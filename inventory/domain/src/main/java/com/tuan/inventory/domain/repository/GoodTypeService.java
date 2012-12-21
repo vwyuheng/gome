@@ -11,8 +11,7 @@ import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.OrderGoodsDO;
 import com.tuan.inventory.dao.data.OrderInfoDetailDO;
-import com.tuan.ordercenter.model.OrderGoodsSelectionModel;
-import com.tuan.ordercenter.model.enu.res.OrderCreatorEnum;
+import com.tuan.inventory.model.OrderGoodsSelectionModel;
 
 
 public class GoodTypeService{
