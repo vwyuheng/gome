@@ -1,6 +1,6 @@
 # ------- 应用程序的动态配置属性，将用在Spring中 --------
 # RMI config
-youhui.rmi.port=${youhui.rmi.port}
+inventory.rmi.port=${youhui.rmi.port}
 
 # 性能阈值
 performance.threshold=${performance.threshold}
@@ -10,7 +10,6 @@ loggingRoot=${loggingRoot}
 loggingLevel=${loggingLevel}
 
 #memcached配置
-youhuiSpyMemcachedClient.memcached.server.list=${youhuiSpyMemcachedClient.memcached.server.list}
 
 #数据连接配置 jndi
 dataSource.jndi.master=${dataSource.jndi.master}
