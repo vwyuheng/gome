@@ -2,28 +2,28 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>tuan-youhuicenter-parent</artifactId>
+		<artifactId>tuan-inventorycenter-parent</artifactId>
 		<groupId>com.tuan</groupId>
 		<version>1.0</version>
 	</parent>
-	<groupId>com.tuan.youhui</groupId>
-	<artifactId>youhui-service-impl</artifactId>
-	<version>${youhui.service.impl.version}</version>
+	<groupId>com.tuan.inventory</groupId>
+	<artifactId>inventory-service-impl</artifactId>
+	<version>${inventory.service.impl.version}</version>
 	<packaging>jar</packaging>
-	<name>youhui-service-impl</name>
+	<name>inventory-service-impl</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
 		<dependency>
-			<groupId>com.tuan.youhui</groupId>
-			<artifactId>youhui-model</artifactId>
+			<groupId>com.tuan.inventory</groupId>
+			<artifactId>inventory-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tuan.youhui</groupId>
-			<artifactId>youhui-service</artifactId>
+			<groupId>com.tuan.inventory</groupId>
+			<artifactId>inventory-service</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tuan.youhui</groupId>
-			<artifactId>youhui-domain</artifactId>
+			<groupId>com.tuan.inventory</groupId>
+			<artifactId>inventory-domain</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tuan.cozy</groupId>
