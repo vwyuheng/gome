@@ -1,10 +1,10 @@
-package com.tuan.pmt.model.result;
+package com.tuan.inventory.model.result;
 
 import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
  * Service层返回结果封装类，将结果业务对象泛化
- * @author wanghongwei
+ * @author wowo
  *
  * @param <T> 泛化的业务返回对象
  */
