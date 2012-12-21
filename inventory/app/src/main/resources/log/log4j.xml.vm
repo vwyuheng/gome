@@ -92,7 +92,7 @@
 	<!-- ===== [应用Appender] ===== -->
 	<!-- [应用Appender] 默认 -->
 	<appender name="UCORE-DEFAULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${loggingRoot}/youhui-default.log"/>
+		<param name="file" value="${loggingRoot}/inventory-default.log"/>
 		<param name="append" value="true"/>
 		<param name="encoding" value="UTF-8"/>
                 <param name="DatePattern" value="'.'yyyyMMdd" />
@@ -103,7 +103,7 @@
 	
 	<!-- [应用Appender] 应用业务处理结果日志 -->
 	<appender name="UCORE-BUSINESS-RESULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${loggingRoot}/youhui-biz-result.log"/>
+		<param name="file" value="${loggingRoot}/inventory-biz-result.log"/>
 		<param name="append" value="true"/>
 		<param name="encoding" value="UTF-8"/>
 		<param name="DatePattern" value="'.'yyyyMMdd" />
@@ -112,7 +112,7 @@
 		</layout>
 	</appender>
 	<appender name="COMMON-BUSINESS-RESULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
-		<param name="file" value="${loggingRoot}/youhui-business-result.log"/>
+		<param name="file" value="${loggingRoot}/inventory-business-result.log"/>
 		<param name="append" value="true"/>
 		<param name="encoding" value="UTF-8"/>
 		<param name="DatePattern" value="'.'yyyyMMdd" />
