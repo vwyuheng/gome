@@ -6,7 +6,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
  * @ClassName: OrderGoodsSelectionModel
  * @Description: 订单商品选型信息Bean类，对应OrderGoodsSelectionDO
  * 		对应订单商品选型信息表 order_center.jeehe_order_info_detail
- * @author wanghongwei
+ * @author wowo
  * @date 2011-12-21
  */
 public class OrderGoodsSelectionModel extends TuanBaseDO {
