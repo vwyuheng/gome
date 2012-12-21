@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.tuan.assembly</groupId>
+	<artifactId>tuan-youhui-assembly-parent</artifactId>
+	<name>tuan youhui Deploy Projects</name>
+	<parent>
+		<artifactId>tuan-youhui-parent</artifactId>
+		<groupId>com.tuan</groupId>
+		<version>1.0</version>
+	</parent>
+	<packaging>pom</packaging>
+	<dependencyManagement>
+		<dependencies/>
+	</dependencyManagement>
+	<modules>
+		<module>youhui-war</module>
+	</modules>
+</project>

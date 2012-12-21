@@ -1,0 +1,25 @@
+# ------- 应用程序的动态配置属性，将用在Spring中 --------
+# RMI config
+youhui.rmi.port=${youhui.rmi.port}
+
+# 性能阈值
+performance.threshold=${performance.threshold}
+
+# 记录应用日志的跟目录 -- FOR LOG4J 
+loggingRoot=${loggingRoot}
+loggingLevel=${loggingLevel}
+
+#memcached配置
+youhuiSpyMemcachedClient.memcached.server.list=${youhuiSpyMemcachedClient.memcached.server.list}
+
+#数据连接配置 jndi
+dataSource.jndi.master=${dataSource.jndi.master}
+dataSource.jndi.slave_1=${dataSource.jndi.slave_1}
+#dataSource.jndi.slave_2=${dataSource.jndi.slave_2}
+#dataSource.jndi.slave_3=${dataSource.jndi.slave_3}
+#数据库负载均衡，心跳检测
+dataSourceLoadbalance.detectingSql=${dataSourceLoadbalance.detectingSql}
+dataSourceLoadbalance.totalFailureCount=${dataSourceLoadbalance.totalFailureCount}
+dataSourceLoadbalance.totalRiseCount=${dataSourceLoadbalance.totalRiseCount}
+dataSourceLoadbalance.interTime=${dataSourceLoadbalance.interTime}
+

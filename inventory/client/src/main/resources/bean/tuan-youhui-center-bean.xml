@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+	default-autowire="byName">
+
+	<bean id="youhuiCenterFacade" class="com.tuan.pmt.client.impl.YouhuiCenterFacadeImpl" />
+
+	<bean id="couponCheckService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+		<property name="serviceUrl">
+			<value>rmi://youhui.55tuan.me:16050/couponCheckService</value>
+		</property>
+		<property name="serviceInterface">
+			<value>com.tuan.pmt.service.CouponCheckService</value>
+		</property>
+		<property name="lookupStubOnStartup">
+			<value>false</value>
+		</property>
+		<property name="refreshStubOnConnectFailure">
+			<value>true</value>
+		</property>
+		<property name="cacheStub">
+			<value>true</value>
+		</property>
+	</bean>
+	
+	<bean id="couponQueryService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+		<property name="serviceUrl">
+			<value>rmi://youhui.55tuan.me:16050/couponQueryService</value>
+		</property>
+		<property name="serviceInterface">
+			<value>com.tuan.pmt.service.CouponQueryService</value>
+		</property>
+		<property name="lookupStubOnStartup">
+			<value>false</value>
+		</property>
+		<property name="refreshStubOnConnectFailure">
+			<value>true</value>
+		</property>
+		<property name="cacheStub">
+			<value>true</value>
+		</property>
+	</bean>
+	
+	<bean id="couponUpdateService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+		<property name="serviceUrl">
+			<value>rmi://youhui.55tuan.me:16050/couponUpdateService</value>
+		</property>
+		<property name="serviceInterface">
+			<value>com.tuan.pmt.service.CouponUpdateService</value>
+		</property>
+		<property name="lookupStubOnStartup">
+			<value>false</value>
+		</property>
+		<property name="refreshStubOnConnectFailure">
+			<value>true</value>
+		</property>
+		<property name="cacheStub">
+			<value>true</value>
+		</property>
+	</bean>
+	
+	
+	<bean id="youhuiSpyMemcachedClient" class="com.tuan.core.common.lang.cache.remote.SpyMemcachedClient">
+        <property name="memcachedNodes" value="mem10.55tuan.me:31222 mem11.55tuan.me:31222 mem23.55tuan.me:31222 mem24.55tuan.me:31222" />
+    </bean>
+</beans>

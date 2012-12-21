@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+			default-autowire="byName">
+	<bean id="writeDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowopmt?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+		<property name="user" value="deployment" />
+		<property name="password" value="123456" />
+		<property name="initialPoolSize" value="2" />
+		<property name="minPoolSize" value="2" />
+		<property name="maxPoolSize" value="5" />
+		<property name="idleConnectionTestPeriod" value="600" />
+		<property name="maxIdleTime" value="600" />
+		<property name="maxStatements" value="0" />
+		<property name="maxStatementsPerConnection" value="0" />
+		<property name="acquireIncrement" value="5" />
+		<property name="acquireRetryAttempts" value="200" />
+		<property name="acquireRetryDelay" value="180000" />
+	</bean>
+	<bean id="readDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowopmt?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+		<property name="user" value="deployment" />
+		<property name="password" value="123456" />
+		<property name="initialPoolSize" value="2" />
+		<property name="minPoolSize" value="2" />
+		<property name="maxPoolSize" value="5" />
+		<property name="idleConnectionTestPeriod" value="600" />
+		<property name="maxIdleTime" value="600" />
+		<property name="maxStatements" value="0" />
+		<property name="maxStatementsPerConnection" value="0" />
+		<property name="acquireIncrement" value="5" />
+		<property name="acquireRetryAttempts" value="200" />
+		<property name="acquireRetryDelay" value="180000" />
+	</bean>
+</beans>

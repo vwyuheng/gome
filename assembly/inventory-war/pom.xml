@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.tuan.assembly</groupId>
+		<artifactId>tuan-youhui-assembly-parent</artifactId>
+		<version>1.0</version>
+	</parent>
+	<groupId>com.tuan.assembly</groupId>
+	<artifactId>youhuicenter</artifactId>
+	<version>1.0</version>
+	<name>tuan youhuicenter Deployment War</name>
+	<url>https://www.55tuan.com/</url>
+	<packaging>pom</packaging>
+	<properties>
+		<assembly.name>youhuicenter</assembly.name>
+	</properties>
+	<dependencies>
+
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-structure</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-app</artifactId>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>
+								${project.build.directory}/${assembly.name}.war
+							</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-libs</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<!-- common JAR -->
+								<artifactItem>
+									<groupId>commons-io</groupId>
+									<artifactId>commons-io</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-lang</groupId>
+									<artifactId>commons-lang</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-collections</groupId>
+									<artifactId>commons-collections</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-beanutils</groupId>
+									<artifactId>commons-beanutils</artifactId>
+								</artifactItem>
+								
+								<artifactItem>
+									<groupId>commons-dbcp</groupId>
+									<artifactId>commons-dbcp</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-httpclient</groupId>
+									<artifactId>commons-httpclient</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-discovery</groupId>
+									<artifactId>commons-discovery</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>jaxen</groupId>
+									<artifactId>jaxen</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-pool</groupId>
+									<artifactId>commons-pool</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-codec</groupId>
+									<artifactId>commons-codec</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>oro</groupId>
+									<artifactId>oro</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-logging</groupId>
+									<artifactId>commons-logging-api</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-logging</groupId>
+									<artifactId>commons-logging</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>log4j</groupId>
+									<artifactId>log4j</artifactId>
+								</artifactItem>
+								<!-- SPRING JAR -->
+								<artifactItem>
+									<groupId>org.apache.xbean</groupId>
+									<artifactId>xbean-spring</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-core</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-beans</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-aop</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-context</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-context-support</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-tx</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-jdbc</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-orm</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-web</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-webmvc</artifactId>
+								</artifactItem>
+								<!-- spring depency -->
+								<artifactItem>
+									<groupId>aopalliance</groupId>
+									<artifactId>aopalliance</artifactId>
+									<version>1.0</version>
+								</artifactItem>
+								<!-- hessian -->
+								<artifactItem>
+									<groupId>hessian</groupId>
+									<artifactId>hessian</artifactId>
+								</artifactItem>
+								<!-- axis -->
+								<artifactItem>
+									<groupId>axis</groupId>
+									<artifactId>axis</artifactId>
+								</artifactItem>
+								<!-- iBatis -->
+								<artifactItem>
+									<groupId>org.apache.ibatis</groupId>
+									<artifactId>ibatis-sqlmap</artifactId>
+								</artifactItem>
+								<!-- java byte operator -->
+								<artifactItem>
+									<groupId>cglib</groupId>
+									<artifactId>cglib-nodep</artifactId>
+								</artifactItem>
+								<!-- other -->
+								<artifactItem>
+									<groupId>com.google.code.gson</groupId>
+									<artifactId>gson</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>velocity</groupId>
+									<artifactId>velocity</artifactId>
+								</artifactItem>
+								<!-- for cache -->
+								<artifactItem>
+									<groupId>memcached</groupId>
+									<artifactId>memcached</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>dom4j</groupId>
+									<artifactId>dom4j</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>json-object</groupId>
+									<artifactId>json-object</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-webmvc</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>freemarker</groupId>
+									<artifactId>freemarker</artifactId>
+								</artifactItem>
+								<!-- activemq -->
+								<artifactItem>
+									<groupId>org.apache.activemq</groupId>
+									<artifactId>activemq-core</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.osgi</groupId>
+									<artifactId>org.osgi.core</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.geronimo.specs</groupId>
+									<artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>commons-net</groupId>
+									<artifactId>commons-net</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.slf4j</groupId>
+									<artifactId>slf4j-api</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.slf4j</groupId>
+									<artifactId>slf4j-log4j12</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>json-lib</groupId>
+									<artifactId>json-lib</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.ezmorph</groupId>
+									<artifactId>ezmorph</artifactId>
+								</artifactItem>
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/lib</outputDirectory>
+						</configuration>
+					</execution>
+					<execution>
+						<id>copy-order-core</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+
+
+								<artifactItem>
+									<groupId>com.tuan.jeehe</groupId>
+									<artifactId>jeehe-common</artifactId>
+								</artifactItem>
+
+
+								<!-- USFP jars -->
+								<artifactItem>
+									<groupId>com.tuan.cozy</groupId>
+									<artifactId>cozy-common-lang</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.cozy</groupId>
+									<artifactId>cozy-common-spring</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.cozy</groupId>
+									<artifactId>cozy-framework-service</artifactId>
+								</artifactItem>
+								<!-- ucore jars -->
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-model</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-service</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-service-impl</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-domain</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-dao</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.youhuicenter</groupId>
+									<artifactId>youhuicenter-ext</artifactId>
+								</artifactItem>
+								<!-- for activemq -->
+								<artifactItem>
+									<groupId>com.tuan.cozy</groupId>
+									<artifactId>cozy-common-activemq</artifactId>
+								</artifactItem>
+
+							</artifactItems>
+							<outputDirectory>${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/lib</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 过滤文件 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<configuration>
+				<encoding>UTF-8</encoding>
+				</configuration>
+				<executions>
+					<!-- 过滤处理日志文件 -->
+					<execution>
+						<id>log-filter</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+						<encoding>UTF-8</encoding>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/${assembly.name}.war/log/</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+							<outputDirectory>
+								${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/
+							</outputDirectory>
+							<overwrite>true</overwrite>
+						</configuration>
+					</execution>
+					<!-- 过滤处理应用配置文件 -->
+					<execution>
+						<id>conf-filter</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+						<encoding>UTF-8</encoding>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/${assembly.name}.war/conf/</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+							<outputDirectory>
+								${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/
+							</outputDirectory>
+							<overwrite>true</overwrite>
+						</configuration>
+					</execution>
+					<!-- 过滤处理数据库配置 -->
+					<!-- 过滤处理Apache配置 -->
+				</executions>
+			</plugin>
+			<!-- 文件名称处理 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>rename-log4j</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete
+									file="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/log4j.xml" />
+								<copy
+									file="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/log4j.xml.vm"
+									tofile="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/log4j.xml" />
+								<delete
+									file="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/log4j.xml.vm" />
+								<delete dir="${project.build.directory}/${assembly.name}.war/log" />
+								<delete dir="${project.build.directory}/${assembly.name}.war/conf" />
+							</tasks>
+						</configuration>
+					</execution>
+					<execution>
+						<id>rename-app-config</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete
+									file="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/app.properties" />
+								<mkdir
+									dir="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/META-INF" />
+								<copy
+									file="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/app.properties.vm"
+									tofile="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/META-INF/app.properties" />
+								<delete
+									file="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/app.properties.vm" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- 打包 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assemble/war.xml</descriptor>
+					</descriptors>
+					<attach>false</attach>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- 文件包处理 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>rename-war</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<delete
+									file="${project.build.directory}/${project.artifactId}-${project.version}.war" />
+								<copy
+									file="${project.build.directory}/${project.artifactId}-${project.version}-war.zip"
+									tofile="${project.build.directory}/${assembly.name}-${project.version}.war" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>

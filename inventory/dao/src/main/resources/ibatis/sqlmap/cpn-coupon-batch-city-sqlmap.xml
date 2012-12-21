@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="cpn_coupon_batch">
+	<resultMap id="cpnCouponBatchCityResult" class="com.tuan.pmt.dao.data.CpnCouponBatchCityDO">
+		<result column="id" property="id" jdbcType="BIGINT" />
+		<result column="batch_id" property="batchId" jdbcType="BIGINT" />
+		<result column="city_id" property="cityId" jdbcType="INTEGER" />
+	</resultMap>
+	
+	<select id="queryCpnCouponBatchCityByBatchIdAndCityId" parameterClass="java.util.Map" resultMap="cpnCouponBatchCityResult">
+		select id,batch_id,city_id 
+		from cpn_coupon_batch_city 
+		where batch_id = #batchId:BIGINT# and city_id = #cityId:INTEGER#
+	</select>
+	
+	<select id="queryCpnCouponBatchCityByBatchId" parameterClass="java.lang.Long" resultMap="cpnCouponBatchCityResult">
+		select id,batch_id,city_id 
+		from cpn_coupon_batch_city 
+		where batch_id = #batchId:BIGINT# 
+	</select>
+
+</sqlMap>

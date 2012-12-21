@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="GBK"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//iBATIS.com//DTD SQL Map Config 2.0//EN" "http://www.ibatis.com/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+	<settings cacheModelsEnabled="true" enhancementEnabled="true"
+		lazyLoadingEnabled="false" errorTracingEnabled="true"
+		defaultStatementTimeout="300" maxRequests="2048" maxSessions="1024"
+		maxTransactions="512" useStatementNamespaces="false" />
+
+	<sqlMap resource="ibatis/sqlmap/cpn-coupon-sqlmap.xml" />
+	<sqlMap resource="ibatis/sqlmap/cpn-coupon-batch-sqlmap.xml" />
+	<sqlMap resource="ibatis/sqlmap/cpn-coupon-log-sqlmap.xml" />
+	<sqlMap resource="ibatis/sqlmap/cpn-coupon-batch-cat-sqlmap.xml" />
+	<sqlMap resource="ibatis/sqlmap/cpn-coupon-batch-city-sqlmap.xml" />
+</sqlMapConfig>

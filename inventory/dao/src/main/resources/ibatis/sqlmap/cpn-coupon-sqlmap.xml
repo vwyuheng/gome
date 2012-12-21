@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="cpn_coupon">
+	<resultMap id="cpnCouponResult" class="com.tuan.pmt.dao.data.CpnCouponDO">
+		<result column="coupon_id" property="couponId" jdbcType="BIGINT" />
+		<result column="batch_id" property="batchId" jdbcType="BIGINT" />
+		<result column="prefix" property="prefix" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="gen_time" property="genTime" jdbcType="TIMESTAMP" />
+		<result column="bind_time" property="bindTime" jdbcType="TIMESTAMP" />
+		<result column="used_time" property="usedTime" jdbcType="TIMESTAMP" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" />
+		<result column="order_id" property="orderId" jdbcType="BIGINT" />
+		<result column="status" property="status" jdbcType="TINYINT" />
+		<result column="invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+		<result column="invalid_admin_id" property="invalidAdminId" jdbcType="BIGINT" />
+		<result column="invalid_reason" property="invalidReason" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="get-cpnBatch-result" class="com.tuan.pmt.dao.data.CpnCouponBatchDO">
+	   <result column="b_batch_id" property="batchId" jdbcType="BIGINT" />
+        <result column="assign_type" property="assignType" jdbcType="VARCHAR" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="backend_name" property="backendName" jdbcType="VARCHAR" />
+        <result column="b_gen_time" property="genTime" jdbcType="TIMESTAMP" />
+        <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+        <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+        <result column="face_value" property="faceValue" jdbcType="INTEGER" />
+        <result column="num" property="num" jdbcType="BIGINT" />
+        <result column="admin_id" property="adminId" jdbcType="BIGINT" />
+        <result column="department" property="department" jdbcType="VARCHAR" />
+        <result column="comment" property="comment" jdbcType="VARCHAR" />
+        <result column="b_invalid_time" property="invalidTime" jdbcType="TIMESTAMP" />
+        <result column="b_invalid_admin_id" property="invalidAdminId" jdbcType="BIGINT" />
+        <result column="b_invalid_reason" property="invalidReason" jdbcType="VARCHAR" />
+        <result column="use_terminal" property="useTerminal" jdbcType="VARCHAR" />
+        <result column="bind_limit" property="bindLimit" jdbcType="INTEGER" />
+        <result column="goods_price" property="goodsPrice" jdbcType="INTEGER" />
+        <result column="goods_set_amount" property="goodsSetAmount" jdbcType="INTEGER" />
+        <result column="goods_ids" property="goodsIds" jdbcType="VARCHAR" />
+        <result column="first_time" property="firstTime" jdbcType="INTEGER" />
+        <result column="bind_phone" property="bindPhone" jdbcType="INTEGER" />
+        <result column="used_num" property="usedNum" jdbcType="BIGINT" />
+        <result column="bind_num" property="bindNum" jdbcType="BIGINT" />
+        <result column="freeze_num" property="freezeNum" jdbcType="BIGINT" />
+        <result column="invalid_num" property="invalidNum" jdbcType="BIGINT" />
+        <result column="refund_amount" property="refundAmount" jdbcType="DECIMAL" />
+        <result column="used_amount" property="usedAmount" jdbcType="DECIMAL" />
+        <result column="user_num" property="userNum" jdbcType="BIGINT" />
+        <result column="goods_amount" property="goodsAmount" jdbcType="DECIMAL" />
+        <result column="b_status" property="status" jdbcType="INTEGER" />
+        <result column="all_city" property="allCity" jdbcType="INTEGER" />
+        <result column="all_cat" property="allCat" jdbcType="INTEGER" />
+	</resultMap>
+
+	<update id="updateCpnCouponByCouponId" parameterClass="com.tuan.pmt.dao.data.CpnCouponDO">
+		update cpn_coupon set
+			bind_time=#bindTime:TIMESTAMP#,used_time=#usedTime:TIMESTAMP#,user_id=#userId:BIGINT# ,
+			order_id=#orderId:BIGINT# ,status=#status:TINYINT# ,invalid_time=#invalidTime:TIMESTAMP#,
+			invalid_admin_id=#invalidAdminId:BIGINT#,invalid_reason=#invalidReason:VARCHAR# 
+		where coupon_id = #couponId:BIGINT# 
+	</update>
+
+	<select id="queryCpnCouponByCouponId" parameterClass="Long" resultMap="cpnCouponResult">
+		select a.coupon_id,a.batch_id,a.prefix,a.code,a.gen_time,a.bind_time,a.used_time,a.user_id,
+				a.order_id,a.status,a.invalid_time,a.invalid_admin_id,a.invalid_reason
+        from cpn_coupon a
+		where coupon_id = #couponId:BIGINT#
+	</select>
+	
+	<select id="queryCpnCouponByUserId" parameterClass="java.util.Map" resultMap="cpnCouponResult">
+		select a.coupon_id,a.batch_id,a.prefix,a.code,a.gen_time,a.bind_time,a.used_time,a.user_id,
+				a.order_id,a.status,a.invalid_time,a.invalid_admin_id,a.invalid_reason
+        from cpn_coupon a,cpn_coupon_batch b
+		 where  a.batch_id = b.batch_id   
+        <dynamic>
+            <isNotEmpty prepend="and" property="statusList" >
+                a.status in
+                <iterate property="statusList" open="(" close=")" conjunction=",">
+                    #statusList[]:TINYINT#
+                </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="platType" >
+                FIND_IN_SET(#platType:VARCHAR# ,b.use_terminal)>0
+            </isNotEmpty>
+               <isGreaterThan prepend="and" property="userId" compareValue="0">
+                a.user_id = #userId:BIGINT# 
+            </isGreaterThan>
+        </dynamic>
+		order by a.status asc,b.status asc,a.bind_time desc
+		limit #pageNum#,#pageSize#
+	</select>
+	
+	<select id="queryCpnCouponByUserIdCount" parameterClass="java.util.Map" resultClass="int">
+        select count(coupon_id) as count 
+        from cpn_coupon a,cpn_coupon_batch b
+        where  a.batch_id = b.batch_id and a.user_id = #userId:BIGINT# 
+        <dynamic>
+            <isNotEmpty prepend="and" property="statusList" >
+                a.status in
+                <iterate property="statusList" open="(" close=")" conjunction=",">
+                    #statusList[]:TINYINT#
+                </iterate>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="platType" >
+                FIND_IN_SET(#platType:VARCHAR# ,b.use_terminal)>0
+            </isNotEmpty>
+        </dynamic>
+    </select>
+	
+	<select id="queryCpnCouponByCode" parameterClass="java.lang.String" resultMap="cpnCouponResult">
+		select a.coupon_id,a.batch_id,a.prefix,a.code,a.gen_time,a.bind_time,a.used_time,a.user_id,
+				a.order_id,a.status,a.invalid_time,a.invalid_admin_id,a.invalid_reason
+        from cpn_coupon a
+        where code = #code:VARCHAR#
+	</select>
+	
+	<select id="queryCouponsByUserIdAndBatchId" parameterClass="java.util.Map" resultMap="cpnCouponResult">
+		select a.coupon_id,a.batch_id,a.prefix,a.code,a.gen_time,a.bind_time,a.used_time,a.user_id,
+				a.order_id,a.status,a.invalid_time,a.invalid_admin_id,a.invalid_reason
+        from cpn_coupon a
+        where a.batch_id = #batchId:BIGINT# and user_id = #userId:BIGINT# 
+    </select>
+	
+	<select id="queryCpnCouponByOrderId" parameterClass="Long" resultMap="cpnCouponResult">
+		select a.coupon_id,a.batch_id,a.prefix,a.code,a.gen_time,a.bind_time,a.used_time,a.user_id,
+				a.order_id,a.status,a.invalid_time,a.invalid_admin_id,a.invalid_reason
+        from cpn_coupon a
+		where order_id = #orderId:BIGINT#
+	</select>
+	
+	<select id="queryCpnCouponByOrderIdAndStatusList" parameterClass="java.util.Map" resultMap="cpnCouponResult">
+		select a.coupon_id,a.batch_id,a.prefix,a.code,a.gen_time,a.bind_time,a.used_time,a.user_id,
+				a.order_id,a.status,a.invalid_time,a.invalid_admin_id,a.invalid_reason
+        from cpn_coupon a
+		where a.user_id = #userId:BIGINT# and a.order_id = #orderId:BIGINT#
+        <dynamic>
+            <isNotEmpty prepend="and" property="statusList" >
+                a.status in
+                <iterate property="statusList" open="(" close=")" conjunction=",">
+                    #statusList[]:TINYINT#
+                </iterate>
+            </isNotEmpty>
+        </dynamic>
+	</select>
+</sqlMap>

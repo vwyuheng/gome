@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+	default-autowire="byName">
+	
+	<bean id="couponServiceTemplate" class="com.tuan.pmt.service.impl.CouponServiceTemplateImpl" />
+	<bean id="couponQueryService" class="com.tuan.pmt.service.impl.CouponQueryServiceImpl" />
+	<bean id="couponCheckService" class="com.tuan.pmt.service.impl.CouponCheckServiceImpl" />
+	<bean id="couponUpdateService" class="com.tuan.pmt.service.impl.CouponUpdateServiceImpl" />
+
+	<!-- ========================= 定义远程rmi服务 ========================= -->
+	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="serviceName" value="couponQueryService" />
+		<property name="service" ref="couponQueryService" />
+		<property name="serviceInterface" value="com.tuan.pmt.service.CouponQueryService" />
+		<property name="registryPort" value="${youhui.rmi.port}" />
+	</bean>
+	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="serviceName" value="couponCheckService" />
+		<property name="service" ref="couponCheckService" />
+		<property name="serviceInterface" value="com.tuan.pmt.service.CouponCheckService" />
+		<property name="registryPort" value="${youhui.rmi.port}" />
+	</bean>
+	<bean class="org.springframework.remoting.rmi.RmiServiceExporter">
+		<property name="serviceName" value="couponUpdateService" />
+		<property name="service" ref="couponUpdateService" />
+		<property name="serviceInterface" value="com.tuan.pmt.service.CouponUpdateService" />
+		<property name="registryPort" value="${youhui.rmi.port}" />
+	</bean>
+</beans>
