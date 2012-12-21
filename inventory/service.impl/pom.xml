@@ -6,24 +6,24 @@
 		<groupId>com.tuan</groupId>
 		<version>1.0</version>
 	</parent>
-	<groupId>com.tuan.youhuicenter</groupId>
-	<artifactId>youhuicenter-service-impl</artifactId>
+	<groupId>com.tuan.youhui</groupId>
+	<artifactId>youhui-service-impl</artifactId>
 	<version>${youhui.service.impl.version}</version>
 	<packaging>jar</packaging>
-	<name>youhuicenter-service-impl</name>
+	<name>youhui-service-impl</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
 		<dependency>
-			<groupId>com.tuan.youhuicenter</groupId>
-			<artifactId>youhuicenter-model</artifactId>
+			<groupId>com.tuan.youhui</groupId>
+			<artifactId>youhui-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tuan.youhuicenter</groupId>
-			<artifactId>youhuicenter-service</artifactId>
+			<groupId>com.tuan.youhui</groupId>
+			<artifactId>youhui-service</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tuan.youhuicenter</groupId>
-			<artifactId>youhuicenter-domain</artifactId>
+			<groupId>com.tuan.youhui</groupId>
+			<artifactId>youhui-domain</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.tuan.cozy</groupId>
