@@ -4,17 +4,17 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.tuan.assembly</groupId>
-		<artifactId>tuan-youhui-assembly-parent</artifactId>
+		<artifactId>tuan-inventory-assembly-parent</artifactId>
 		<version>1.0</version>
 	</parent>
 	<groupId>com.tuan.assembly</groupId>
-	<artifactId>youhuicenter</artifactId>
+	<artifactId>inventory</artifactId>
 	<version>1.0</version>
-	<name>tuan youhuicenter Deployment War</name>
+	<name>tuan inventorycenter Deployment War</name>
 	<url>https://www.55tuan.com/</url>
 	<packaging>pom</packaging>
 	<properties>
-		<assembly.name>youhuicenter</assembly.name>
+		<assembly.name>inventory</assembly.name>
 	</properties>
 	<dependencies>
 
@@ -34,8 +34,8 @@
 						<configuration>
 							<artifactItems>
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-app</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-app</artifactId>
 								</artifactItem>
 							</artifactItems>
 							<outputDirectory>
@@ -282,28 +282,28 @@
 								</artifactItem>
 								<!-- ucore jars -->
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-model</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-model</artifactId>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-service</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-service</artifactId>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-service-impl</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-service-impl</artifactId>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-domain</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-domain</artifactId>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-dao</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-dao</artifactId>
 								</artifactItem>
 								<artifactItem>
-									<groupId>com.tuan.youhuicenter</groupId>
-									<artifactId>youhuicenter-ext</artifactId>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-ext</artifactId>
 								</artifactItem>
 								<!-- for activemq -->
 								<artifactItem>
