@@ -1,4 +1,4 @@
-package com.tuan.pmt.service.impl;
+package com.tuan.inventory.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,17 +14,17 @@ import com.tuan.core.common.lang.TuanRuntimeException;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.core.common.service.TuanServiceConstants;
 import com.tuan.core.common.service.TuanServiceException;
-import com.tuan.pmt.service.CouponServiceCallback;
-import com.tuan.pmt.service.CouponServiceTemplate;
+import com.tuan.inventory.service.InventoryServiceCallback;
+import com.tuan.inventory.service.InventoryServiceTemplate;
 
 /**
  * 订单中心业务处理模板实现类
  * @author tianzq
  * @date 2012.10.25
  */
-public class CouponServiceTemplateImpl implements CouponServiceTemplate{
+public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
 
-    private final static Log logger = LogFactory.getLog(CouponServiceTemplateImpl.class);
+    private final static Log logger = LogFactory.getLog(InventoryServiceTemplateImpl.class);
 
    
     protected TransactionTemplate transactionTemplate;
@@ -36,7 +36,7 @@ public class CouponServiceTemplateImpl implements CouponServiceTemplate{
     		DataSourceContextHolder.setDataSourceType(MSDataSourceType.SALVE_1);
     	}
     }
-    public TuanCallbackResult execute(final CouponServiceCallback action) {
+    public TuanCallbackResult execute(final InventoryServiceCallback action) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("进入模板方法开始处理");
@@ -109,7 +109,7 @@ public class CouponServiceTemplateImpl implements CouponServiceTemplate{
         return result;
     }
    
-    public TuanCallbackResult executeWithoutTransaction(final CouponServiceCallback action, final Object domain) {
+    public TuanCallbackResult executeWithoutTransaction(final InventoryServiceCallback action, final Object domain) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("进入模板方法开始处理");
@@ -179,7 +179,7 @@ public class CouponServiceTemplateImpl implements CouponServiceTemplate{
      * @param serviceContext
      * @param domain
      */
-    protected void templateExtensionAfterTransaction(TuanCallbackResult result,final CouponServiceCallback action) {
+    protected void templateExtensionAfterTransaction(TuanCallbackResult result,final InventoryServiceCallback action) {
         // DUMY
     	try {
 			action.executeAfter();
@@ -191,7 +191,7 @@ public class CouponServiceTemplateImpl implements CouponServiceTemplate{
     }
 
    
-    protected void templateExtensionAfterExecute(TuanCallbackResult result,final CouponServiceCallback action) {
+    protected void templateExtensionAfterExecute(TuanCallbackResult result,final InventoryServiceCallback action) {
         // DUMY
     	try {
 			action.executeAfter();

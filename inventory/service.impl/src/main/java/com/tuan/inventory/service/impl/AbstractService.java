@@ -1,21 +1,21 @@
-package com.tuan.pmt.service.impl;
+package com.tuan.inventory.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.core.common.service.AbstractServiceImpl;
 import com.tuan.core.common.service.TuanCallbackResult;
-import com.tuan.pmt.model.result.CallResult;
-import com.tuan.pmt.service.CouponServiceTemplate;
+import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.service.InventoryServiceTemplate;
 
 public abstract class AbstractService extends AbstractServiceImpl {
-	 protected CouponServiceTemplate couponServiceTemplate;
+	 protected InventoryServiceTemplate couponServiceTemplate;
 
-	public CouponServiceTemplate getCouponServiceTemplate() {
+	public InventoryServiceTemplate getCouponServiceTemplate() {
 		return couponServiceTemplate;
 	}
 
-	public void setCouponServiceTemplate(CouponServiceTemplate couponServiceTemplate) {
+	public void setCouponServiceTemplate(InventoryServiceTemplate couponServiceTemplate) {
 		this.couponServiceTemplate = couponServiceTemplate;
 	}
 
@@ -38,9 +38,4 @@ public abstract class AbstractService extends AbstractServiceImpl {
 		}
 	}
 
-//	protected void writeLog(LogModel lm) {
-//		if (log.isInfoEnabled()) {
-//			log.info(lm.toJson());
-//		}
-//	}
 }
