@@ -4,9 +4,9 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=GBK">
-<title>Youhui Center</title>
+<title>Inventory Center</title>
 </head>
 <body>
-<p>Welcome to Youhui Center!</p>
+<p>Welcome to Inventory Center!</p>
 </body>
 </html>
