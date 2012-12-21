@@ -6,11 +6,11 @@
 		<groupId>com.tuan</groupId>
 		<version>1.0</version>
 	</parent>
-	<groupId>com.tuan.youhuicenter</groupId>
-	<artifactId>youhuicenter-dao</artifactId>
+	<groupId>com.tuan.youhui</groupId>
+	<artifactId>youhui-dao</artifactId>
 	<version>${youhui.dao.version}</version>
 	<packaging>jar</packaging>
-	<name>youhuicenter-dao</name>
+	<name>youhui-dao</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
 		<dependency>
