@@ -13,5 +13,5 @@
     <!-- 定义与系统或环境有关的行为 -->
 
     <!-- 引入其它资源，需要开发人员随时维护 -->
-    <import resource="classpath:/bean/youhui-center-root-bean.xml" />
+    <import resource="classpath:/bean/inventory-center-root-bean.xml" />
 </beans>
