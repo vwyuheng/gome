@@ -6,24 +6,24 @@
 		<groupId>com.tuan</groupId>
 		<version>1.0</version>
 	</parent>
-	<groupId>com.tuan.youhuicenter</groupId>
-	<artifactId>youhuicenter-domain</artifactId>
+	<groupId>com.tuan.youhui</groupId>
+	<artifactId>youhui-domain</artifactId>
 	<version>${youhui.domain.version}</version>
 	<packaging>jar</packaging>
-	<name>youhuicenter-domain</name>
+	<name>youhui-domain</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
 		<dependency>
-			<groupId>com.tuan.youhuicenter</groupId>
-			<artifactId>youhuicenter-model</artifactId>
+			<groupId>com.tuan.youhui</groupId>
+			<artifactId>youhui-model</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tuan.youhuicenter</groupId>
-			<artifactId>youhuicenter-dao</artifactId>
+			<groupId>com.tuan.youhui</groupId>
+			<artifactId>youhui-dao</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.tuan.youhuicenter</groupId>
-			<artifactId>youhuicenter-ext</artifactId>
+			<groupId>com.tuan.youhui</groupId>
+			<artifactId>youhui-ext</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
