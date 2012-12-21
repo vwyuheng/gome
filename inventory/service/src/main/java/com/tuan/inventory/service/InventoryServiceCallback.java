@@ -1,4 +1,4 @@
-package com.tuan.pmt.service;
+package com.tuan.inventory.service;
 
 import com.tuan.core.common.service.TuanCallbackResult;
 
@@ -7,7 +7,7 @@ import com.tuan.core.common.service.TuanCallbackResult;
  * @author 窝窝团
  * @date 2012.10.25
  */
-public interface CouponServiceCallback {
+public interface InventoryServiceCallback {
     /**
      * 参数检查
      * @return
