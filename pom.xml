@@ -4,22 +4,22 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.tuan</groupId>
-	<artifactId>tuan-youhui-parent</artifactId>
+	<artifactId>tuan-inventory-parent</artifactId>
 	<version>1.0</version>
-	<name>Youhui center Projects</name>
+	<name>inventory center Projects</name>
 	<url>https://www.55tuan.com/</url>
 	<description>Tuan Projects.</description>
 	<packaging>pom</packaging>
 	<properties>
 		<!-- 将会发布到MVN库 -->
-		<youhui.app.version>1.0.1.20121128</youhui.app.version>
-		<youhui.client.version>1.0.1.20121128</youhui.client.version>
-		<youhui.service.version>1.0.1.20121128</youhui.service.version>
-		<youhui.model.version>1.0.1.20121128</youhui.model.version>
-		<youhui.dao.version>1.0.1.20121128</youhui.dao.version>
-		<youhui.domain.version>1.0.1.20121128</youhui.domain.version>
-		<youhui.service.impl.version>1.0.1.20121128</youhui.service.impl.version>
-		<youhui.ext.version>1.0.1.20121128</youhui.ext.version>
+		<inventory.app.version>1.0.1.20121220</inventory.app.version>
+		<inventory.client.version>1.0.1.20121220</inventory.client.version>
+		<inventory.service.version>1.0.1.20121220</inventory.service.version>
+		<inventory.model.version>1.0.1.20121220</inventory.model.version>
+		<inventory.dao.version>1.0.1.20121220</inventory.dao.version>
+		<inventory.domain.version>1.0.1.20121220</inventory.domain.version>
+		<inventory.service.impl.version>1.0.1.20121220</inventory.service.impl.version>
+		<inventory.ext.version>1.0.1.20121220</inventory.ext.version>
 		<!-- spring version  -->
 		<spring.version>2.5.5</spring.version>
 	</properties>
@@ -27,44 +27,44 @@
 		<dependencies>
 			<!-- user core jars -->
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-model</artifactId>
-				<version>${youhui.model.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventorycenter-model</artifactId>
+				<version>${inventory.model.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-service</artifactId>
-				<version>${youhui.service.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-service</artifactId>
+				<version>${inventory.service.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-service-impl</artifactId>
-				<version>${youhui.service.impl.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-service-impl</artifactId>
+				<version>${inventory.service.impl.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-domain</artifactId>
-				<version>${youhui.domain.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-domain</artifactId>
+				<version>${inventory.domain.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-dao</artifactId>
-				<version>${youhui.dao.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-dao</artifactId>
+				<version>${inventory.dao.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-ext</artifactId>
-				<version>${youhui.ext.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-ext</artifactId>
+				<version>${inventory.ext.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-app</artifactId>
-				<version>${youhui.app.version}</version>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-app</artifactId>
+				<version>${inventory.app.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.youhuicenter</groupId>
-				<artifactId>youhuicenter-client</artifactId>
-				<version>${youhui.client.version}</version>
+				<groupId>com.tuan.inventorycenter</groupId>
+				<artifactId>inventory-client</artifactId>
+				<version>${inventory.client.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.tuan.jeehe</groupId>
@@ -479,7 +479,7 @@
 		</plugins>
 	</build>
 	<modules>
-		<module>youhui</module>
+		<module>inventory</module>
 		<module>assembly</module>
 	</modules>
 	<repositories>
