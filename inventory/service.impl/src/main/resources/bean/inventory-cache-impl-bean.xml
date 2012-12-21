@@ -10,12 +10,4 @@
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 	default-autowire="byName">
 	
-	   <bean id="youhuiSpyMemcachedClient" class="com.tuan.core.common.lang.cache.remote.SpyMemcachedClient">
-        <!-- 
-        <property name="memcachedNodes" value="${youhuiSpyMemcachedClient.memcached.server.list}" />
-        -->
-        <property name="memcachedNodes" value="mem10.55tuan.me:31222 mem11.55tuan.me:31222 mem23.55tuan.me:31222 mem24.55tuan.me:31222" />
-       </bean>
-	
-
 </beans>

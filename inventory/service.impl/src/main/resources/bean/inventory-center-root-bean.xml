@@ -9,13 +9,13 @@
 	default-autowire="byName">
 	<context:property-placeholder location="classpath:META-INF/app.properties" />
 
-    <import resource="classpath:/bean/youhui-dao-env-bean.xml" />
-	<import resource="classpath:/bean/youhui-dao-bean.xml" />
-	<import resource="classpath:/bean/youhui-domain-bean.xml" />
-	<import resource="classpath:/bean/youhui-service-impl-bean.xml" />
-	<import resource="classpath:/bean/youhui-cache-impl-bean.xml" />
-	<import resource="classpath:/bean/youhui-service-framework-bean.xml" />
-	<import resource="classpath:/bean/youhui-center-ext-bean.xml" />
-	<import resource="classpath:/bean/youhui-remoting-servlet.xml" />
+    <import resource="classpath:/bean/inventory-dao-env-bean.xml" />
+	<import resource="classpath:/bean/inventory-dao-bean.xml" />
+	<import resource="classpath:/bean/inventory-domain-bean.xml" />
+	<import resource="classpath:/bean/inventory-service-impl-bean.xml" />
+	<import resource="classpath:/bean/inventory-cache-impl-bean.xml" />
+	<import resource="classpath:/bean/inventory-service-framework-bean.xml" />
+	<import resource="classpath:/bean/inventory-center-ext-bean.xml" />
+	<import resource="classpath:/bean/inventory-remoting-servlet.xml" />
 	
 </beans>
