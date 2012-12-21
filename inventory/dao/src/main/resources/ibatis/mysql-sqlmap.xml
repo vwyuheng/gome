@@ -5,10 +5,5 @@
 		lazyLoadingEnabled="false" errorTracingEnabled="true"
 		defaultStatementTimeout="300" maxRequests="2048" maxSessions="1024"
 		maxTransactions="512" useStatementNamespaces="false" />
-
-	<sqlMap resource="ibatis/sqlmap/cpn-coupon-sqlmap.xml" />
-	<sqlMap resource="ibatis/sqlmap/cpn-coupon-batch-sqlmap.xml" />
-	<sqlMap resource="ibatis/sqlmap/cpn-coupon-log-sqlmap.xml" />
-	<sqlMap resource="ibatis/sqlmap/cpn-coupon-batch-cat-sqlmap.xml" />
-	<sqlMap resource="ibatis/sqlmap/cpn-coupon-batch-city-sqlmap.xml" />
+	<sqlMap resource="ibatis/sqlmap/inventory-goods-type-sql-mapping.xml" />
 </sqlMapConfig>
