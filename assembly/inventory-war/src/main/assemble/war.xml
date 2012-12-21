@@ -6,7 +6,7 @@
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
 		<fileSet>
-			<directory>target/youhuicenter.war/webapp</directory>
+			<directory>target/inventory.war/webapp</directory>
 			<outputDirectory>/</outputDirectory>
 		</fileSet>
 	</fileSets>
