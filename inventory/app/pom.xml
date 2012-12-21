@@ -2,15 +2,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<artifactId>tuan-youhuicenter-parent</artifactId>
+		<artifactId>tuan-inventorycenter-parent</artifactId>
 		<groupId>com.tuan</groupId>
 		<version>1.0</version>
 	</parent>
-	<groupId>com.tuan.youhui</groupId>
-	<artifactId>youhui-app</artifactId>
-	<version>${youhui.app.version}</version>
+	<groupId>com.tuan.inventory</groupId>
+	<artifactId>inventory-app</artifactId>
+	<version>${inventory.app.version}</version>
 	<packaging>jar</packaging>
-	<name>youhui-app</name>
+	<name>inventory-app</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
 		<dependency>
