@@ -12,7 +12,6 @@
 	<packaging>jar</packaging>
 	<name>inventory-ext</name>
 	<url>http://www.55tuan.com</url>
-
 	<dependencies>
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
