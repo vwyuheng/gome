@@ -28,7 +28,7 @@
 			<!-- user core jars -->
 			<dependency>
 				<groupId>com.tuan.inventory</groupId>
-				<artifactId>inventorycenter-model</artifactId>
+				<artifactId>inventory-model</artifactId>
 				<version>${inventory.model.version}</version>
 			</dependency>
 			<dependency>
