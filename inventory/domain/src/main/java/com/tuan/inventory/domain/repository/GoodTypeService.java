@@ -150,7 +150,7 @@ public class GoodTypeService{
 				}
 			}
 		} catch (Exception e) {
-			log.error("updateInventoryNumber invoke error [goodsId=" + goodsId + "]", e);
+			log.error("updateInventoryNumber invoke error [goodsId=" + goodsId +";num="+ num+";goodsAttribute="+goodsAttribute+"] cause is "+e.getMessage());
 			
 			return false;
 		}
