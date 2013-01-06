@@ -17,10 +17,5 @@
 			<groupId>com.tuan.cozy</groupId>
 			<artifactId>cozy-common-lang</artifactId>
 		</dependency> 
-		<dependency>
-				<groupId>com.tuan.goodscenter</groupId>
-				<artifactId>goodscenter-model</artifactId>
-				<version>${goodscenter.model.version}</version>
-			</dependency>
 	</dependencies>
 </project>
