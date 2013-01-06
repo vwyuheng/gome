@@ -5,8 +5,6 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.tuan.goods.model.CommonGoodsAttribute;
-import com.tuan.goods.model.enu.LimitStorageTypeEnum;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.OrderGoodsDO;
@@ -111,27 +109,23 @@ public class GoodTypeService{
 		return gsiDo.getLimitNumber();
 	}
 
-	public boolean updateInventoryNumber(long goodsId, int pindaoId, int num,
-			List<OrderGoodsSelectionModel> goodsSelectionList,CommonGoodsAttribute goodsAttribute) {
+	public boolean updateInventoryNumber(long orderId,long goodsId, int pindaoId, int num,
+			List<OrderGoodsSelectionModel> goodsSelectionList,int limitStorage,Long goodsWmsId) {
 		try {
-			log.info("goodsId="+goodsId+"pindoId="+pindaoId+"num="+num+"goodsAttribute="+goodsAttribute);
+			log.info("orderId="+orderId+"goodsId="+goodsId+"pindoId="+pindaoId+"num="+num+"limitStorage="+limitStorage+"goodsWmsId="+goodsWmsId);
 			if (goodsId > 0) {
 				OrderGoodsDO orderGoodsDO = new OrderGoodsDO();
 				orderGoodsDO.setGoodsId(Long.valueOf(goodsId).intValue());
 				orderGoodsDO.setGoodsNumber(num);
-				 if (goodsAttribute == null) {
-					    log.error("goods attribute error "+goodsAttribute);
-						return false;
-					}else{
-					if (goodsAttribute.getLimitStorage() == LimitStorageTypeEnum.Limit) {
+				int LimitStorageTypeEnum_Limit=1; 
+				if (limitStorage == LimitStorageTypeEnum_Limit) {
 						goodTypeDomainRepository.updateGoodsAttributesLeftNumber(orderGoodsDO);
+					}	
+					if (goodsWmsId != null
+							&& goodsWmsId > 0) {
+						goodTypeDomainRepository.updataGoodsWmsLeftNumByID(goodsWmsId, num);
 					}
-	
-					if (goodsAttribute.getGoodsWmsId() != null
-							&& goodsAttribute.getGoodsWmsId() > 0) {
-						goodTypeDomainRepository.updataGoodsWmsLeftNumByID(goodsAttribute.getGoodsWmsId(), num);
-					}
-			}
+			
 			}
 			if (goodsSelectionList != null) {
 				for (OrderGoodsSelectionModel orderGoodsSelectionModel : goodsSelectionList) {
@@ -150,7 +144,7 @@ public class GoodTypeService{
 				}
 			}
 		} catch (Exception e) {
-			log.error("updateInventoryNumber invoke error [goodsId=" + goodsId +";num="+ num+";goodsAttribute="+goodsAttribute+"] cause is "+e.getMessage());
+			log.error("updateInventoryNumber invoke error [orderId="+orderId+";goodsId=" + goodsId +";num="+ num+";limitStorage="+limitStorage+";goodsWmsId="+goodsWmsId+"] cause is "+e.getMessage());
 			
 			return false;
 		}
