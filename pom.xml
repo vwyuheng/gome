@@ -22,7 +22,6 @@
 		<inventory.ext.version>1.0.1.20121220</inventory.ext.version>
 		<!-- spring version  -->
 		<spring.version>2.5.5</spring.version>
-		<goodscenter.model.version>1.0.1.20121130</goodscenter.model.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -72,7 +71,6 @@
 				<artifactId>jeehe-common</artifactId>
 				<version>1.0.1.20120201</version>
 			</dependency>
-			
 			<!-- spring framework -->
 			<dependency>
 				<groupId>org.springframework</groupId>
