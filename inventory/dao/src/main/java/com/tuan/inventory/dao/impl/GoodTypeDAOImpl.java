@@ -1,9 +1,14 @@
 package com.tuan.inventory.dao.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.GoodTypeDAO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.OrderGoodsDO;
 import com.tuan.inventory.dao.data.OrderInfoDetailDO;
@@ -63,4 +68,21 @@ public class GoodTypeDAOImpl extends SqlMapClientDaoSupport implements GoodTypeD
 		getSqlMapClientTemplate().update("updataGoodsWmsLeftNumByID", wmsGoods);
 		getSqlMapClientTemplate().update("set_sql_model_sys");
 	}
+	
+	@Override
+	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIdAndGoodsId(
+			long selectionRelationId, long goodsId) {
+		if(goodsId <=0 ){
+			return null;
+		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		if (selectionRelationId > 0) {
+			paramMap.put("selectionRelationId", selectionRelationId);
+		}
+		if (goodsId > 0) {
+			paramMap.put("goodsId", goodsId);
+		}
+		return super.getSqlMapClientTemplate().queryForList("selectSelectionRelationBySrIdAndGoodsId", paramMap);
+	}
+
 }

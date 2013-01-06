@@ -6,11 +6,23 @@ import org.apache.commons.logging.LogFactory;
 import com.tuan.core.common.service.AbstractServiceImpl;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.service.BusiServiceTemplate;
 import com.tuan.inventory.service.InventoryServiceTemplate;
 
 public abstract class AbstractService extends AbstractServiceImpl {
+	
+	 protected BusiServiceTemplate busiServiceTemplate;
 	 protected InventoryServiceTemplate couponServiceTemplate;
 
+	 
+	 public BusiServiceTemplate getBusiServiceTemplate() {
+		 return busiServiceTemplate;
+	 }
+	 
+	 public void setBusiServiceTemplate(BusiServiceTemplate busiServiceTemplate) {
+		 this.busiServiceTemplate = busiServiceTemplate;
+	 }
+	 
 	public InventoryServiceTemplate getCouponServiceTemplate() {
 		return couponServiceTemplate;
 	}

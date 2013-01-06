@@ -1,14 +1,17 @@
 package com.tuan.inventory.domain.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.OrderGoodsDO;
 import com.tuan.inventory.dao.data.OrderInfoDetailDO;
+import com.tuan.inventory.model.GoodsSelectionRelationModel;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
 
 
@@ -149,6 +152,36 @@ public class GoodTypeService{
 			return false;
 		}
 		return true;
+	}
+	
+	public List<GoodsSelectionRelationModel>  getSelectionRelationBySrIdAndGoodsId(long SelectionRelationId, long goodsId) {
+		ArrayList<GoodsSelectionRelationModel> list = new ArrayList<GoodsSelectionRelationModel>();
+		try {
+			List<GoodsSelectionRelationGoodDO> list_do = goodTypeDomainRepository.selectSelectionRelationBySrIdAndGoodsId(SelectionRelationId, goodsId);
+			for (GoodsSelectionRelationGoodDO relation : list_do) {
+				GoodsSelectionRelationModel model = new GoodsSelectionRelationModel();
+				model.setId(relation.getId());
+				model.setSuppliersId(relation.getSuppliersId());
+				model.setStatus(relation.getStatus());
+				model.setGoodTypeId(relation.getGoodTypeId());
+				model.setImageURL(relation.getImageURL());
+				model.setTotalNumber(relation.getTotalNumber());
+				model.setLeftNumber(relation.getLeftNumber());
+				model.setAddTotalNumber(relation.getAddTotalNumber());
+				model.setReduceTotalNumber(relation.getReduceTotalNumber());
+				model.setLimitNumber(relation.getLimitNumber());
+				model.setSuppliersSubId(relation.getSuppliersSubId());
+				model.setLeftTotalNumDisplayFont(relation.getLeftTotalNumDisplayFont());
+				model.setLimitStorage(relation.getLimitStorage());
+				model.setGoodId(relation.getGoodId());
+				model.setName(relation.getName());
+				list.add(model);
+			}
+		} catch (Exception e) {
+			log.error("goodTypeDomainRepository.selectSelectionRelationBySrId invoke error [SelectionRelationId="
+					+ SelectionRelationId + "]", e);
+		}
+		return list;
 	}
 
 	public GoodTypeDomainRepository getGoodTypeDomainRepository() {

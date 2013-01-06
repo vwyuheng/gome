@@ -98,4 +98,19 @@
 	<update id="set_sql_model_sys"  >
 		set sql_mode='NO_AUTO_CREATE_USER'
 	</update>
+	
+	<!-- 通过分店配型关系表ID获得该分店选型信息   -->	
+	<select id="selectSelectionRelationBySrIdAndGoodsId" resultMap="GoodsSelectionRelationAndGoodsResult" parameterClass="java.util.Map" >
+		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
+			sr.leftNumber,sr.limitNumber,sr.reduceTotalNumber,sr.`STATUS`,sr.suppliers_id,
+			sr.suppliers_sub_id,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage,gt.goodId,gt.name  
+		from jeehe_selection_relation sr ,jeehe_good_type gt 
+		where gt.id=sr.good_type_id and gt.`status`=1 
+			  and sr.`STATUS` = 0 
+    <dynamic >
+	<isNotNull prepend="and" property="selectionRelationId" > sr.id = #selectionRelationId:BIGINT#</isNotNull>
+	<isNotNull prepend="and" property="goodsId" > gt.goodId = #goodsId:BIGINT#</isNotNull>
+	</dynamic>			  
+	</select>
+	
 </sqlMap>

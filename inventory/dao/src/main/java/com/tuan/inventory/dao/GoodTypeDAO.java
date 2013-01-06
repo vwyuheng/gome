@@ -1,6 +1,9 @@
 package com.tuan.inventory.dao;
 
+import java.util.List;
+
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.OrderGoodsDO;
 import com.tuan.inventory.dao.data.OrderInfoDetailDO;
@@ -53,4 +56,15 @@ public interface GoodTypeDAO {
 	 * @param wmsGoods
 	 */
 	public void updataGoodsWmsLeftNumByID(WmsGoodsDO wmsGoods);
+	
+	/**
+	 * @Title: selectGoodsSuppliersInventoryBySiId
+	 * @Description: 根据分店选型关系表id取得所有配型
+	 * @param suppliersInventoryId
+	 * @param goodsId
+	 * @return GoodsSuppliersInventoryDO
+	 */
+	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIdAndGoodsId(
+			long selectionRelationId, long goodsId);
+	
 }
