@@ -61,7 +61,7 @@
 
 	<bean id="dataSourceSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
 		<property name="configLocation">
-			<value>classpath:/ibatis/mysql-sqlmap.xml</value>
+			<value>classpath:/ibatis/mysql-inventory-sqlmap.xml</value>
 		</property>
 		<property name="dataSource" ref="dataSource"></property>
 	</bean>
