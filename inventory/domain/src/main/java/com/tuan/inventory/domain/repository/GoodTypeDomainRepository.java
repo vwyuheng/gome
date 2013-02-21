@@ -3,6 +3,7 @@ package com.tuan.inventory.domain.repository;
 import java.util.List;
 
 import com.tuan.inventory.dao.GoodTypeDAO;
+import com.tuan.inventory.dao.data.GoodsAttributeInventoryDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
@@ -74,6 +75,10 @@ public class GoodTypeDomainRepository {
 	
 	public List<GoodsSelectionRelationGoodDO>  selectSelectionRelationBySrIdAndGoodsId(long selectionRelationId, long goodsId) {
 		return getGoodTypeDAO().selectSelectionRelationBySrIdAndGoodsId(selectionRelationId, goodsId);
+	}
+	
+	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
+		return goodTypeDAO.getNotSeleInventory(goodsId);
 	}
 
 	public GoodTypeDAO getGoodTypeDAO() {

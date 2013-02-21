@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.GoodTypeDAO;
+import com.tuan.inventory.dao.data.GoodsAttributeInventoryDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
@@ -83,6 +84,12 @@ public class GoodTypeDAOImpl extends SqlMapClientDaoSupport implements GoodTypeD
 			paramMap.put("goodsId", goodsId);
 		}
 		return super.getSqlMapClientTemplate().queryForList("selectSelectionRelationBySrIdAndGoodsId", paramMap);
+	}
+	
+	@Override
+	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
+		return (GoodsAttributeInventoryDO) super.getSqlMapClientTemplate().
+				queryForObject("selectGoodsNotSelectionInventoryByGoodsId", goodsId);
 	}
 
 }

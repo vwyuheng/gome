@@ -17,6 +17,13 @@
 	    <result column="totalNum_display_font" property="totalNumDisplayFont" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
 	 </resultMap>
+	<!-- 非选型商品实时库存信息-->	
+	<resultMap id="GoodsAttributeInventoryResult" class="com.tuan.inventory.dao.data.GoodsAttributeInventoryDO">
+	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
+	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
+	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
+	 </resultMap>
 	<!-- 分店配型信息-->	
 	<resultMap id="GoodsSelectionRelationResult" class="com.tuan.inventory.dao.data.GoodsSelectionRelationDO">
 	    <result column="id" property="id" jdbcType="INTEGER" />
@@ -131,4 +138,9 @@
 	</dynamic>			  
 	</select>
 	
+	<!-- 通过商品ID查询非选型实物商品的库存  -->	
+	<select id="selectGoodsNotSelectionInventoryByGoodsId" resultMap="GoodsAttributeInventoryResult"  parameterClass="java.lang.Long">
+		select goods_id,total_num,left_num,limit_storage 
+		from jeehe_goods_attribute where goods_id = #goodsId:BIGINT#
+	</select>
 </sqlMap>

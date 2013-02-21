@@ -6,11 +6,13 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.tuan.inventory.dao.data.GoodsAttributeInventoryDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.OrderGoodsDO;
 import com.tuan.inventory.dao.data.OrderInfoDetailDO;
+import com.tuan.inventory.model.GoodsAttributeInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
 
@@ -182,6 +184,19 @@ public class GoodTypeService{
 					+ SelectionRelationId + "]", e);
 		}
 		return list;
+	}
+	
+	public GoodsAttributeInventoryModel getNotSeleInventory (long goodsId) {
+		GoodsAttributeInventoryModel model = null;
+		GoodsAttributeInventoryDO vo = goodTypeDomainRepository.getNotSeleInventory(goodsId);
+		if (null != vo) {
+			model = new GoodsAttributeInventoryModel();
+			model.setGoodsId(vo.getGoodsId());
+			model.setTotalNumber(vo.getTotalNumber());
+			model.setLeftNumber(vo.getLeftNumber());
+			model.setLimitStorage(vo.getLimitStorage());
+		}
+		return model;
 	}
 
 	public GoodTypeDomainRepository getGoodTypeDomainRepository() {

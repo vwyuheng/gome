@@ -2,6 +2,7 @@ package com.tuan.inventory.dao;
 
 import java.util.List;
 
+import com.tuan.inventory.dao.data.GoodsAttributeInventoryDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
@@ -66,5 +67,7 @@ public interface GoodTypeDAO {
 	 */
 	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIdAndGoodsId(
 			long selectionRelationId, long goodsId);
+	
+	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId);
 	
 }
