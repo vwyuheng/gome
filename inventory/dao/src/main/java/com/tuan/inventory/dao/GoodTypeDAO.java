@@ -68,6 +68,13 @@ public interface GoodTypeDAO {
 	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIdAndGoodsId(
 			long selectionRelationId, long goodsId);
 	
+	/**
+	 * 根据分店选型关系表id列表取得所有对应配型
+	 * @param selectionRelationIdList
+	 * @return
+	 */
+	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIds(List<Long> selectionRelationIdList);
+	
 	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId);
 	
 }
