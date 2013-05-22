@@ -138,6 +138,24 @@
 	</dynamic>			  
 	</select>
 	
+	<!-- 通过分店配型关系表IDs获得该分店选型信息   -->	
+	<select id="selectSelectionRelationBySrIds" resultMap="GoodsSelectionRelationAndGoodsResult" parameterClass="java.util.Map" >
+		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
+			sr.leftNumber,sr.limitNumber,sr.reduceTotalNumber,sr.`STATUS`,sr.suppliers_id,
+			sr.suppliers_sub_id,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage,gt.goodId,gt.name  
+		from jeehe_selection_relation sr ,jeehe_good_type gt 
+		where gt.id=sr.good_type_id and gt.`status`=0 
+			  and sr.`STATUS` = 0 
+    <dynamic >
+	    <isNotNull prepend="and" property="selectionRelationIdList" > 
+	        sr.id in 
+	        <iterate property="selectionRelationIdList" open="(" close=")" conjunction=",">
+	            #selectionRelationIdList[]:BIGINT#
+	        </iterate>
+	    </isNotNull>
+	</dynamic>			  
+	</select>
+	
 	<!-- 通过商品ID查询非选型实物商品的库存  -->	
 	<select id="selectGoodsNotSelectionInventoryByGoodsId" resultMap="GoodsAttributeInventoryResult"  parameterClass="java.lang.Long">
 		select goods_id,total_num,left_num,limit_storage 
