@@ -187,10 +187,10 @@ public class GoodTypeService{
 		return list;
 	}
 	
-	public List<GoodsSelectionRelationModel>  getSelectionRelationBySrIds(List<Long> selectionRelationIdList) {
+	public List<GoodsSelectionRelationModel>  getSelectionRelationBySrIds(List<Long> selectionRelationIdList,long goodsId) {
 		ArrayList<GoodsSelectionRelationModel> list = new ArrayList<GoodsSelectionRelationModel>();
 		try {
-			List<GoodsSelectionRelationGoodDO> list_do = goodTypeDomainRepository.selectSelectionRelationBySrIds(selectionRelationIdList);
+			List<GoodsSelectionRelationGoodDO> list_do = goodTypeDomainRepository.selectSelectionRelationBySrIds(selectionRelationIdList,goodsId);
 			for (GoodsSelectionRelationGoodDO relation : list_do) {
 				GoodsSelectionRelationModel model = new GoodsSelectionRelationModel();
 				model.setId(relation.getId());
