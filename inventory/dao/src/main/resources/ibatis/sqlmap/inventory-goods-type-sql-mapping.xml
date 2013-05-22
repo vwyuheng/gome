@@ -152,6 +152,7 @@
 	            #selectionRelationIdList[]:BIGINT#
 	        </iterate>
 	    </isNotNull>
+	    <isNotNull prepend="and" property="goodsId" > gt.goodId = #goodsId:BIGINT#</isNotNull>
 	</dynamic>			  
 	</select>
 	
