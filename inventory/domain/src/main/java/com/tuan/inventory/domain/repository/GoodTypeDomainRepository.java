@@ -77,6 +77,15 @@ public class GoodTypeDomainRepository {
 		return getGoodTypeDAO().selectSelectionRelationBySrIdAndGoodsId(selectionRelationId, goodsId);
 	}
 	
+	/**
+	 * 根据ids查询对应选型对象 
+	 * @param selectionRelationIdList
+	 * @return
+	 */
+	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIds(List<Long> selectionRelationIdList){
+		return getGoodTypeDAO().selectSelectionRelationBySrIds(selectionRelationIdList);
+	}
+	
 	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
 		return goodTypeDAO.getNotSeleInventory(goodsId);
 	}

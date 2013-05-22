@@ -1,6 +1,7 @@
 package com.tuan.inventory.domain.repository;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -182,6 +183,36 @@ public class GoodTypeService{
 		} catch (Exception e) {
 			log.error("goodTypeDomainRepository.selectSelectionRelationBySrId invoke error [SelectionRelationId="
 					+ SelectionRelationId + "]", e);
+		}
+		return list;
+	}
+	
+	public List<GoodsSelectionRelationModel>  getSelectionRelationBySrIds(List<Long> selectionRelationIdList) {
+		ArrayList<GoodsSelectionRelationModel> list = new ArrayList<GoodsSelectionRelationModel>();
+		try {
+			List<GoodsSelectionRelationGoodDO> list_do = goodTypeDomainRepository.selectSelectionRelationBySrIds(selectionRelationIdList);
+			for (GoodsSelectionRelationGoodDO relation : list_do) {
+				GoodsSelectionRelationModel model = new GoodsSelectionRelationModel();
+				model.setId(relation.getId());
+				model.setSuppliersId(relation.getSuppliersId());
+				model.setStatus(relation.getStatus());
+				model.setGoodTypeId(relation.getGoodTypeId());
+				model.setImageURL(relation.getImageURL());
+				model.setTotalNumber(relation.getTotalNumber());
+				model.setLeftNumber(relation.getLeftNumber());
+				model.setAddTotalNumber(relation.getAddTotalNumber());
+				model.setReduceTotalNumber(relation.getReduceTotalNumber());
+				model.setLimitNumber(relation.getLimitNumber());
+				model.setSuppliersSubId(relation.getSuppliersSubId());
+				model.setLeftTotalNumDisplayFont(relation.getLeftTotalNumDisplayFont());
+				model.setLimitStorage(relation.getLimitStorage());
+				model.setGoodId(relation.getGoodId());
+				model.setName(relation.getName());
+				list.add(model);
+			}
+		} catch (Exception e) {
+			log.error("goodTypeDomainRepository.selectSelectionRelationBySrId invoke error [SelectionRelationIds="
+					+ selectionRelationIdList + "]", e);
 		}
 		return list;
 	}
