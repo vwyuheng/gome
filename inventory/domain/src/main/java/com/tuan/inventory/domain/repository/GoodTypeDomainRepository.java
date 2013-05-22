@@ -82,8 +82,8 @@ public class GoodTypeDomainRepository {
 	 * @param selectionRelationIdList
 	 * @return
 	 */
-	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIds(List<Long> selectionRelationIdList){
-		return getGoodTypeDAO().selectSelectionRelationBySrIds(selectionRelationIdList);
+	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIds(List<Long> selectionRelationIdList,long goodsId){
+		return getGoodTypeDAO().selectSelectionRelationBySrIds(selectionRelationIdList,goodsId);
 	}
 	
 	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
