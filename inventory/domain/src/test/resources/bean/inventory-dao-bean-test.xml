@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="GBK"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+			default-autowire="byName">
+			
+    <!--  DAO定义。 -->
+    <bean id="goodTypeDAO" class="com.tuan.inventory.dao.impl.GoodTypeDAOImpl" parent="baseSqlMapClientDAO"/>
+    <bean id="nullDbInitSelectionRelationDAO" class="com.tuan.inventory.dao.impl.NullDbInitSelectionRelationDAOImpl" parent="baseSqlMapClientDAO"/>
+    <bean id="nullCacheInitDAO" class="com.tuan.inventory.dao.impl.NullCacheInitDAOImpl" parent="baseSqlMapClientDAO"/>
+</beans>

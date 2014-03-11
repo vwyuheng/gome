@@ -6,4 +6,6 @@
 		defaultStatementTimeout="300" maxRequests="2048" maxSessions="1024"
 		maxTransactions="512" useStatementNamespaces="false" />
 	<sqlMap resource="ibatis/sqlmap/inventory-goods-type-sql-mapping.xml" />
+	<sqlMap resource="ibatis/sqlmap/inventory-selection-relation-sql-mapping.xml" />
+	<sqlMap resource="ibatis/sqlmap/redis-init-inventory-sql-mapping.xml" />
 </sqlMapConfig>

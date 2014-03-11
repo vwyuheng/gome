@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+			default-autowire="byName">
+	<bean id="writeDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowotuan?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+		<property name="user" value="deployment" />
+		<property name="password" value="123456" />
+		<!-- 测试用 start-->
+		<!-- <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/demo"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="root"></property> -->
+		<!-- 测试用 end-->
+		<property name="initialPoolSize" value="1" />
+		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="5" />
+		<property name="idleConnectionTestPeriod" value="600" />
+		<property name="maxIdleTime" value="600" />
+		<property name="maxStatements" value="0" />
+		<property name="maxStatementsPerConnection" value="0" />
+		<property name="acquireIncrement" value="5" />
+		<property name="acquireRetryAttempts" value="200" />
+		<property name="acquireRetryDelay" value="180000" />
+	</bean>
+	<bean id="readDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowotuan?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+		<property name="user" value="deployment" />
+		<property name="password" value="123456" />
+		<!-- 测试用 start-->
+		<!-- <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/demo1"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="root"></property> -->
+		<!-- 测试用 end-->
+		<property name="initialPoolSize" value="1" />
+		<property name="minPoolSize" value="1" />
+		<property name="maxPoolSize" value="5" />
+		<property name="idleConnectionTestPeriod" value="600" />
+		<property name="maxIdleTime" value="600" />
+		<property name="maxStatements" value="0" />
+		<property name="maxStatementsPerConnection" value="0" />
+		<property name="acquireIncrement" value="5" />
+		<property name="acquireRetryAttempts" value="200" />
+		<property name="acquireRetryDelay" value="180000" />
+	</bean>
+	
+	<bean id="dataSource"
+		class="com.tuan.core.common.datasource.MultipleRoutingDataSource">
+		<property name="targetDataSources">
+			<map>
+				<entry key="master" value-ref="writeDataSource" />
+				<entry key="slave_1" value-ref="readDataSource" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="dataSourceLoadbalance"
+		class="com.tuan.core.common.datasource.msloadbalancer.MSDataSourcesLoadBalancerManager"
+		init-method="init">
+		<property name="initDataSourceMap">
+			<map>
+				<entry key="slave_1" value-ref="readDataSource" />
+			</map>
+		</property>
+		<!-- <property name="totalFailureCount" value="${dataSourceLoadbalance.totalFailureCount}" />
+		<property name="totalRiseCount" value="${dataSourceLoadbalance.totalRiseCount}" />
+		<property name="interTime" value="${dataSourceLoadbalance.interTime}" /> -->
+		<property name="totalFailureCount" value="3"/>
+        <property name="totalRiseCount" value="3"/>
+        <property name="interTime" value="2000"/>
+	</bean>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<bean id="transactionTemplate"
+		class="org.springframework.transaction.support.TransactionTemplate">
+		<property name="transactionManager" ref="transactionManager"></property>
+	</bean>
+
+	<bean id="tuanServiceTemplate" class="com.tuan.core.common.service.TuanServiceTemplateImpl" />
+
+	<bean id="dataSourceSqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>classpath:/ibatis/mysql-inventory-sqlmap.xml</value>
+		</property>
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<bean id="baseSqlMapClientDAO" abstract="true">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="sqlMapClient">
+			<ref bean="dataSourceSqlMapClient" />
+		</property>
+	</bean>
+	<bean id="daoProxyCreator"
+		class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+		<property name="interceptorNames">
+			<list>
+				<value>performanceInstrument</value>
+			</list>
+		</property>
+		<property name="beanNames">
+			<value>*DAO</value>
+		</property>
+	</bean>
+	<bean id="performanceInstrument" class="com.tuan.core.common.aop.pref.PerformanceInstrumentInterceptor" />
+</beans>

@@ -22,9 +22,16 @@
 		<inventory.ext.version>1.0.1.20130221</inventory.ext.version>
 		<!-- spring version  -->
 		<spring.version>2.5.5</spring.version>
+		<cozy.common.sequence.version>1.0.1.20140307</cozy.common.sequence.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+		<!-- @2014/3/11 add by henry.yu -->
+		<dependency>
+		  		<groupId>com.tuan.cozy</groupId>
+		  		<artifactId>cozy-common-sequence-client</artifactId>
+		  		<version>${cozy.common.sequence.version}</version>
+			</dependency>
 			<!-- user core jars -->
 			<dependency>
 				<groupId>com.tuan.inventory</groupId>
@@ -383,6 +390,12 @@
 				<version>1.0.1</version>
 				<scope>test</scope>
 			</dependency>
+			<!-- 新引入包 -->
+			<dependency>
+      	<groupId>redis.clients</groupId>
+      	<artifactId>jedis</artifactId>
+      	<version>2.4.0</version>
+       </dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

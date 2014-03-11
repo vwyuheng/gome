@@ -11,5 +11,7 @@
 			default-autowire="byName">
     <!--  DAO¶¨Òå¡£ -->
     <bean id="goodTypeDAO" class="com.tuan.inventory.dao.impl.GoodTypeDAOImpl" parent="baseSqlMapClientDAO"/>
-   
+    
+    <bean id="nullDbInitSelectionRelationDAO" class="com.tuan.inventory.dao.impl.NullDbInitSelectionRelationDAOImpl" parent="baseSqlMapClientDAO"/>
+    <bean id="nullCacheInitDAO" class="com.tuan.inventory.dao.impl.NullCacheInitDAOImpl" parent="baseSqlMapClientDAO"/>
 </beans>

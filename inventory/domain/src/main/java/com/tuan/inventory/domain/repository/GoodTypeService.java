@@ -1,7 +1,6 @@
 package com.tuan.inventory.domain.repository;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -19,7 +18,7 @@ import com.tuan.inventory.model.OrderGoodsSelectionModel;
 
 
 public class GoodTypeService{
-	
+
 	private GoodTypeDomainRepository goodTypeDomainRepository;
 
 	private static Log log = LogFactory.getLog(GoodTypeService.class);
@@ -237,5 +236,4 @@ public class GoodTypeService{
 	public void setGoodTypeDomainRepository(GoodTypeDomainRepository goodTypeDomainRepository) {
 		this.goodTypeDomainRepository = goodTypeDomainRepository;
 	}
-
 }
