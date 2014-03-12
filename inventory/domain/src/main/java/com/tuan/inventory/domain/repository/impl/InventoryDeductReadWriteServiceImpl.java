@@ -1,10 +1,14 @@
 package com.tuan.inventory.domain.repository.impl;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import net.sf.json.JSONObject;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
@@ -13,6 +17,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.Transaction;
 
+import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
@@ -21,8 +26,10 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryDeductReadWriteService;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
+import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
 import com.tuan.inventory.model.enu.InventoryEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
@@ -151,7 +158,7 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 		Transaction	ts = null;
 		long redisAck = 0;
 		//级联删除操作
-		jedis.watch(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
+		//jedis.watch(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
 		if(jedis.exists(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId))){
 			//开启事务
 			 ts = jedis.multi();
@@ -160,26 +167,26 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 						if (orderGoodsSelectionModel.getSelectionRelationId()!= null
 								&& orderGoodsSelectionModel.getSelectionRelationId()> 0) {  //更新商品选型库存
 							//1.首先根据商品id检查获商品是否添加配型关系 
-						    Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-						    if(!CollectionUtils.isEmpty(setSelectionIds)){
-						    	for(String id:setSelectionIds){
+						    //Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
+						  //  if(!CollectionUtils.isEmpty(setSelectionIds)){
+						    	//for(String id:setSelectionIds){
 						    		//根据选型id删除选型库存主体信息
-							    	jedis.del(InventoryEnum.HASHCACHE+":"+id);
-						    	}
+							    	jedis.del(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId());
+						    	//}
 						    	
-						    }
+						    //}
 						}
 						
 						if(orderGoodsSelectionModel.getSuppliersId()>0){  //更新商品分店的库存
 							 //2.根据商品id检查商品销售是否指定分店
-						    Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-						    if(!CollectionUtils.isEmpty(setSuppliersIds)){
-						    	for(String id:setSuppliersIds){
+						   // Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
+						   // if(!CollectionUtils.isEmpty(setSuppliersIds)){
+						    	//for(String id:setSuppliersIds){
 						    		//根据选型id删除选型库存主体信息
-							    	jedis.del(InventoryEnum.HASHCACHE+":"+id);
-						    	}
+							    	jedis.del(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId());
+						    	//}
 						    	
-						    }
+						    //}
 						}
 					}//if3
 				}//if2
@@ -187,10 +194,10 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 			    redisAck = jedis.del(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
 				//执行事务
 				ts.exec();
-		 }else {//if1
+		 }//else {//if1
 				//保证下一个事务的执行不受影响
-				jedis.unwatch();
-			}
+				//jedis.unwatch();
+			//}
 		 
 		 if(redisAck>0){
                //TODO 发送库存新增消息
@@ -207,105 +214,266 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 	}
 
 	@Override
-	public boolean updateInventory(long orderId,long goodsId,  int pindaoId,int num, int limitStorage,
-			List<OrderGoodsSelectionModel> goodsSelectionList)
+	public Map<String,String> updateInventory(long orderId,long goodsId,  int pindaoId,int num, int limitStorage,
+			List<OrderGoodsSelectionModel> goodsSelectionList,Long userId,String system,String clientIp)
 			throws Exception {
 		log.info("orderId="+orderId+"goodsId="+goodsId+"pindoId="+pindaoId+"num="+num+"limitStorage="+limitStorage);
+		String selectType = null; //声明选型商品的属性类别
+		String suppliersType = null; //声明分店商品的属性类别
+		Map<String,String> mapResult = null;
+		//声明库存变化量json对象
+		JSONObject jsonData = new JSONObject();
 		Jedis jedis = jedisSentinelPool.getResource();
 		boolean result = false;
-		if(jedis== null) 
-			return result;
-		//级联更新操作
-		jedis.watch(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));	
+		if(jedis== null) {
+			mapResult = new HashMap<String,String>();
+			mapResult.put("result", String.valueOf(result));
+			return mapResult;
+		}
+			
+		
 		//开启事务
-		 Transaction	ts = jedis.multi();
+		// Transaction	ts = jedis.multi();
 		 long resultAck = 0;
-		 if(goodsId>0&&limitStorage==1){
+		 if(goodsId>0&&limitStorage==1){  //limitStorage>0:库存无限制；1：限制库存
 			 if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),"leftNumber")){  //key field 域不存在 初始化
 				      this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
 				}
+			     jsonData.put("商品总库存变化量", num);
 				 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), "leftNumber", (-num));
 				 if(resultAck<0) { //说明本次交易的库存不足
 					 //还原扣减的库存
 					 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), "leftNumber", (num));
-					 return result;
+					 mapResult = new HashMap<String,String>();
+					 mapResult.put("result", String.valueOf(result));
+					 return mapResult;
+				 }else {
+					 jsonData.put("商品总库存剩余量", resultAck);
 				 }
+				 
 			 
 		 }
 		 
-		if (!CollectionUtils.isEmpty(goodsSelectionList)) {
-			for (OrderGoodsSelectionModel orderGoodsSelectionModel : goodsSelectionList) {
+		if (!CollectionUtils.isEmpty(goodsSelectionList)) { //if1
+			//选型商品类别赋值
+			selectType = StringUtil.getIdsString(goodsSelectionList);
+			//分店商品类别赋值
+			suppliersType = StringUtil.getIdsString(goodsSelectionList);
+			for (OrderGoodsSelectionModel orderGoodsSelectionModel : goodsSelectionList) { //for
 				if (orderGoodsSelectionModel.getSelectionRelationId()!= null
-						&& orderGoodsSelectionModel.getSelectionRelationId()> 0) {  //更新商品选型库存
+						&& orderGoodsSelectionModel.getSelectionRelationId()> 0) { //if选型 //更新商品选型库存
 					if(!jedis.exists(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId))){
 						 this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
 					}
-					//1.首先根据商品id检查获商品是否添加配型关系 
-				    Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-				    if(!CollectionUtils.isEmpty(setSelectionIds)){
-				    	for(String id:setSelectionIds){
-				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+id,"leftNumber")){
+					//1.首先参数检查获商品是否添加配型关系 
+				   // Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
+				   // if(!CollectionUtils.isEmpty(setSelectionIds)){
+				    	//for(String id:setSelectionIds){
+				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId(),"leftNumber")){
 				    			this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
 								}
+				    		jsonData.put("商品选型库存变化量", (orderGoodsSelectionModel.getCount().intValue()));
 				    		//根据选型id删除选型库存主体信息
-				    	    resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+id,"leftNumber", (-num));
+				    	    resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId(),"leftNumber", (-(orderGoodsSelectionModel.getCount().intValue())));
 				    	    if(resultAck<0) { //说明本次交易的库存不足
-				    	    	//还原扣减的库存
-				    	    	resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+id,"leftNumber", (num));
-								 return result;
+				    	    	//首先还原商品选型被扣减的库存
+				    	    	resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId(),"leftNumber", (orderGoodsSelectionModel.getCount().intValue()));
+				    	    	//再还原商品主体信息中被扣减的库存
+				    	    	resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), "leftNumber", (num));
+				    	    	mapResult = new HashMap<String,String>();
+				    	    	mapResult.put("result", String.valueOf(result));
+				    			return mapResult;
+							 }else {
+								 jsonData.put("商品选型库存剩余量", (resultAck));
 							 }
-				    	}
 				    	
-				    }
-				}
-				
-				if(orderGoodsSelectionModel.getSuppliersId()>0){  //更新商品分店的库存
+				} //if选型	
+				if(orderGoodsSelectionModel.getSuppliersId()>0){ //if分店 //更新商品分店的库存
 					if(!jedis.exists(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId))){
 						this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
 					}
 					//2.根据商品id检查商品销售是否指定分店
-				    Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-				    if(!CollectionUtils.isEmpty(setSuppliersIds)){
-				    	for(String id:setSuppliersIds){
-				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+id,"leftNumber")){
+				   // Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
+				   // if(!CollectionUtils.isEmpty(setSuppliersIds)){
+				    //	for(String id:setSuppliersIds){
+				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId(),"leftNumber")){
 				    			this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
-								
 								}
+				    		jsonData.put("商品分店库存变化量", (orderGoodsSelectionModel.getCount().intValue()));
 				    		//根据选型id删除选型库存主体信息
-				    		 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+id,"leftNumber", (-num)); 
+				    		 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId(),"leftNumber", (-(orderGoodsSelectionModel.getCount().intValue()))); 
 				    		 if(resultAck<0) { //说明本次交易的库存不足
-				    			//还原扣减的库存
-				    			 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+id,"leftNumber", (num)); 
-								 return result;
+				    			//首先还原商品分店中被扣减的库存
+				    			 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId(),"leftNumber", (orderGoodsSelectionModel.getCount().intValue())); 
+				    			//再还原商品主体信息中被扣减的库存
+					    	     resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), "leftNumber", (num));
+					    	     mapResult = new HashMap<String,String>();
+					    	     mapResult.put("result", String.valueOf(result));
+					 			 return mapResult;
+							 }else {
+								 jsonData.put("商品分店库存剩余量", (resultAck));
 							 }
-				    	}
-				    	
-				    }
-				}
-			}
-		}
+				  
+				}//if分店
+			}//for
+		} //if1
 		//执行事务
-		ts.exec();
+		//ts.exec();
 		if(resultAck>=0) {//库存充足并扣减成功
 			result = true; 
-			//TODO 插入异步处理的库存日志流水信息
+			mapResult = new HashMap<String,String>();
+			mapResult.put("result", String.valueOf(result));
+			//构建库存更新的队列信息
+			RedisInventoryQueueDO queueDO = this.asemblyQueueDO(SequenceUtil.getSequence(SEQNAME.seq_queue_send, jedis),goodsId, orderId, ResultStatusEnum.LOCKED.getCode(), selectType, suppliersType, jsonData.toString());
 			//构建库存操作日志对象
-			RedisInventoryLogDO rilogDO = new RedisInventoryLogDO();
-			rilogDO.setId(SequenceUtil.getSequence(SEQNAME.seq_log, jedis));
-			
-			//TODO 插入异步库存处理的队列信息
-			RedisInventoryQueueDO queueDO = new RedisInventoryQueueDO();
-			queueDO.setId(SequenceUtil.getSequence(SEQNAME.seq_queue_send, jedis));
+			RedisInventoryLogDO logDO = this.asemblyLogDO(SequenceUtil.getSequence(SEQNAME.seq_log, jedis), goodsId, orderId, selectType, suppliersType, jsonData.toString(), ResultStatusEnum.DEDUCTION.getDescription(), userId, system, clientIp, "", this.asemblyJsonData(queueDO, pindaoId));
+			//将库存更新队列信息压入到redis set集合 便于统计 job程序中会每次将某区间的元素移动到另一个集合set中去，在这个目的set集合中做库存消息更新的处理，处理完立即情况该集合，并重复操作
+			//如下 可以指定score值取值 ZADD salary 2500 jack
+			//ZRANGEBYSCORE salary 2500 2500 WITHSCORES  
+			//删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
+			String jsonMember = JSONObject.fromObject(queueDO).toString();
+			mapResult.put("queuekey", String.valueOf(queueDO.getId()));
+			//缓存队列的key、member信息 1小时失效
+			jedis.setex(QueueConstant.QUEUE_KEY_MEMBER+":"+String.valueOf(queueDO.getId()),3600, jsonMember);
+			//zset key score value
+			jedis.zadd(QueueConstant.QUEUE_SEND_MESSAGE+":"+String.valueOf(queueDO.getId()), Double.valueOf(queueDO.getStatus()),jsonMember);
+			//将库存日志队列信息压入到redis list
+			jedis.lpush(QueueConstant.QUEUE_LOGS_MESSAGE+":"+String.valueOf(logDO.getId()), JSONObject.fromObject(logDO).toString());
+					
 		  }
-		  if(ts!=null)
-			   ts.discard();
+		 // if(ts!=null)
+			  // ts.discard();
 		
 			if(jedis!=null) 
-				jedisSentinelPool.returnResource(jedis);	
-			
+				jedisSentinelPool.returnResource(jedis);
+		
+			return mapResult;
+		//return result;
+	}
+	
+	@Override
+	public boolean inventoryCallbackAck(String ack,String key) throws Exception {
+		Jedis jedis = jedisSentinelPool.getResource();
+		boolean result = false;
+		if(jedis== null) 
+			return result;
+		//打开对相关key的监控
+		jedis.watch(QueueConstant.QUEUE_KEY_MEMBER+":"+key,QueueConstant.QUEUE_SEND_MESSAGE+":"+key);
+		//事务声明
+		Transaction	ts =  null;
+		if(StringUtils.isNotBlank(ack)&&ack.equalsIgnoreCase(ResultStatusEnum.ACTIVE.getCode())) {
+			//开启事务
+		    ts = jedis.multi();
+			String member = jedis.get(QueueConstant.QUEUE_KEY_MEMBER+":"+key);
+			Double scoreAck = jedis.zincrby(QueueConstant.QUEUE_SEND_MESSAGE+":"+key, 2, member);
+			//执行事务
+			ts.exec();
+			if(scoreAck==3) {
+				result = true;
+			}
+		}else {
+			//保证下一个事务的执行不受影响
+			jedis.unwatch();
+		}
+		//销毁事务
+		if(ts!=null)
+		     ts.discard();
+		//释放连接
+		if(jedis!=null) 
+			jedisSentinelPool.returnResource(jedis);
+		
 		return result;
 	}
 	
-	
+	/**
+	 * 负责装配日志对象
+	 * @param id
+	 * @param goodsId
+	 * @param orderId
+	 * @param status
+	 * @param selectType
+	 * @param suppliersType
+	 * @param num
+	 * @param operateType
+	 * @param userId
+	 * @param system
+	 * @param clientIp
+	 * @param remark
+	 * @return
+	 */
+	private  RedisInventoryLogDO  asemblyLogDO(Long id,Long goodsId,Long orderId,
+			String selectType,String suppliersType,String num,String operateType,Long userId,String system,String clientIp,String remark,String jsonContent) {
+		RedisInventoryLogDO logDO = new RedisInventoryLogDO();
+		logDO.setId(id);
+		logDO.setGoodsId(goodsId);
+		logDO.setOrderId(orderId);
+		if(selectType!=null) {
+			logDO.setType(QueueConstant.SELECTION);
+			logDO.setItem(selectType);
+		}else if(suppliersType!=null) {
+			logDO.setType(QueueConstant.SUBBRANCH);
+			logDO.setItem(suppliersType);
+		}else {
+			logDO.setType(QueueConstant.GOODS);
+		}
+		logDO.setVariableQuantity(num);
+		logDO.setUserId(userId);
+		logDO.setOperateType(operateType);
+		logDO.setSystem(system);
+		logDO.setClientIp(clientIp);
+		logDO.setContent(jsonContent);
+		logDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+		logDO.setRemark(remark);
+    	
+		return logDO;
+    }
+	/**
+	 * 负责装配队列对象
+	 * @param id
+	 * @param goodsId
+	 * @param orderId
+	 * @param status
+	 * @param selectType
+	 * @param suppliersType
+	 * @param num
+	 * @return
+	 */
+	private  RedisInventoryQueueDO  asemblyQueueDO(Long id,Long goodsId,Long orderId,String status,String selectType,String suppliersType,String num) {
+    	//构建一个连接池bean对象
+		RedisInventoryQueueDO queueDO = new RedisInventoryQueueDO();
+		queueDO.setId(id);
+		queueDO.setGoodsId(goodsId);
+		queueDO.setOrderId(orderId);
+		//队列初始状态
+		queueDO.setStatus(status);
+		if(selectType!=null) {
+			 queueDO.setType(QueueConstant.SELECTION);
+			 queueDO.setItem(selectType);
+		}else if(suppliersType!=null) {
+			queueDO.setType(QueueConstant.SUBBRANCH);
+			queueDO.setItem(suppliersType);
+		}else {
+			queueDO.setType(QueueConstant.GOODS);
+		}
+		queueDO.setVariableQuantityJsonData(num);
+		queueDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+		queueDO.setUpdateTime(TimeUtil.getNowTimestamp10Int());
+    	
+		return queueDO;
+    }
+	/**
+	 * 装配日志记录里的json数据
+	 * @param queueDO
+	 * @param pindaoId
+	 * @param resultAck
+	 * @return
+	 */
+	private  String  asemblyJsonData(RedisInventoryQueueDO queueDO,int pindaoId) {
+		JSONObject json = JSONObject.fromObject(queueDO);
+		json.put("频道", pindaoId);
+		//json.put("库存变化",jsonData);
+		return json.toString();
+    }
 
+	
 }

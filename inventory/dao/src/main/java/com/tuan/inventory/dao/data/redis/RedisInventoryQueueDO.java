@@ -14,11 +14,11 @@ public class RedisInventoryQueueDO extends TuanBaseDO {
 	private Long orderId;// 订单id
 	//private Long userId ;//用户id
 	private String type;  //标识：选型、总数、分店
-	private Long item; //若选型存选型id，若分店存分店id，若既非选型又非分店则不存数据
+	private String item; //若选型存选型id，若分店存分店id，若既非选型又非分店则不存数据
 	private Integer createTime;  //创建日期
 	private Integer updateTime;  //更新时间[状态被更新]
-	private int variableQuantity;// 库存变化量
-	private String status;  //处理状态位 : 1:正常：有效可处理（active） 3：初始状态（locked），超过一定时间该标记未被更新为正常1的消息做超期处理，（会有个队列定时扫这个标记的消息） 5：标记可以被用作异常队列处
+	private String variableQuantityJsonData;// 库存变化量 【这个是商品主体信息中的库存变化量】 若是存在选型商品或分店则其分别对应的库存变化保存在json数据中
+	private String status;  //处理状态位 : 1:正常：有效可处理（active） 3：初始状态（locked），超过一定时间该标记未被更新为正常1的消息做超期处理，（会有个队列定时扫这个标记的消息） 5：标记可以被用作异常队列处(exception)
 	public Long getId() {
 		return id;
 	}
@@ -43,10 +43,11 @@ public class RedisInventoryQueueDO extends TuanBaseDO {
 	public void setType(String type) {
 		this.type = type;
 	}
-	public Long getItem() {
+	
+	public String getItem() {
 		return item;
 	}
-	public void setItem(Long item) {
+	public void setItem(String item) {
 		this.item = item;
 	}
 	public Integer getCreateTime() {
@@ -61,11 +62,12 @@ public class RedisInventoryQueueDO extends TuanBaseDO {
 	public void setUpdateTime(Integer updateTime) {
 		this.updateTime = updateTime;
 	}
-	public int getVariableQuantity() {
-		return variableQuantity;
+	
+	public String getVariableQuantityJsonData() {
+		return variableQuantityJsonData;
 	}
-	public void setVariableQuantity(int variableQuantity) {
-		this.variableQuantity = variableQuantity;
+	public void setVariableQuantityJsonData(String variableQuantityJsonData) {
+		this.variableQuantityJsonData = variableQuantityJsonData;
 	}
 	public String getStatus() {
 		return status;

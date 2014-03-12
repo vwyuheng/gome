@@ -1,5 +1,7 @@
 package test;
 
+import net.sf.json.JSONObject;
+
 import com.tuan.core.common.sequence.res.SequenceResult;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.domain.support.util.LogModel;
@@ -23,9 +25,9 @@ public class Test {
 		//jsonObject.accumulate("code", "1000");
 		//jsonObject.accumulate("msg", "success");
 		//jsonObject.accumulate("data", rdo);
-		String objStr = LogUtil.formatObjLog(rdo);
-		GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
-		System.out.println(LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class));
+		//String objStr = LogUtil.formatObjLog(rdo);
+		//GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
+		System.out.println(JSONObject.fromObject(rdo).toString());
 //      GoodsSelectionRelationDO rdo1 = new GoodsSelectionRelationDO();
 //		
 //      rdo1.setId(1);

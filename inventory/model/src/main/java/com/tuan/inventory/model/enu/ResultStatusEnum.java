@@ -5,12 +5,19 @@ public enum ResultStatusEnum {
 	INSERT		("1",	"新增"),
 	NOEXISTS    ("3",   "不存在"),
 	
+	//队列状态
+	ACTIVE		("1",	"正常：有效可处理（active）"),
+	LOCKED		("3",	"初始状态（locked）"),
+	EXCEPTION    ("5",   "异常队列"),
+	
 	//业务类型type
 	DEDUCTION   ("14",   "库存扣减"),
 	INVENTORYINIT   ("15",   "初始化库存"),
 	REFUNDRESTORE   ("16",   "商品退款还库存"),
 	MANUALADAPT   ("17",   "手工调整库存"),
 	FAULTCOMPENSATION   ("18",   "出错补偿还库存");
+	
+	
 	
 	private String code;
 	private String description;
@@ -35,5 +42,9 @@ public enum ResultStatusEnum {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(ResultStatusEnum.ACTIVE.getCode());
 	}
 }

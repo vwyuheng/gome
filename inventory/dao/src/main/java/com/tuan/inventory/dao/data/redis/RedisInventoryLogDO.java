@@ -13,16 +13,17 @@ public class RedisInventoryLogDO extends TuanBaseDO {
 	private Long goodsId;// 商品ID(FK)
 	private Long orderId;// 订单id
 	private Long userId ;//用户id
-	private String type;  //业务类型:库存扣减、初始化库存、商品退款还库存、手工调整库存、出错补偿还库存
+	private String type;  //标识：选型、总数、分店
+	private String item; //若选型存选型id，若分店存分店id，若既非选型又非分店则不存数据
 	private Integer createTime;  //创建日期
 	//private Integer updateTime;  //更新时间[状态被更新]
-	private int variableQuantity;// 库存变化量
+	private String variableQuantity;// 库存变化量
 	
-	private String operateType;  //操作类别 :是增库存还是减库存 
+	private String operateType;  //业务类型:库存扣减、初始化库存、商品退款还库存、手工调整库存、出错补偿还库存
 	private String content; //操作内容
 	private String system; // 来源系统
 	private String clientIp; // 来源ip
-	private String exception;  //是否异常信息
+	//private String exception;  //是否异常信息
 	private String remark;  //备注
 	
 //	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
@@ -37,10 +38,17 @@ public class RedisInventoryLogDO extends TuanBaseDO {
 	public Long getId() {
 		return id;
 	}
-	public int getVariableQuantity() {
+	public String getItem() {
+		return item;
+	}
+	public void setItem(String item) {
+		this.item = item;
+	}
+	
+	public String getVariableQuantity() {
 		return variableQuantity;
 	}
-	public void setVariableQuantity(int variableQuantity) {
+	public void setVariableQuantity(String variableQuantity) {
 		this.variableQuantity = variableQuantity;
 	}
 	public String getRemark() {
@@ -94,12 +102,12 @@ public class RedisInventoryLogDO extends TuanBaseDO {
 	public void setClientIp(String clientIp) {
 		this.clientIp = clientIp;
 	}
-	public String getException() {
+	/*public String getException() {
 		return exception;
 	}
 	public void setException(String exception) {
 		this.exception = exception;
-	}
+	}*/
 	public Integer getCreateTime() {
 		return createTime;
 	}

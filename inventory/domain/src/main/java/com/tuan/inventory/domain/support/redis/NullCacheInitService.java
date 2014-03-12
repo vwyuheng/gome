@@ -30,7 +30,7 @@ public class NullCacheInitService {
 	
 	private static Log log = LogFactory.getLog(NullCacheInitService.class);
 	/**
-	 * 初始化商品分店与选型关系缓存
+	 * 初始化库存信息
 	 * @param jedis
 	 * @param goodsId
 	 * @param rsrDo
@@ -44,7 +44,7 @@ public class NullCacheInitService {
 		if(riDo==null){
 			return result;
 		}else {
-			// 从mysql中加载 并set到redis
+			// 初始化商品库存主体信息到redis
 			String redisAck = jedis.hmset(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), ObjectUtil.convertBean(riDo));
 			if(!redisAck.equalsIgnoreCase("ok")){
 				log.error("NullCacheInitService:initRedisInventoryCache invoke error [goodsId="
