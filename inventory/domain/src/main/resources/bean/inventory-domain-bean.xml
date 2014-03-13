@@ -11,7 +11,7 @@
 			default-autowire="byName">
 			
 	<!-- <bean id="cardUpdateDomainRepository" class="com.tuan.inventory.domain.repository.CardUpdateDomainRepository"/> -->
-	<bean id="inventoryDeductReadWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductReadWriteServiceImpl"/>
+	<bean id="inventoryDeductWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductWriteServiceImpl"/>
 	<bean id="nullCacheLoadService" class="com.tuan.inventory.domain.repository.impl.NullCacheLoadServiceImpl"/>
 	<bean id="nullCacheInitService" class="com.tuan.inventory.domain.support.redis.NullCacheInitService"/>
 	

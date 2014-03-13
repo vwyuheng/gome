@@ -23,7 +23,7 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
-import com.tuan.inventory.domain.repository.InventoryDeductReadWriteService;
+import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.domain.support.util.QueueConstant;
@@ -34,17 +34,18 @@ import com.tuan.inventory.model.OrderGoodsSelectionModel;
 import com.tuan.inventory.model.enu.InventoryEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 /**
- * 库存服务
+ * 库存扣减相关写服务
+ * 新增库存、库存扣减[更新]、库存更新后的回调确认、新增注水、修改注水值、删除库存
  * @author henry.yu
  * @date 2014/03/10
  */
-public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadWriteService {
+public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteService {
 	@Resource 
 	JedisSentinelPool jedisSentinelPool;
 	@Resource
 	NullCacheInitService nullCacheInitService;
 	
-	private static Log log = LogFactory.getLog(InventoryDeductReadWriteServiceImpl.class);
+	private static Log log = LogFactory.getLog(InventoryDeductWriteServiceImpl.class);
 	
 	@Override
 	public boolean createInventory(long goodsId,RedisInventoryDO riDO,List<RedisGoodsSelectionRelationDO> rgsrList,List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception {
@@ -230,14 +231,17 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 			mapResult.put("result", String.valueOf(result));
 			return mapResult;
 		}
-			
-		
 		//开启事务
 		// Transaction	ts = jedis.multi();
 		 long resultAck = 0;
 		 if(goodsId>0&&limitStorage==1){  //limitStorage>0:库存无限制；1：限制库存
 			 if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),"leftNumber")){  //key field 域不存在 初始化
-				      this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+				 result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+				 if(!result){
+					 mapResult = new HashMap<String,String>();
+					 mapResult.put("result", String.valueOf(result));
+					 return mapResult;
+				 }
 				}
 			     jsonData.put("商品总库存变化量", num);
 				 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), "leftNumber", (-num));
@@ -263,15 +267,25 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 				if (orderGoodsSelectionModel.getSelectionRelationId()!= null
 						&& orderGoodsSelectionModel.getSelectionRelationId()> 0) { //if选型 //更新商品选型库存
 					if(!jedis.exists(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId))){
-						 this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+						 result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+						 if(!result){
+							 mapResult = new HashMap<String,String>();
+							 mapResult.put("result", String.valueOf(result));
+							 return mapResult;
+						 }
 					}
 					//1.首先参数检查获商品是否添加配型关系 
 				   // Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
 				   // if(!CollectionUtils.isEmpty(setSelectionIds)){
 				    	//for(String id:setSelectionIds){
 				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId(),"leftNumber")){
-				    			this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
-								}
+				    			result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+				    			if(!result){
+									 mapResult = new HashMap<String,String>();
+									 mapResult.put("result", String.valueOf(result));
+									 return mapResult;
+								 }
+				    		}
 				    		jsonData.put("商品选型库存变化量", (orderGoodsSelectionModel.getCount().intValue()));
 				    		//根据选型id删除选型库存主体信息
 				    	    resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId(),"leftNumber", (-(orderGoodsSelectionModel.getCount().intValue())));
@@ -290,15 +304,25 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 				} //if选型	
 				if(orderGoodsSelectionModel.getSuppliersId()>0){ //if分店 //更新商品分店的库存
 					if(!jedis.exists(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId))){
-						this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+						result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+						if(!result){
+							 mapResult = new HashMap<String,String>();
+							 mapResult.put("result", String.valueOf(result));
+							 return mapResult;
+						 }
 					}
 					//2.根据商品id检查商品销售是否指定分店
 				   // Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
 				   // if(!CollectionUtils.isEmpty(setSuppliersIds)){
 				    //	for(String id:setSuppliersIds){
 				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId(),"leftNumber")){
-				    			this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
-								}
+				    			result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
+				    			if(!result){
+									 mapResult = new HashMap<String,String>();
+									 mapResult.put("result", String.valueOf(result));
+									 return mapResult;
+								 }
+				    		}
 				    		jsonData.put("商品分店库存变化量", (orderGoodsSelectionModel.getCount().intValue()));
 				    		//根据选型id删除选型库存主体信息
 				    		 resultAck = jedis.hincrBy(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId(),"leftNumber", (-(orderGoodsSelectionModel.getCount().intValue()))); 
@@ -323,22 +347,22 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 			result = true; 
 			mapResult = new HashMap<String,String>();
 			mapResult.put("result", String.valueOf(result));
-			//构建库存更新的队列信息
+			//构建库存更新的队列信息 每个队列成员(member)都自己的唯一的序列id值
 			RedisInventoryQueueDO queueDO = this.asemblyQueueDO(SequenceUtil.getSequence(SEQNAME.seq_queue_send, jedis),goodsId, orderId, ResultStatusEnum.LOCKED.getCode(), selectType, suppliersType, jsonData.toString());
 			//构建库存操作日志对象
 			RedisInventoryLogDO logDO = this.asemblyLogDO(SequenceUtil.getSequence(SEQNAME.seq_log, jedis), goodsId, orderId, selectType, suppliersType, jsonData.toString(), ResultStatusEnum.DEDUCTION.getDescription(), userId, system, clientIp, "", this.asemblyJsonData(queueDO, pindaoId));
 			//将库存更新队列信息压入到redis set集合 便于统计 job程序中会每次将某区间的元素移动到另一个集合set中去，在这个目的set集合中做库存消息更新的处理，处理完立即情况该集合，并重复操作
 			//如下 可以指定score值取值 ZADD salary 2500 jack
-			//ZRANGEBYSCORE salary 2500 2500 WITHSCORES  
+			//ZRANGEBYSCORE salary 2500 2500 WITHSCORES  ，2取到相应member后，按照member及其删除 [ZREM key member]
 			//删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
 			String jsonMember = JSONObject.fromObject(queueDO).toString();
 			mapResult.put("queuekey", String.valueOf(queueDO.getId()));
 			//缓存队列的key、member信息 1小时失效
 			jedis.setex(QueueConstant.QUEUE_KEY_MEMBER+":"+String.valueOf(queueDO.getId()),3600, jsonMember);
 			//zset key score value
-			jedis.zadd(QueueConstant.QUEUE_SEND_MESSAGE+":"+String.valueOf(queueDO.getId()), Double.valueOf(queueDO.getStatus()),jsonMember);
+			jedis.zadd(QueueConstant.QUEUE_SEND_MESSAGE/*+":"+String.valueOf(queueDO.getId())*/, Double.valueOf(queueDO.getStatus()),jsonMember);
 			//将库存日志队列信息压入到redis list
-			jedis.lpush(QueueConstant.QUEUE_LOGS_MESSAGE+":"+String.valueOf(logDO.getId()), JSONObject.fromObject(logDO).toString());
+			jedis.lpush(QueueConstant.QUEUE_LOGS_MESSAGE/*+":"+String.valueOf(logDO.getId())*/, JSONObject.fromObject(logDO).toString());
 					
 		  }
 		 // if(ts!=null)
@@ -364,8 +388,10 @@ public class InventoryDeductReadWriteServiceImpl implements InventoryDeductReadW
 		if(StringUtils.isNotBlank(ack)&&ack.equalsIgnoreCase(ResultStatusEnum.ACTIVE.getCode())) {
 			//开启事务
 		    ts = jedis.multi();
+		    //根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
 			String member = jedis.get(QueueConstant.QUEUE_KEY_MEMBER+":"+key);
-			Double scoreAck = jedis.zincrby(QueueConstant.QUEUE_SEND_MESSAGE+":"+key, 2, member);
+			//将消息发送队列状态更新为:1>正常：有效可处理（active）
+			Double scoreAck = jedis.zincrby(QueueConstant.QUEUE_SEND_MESSAGE/*+":"+key*/, -(2), member);
 			//执行事务
 			ts.exec();
 			if(scoreAck==3) {

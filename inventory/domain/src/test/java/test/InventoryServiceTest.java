@@ -8,14 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 
-import com.tuan.inventory.domain.repository.InventoryDeductReadWriteService;
+import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
 	@Autowired
-	InventoryDeductReadWriteService inventoryDeductReadWriteService;
+	InventoryDeductWriteService inventoryDeductReadWriteService;
 	@Resource 
 	JedisSentinelPool jedisSentinelPool;
 

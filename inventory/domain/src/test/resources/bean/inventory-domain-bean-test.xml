@@ -12,7 +12,7 @@
 	<bean id="nullCacheLoadService" class="com.tuan.inventory.domain.repository.impl.NullCacheLoadServiceImpl"/>
 	<bean id="nullCacheInitService" class="com.tuan.inventory.domain.support.redis.NullCacheInitService"/>
 	<bean id="goodTypeDomainRepository" class="com.tuan.inventory.domain.repository.GoodTypeDomainRepository"/>
-	<bean id="inventoryDeductReadWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductReadWriteServiceImpl"/>
+	<bean id="inventoryDeductWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductWriteServiceImpl"/>
 	<!-- <bean id="extensionService" class="com.tuan.ordercenter.extrnal.impl.ExtensionServiceImpl">
     <property name="url4Sequence" value="http://sequence.55tuan.me:8189" /></bean> -->
 </beans>

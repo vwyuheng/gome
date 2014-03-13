@@ -8,7 +8,7 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
 
-public interface InventoryDeductReadWriteService {
+public interface InventoryProviderReadService {
 
 	/**
 	 * 新增库存信息
@@ -32,6 +32,7 @@ public interface InventoryDeductReadWriteService {
 			List<OrderGoodsSelectionModel> goodsSelectionList,Long userId,String system,String clientIp) throws Exception;
 	/**
 	 * 新增库存相关的某一个域的值,原子操作
+	 * 新增注水值等
 	 * @param key
 	 * @param field
 	 * @param value
@@ -42,6 +43,7 @@ public interface InventoryDeductReadWriteService {
 	
 	/**
 	 * 更新库存相关的某一个域的值,原子操作
+	 * 更新注水值等
 	 * @param key
 	 * @param field
 	 * @param value
