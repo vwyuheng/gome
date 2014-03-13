@@ -30,7 +30,7 @@ public class NullCacheInitService {
 	
 	private static Log log = LogFactory.getLog(NullCacheInitService.class);
 	/**
-	 * 初始化库存信息
+	 * 初始化库存信息【库存初始化：新增库存（一）】
 	 * @param jedis
 	 * @param goodsId
 	 * @param rsrDo
@@ -118,8 +118,26 @@ public class NullCacheInitService {
 		return result;
 	}
 	
+public RedisInventoryDO initGoodsInventoryNotSelectionOrSuppliers(Jedis jedis ,Long goodsId) throws Exception{
+	       //加载商品库存的主体信息
+			RedisInventoryDO riDo = nullCacheLoadService.getRedisInventoryInfoByGoodsId(goodsId);
+			if(riDo==null){
+				return riDo;
+			}else {
+				// 初始化商品库存主体信息到redis
+				String redisAck = jedis.hmset(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId), ObjectUtil.convertBean(riDo));
+				if(!redisAck.equalsIgnoreCase("ok")){
+					log.error("NullCacheInitService:initGoodsInventoryNotSelectionOrSuppliers invoke error [goodsId="
+							+ goodsId + "]");
+					return null;
+				}
+			}
+	
+		return riDo;
+	}
+	
 	/**
-	 * 初始化商品分店与选型关系缓存
+	 * 初始化商品选型信息到缓存，并返回选型信息对象 [补录库存到缓存:补录商品选型信息到缓存]
 	 * @param jedis
 	 * @param SelectionRelationId
 	 * @param rsrDo
@@ -138,7 +156,7 @@ public class NullCacheInitService {
 			rsrDo.setTotalNumber(result.getTotalNumber());
 			rsrDo.setLimitStorage(result.getLimitStorage());
 			// 从mysql中加载 并set到redis
-			String redisAck = jedis.hmset(String.valueOf(SelectionRelationId), ObjectUtil.convertBean(rsrDo));
+			String redisAck = jedis.hmset(InventoryEnum.HASHCACHE+":"+String.valueOf(SelectionRelationId), ObjectUtil.convertBean(rsrDo));
 			if(!redisAck.equalsIgnoreCase("ok")){
 				log.error("NullCacheInitService:initSelectionRelation invoke error [SelectionRelationId="
 						+ SelectionRelationId + "]");
@@ -149,36 +167,43 @@ public class NullCacheInitService {
 	}
 	
 	/**
-	 * 初始化并返回商品商家库存相关信息
+	 * 初始化商品选型信息到缓存，并返回选型信息对象 [补录库存到缓存:补录商品选型信息到缓存]
 	 * @param jedis
-	 * @param SuppliersInventoryId
-	 * @return
-	 * @throws Exception
+	 * @param sIds
+	 * 
+	 * @return RedisGoodsSelectionRelationDO
 	 */
-	public int initSuppliersInventoryCache(Jedis jedis ,int SuppliersInventoryId) throws Exception{
-		int result = 0;
-		RedisGoodsSuppliersInventoryDO rgsiDO = nullCacheLoadService.getCacheSuppliersInventoryInfoById(SuppliersInventoryId);
-		if(rgsiDO==null){
+	public RedisGoodsSelectionRelationDO initSRelation(Jedis jedis ,Long sIds) throws Exception{
+		RedisGoodsSelectionRelationDO result = null;
+		GoodsSelectionRelationDO gsrDO = nullCacheLoadService.getCacheSelectionRelationDOById(sIds.intValue());
+		if(gsrDO==null){
 			return result;
 		}else {
+			result = new RedisGoodsSelectionRelationDO();
+			result.setId(result.getId());
+			result.setGoodTypeId(result.getGoodTypeId());
+			result.setLeftNumber(result.getLeftNumber());
+			result.setTotalNumber(result.getTotalNumber());
+			result.setLimitStorage(result.getLimitStorage());
 			// 从mysql中加载 并set到redis
-			String redisAck = jedis.hmset(String.valueOf(SuppliersInventoryId), ObjectUtil.convertBean(rgsiDO));
+			String redisAck = jedis.hmset(InventoryEnum.HASHCACHE+":"+String.valueOf(sIds), ObjectUtil.convertBean(result));
 			if(!redisAck.equalsIgnoreCase("ok")){
-				log.error("NullCacheInitService:initSuppliersInventoryCache invoke error [SuppliersInventoryId="
-						+ SuppliersInventoryId + "]");
+				log.error("NullCacheInitService:initSRelation invoke error [sIds="
+						+ sIds + "]");
 			}
-			if (rgsiDO.getLimitStorage() == 0) {
-				result =  Integer.MAX_VALUE;
-			} else {
-				result =  rgsiDO.getLeftNumber();
-			}
-			
 		}
 	
 		return result;
 	}
 	
 	
+	/**
+	 * 初始化商品分店信息到缓存，并返回商品分店信息对象 [补录库存到缓存:补录商品分店信息到缓存]
+	 * @param jedis
+	 * @param SuppliersInventoryId
+	 * @return
+	 * @throws Exception
+	 */
 public GoodsSuppliersInventoryDO initSuppliersInventory(Jedis jedis ,int SuppliersInventoryId) throws Exception{
 		
 	   GoodsSuppliersInventoryDO result = nullCacheLoadService.getCacheSuppliersInventoryDOById(SuppliersInventoryId);
@@ -193,7 +218,7 @@ public GoodsSuppliersInventoryDO initSuppliersInventory(Jedis jedis ,int Supplie
 			rgsiDo.setSuppliersId(result.getSuppliersId());
 			rgsiDo.setLimitStorage(result.getLimitStorage());
 			// 从mysql中加载 并set到redis
-			String redisAck = jedis.hmset(String.valueOf(SuppliersInventoryId), ObjectUtil.convertBean(rgsiDo));
+			String redisAck = jedis.hmset(InventoryEnum.HASHCACHE+":"+String.valueOf(SuppliersInventoryId), ObjectUtil.convertBean(rgsiDo));
 			if(!redisAck.equalsIgnoreCase("ok")){
 				log.error("NullCacheInitService:initSuppliersInventory invoke error [SuppliersInventoryId="
 						+ SuppliersInventoryId + "]");
@@ -202,4 +227,39 @@ public GoodsSuppliersInventoryDO initSuppliersInventory(Jedis jedis ,int Supplie
 	
 		return result;
 	}
+
+	/**
+	 * 初始化并返回商品商家库存相关信息
+	 * 
+	 * @param jedis
+	 * @param SuppliersInventoryId
+	 * @return
+	 * @throws Exception
+	 */
+	public int initSuppliersInventoryCache(Jedis jedis, int SuppliersInventoryId)
+			throws Exception {
+		int result = 0;
+		RedisGoodsSuppliersInventoryDO rgsiDO = nullCacheLoadService
+				.getCacheSuppliersInventoryInfoById(SuppliersInventoryId);
+		if (rgsiDO == null) {
+			return result;
+		} else {
+			// 从mysql中加载 并set到redis
+			String redisAck = jedis.hmset(String.valueOf(SuppliersInventoryId),
+					ObjectUtil.convertBean(rgsiDO));
+			if (!redisAck.equalsIgnoreCase("ok")) {
+				log.error("NullCacheInitService:initSuppliersInventoryCache invoke error [SuppliersInventoryId="
+						+ SuppliersInventoryId + "]");
+			}
+			if (rgsiDO.getLimitStorage() == 0) {
+				result = Integer.MAX_VALUE;
+			} else {
+				result = rgsiDO.getLeftNumber();
+			}
+
+		}
+
+		return result;
+	}
+
 }
