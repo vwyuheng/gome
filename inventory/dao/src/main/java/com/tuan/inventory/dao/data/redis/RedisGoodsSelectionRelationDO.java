@@ -4,14 +4,14 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /** 
  * @ClassName: RedisGoodsSelectionRelationDO
- * @Description: 商品与选型关系（新版）
+ * @Description: 商品与选型关系
  * @author henry.yu
  * @date 2014.03.06
  */
 public class RedisGoodsSelectionRelationDO extends TuanBaseDO{
 
 	private static final long serialVersionUID = 1L;
-	private java.lang.Integer id;
+	private java.lang.Integer id;  //选型id
 	private java.lang.Integer goodsId;	// 商品id
 	private java.lang.Integer goodTypeId; // 选型类型表ID(FK)关联到选型表ID
 	private java.lang.Integer totalNumber; 	// 当前选型总库存

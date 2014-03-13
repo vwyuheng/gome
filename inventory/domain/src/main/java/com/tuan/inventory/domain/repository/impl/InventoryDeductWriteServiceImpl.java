@@ -24,6 +24,8 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
+import com.tuan.inventory.domain.support.enu.HashFieldEnum;
+import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.domain.support.util.QueueConstant;
@@ -31,7 +33,6 @@ import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
-import com.tuan.inventory.model.enu.InventoryEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 /**
  * 库存扣减相关写服务
@@ -109,7 +110,7 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 	}
 
 	@Override
-	public String insertSingleInventory(long goodsId, String field, String value)
+	public String insertSingleInventoryInfoNotExist(long goodsId, String field, String value)
 			throws Exception {
 		Jedis jedis = jedisSentinelPool.getResource();
 		String result = null;
@@ -124,7 +125,7 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 	}
 
 	@Override
-	public String updateSingleInventory(long goodsId, String field, String value)
+	public String updateOverrideSingleInventoryInfo(long goodsId, String field, String value)
 			throws Exception {
 		Jedis jedis = jedisSentinelPool.getResource();
 		String result = null;
@@ -167,31 +168,16 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 					for (OrderGoodsSelectionModel orderGoodsSelectionModel : goodsSelectionList) {//if3
 						if (orderGoodsSelectionModel.getSelectionRelationId()!= null
 								&& orderGoodsSelectionModel.getSelectionRelationId()> 0) {  //更新商品选型库存
-							//1.首先根据商品id检查获商品是否添加配型关系 
-						    //Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-						  //  if(!CollectionUtils.isEmpty(setSelectionIds)){
-						    	//for(String id:setSelectionIds){
-						    		//根据选型id删除选型库存主体信息
+						    		//根据选型id删除选型库存信息
 							    	jedis.del(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId());
-						    	//}
-						    	
-						    //}
-						}
-						
+						    }	
 						if(orderGoodsSelectionModel.getSuppliersId()>0){  //更新商品分店的库存
-							 //2.根据商品id检查商品销售是否指定分店
-						   // Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-						   // if(!CollectionUtils.isEmpty(setSuppliersIds)){
-						    	//for(String id:setSuppliersIds){
-						    		//根据选型id删除选型库存主体信息
+						    		//根据选型id删除选型分店库存信息
 							    	jedis.del(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId());
-						    	//}
-						    	
-						    //}
 						}
 					}//if3
 				}//if2
-			    //3.最后删除商品库存主体信息、选型库存主体信息及商品分店库存信息
+			    //3.最后删除商品库存主体信息和商品id与选型id或商品分店id之间的对应关系
 			    redisAck = jedis.del(InventoryEnum.HASHCACHE+":"+String.valueOf(goodsId),InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
 				//执行事务
 				ts.exec();
@@ -275,9 +261,6 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 						 }
 					}
 					//1.首先参数检查获商品是否添加配型关系 
-				   // Set<String> setSelectionIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-				   // if(!CollectionUtils.isEmpty(setSelectionIds)){
-				    	//for(String id:setSelectionIds){
 				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSelectionRelationId(),"leftNumber")){
 				    			result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
 				    			if(!result){
@@ -312,9 +295,6 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 						 }
 					}
 					//2.根据商品id检查商品销售是否指定分店
-				   // Set<String> setSuppliersIds = jedis.smembers(InventoryEnum.SETCACHE+":"+String.valueOf(goodsId));
-				   // if(!CollectionUtils.isEmpty(setSuppliersIds)){
-				    //	for(String id:setSuppliersIds){
 				    		if(!jedis.hexists(InventoryEnum.HASHCACHE+":"+orderGoodsSelectionModel.getSuppliersId(),"leftNumber")){
 				    			result =  this.nullCacheInitService.initRedisInventoryCache(jedis, goodsId, limitStorage, goodsSelectionList);
 				    			if(!result){
@@ -356,7 +336,7 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 			//ZRANGEBYSCORE salary 2500 2500 WITHSCORES  ，2取到相应member后，按照member及其删除 [ZREM key member]
 			//删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
 			String jsonMember = JSONObject.fromObject(queueDO).toString();
-			mapResult.put("queuekey", String.valueOf(queueDO.getId()));
+			mapResult.put(QueueConstant.QUEUE_KEY_ID, String.valueOf(queueDO.getId()));
 			//缓存队列的key、member信息 1小时失效
 			jedis.setex(QueueConstant.QUEUE_KEY_MEMBER+":"+String.valueOf(queueDO.getId()),3600, jsonMember);
 			//zset key score value
@@ -394,7 +374,7 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 			Double scoreAck = jedis.zincrby(QueueConstant.QUEUE_SEND_MESSAGE/*+":"+key*/, -(2), member);
 			//执行事务
 			ts.exec();
-			if(scoreAck==3) {
+			if(scoreAck==1) {
 				result = true;
 			}
 		}else {
@@ -408,6 +388,36 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 		if(jedis!=null) 
 			jedisSentinelPool.returnResource(jedis);
 		
+		return result;
+	}
+	
+	@Override
+	public boolean inventoryAdjustment(String key, String field, int num)
+			throws Exception {
+		Jedis jedis = jedisSentinelPool.getResource();
+		boolean result = false;
+		if(jedis== null) 
+			return result;
+		//hincrby返回的是field更新后的值
+		Long resultAck = jedis.hincrBy(key, field, (num));
+		if(resultAck>=0) {  //因为库存、注水等值不能为负数
+			result = true;
+		}
+		return result;
+	}
+
+	@Override
+	public boolean waterfloodValAdjustment(String key, int num)
+			throws Exception {
+		Jedis jedis = jedisSentinelPool.getResource();
+		boolean result = false;
+		if(jedis== null) 
+			return result;
+		//hincrby返回的是field更新后的值
+		Long resultAck = jedis.hincrBy(key, HashFieldEnum.waterfloodVal.toString(), (num));
+		if(resultAck>=0) {  //因为注水值不能为负数
+			result = true;
+		}
 		return result;
 	}
 	
@@ -472,18 +482,18 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 		queueDO.setOrderId(orderId);
 		//队列初始状态
 		queueDO.setStatus(status);
-		if(selectType!=null) {
+		if(StringUtils.isNotEmpty(selectType)) {
 			 queueDO.setType(QueueConstant.SELECTION);
 			 queueDO.setItem(selectType);
-		}else if(suppliersType!=null) {
+		}else if(StringUtils.isNotEmpty(suppliersType)) {
 			queueDO.setType(QueueConstant.SUBBRANCH);
 			queueDO.setItem(suppliersType);
 		}else {
 			queueDO.setType(QueueConstant.GOODS);
 		}
 		queueDO.setVariableQuantityJsonData(num);
-		queueDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-		queueDO.setUpdateTime(TimeUtil.getNowTimestamp10Int());
+		//queueDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+		//queueDO.setUpdateTime(TimeUtil.getNowTimestamp10Int());
     	
 		return queueDO;
     }
@@ -500,6 +510,8 @@ public class InventoryDeductWriteServiceImpl implements InventoryDeductWriteServ
 		//json.put("库存变化",jsonData);
 		return json.toString();
     }
+
+	
 
 	
 }

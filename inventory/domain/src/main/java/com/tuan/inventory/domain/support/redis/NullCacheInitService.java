@@ -16,9 +16,9 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.domain.repository.NullCacheLoadService;
+import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
-import com.tuan.inventory.model.enu.InventoryEnum;
 /**
  * 缓存初始化工具类
  * @author henry.yu

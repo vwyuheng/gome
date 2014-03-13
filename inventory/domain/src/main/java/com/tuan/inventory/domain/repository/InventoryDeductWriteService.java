@@ -7,13 +7,17 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
-
+/**
+ * 库存扣减写服务接口
+ * @author henry.yu
+ * @date 2014/3/13
+ */
 public interface InventoryDeductWriteService {
 
 	/**
 	 * 新增库存信息
 	 * @param goodsId[商品id],RedisInventoryDO[商品库存主体信息],
-	 * List<RedisGoodsSelectionRelationDO>[商品选型],List<RedisGoodsSuppliersInventoryDO>[商品分店,保留暂不用]
+	 * List<RedisGoodsSelectionRelationDO>[商品选型],List<RedisGoodsSuppliersInventoryDO>[商品分店]
 	 * @return
 	 */
 	public boolean createInventory(long goodsId,RedisInventoryDO riDO,List<RedisGoodsSelectionRelationDO> rgsrList,List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception;
@@ -33,24 +37,27 @@ public interface InventoryDeductWriteService {
 	/**
 	 * 新增库存相关的某一个域的值,原子操作
 	 * 新增注水值等
+	 * 该域不存在的情况下
+	 * 注意新增注水值时，指定了field：waterfloodVal
 	 * @param key
 	 * @param field
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public String insertSingleInventory(long goodsId,String field,String value) throws Exception;
+	public String insertSingleInventoryInfoNotExist(long goodsId,String field,String value) throws Exception;
 	
 	/**
 	 * 更新库存相关的某一个域的值,原子操作
 	 * 更新注水值等
+	 * 这个更新是覆盖旧值，替换为新值的更新
 	 * @param key
 	 * @param field
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public String updateSingleInventory(long goodsId,String field,String value) throws Exception;
+	public String updateOverrideSingleInventoryInfo(long goodsId,String field,String value) throws Exception;
 	/**
 	 * 删除商品时清除该商品的库存信息
 	 * @param goodsId
@@ -67,4 +74,21 @@ public interface InventoryDeductWriteService {
 	 * @throws Exception
 	 */
 	public boolean inventoryCallbackAck(String ack,String key) throws Exception;
+	/**
+	 * 库存值调整服务
+	 * @param key 
+	 * @param field 可传 totalNumber、leftNumber、waterfloodVal，其他field勿用此方法
+	 * @param num 调整值：可调整(+),亦可调减(-) 默认调增,若调减请传负参数
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean inventoryAdjustment(String key,String field,int num) throws Exception;
+	/**
+	 * 注水值调整服务,指定了field：waterfloodVal
+	 * @param key 
+	 * @param num 调整值：可调整(+),亦可调减(-) 默认调增,若调减请传负参数
+	 * @return
+	 * @throws Exception
+	 */
+	public boolean waterfloodValAdjustment(String key,int num) throws Exception;
 }
