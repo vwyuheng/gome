@@ -8,6 +8,7 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 
 public interface InventoryProviderReadService {
+	public GoodsSelectionRelationDO getSelection(int SelectionRelationId) throws Exception;
 
 	/**
 	 * 根据选型id获取选型库存信息

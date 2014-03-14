@@ -11,7 +11,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisSentinelPool;
 
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
@@ -19,9 +18,12 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
+import com.tuan.inventory.domain.support.jedistools.JedisFactory;
+import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
+
 /**
  * 用于库存相关的读取服务接口
  * @author henry.yu
@@ -29,18 +31,64 @@ import com.tuan.inventory.model.GoodsSelectionRelationModel;
  */
 public class InventoryProviderReadServiceImpl implements
 		InventoryProviderReadService {
-
-	@Resource 
-	JedisSentinelPool jedisSentinelPool;
-	@Resource
-	NullCacheInitService nullCacheInitService;
 	private static Log log = LogFactory.getLog(InventoryProviderReadServiceImpl.class);
 	
+	@Resource
+	JedisFactory jedisFactory;
+	@Resource
+	NullCacheInitService nullCacheInitService;
+	
+	@Override
+	public GoodsSelectionRelationDO getSelection(
+			final int SelectionRelationId) throws Exception {
+		
+		log.info("InventoryProviderReadService.getSelectionRelationBySrId:"+"SelectionRelationId="+SelectionRelationId);
+		
+		return jedisFactory.withJedisDo(new JWork<GoodsSelectionRelationDO>() 
+				{
+					@Override
+					public GoodsSelectionRelationDO work(Jedis j)
+					{
+						GoodsSelectionRelationDO result = null;
+						try {
+							// TODO 测试用
+							//j.del(String.valueOf(InventoryEnum.HASHCACHE+ ":"+ SelectionRelationId));
+							Map<String, String> objMap = j
+									.hgetAll(InventoryEnum.HASHCACHE
+											+ ":"
+											+ String.valueOf(SelectionRelationId));
+							if (!CollectionUtils.isEmpty(objMap)) { // if1
+
+								result = (GoodsSelectionRelationDO) ObjectUtil
+										.convertMap(
+												GoodsSelectionRelationDO.class,
+												objMap);
+
+							} else {
+								result = nullCacheInitService
+										.initSelectionRelation(j,
+												SelectionRelationId);
+								
+							}
+							
+						} catch (Exception e) {
+							// TODO: handle exception
+							log.error(
+									"GoodsSelectionRelationDO:InventoryDeductReadWriteService.getSelectionRelationBySrId invoke error [SelectionRelationId="
+											+ SelectionRelationId + "]", e);
+						}
+						return result;
+					}			
+				});
+		
+	}
+
 	@Override
 	public GoodsSelectionRelationDO getSelectionRelationBySrId(
 			int SelectionRelationId) throws Exception {
 		log.info("InventoryProviderReadService.getSelectionRelationBySrId:"+"SelectionRelationId="+SelectionRelationId);
-		Jedis jedis = jedisSentinelPool.getResource();
+		//Jedis jedis = jedisSentinelPool.getResource();
+		Jedis jedis = JedisFactory.getRes();
 		GoodsSelectionRelationDO result = null;
 		if (jedis == null)
 			return result;
@@ -63,6 +111,10 @@ public class InventoryProviderReadServiceImpl implements
 					"GoodsSelectionRelationDO:InventoryDeductReadWriteService.getSelectionRelationBySrId invoke error [SelectionRelationId="
 							+ SelectionRelationId + "]", e);
 			e.printStackTrace();
+		}finally {
+			//将连接释放，还回到池子
+			if(jedis!=null)
+				JedisFactory.returnRes(jedis);
 		}
 		return result;
 	}
@@ -71,7 +123,8 @@ public class InventoryProviderReadServiceImpl implements
 	public GoodsSuppliersInventoryDO getSuppliersInventoryBySiId(
 			int SuppliersInventoryId) throws Exception {
 		log.info("InventoryProviderReadService.getSuppliersInventoryBySiId:"+"SuppliersInventoryId="+SuppliersInventoryId);
-		Jedis jedis = jedisSentinelPool.getResource();
+//		Jedis jedis = jedisSentinelPool.getResource();
+		Jedis jedis = JedisFactory.getRes();
 		GoodsSuppliersInventoryDO result = null;
 		if(jedis== null)
 			 return null;
@@ -91,7 +144,8 @@ public class InventoryProviderReadServiceImpl implements
 			e.printStackTrace();
 		}finally {  //释放资源
 			if(jedis!=null)
-				jedisSentinelPool.returnResource(jedis);
+				JedisFactory.returnRes(jedis);
+//				jedisSentinelPool.returnResource(jedis);
 		}
 		return result;
 	}
@@ -100,11 +154,12 @@ public class InventoryProviderReadServiceImpl implements
 	public List<GoodsSelectionRelationModel> getSelectionRelationBySrIds(
 			List<Long> selectionRelationIdList,long goodsId) throws Exception {
 		log.info("InventoryProviderReadService.getSelectionRelationBySrIds:"+"goodsId="+goodsId);
-		Jedis jedis = jedisSentinelPool.getResource();
+//		Jedis jedis = jedisSentinelPool.getResource();
+		Jedis jedis = JedisFactory.getRes();
 		List<GoodsSelectionRelationModel> result = null;
 		if (jedis == null)
 			return result;
-		 if (!CollectionUtils.isEmpty(selectionRelationIdList)) {
+		 if (!CollectionUtils.isEmpty(selectionRelationIdList)) { //if1
 			 result = new ArrayList<GoodsSelectionRelationModel>();
 			 for(Long lIds:selectionRelationIdList) {
 				 RedisGoodsSelectionRelationDO resultTmp = null;
@@ -123,7 +178,11 @@ public class InventoryProviderReadServiceImpl implements
 					 }
 				 }
 			 }
-		 }
+		 }//if1
+		//释放资源
+		 if (jedis != null)
+			 JedisFactory.returnRes(jedis);
+//			 jedisSentinelPool.returnResource(jedis);
 		return result;
 	}
 
@@ -131,7 +190,8 @@ public class InventoryProviderReadServiceImpl implements
 	public RedisInventoryDO getNotSeleInventory(long goodsId)
 			throws Exception {
 		log.info("InventoryProviderReadService.getNotSeleInventory:"+"goodsId="+goodsId);
-		Jedis jedis = jedisSentinelPool.getResource();
+//		Jedis jedis = jedisSentinelPool.getResource();
+		Jedis jedis = JedisFactory.getRes();
 		RedisInventoryDO result = null;
 		if (jedis == null)
 			return result;
@@ -145,7 +205,8 @@ public class InventoryProviderReadServiceImpl implements
 		
 		//释放资源
 		if(jedis!=null)
-			jedisSentinelPool.returnResource(jedis);
+			JedisFactory.returnRes(jedis);
+//			jedisSentinelPool.returnResource(jedis);
 		
 		return result;
 	}

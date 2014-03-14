@@ -10,7 +10,6 @@
 	        default-lazy-init="true" default-autowire="byName">
 	
 	<bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPool">
-		
 		<constructor-arg index="0">
 				<value>mymaster</value>
 		</constructor-arg>
@@ -29,5 +28,9 @@
 		<property name="testOnBorrow" value="true" />
 	</bean>
 	
+	<bean id="jedisFactory" class="com.tuan.inventory.domain.support.jedistools.JedisFactory" init-method="init">
+	<property name="jedisSentinelPool" ref="jedisSentinelPool"/>
+	</bean>
+	<bean id="redisServiceTemplate" class="com.tuan.inventory.domain.support.redis.common.impl.RedisServiceTemplateImpl"/>
 	
 </beans>
