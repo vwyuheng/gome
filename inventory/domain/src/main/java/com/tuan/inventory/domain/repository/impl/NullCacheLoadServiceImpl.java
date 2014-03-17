@@ -13,7 +13,11 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.domain.repository.GoodTypeDomainRepository;
 import com.tuan.inventory.domain.repository.NullCacheLoadService;
-
+/**
+ * 用于初始化redis缓存
+ * @author henry.yu
+ * @date 2014/3/11
+ */
 public class NullCacheLoadServiceImpl implements NullCacheLoadService {
 	@Resource
 	private GoodTypeDomainRepository goodTypeDomainRepository;
