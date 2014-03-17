@@ -9,12 +9,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 
 /**
- * A simple factory that returns a {@link Jedis} object back 
- * to the caller of {@link JedisFactory#getInstance()} after 
- * which they can call {@link JedisFactory#getRes()} to get 
- * a {@link Jedis} object and {@link JedisFactory#returnRes(Jedis)} to 
- * return the resource back to the pool.
- * 
+ * redis组件:模板方法,统一管理redis连接资源的申请与释放
  * @author henry.yu
  * @date 2014/3/14
  */
@@ -77,9 +72,6 @@ public class JedisFactory
 
 	/**
 	 * Gives the user access to a Redis object that they can use to interact with 
-	 * the server. The {@link Jedis} object must be returned back using {@link JedisFactory#returnRes(Jedis)} so others can use it..
-	 * 
-	 * @return the Jedis object use, must be returned back using {@link JedisFactory#returnRes(Jedis)} so others can use it. 
 	 */
 	public static Jedis getRes() 
 	{
@@ -137,13 +129,15 @@ public class JedisFactory
     	}
     	catch (Exception e)
     	{
+    		m_logger.error("JedisFactory:withJedisDo invoke error", e);
+    		e.printStackTrace();
     		return null;
     	}
     }        
     
     public interface Work<Return,Param>
     {
-    	public Return work(Param p);
+    	public Return work(Param p) throws Exception;
     }
     
     public interface JWork<Return> extends Work<Return, Jedis>

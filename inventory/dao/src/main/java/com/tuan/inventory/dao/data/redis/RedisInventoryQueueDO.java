@@ -18,7 +18,7 @@ public class RedisInventoryQueueDO extends TuanBaseDO {
 	//private Integer createTime;  //创建日期
 	//private Integer updateTime;  //更新时间[状态被更新]
 	private String variableQuantityJsonData;// 库存变化量 商品主体信息中的库存变化量、选型商品或分店则其分别对应的库存变化保存在json数据中
-	private String status;  //处理状态位 : 1:正常：有效可处理（active） 3：初始状态（locked），超过一定时间该标记未被更新为正常1的消息做超期处理，（会有个队列定时扫这个标记的消息） 5：标记可以被用作异常队列处(exception)
+	//private String status;  //处理状态位 : 1:正常：有效可处理（active） 3：初始状态（locked），超过一定时间该标记未被更新为正常1的消息做超期处理，（会有个队列定时扫这个标记的消息） 5：标记可以被用作异常队列处(exception)
 	public Long getId() {
 		return id;
 	}
@@ -69,12 +69,12 @@ public class RedisInventoryQueueDO extends TuanBaseDO {
 	public void setVariableQuantityJsonData(String variableQuantityJsonData) {
 		this.variableQuantityJsonData = variableQuantityJsonData;
 	}
-	public String getStatus() {
+	/*public String getStatus() {
 		return status;
 	}
 	public void setStatus(String status) {
 		this.status = status;
-	}
+	}*/
 	
 //	private String operateType;  //操作类别 :是增库存还是//减库存 
 //	private String content; //操作内容

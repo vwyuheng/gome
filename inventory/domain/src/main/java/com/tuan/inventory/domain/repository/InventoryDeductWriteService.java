@@ -20,7 +20,7 @@ public interface InventoryDeductWriteService {
 	 * List<RedisGoodsSelectionRelationDO>[商品选型],List<RedisGoodsSuppliersInventoryDO>[商品分店]
 	 * @return
 	 */
-	public boolean createInventory(long goodsId,RedisInventoryDO riDO,List<RedisGoodsSelectionRelationDO> rgsrList,List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception;
+	public Boolean createInventory(final long goodsId,final RedisInventoryDO riDO,final List<RedisGoodsSelectionRelationDO> rgsrList,final List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception;
 	/**
 	 * 更新库存
 	 * @param orderId
@@ -32,8 +32,11 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String,String> updateInventory(long orderId,long goodsId, int pindaoId, int num,int limitStorage,
-			List<OrderGoodsSelectionModel> goodsSelectionList,Long userId,String system,String clientIp) throws Exception;
+	public Map<String,String> updateInventory(final long orderId,
+			final long goodsId, final int pindaoId, final int num,
+			final int limitStorage,
+			final List<OrderGoodsSelectionModel> goodsSelectionList,
+			final Long userId, final String system, final String clientIp) throws Exception;
 	/**
 	 * 新增库存相关的某一个域的值,原子操作
 	 * 新增注水值等
@@ -45,26 +48,26 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public String insertSingleInventoryInfoNotExist(long goodsId,String field,String value) throws Exception;
+	public boolean insertSingleInventoryInfoNotExist(final long goodsId, final String field, final String value) throws Exception;
 	
 	/**
 	 * 更新库存相关的某一个域的值,原子操作
 	 * 更新注水值等
-	 * 这个更新是覆盖旧值，替换为新值的更新
+	 * 这个更新是覆盖旧值，替换为新值的更新,且不存在则创建
 	 * @param key
 	 * @param field
 	 * @param value
 	 * @return
 	 * @throws Exception
 	 */
-	public String updateOverrideSingleInventoryInfo(long goodsId,String field,String value) throws Exception;
+	public boolean updateOverrideSingleInventoryInfo(long goodsId,String field,String value) throws Exception;
 	/**
 	 * 删除商品时清除该商品的库存信息
 	 * @param goodsId
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteInventory(long goodsId,List<OrderGoodsSelectionModel> goodsSelectionList) throws Exception;
+	public boolean deleteInventory(final long goodsId,final List<OrderGoodsSelectionModel> goodsSelectionList) throws Exception;
 	/**
 	 * 库存回调确认接口
 	 * 当调用方对库存的操作一切正常时 确认参数传1，当调用方发生异常时 在catch到异常时回调传确认参数为5

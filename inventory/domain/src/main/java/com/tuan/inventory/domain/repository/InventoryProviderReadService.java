@@ -8,22 +8,20 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 
 public interface InventoryProviderReadService {
-	public GoodsSelectionRelationDO getSelection(int SelectionRelationId) throws Exception;
-
 	/**
 	 * 根据选型id获取选型库存信息
 	 * @param SelectionRelationId
 	 * @return
 	 * @throws Exception
 	 */
-	public GoodsSelectionRelationDO getSelectionRelationBySrId(int SelectionRelationId) throws Exception;
+	public GoodsSelectionRelationDO getSelectionRelationBySrId(final int SelectionRelationId) throws Exception;
 	/**
 	 * 根据商品分店id获取fen
 	 * @param SuppliersInventoryId
 	 * @return
 	 * @throws Exception
 	 */
-	public GoodsSuppliersInventoryDO getSuppliersInventoryBySiId(int SuppliersInventoryId) throws Exception;
+	public GoodsSuppliersInventoryDO getSuppliersInventoryBySiId(final int SuppliersInventoryId) throws Exception;
 	/**
 	 * 获取商品选型列表
 	 * @param selectionRelationIdList
@@ -31,12 +29,12 @@ public interface InventoryProviderReadService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<GoodsSelectionRelationModel>  getSelectionRelationBySrIds(List<Long> selectionRelationIdList,long goodsId) throws Exception;
+	public List<GoodsSelectionRelationModel>  getSelectionRelationBySrIds(final List<Long> selectionRelationIdList,final long goodsId) throws Exception;
 	/**
 	 * 根据商品id获取商品库存信息
 	 * @param goodsId
 	 * @return
 	 * @throws Exception
 	 */
-	public RedisInventoryDO getNotSeleInventory (long goodsId) throws Exception;
+	public RedisInventoryDO getNotSeleInventory (final long goodsId) throws Exception;
 }

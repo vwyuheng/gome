@@ -68,7 +68,12 @@ public class NullCacheInitService {
 						rsrDo.setId(rsrDo.getId());
 						rsrDo.setGoodsId(goodsId.intValue());
 						rsrDo.setGoodTypeId(rsrDo.getGoodTypeId());
-						rsrDo.setLeftNumber(rsrDo.getLeftNumber());
+						//当商品是无库存限制商品时，修正库存量为integer最大数值量
+						if (gsrDO.getLimitStorage() == 0) {
+							rsrDo.setLeftNumber(Integer.MAX_VALUE); 
+						} else {
+							rsrDo.setLeftNumber(rsrDo.getLeftNumber());
+						}
 						rsrDo.setTotalNumber(rsrDo.getTotalNumber());
 						rsrDo.setLimitStorage(rsrDo.getLimitStorage());
 						//2.商品id与选型关系
@@ -95,7 +100,12 @@ public class NullCacheInitService {
 						RedisGoodsSuppliersInventoryDO rgsiDO = new RedisGoodsSuppliersInventoryDO();
 						rgsiDO.setId(gsiDO.getId());
 						rgsiDO.setGoodsId(gsiDO.getGoodsId());
-						rgsiDO.setLeftNumber(gsiDO.getLeftNumber());
+						//当商品是无库存限制商品时，修正库存量为integer最大数值量
+						if (gsiDO.getLimitStorage() == 0) {
+							rgsiDO.setLeftNumber(Integer.MAX_VALUE); 
+						} else {
+							rgsiDO.setLeftNumber(gsiDO.getLeftNumber());
+						}
 						rgsiDO.setTotalNumber(gsiDO.getTotalNumber());
 						rgsiDO.setSuppliersId(gsiDO.getSuppliersId());
 						rgsiDO.setLimitStorage(gsiDO.getLimitStorage());
@@ -152,7 +162,12 @@ public RedisInventoryDO initGoodsInventoryNotSelectionOrSuppliers(Jedis jedis ,L
 			RedisGoodsSelectionRelationDO rsrDo = new RedisGoodsSelectionRelationDO();
 			rsrDo.setId(result.getId());
 			rsrDo.setGoodTypeId(result.getGoodTypeId());
-			rsrDo.setLeftNumber(result.getLeftNumber());
+			//当商品是无库存限制商品时，修正库存量为integer最大数值量
+			if (result.getLimitStorage() == 0) {
+				rsrDo.setLeftNumber(Integer.MAX_VALUE); 
+			} else {
+				rsrDo.setLeftNumber(result.getLeftNumber());
+			}
 			rsrDo.setTotalNumber(result.getTotalNumber());
 			rsrDo.setLimitStorage(result.getLimitStorage());
 			// 从mysql中加载 并set到redis
@@ -182,7 +197,12 @@ public RedisInventoryDO initGoodsInventoryNotSelectionOrSuppliers(Jedis jedis ,L
 			result = new RedisGoodsSelectionRelationDO();
 			result.setId(result.getId());
 			result.setGoodTypeId(result.getGoodTypeId());
-			result.setLeftNumber(result.getLeftNumber());
+			//当商品是无库存限制商品时，修正库存量为integer最大数值量
+			if (gsrDO.getLimitStorage() == 0) {
+				result.setLeftNumber(Integer.MAX_VALUE); 
+			} else {
+				result.setLeftNumber(gsrDO.getLeftNumber());
+			}
 			result.setTotalNumber(result.getTotalNumber());
 			result.setLimitStorage(result.getLimitStorage());
 			// 从mysql中加载 并set到redis
@@ -213,7 +233,12 @@ public GoodsSuppliersInventoryDO initSuppliersInventory(Jedis jedis ,int Supplie
 			RedisGoodsSuppliersInventoryDO rgsiDo = new RedisGoodsSuppliersInventoryDO();
 			rgsiDo.setId(result.getId());
 			rgsiDo.setGoodsId(result.getGoodsId());
-			rgsiDo.setLeftNumber(result.getLeftNumber());
+			//当商品是无库存限制商品时，修正库存量为integer最大数值量
+			if (result.getLimitStorage() == 0) {
+				rgsiDo.setLeftNumber(Integer.MAX_VALUE); 
+			} else {
+				rgsiDo.setLeftNumber(result.getLeftNumber());
+			}
 			rgsiDo.setTotalNumber(result.getTotalNumber());
 			rgsiDo.setSuppliersId(result.getSuppliersId());
 			rgsiDo.setLimitStorage(result.getLimitStorage());

@@ -1,9 +1,6 @@
 package com.tuan.inventory.model.enu;
 
 public enum ResultStatusEnum {
-	UPDATE		("0",	"更新"),
-	INSERT		("1",	"新增"),
-	NOEXISTS    ("3",   "不存在"),
 	
 	//队列状态
 	ACTIVE		("1",	"正常：有效可处理（active）"),

@@ -1,4 +1,4 @@
-package com.tuan.inventory.domain.support.util;
+package com.tuan.inventory.domain.support.logs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +10,12 @@ public class LogModel {
 	/** 附加信息集 */
 	Map<String, Object> datas;
 	String method;
+	long start=0;
 	private final AtomicInteger serialId = new AtomicInteger(0);   
 	private LogModel(String name) {
 		datas = new HashMap<String, Object>();
-		method = name + "#" + System.currentTimeMillis() + "#";
+		start=System.currentTimeMillis();
+		method = name + "#" +start  + "#";
 		datas.put("_method", method);
 	}
 
@@ -33,7 +35,11 @@ public class LogModel {
 			datas.put(key, "");
 		return this;
 	}
-
+	public LogModel delMetaData(String key) {
+		if (key != null)
+			datas.remove(key); 		
+		return this;
+	}
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (Map.Entry<String, Object> entry : datas.entrySet()) {
@@ -46,19 +52,21 @@ public class LogModel {
 		try {
 			datas.put("_serialId", serialId.incrementAndGet());
 			if (purge) {
+				datas.put("handleCost", System.currentTimeMillis()-start);
 				JSONObject ja = JSONObject.fromObject(datas);
 				purge();
 				return ja.toString();
 
 			} else {
 				Map<String, Object> map = toMap();
+				map.put("handleCost", System.currentTimeMillis()-start);
 				if (map != null) {
 					JSONObject ja = JSONObject.fromObject(map);
 					return ja.toString();
 				}
 			}
 		} catch (Exception e) {
-
+//			System.out.println(e.getMessage()+"### datas ="+datas);
 			e.printStackTrace();
 		}
 
@@ -70,7 +78,10 @@ public class LogModel {
 		datas.put("_method", method);
 
 	}
+	public String endJson() {
+		return toJson(true);
 
+	}
 	public String toJson() {
 		return toJson(true);
 

@@ -72,7 +72,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	public void  RedisMapTest() {
 		//System.out.println(test1("myhash11"));
 		try {
-			inventoryProviderReadService.getSelection(1);
+			//inventoryProviderReadService.getSelection(1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

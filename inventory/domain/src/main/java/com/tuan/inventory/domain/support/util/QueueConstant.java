@@ -18,7 +18,7 @@ public class QueueConstant {
 	//商品属性类别
 	public final static String SELECTION = "选型商品库存";  // 标识：选型、总数、分店
 	public final static String SUBBRANCH = "分店商品库存";  
-	public final static String GOODS = "商品库存"; 
+	public final static String GOODS = "商品总库存"; 
 	//库存扣减返回参数：生成的队列主键id值的key名称定义
 	public final static String QUEUE_KEY_ID="queue:key.id";//异步触发记录日志流水的队列名称
 }

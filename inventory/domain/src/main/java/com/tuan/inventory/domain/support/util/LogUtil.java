@@ -2,7 +2,6 @@ package com.tuan.inventory.domain.support.util;
 
 
 
-import java.io.StringReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,5 +75,9 @@ public class LogUtil {
 			e1.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static long getRunTime(long startTime){
+		return System.currentTimeMillis() - startTime;
 	}
 } 
