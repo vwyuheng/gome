@@ -2,10 +2,7 @@ package test;
 
 import net.sf.json.JSONObject;
 
-import com.tuan.core.common.sequence.res.SequenceResult;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
-import com.tuan.inventory.domain.support.util.LogModel;
-import com.tuan.inventory.domain.support.util.LogUtil;
 
 public class Test {
 
