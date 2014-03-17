@@ -5,9 +5,8 @@ import java.util.List;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.repository.GoodTypeDomainRepository;
 import com.tuan.inventory.domain.repository.GoodTypeService;
-import com.tuan.inventory.domain.support.util.LogModel;
+import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
-import com.tuan.inventory.model.enu.ClientNameEnum;
 import com.tuan.inventory.model.enu.res.InventoryQueryEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.result.InventoryQueryResult;
@@ -48,12 +47,12 @@ public class GoodSeletionQueryServiceImpl extends AbstractService implements Goo
 	public CallResult<InventoryQueryResult> querySelectionRelation(final String clientIp,
 			final String clientName,final long goodsId,final long SelectionRelationId) {
 		// 获取接口名称
-		final String interfaceMehtodName = ClientNameEnum.getCurrentMethodName(
-				Thread.currentThread().getStackTrace(),
-				getClass().getInterfaces()[0].getName());
+		//final String interfaceMehtodName = ClientNameEnum.getCurrentMethodName(
+				//Thread.currentThread().getStackTrace(),
+			//	getClass().getInterfaces()[0].getName());
 		final LogModel lm = LogModel.newLogModel("GoodSeletionQueryService.querySelectionRelation");
 		lm.addMetaData("clientName",clientName).addMetaData("goodsId", goodsId).addMetaData("SelectionRelationId", SelectionRelationId);
-		InventoryQueryResult res = null;
+		//InventoryQueryResult res = null;
 		//final GoodTypeService goodtypeService = goodTypeDomainRepository.createGoodTypeService(goodTypeDomainRepository);
 		TuanCallbackResult result =  this.busiServiceTemplate.execute(
 				new OrderServiceCallback() {
