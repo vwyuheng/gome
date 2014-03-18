@@ -138,6 +138,7 @@ public class JedisFactory
     public interface Work<Return,Param>
     {
     	public Return work(Param p) throws Exception;
+    	public void workAfter(Param p) throws Exception;
     }
     
     public interface JWork<Return> extends Work<Return, Jedis>

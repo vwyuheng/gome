@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain.repository.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,10 +20,14 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryNumDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.RedisSelectionNumDO;
+import com.tuan.inventory.dao.data.redis.RedisSuppliersNumDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
+import com.tuan.inventory.domain.support.enu.InventoryVarQttEnum;
 import com.tuan.inventory.domain.support.exception.RedisRunException;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
@@ -123,10 +128,10 @@ public class InventoryDeductWriteServiceImpl implements
 						//log.error("InventoryRelationMainTainService:createInventory invoke error [goodsId="
 								//+ goodsId + "]");
 					} else {
-						// TODO 发送库存新增消息
-
+						
 						result = true;
 					}
+					
 				} catch (Exception e) {
 					log.error(lm.addMetaData("goodsId", String.valueOf(goodsId))
 							.addMetaData("RedisInventoryDO", riDO)
@@ -145,6 +150,13 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
+
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				// TODO 发送库存新增消息
+			}
+			
 		});
 
 	}
@@ -188,6 +200,11 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 
 	}
@@ -229,6 +246,12 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("useTime", LogUtil.getRunTime(startTime))
 						.addMetaData("result", result).toJson());
 				return result;
+			}
+			
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 
@@ -311,6 +334,11 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 
 	}
@@ -339,6 +367,10 @@ public class InventoryDeductWriteServiceImpl implements
 				Map<String, String> mapResult = null;
 				// 声明库存变化量json对象
 				JSONObject jsonData = new JSONObject();
+				//声明一个保存商品选型库存变化的list
+				List<RedisSelectionNumDO> sLists= new ArrayList<RedisSelectionNumDO>();
+				//声明一个保存商品分店库存变化的list
+				List<RedisSuppliersNumDO> suppLists= new ArrayList<RedisSuppliersNumDO>();
 				boolean result = false;
 				if (j == null) {
 					mapResult = new HashMap<String, String>();
@@ -364,7 +396,8 @@ public class InventoryDeductWriteServiceImpl implements
 								return mapResult;
 							}
 						}
-						jsonData.put("商品总库存变化量", num);
+						//jsonData.put("商品总库存变化量", num);
+						jsonData.put(InventoryVarQttEnum.num, num);
 						resultAck = j.hincrBy(InventoryEnum.HASHCACHE + ":"
 								+ String.valueOf(goodsId),
 								HashFieldEnum.leftNumber.toString(), (-num));
@@ -377,7 +410,8 @@ public class InventoryDeductWriteServiceImpl implements
 							mapResult.put("result", String.valueOf(result));
 							return mapResult;
 						} else {
-							jsonData.put("商品总库存剩余量", resultAck);
+							//jsonData.put("商品总库存剩余量", resultAck);
+							jsonData.put(InventoryVarQttEnum.leftNum, resultAck);
 						}
 
 					}
@@ -401,7 +435,7 @@ public class InventoryDeductWriteServiceImpl implements
 													goodsId, limitStorage,
 													goodsSelectionList);
 									if (!result) {
-										// 还原被扣减的库存
+										// 还原被扣减商品的总库存
 										resultAck = j
 												.hincrBy(
 														InventoryEnum.HASHCACHE
@@ -443,9 +477,9 @@ public class InventoryDeductWriteServiceImpl implements
 										return mapResult;
 									}
 								}
-								jsonData.put("商品选型库存变化量",
-										(orderGoodsSelectionModel.getCount()
-												.intValue()));
+								//jsonData.put(InventoryVarQttEnum.selectionNum,
+									//	(orderGoodsSelectionModel.getCount()
+										//		.intValue()));
 								// 根据选型id更新选型库存主体信息
 								resultAck = j
 										.hincrBy(
@@ -483,8 +517,21 @@ public class InventoryDeductWriteServiceImpl implements
 											String.valueOf(result));
 									return mapResult;
 								} else {
-									jsonData.put("商品选型库存剩余量", (resultAck));
+									//选型商品库存剩余量
+									//jsonData.put(InventoryVarQttEnum.selectionLeftNum, (resultAck));
+									//选型商品库存变化量
+									RedisSelectionNumDO sDO = new RedisSelectionNumDO();
+									//每次扣减的选型库存量
+									sDO.setSelectionNum(orderGoodsSelectionModel.getCount()
+													.intValue());
+									sDO.setSelectionRelationId(orderGoodsSelectionModel
+																	.getSelectionRelationId());
+									//每次扣减后剩余的选型库存量
+									sDO.setSelectionLeftNum(resultAck);
+									
+									sLists.add(sDO);
 								}
+								
 
 							} // if选型
 							if (orderGoodsSelectionModel.getSuppliersId() > 0) { // if分店
@@ -539,9 +586,10 @@ public class InventoryDeductWriteServiceImpl implements
 										return mapResult;
 									}
 								}
-								jsonData.put("商品分店库存变化量",
-										(orderGoodsSelectionModel.getCount()
-												.intValue()));
+								//分店商品库存变化量
+								//jsonData.put(InventoryVarQttEnum.supplierNum,
+										//(orderGoodsSelectionModel.getCount()
+											//	.intValue()));
 								// 根据选型id删除选型库存主体信息
 								resultAck = j.hincrBy(
 										InventoryEnum.HASHCACHE
@@ -577,11 +625,26 @@ public class InventoryDeductWriteServiceImpl implements
 											String.valueOf(result));
 									return mapResult;
 								} else {
-									jsonData.put("商品分店库存剩余量", (resultAck));
+									//分店商品库存剩余量
+									//jsonData.put(InventoryVarQttEnum.supplierLeftNum, (resultAck));
+									RedisSuppliersNumDO suppDO = new RedisSuppliersNumDO();
+									//每次扣减的分店库存量
+									suppDO.setSupplierNum(orderGoodsSelectionModel.getCount()
+													.intValue());
+									suppDO.setSuppliersId(orderGoodsSelectionModel
+																	.getSuppliersId());
+									//每次扣减后剩余的分店库存量
+									suppDO.setSupplierLeftNum(resultAck);
+									
+									suppLists.add(suppDO);
 								}
 
 							}// if分店
 						}// for
+						//商品选型库存变化情况汇总
+						jsonData.put("sLists",sLists);
+						//商品分店库存变化情况汇总
+						jsonData.put("suppLists", suppLists);
 					} // if1
 						// 执行事务
 						// ts.exec();
@@ -605,8 +668,8 @@ public class InventoryDeductWriteServiceImpl implements
 								ResultStatusEnum.DEDUCTION.getDescription(),
 								userId, system, clientIp, "",
 								asemblyJsonData(queueDO, pindaoId));
-						// 将库存更新队列信息压入到redis set集合 便于统计
-						// job程序中会每次将某区间的元素移动到另一个集合set中去，在这个目的set集合中做库存消息更新的处理，处理完立即情况该集合，并重复操作
+						// 将库存更新队列信息压入到redis zset集合 便于统计
+						// job程序中会每次将score为1的元素取出，做库存消息更新的处理，处理完根据key score member(因id都是唯一的，因此每个member都是不一样的)立即清空源集合中的相关元素，并重复操作
 						// 如下 可以指定score值取值 ZADD salary 2500 jack
 						// ZRANGEBYSCORE salary 2500 2500 WITHSCORES
 						// ，2取到相应member后，按照member及其删除 [ZREM key member]
@@ -646,6 +709,11 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return mapResult;
 			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 
 	}
@@ -667,15 +735,15 @@ public class InventoryDeductWriteServiceImpl implements
 					return result;
 				try {
 					// 打开对相关key的监控
-					j.watch(QueueConstant.QUEUE_KEY_MEMBER + ":" + key,
-							QueueConstant.QUEUE_SEND_MESSAGE + ":" + key);
-					// 事务声明
-					Transaction ts = null;
+					//j.watch(QueueConstant.QUEUE_KEY_MEMBER + ":" + key,
+							//QueueConstant.QUEUE_SEND_MESSAGE);
+					// 事务声明、开启事务
+					Transaction ts = j.multi();
+					
 					if (StringUtils.isNotBlank(ack)
 							&& ack.equalsIgnoreCase(ResultStatusEnum.ACTIVE
 									.getCode())) {
-						// 开启事务
-						ts = j.multi();
+						
 						// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
 						String member = j.get(QueueConstant.QUEUE_KEY_MEMBER
 								+ ":" + key);
@@ -689,9 +757,36 @@ public class InventoryDeductWriteServiceImpl implements
 						if (scoreAck == 1) { // scoreAck返回的是对于的结果值
 							result = true;
 						}
-					} else {
+					} else if (StringUtils.isNotBlank(ack)
+							&& ack.equalsIgnoreCase(ResultStatusEnum.EXCEPTION
+									.getCode())) { //EXCEPTION    ("5",   "异常队列")
+						
+						// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
+						String member = j.get(QueueConstant.QUEUE_KEY_MEMBER
+								+ ":" + key);
+						//JSONObject.toBean(JSONObject.fromObject(member));
+						RedisInventoryNumDO inventoryNumDO = null;
+						RedisInventoryQueueDO queueDO = (RedisInventoryQueueDO) LogUtil.jsonToObject(member,RedisInventoryQueueDO.class);
+						if(queueDO!=null) {
+							inventoryNumDO = (RedisInventoryNumDO) LogUtil.jsonToObject(queueDO.getVariableQuantityJsonData(), RedisInventoryNumDO.class);
+							if(inventoryNumDO!=null) {
+								//还原库存
+								result = nullCacheInitService.rollbackInventoryCache(j, queueDO.getGoodsId(), inventoryNumDO);
+							}
+						}
+						// 删除该条消息(member):库存更新的队列信息
+						Long scoreAck = j
+								.zrem(QueueConstant.QUEUE_SEND_MESSAGE,member);
+						// 执行事务
+						ts.exec();
+						if (scoreAck == 1) { //  删除N个member就返回数值N
+							result = true;
+						}
+						
+					}else {
 						// 保证下一个事务的执行不受影响
-						j.unwatch();
+						//j.unwatch();
+						
 					}
 					// 销毁事务
 					if (ts != null)
@@ -710,6 +805,12 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				
+				
+			}
+			
 		});
 
 	}
@@ -755,6 +856,11 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 
 	}
@@ -794,6 +900,11 @@ public class InventoryDeductWriteServiceImpl implements
 						.addMetaData("useTime", LogUtil.getRunTime(startTime))
 						.addMetaData("result", result).toJson());
 				return result;
+			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 

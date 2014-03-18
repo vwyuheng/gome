@@ -1,8 +1,12 @@
 package test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.sf.json.JSONObject;
 
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.domain.support.util.LogUtil;
 
 public class Test {
 
@@ -13,8 +17,8 @@ public class Test {
 		rdo.setId(1);
 		//rdo.setGoodsId(2);
 		rdo.setGoodTypeId(3);
-		rdo.setLeftNumber(100);
-		rdo.setTotalNumber(1000);
+	    rdo.setLeftNumber(100);
+	    rdo.setTotalNumber(1000);
 		//rdo.setSuppliersInventoryId(4);
 		rdo.setLimitStorage(0);
 		
@@ -22,9 +26,10 @@ public class Test {
 		//jsonObject.accumulate("code", "1000");
 		//jsonObject.accumulate("msg", "success");
 		//jsonObject.accumulate("data", rdo);
-		//String objStr = LogUtil.formatObjLog(rdo);
-		//GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
-		System.out.println(JSONObject.fromObject(rdo).toString());
+		String objStr = LogUtil.formatObjLog(rdo);
+		GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
+		System.out.println(JSONObject.fromObject(rdo));
+		System.out.println(JSONObject.fromObject(rdo));
 //      GoodsSelectionRelationDO rdo1 = new GoodsSelectionRelationDO();
 //		
 //      rdo1.setId(1);
@@ -81,10 +86,13 @@ public class Test {
 		e.printStackTrace();
 	}*/
 	
-		
-		
-		
-		
+		JSONObject jsonData = new JSONObject();
+		/*Map<String,String> map = new HashMap<String,String>();
+		map.put("k", "1");
+		map.put("k", "2");*/
+		jsonData.put("k", "1");
+		jsonData.put("k", "2");
+		System.out.println(jsonData.toString());
 	}
 	
 	

@@ -83,6 +83,11 @@ public class InventoryProviderReadServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 
 	}
@@ -130,6 +135,11 @@ public class InventoryProviderReadServiceImpl implements
 						.addMetaData("useTime", LogUtil.getRunTime(startTime))
 						.addMetaData("result", result).toJson());
 				return result;
+			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 
@@ -194,6 +204,11 @@ public class InventoryProviderReadServiceImpl implements
 								.addMetaData("result", result).toJson());
 						return result;
 					}
+					@Override
+					public void workAfter(Jedis j) throws Exception {
+						// TODO Auto-generated method stub
+						
+					}
 				});
 
 	}
@@ -237,6 +252,11 @@ public class InventoryProviderReadServiceImpl implements
 						.addMetaData("useTime", LogUtil.getRunTime(startTime))
 						.addMetaData("result", result).toJson());
 				return result;
+			}
+			@Override
+			public void workAfter(Jedis j) throws Exception {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 	}

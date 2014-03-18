@@ -87,6 +87,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 					public Integer work(Jedis j)
 					{
 						return j.hlen(key).intValue();				
+					}
+
+					@Override
+					public void workAfter(Jedis j) throws Exception {
+						// TODO Auto-generated method stub
+						
 					}			
 				});
 		
