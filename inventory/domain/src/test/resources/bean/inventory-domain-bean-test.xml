@@ -14,6 +14,6 @@
 	<bean id="goodTypeDomainRepository" class="com.tuan.inventory.domain.repository.GoodTypeDomainRepository"/>
 	<bean id="inventoryDeductWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductWriteServiceImpl"/>
 	<bean id="inventoryProviderReadService" class="com.tuan.inventory.domain.repository.impl.InventoryProviderReadServiceImpl"/>
-	<!-- <bean id="extensionService" class="com.tuan.ordercenter.extrnal.impl.ExtensionServiceImpl">
-    <property name="url4Sequence" value="http://sequence.55tuan.me:8189" /></bean> -->
+	<!-- <bean id="redisServiceTemplateImpl" class="com.tuan.inventory.domain.common.service.RedisServiceTemplateImpl" />
+	<bean id="mysqlServiceTemplateImpl" class="com.tuan.inventory.domain.common.service.MysqlServiceTemplateImpl" /> -->
 </beans>

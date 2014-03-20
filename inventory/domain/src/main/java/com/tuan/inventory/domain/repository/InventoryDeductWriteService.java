@@ -20,7 +20,7 @@ public interface InventoryDeductWriteService {
 	 * List<RedisGoodsSelectionRelationDO>[商品选型],List<RedisGoodsSuppliersInventoryDO>[商品分店]
 	 * @return
 	 */
-	public Boolean createInventory(final long goodsId,final RedisInventoryDO riDO,final List<RedisGoodsSelectionRelationDO> rgsrList,final List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception;
+	public Boolean createInventory(final long goodsId, final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,final RedisInventoryDO riDO,final List<RedisGoodsSelectionRelationDO> rgsrList,final List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception;
 	/**
 	 * 更新库存
 	 * @param orderId
@@ -48,7 +48,7 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean insertSingleInventoryInfoNotExist(final long goodsId, final String field, final String value) throws Exception;
+	public boolean insertSingleInventoryInfoNotExist(final long goodsId, final String field, final String value,final Long userId, final String system, final String clientIp) throws Exception;
 	
 	/**
 	 * 更新库存相关的某一个域的值,原子操作
@@ -60,14 +60,14 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean updateOverrideSingleInventoryInfo(long goodsId,String field,String value) throws Exception;
+	public boolean updateOverrideSingleInventoryInfo(final long goodsId,final String field,final String value,final Long userId, final String system, final String clientIp) throws Exception;
 	/**
 	 * 删除商品时清除该商品的库存信息
 	 * @param goodsId
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean deleteInventory(final long goodsId,final List<OrderGoodsSelectionModel> goodsSelectionList) throws Exception;
+	public boolean deleteInventory(final long goodsId,final List<OrderGoodsSelectionModel> goodsSelectionList,final Long userId, final String system, final String clientIp) throws Exception;
 	/**
 	 * 库存回调确认接口
 	 * 当调用方对库存的操作一切正常时 确认参数传1，当调用方发生异常时 在catch到异常时回调传确认参数为5
@@ -76,7 +76,7 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean inventoryCallbackAck(String ack,String key) throws Exception;
+	public void inventoryCallbackAck(final String ack,final String key) throws Exception;
 	/**
 	 * 库存值调整服务
 	 * @param key 
@@ -85,7 +85,7 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean inventoryAdjustment(String key,String field,int num) throws Exception;
+	public boolean inventoryAdjustment(final String key,final String field,final int num) throws Exception;
 	/**
 	 * 注水值调整服务,指定了field：waterfloodVal
 	 * @param key 
@@ -93,5 +93,7 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean waterfloodValAdjustment(String key,int num) throws Exception;
+	public boolean waterfloodValAdjustment(final String key,final int num,final Long userId, final String system, final String clientIp) throws Exception;
+	
+	//public void callbackAck(final String ack, final String key) throws Exception;
 }

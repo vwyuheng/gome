@@ -13,9 +13,9 @@ import redis.clients.jedis.JedisSentinelPool;
  * @author henry.yu
  * @date 2014/3/14
  */
-public class JedisFactory 
+public class ReadJedisFactory extends RedisBaseObject
 {
-	protected static Logger m_logger = Logger.getLogger(JedisFactory.class.getName());
+	protected static Logger m_logger = Logger.getLogger(ReadJedisFactory.class.getName());
 	/**
 	 * spring 注入的 The connection pool.
 	 */
@@ -25,28 +25,7 @@ public class JedisFactory
 	 * spring 静态注入的解决方式
 	 * The connection pool.
 	 */
-	protected static JedisFactory jf;
-	/**
-	 * Static for Redis' minus infinity[无穷].
-	 */
-	public static String MINUS_INF = "-inf";
-	/**
-	 * Static for Redis'  plus infinity.
-	 */
-	public static String PLUS_INF = "+inf";
-	/**
-	 * Maximum number of allowed Jedis active connections in the pool.
-	 */
-	protected static int REDIS_POOL_MAX_ACTIVE = 200;
-	/**
-	 * Max number of allowed idle Jedis connections in the pool.
-	 */
-	protected static int REDIS_POOL_MAX_IDLE = REDIS_POOL_MAX_ACTIVE;
-	
-	/**
-	 * Number of times to try to get resources before giving up and reconnecting the entire pool.
-	 */
-	protected static int REDIS_FAILED_RESOURCES_BEFORE_RECONNECT = REDIS_POOL_MAX_ACTIVE / 2 + 1;
+	protected static ReadJedisFactory jf;
     /**
      * 解决spring静态注入问题
      */
@@ -65,7 +44,7 @@ public class JedisFactory
 	/**
 	 *  Prevent direct access to the constructor 
 	 */
-	private JedisFactory() 
+	private ReadJedisFactory() 
 	{
 		super();	
 	}
@@ -129,7 +108,7 @@ public class JedisFactory
     	}
     	catch (Exception e)
     	{
-    		m_logger.error("JedisFactory:withJedisDo invoke error", e);
+    		m_logger.error("ReadJedisFactory:withJedisDo invoke error", e);
     		e.printStackTrace();
     		return null;
     	}
@@ -138,7 +117,6 @@ public class JedisFactory
     public interface Work<Return,Param>
     {
     	public Return work(Param p) throws Exception;
-    	public void workAfter(Param p) throws Exception;
     }
     
     public interface JWork<Return> extends Work<Return, Jedis>

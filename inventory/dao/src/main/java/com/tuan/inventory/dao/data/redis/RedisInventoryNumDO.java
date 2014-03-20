@@ -13,9 +13,9 @@ public class RedisInventoryNumDO extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	private int num;  //TOTAL_NUM("商品总库存变化量"),
 	private int leftNum;//TOTA_LLEFTNUM("商品总库存剩余量"),
-	//声明一个保存商品选型库存变化的list
+	//声明一个保存商品选型库存变化的list,注意sLists不能变，否则就要变put里面的名称
 	private List<RedisSelectionNumDO> sLists;
-	//声明一个保存商品分店库存变化的list
+	//声明一个保存商品分店库存变化的list,注意suppLists不能变，否则就要变put里面的名称
 	private List<RedisSuppliersNumDO> suppLists;
 	public int getNum() {
 		return num;

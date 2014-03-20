@@ -17,8 +17,8 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.exception.RedisRunException;
-import com.tuan.inventory.domain.support.jedistools.JedisFactory;
-import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
+import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
+import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
@@ -36,14 +36,14 @@ public class InventoryProviderReadServiceImpl implements
 		InventoryProviderReadService {
 	private final static LocalLogger log = LocalLogger.getLog("InventoryProviderReadService.LOG");
 	@Resource
-	JedisFactory jedisFactory;
+	ReadJedisFactory readJedisFactory;
 	@Resource
 	NullCacheInitService nullCacheInitService;
 	@Override
 	public GoodsSelectionRelationDO getSelectionRelationBySrId(
 			final int SelectionRelationId) throws Exception {
 		
-		return jedisFactory.withJedisDo(new JWork<GoodsSelectionRelationDO>() {
+		return readJedisFactory.withJedisDo(new JWork<GoodsSelectionRelationDO>() {
 			@Override
 			public GoodsSelectionRelationDO work(Jedis j) throws Exception {
 				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getSelectionRelationBySrId(SelectionRelationId)");
@@ -83,19 +83,13 @@ public class InventoryProviderReadServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
-			@Override
-			public void workAfter(Jedis j) throws Exception {
-				// TODO Auto-generated method stub
-				
-			}
 		});
 
 	}
-
 	@Override
 	public GoodsSuppliersInventoryDO getSuppliersInventoryBySiId(
 			final int SuppliersInventoryId) throws Exception {
-		return jedisFactory.withJedisDo(new JWork<GoodsSuppliersInventoryDO>() {
+		return readJedisFactory.withJedisDo(new JWork<GoodsSuppliersInventoryDO>() {
 			@Override
 			public GoodsSuppliersInventoryDO work(Jedis j) throws Exception {
 				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getSuppliersInventoryBySiId(SuppliersInventoryId)");
@@ -136,11 +130,7 @@ public class InventoryProviderReadServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
-			@Override
-			public void workAfter(Jedis j) throws Exception {
-				// TODO Auto-generated method stub
-				
-			}
+			
 		});
 
 	}
@@ -149,7 +139,7 @@ public class InventoryProviderReadServiceImpl implements
 	public List<GoodsSelectionRelationModel> getSelectionRelationBySrIds(
 			final List<Long> selectionRelationIdList, final long goodsId)
 			throws Exception {
-		return jedisFactory
+		return readJedisFactory
 				.withJedisDo(new JWork<List<GoodsSelectionRelationModel>>() {
 					@Override
 					public List<GoodsSelectionRelationModel> work(Jedis j)
@@ -204,11 +194,7 @@ public class InventoryProviderReadServiceImpl implements
 								.addMetaData("result", result).toJson());
 						return result;
 					}
-					@Override
-					public void workAfter(Jedis j) throws Exception {
-						// TODO Auto-generated method stub
-						
-					}
+					
 				});
 
 	}
@@ -216,7 +202,7 @@ public class InventoryProviderReadServiceImpl implements
 	@Override
 	public RedisInventoryDO getNotSeleInventory(final long goodsId)
 			throws Exception {
-		return jedisFactory.withJedisDo(new JWork<RedisInventoryDO>() {
+		return readJedisFactory.withJedisDo(new JWork<RedisInventoryDO>() {
 			@Override
 			public RedisInventoryDO work(Jedis j) throws Exception {
 				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getNotSeleInventory(goodsId)");
@@ -253,12 +239,10 @@ public class InventoryProviderReadServiceImpl implements
 						.addMetaData("result", result).toJson());
 				return result;
 			}
-			@Override
-			public void workAfter(Jedis j) throws Exception {
-				// TODO Auto-generated method stub
-				
-			}
+			
 		});
+		
+		
 	}
 
 	/**

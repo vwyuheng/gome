@@ -18,5 +18,5 @@
 	
 	<!-- <bean id="extensionService" class="com.tuan.ordercenter.extrnal.impl.ExtensionServiceImpl">
     <property name="url4Sequence" value="${sequence.url}" /></bean> -->
-	
+	<!-- <bean id="redisServiceTemplate" class="com.tuan.inventory.domain.common.service.RedisServiceTemplateImpl" /> -->
 </beans>
