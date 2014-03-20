@@ -8,7 +8,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.tuan.inventory.domain.job.bean.NotifyMessage;
+import com.tuan.inventory.domain.support.bean.job.NotifyMessage;
 import com.tuan.notifyserver.core.pclient.ProducerClientQueue;
 
 public class NotifyServerHandler {

@@ -1,4 +1,4 @@
-package com.tuan.inventory.domain.job.bean;
+package com.tuan.inventory.domain.support.bean.job;
 
 import java.io.Serializable;
 
