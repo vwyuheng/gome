@@ -15,6 +15,8 @@
 	<bean id="inventoryDeductWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductWriteServiceImpl"/>
 	<bean id="nullCacheLoadService" class="com.tuan.inventory.domain.repository.impl.NullCacheLoadServiceImpl"/>
 	<bean id="nullCacheInitService" class="com.tuan.inventory.domain.support.redis.NullCacheInitService"/>
+	<bean id="logOfWaterHandleService" class="com.tuan.inventory.domain.repository.impl.LogOfWaterHandleServiceImpl"/>
+	<bean id="sequenceUtil" class="com.tuan.inventory.domain.support.util.SequenceUtil"/>
 	
 	<!-- <bean id="extensionService" class="com.tuan.ordercenter.extrnal.impl.ExtensionServiceImpl">
     <property name="url4Sequence" value="${sequence.url}" /></bean> -->

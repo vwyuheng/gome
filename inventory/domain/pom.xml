@@ -13,10 +13,14 @@
 	<name>inventory-domain</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
-	   <!--  <dependency>
-			<groupId>com.tuan.cozy</groupId>
-			<artifactId>cozy-common-activemq</artifactId>
-		</dependency> -->
+	<dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-all</artifactId>
+		</dependency>
+	  <dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+		</dependency>		
 	    <!-- notifyserver start -->
 	    <dependency>
 			<groupId>com.tuan.notifyserver.client</groupId>

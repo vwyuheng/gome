@@ -14,6 +14,9 @@
 	<bean id="goodTypeDomainRepository" class="com.tuan.inventory.domain.repository.GoodTypeDomainRepository"/>
 	<bean id="inventoryDeductWriteService" class="com.tuan.inventory.domain.repository.impl.InventoryDeductWriteServiceImpl"/>
 	<bean id="inventoryProviderReadService" class="com.tuan.inventory.domain.repository.impl.InventoryProviderReadServiceImpl"/>
+	<bean id="logOfWaterHandleService" class="com.tuan.inventory.domain.repository.impl.LogOfWaterHandleServiceImpl"/>
+	<bean id="sequenceUtil" class="com.tuan.inventory.domain.support.util.SequenceUtil"/>
+	
 	<!-- <bean id="redisServiceTemplateImpl" class="com.tuan.inventory.domain.common.service.RedisServiceTemplateImpl" />
 	<bean id="mysqlServiceTemplateImpl" class="com.tuan.inventory.domain.common.service.MysqlServiceTemplateImpl" /> -->
 </beans>

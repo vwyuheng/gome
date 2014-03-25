@@ -21,4 +21,17 @@ public class QueueConstant {
 	public final static String GOODS = "商品总库存"; 
 	//库存扣减返回参数：生成的队列主键id值的key名称定义
 	public final static String QUEUE_KEY_ID="queue:key.id";//异步触发记录日志流水的队列名称
+	
+	/** 队列操作 status */
+	public static final int QUEUE_STATUS_ACTIVE = 1;//消息可用
+	public static final int QUEUE_STATUS_LOCKED = 3;//消息被占用
+	public static final int QUEUE_STATUS_DELETED = 5;//消息删除（表示成功）
+	public static final int QUEUE_STATUS_CANCEL = 4;//消费作废（表示失败的）
+	
+	/** 队列结果状态 status */
+	public static final int QUEUE_STATUS_NOT_CONSUMER = 1;//未消费
+	public static final int QUEUE_STATUS_CONSUMER_SUCCESS = 2;//消费成功(包括消费次数已经用完，也标记成功，但是队列的阿状态不一样)
+	public static final int QUEUE_STATUS_CONSUMER_FAILED = 3;//消费失败
+
+	public static final int QUEUE_MAX_CONSUME_COUNT = 8;//最大消费次数
 }

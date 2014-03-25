@@ -5,6 +5,8 @@ import java.util.List;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 
 public interface InventoryProviderReadService {
@@ -33,8 +35,17 @@ public interface InventoryProviderReadService {
 	/**
 	 * 根据商品id获取商品库存信息
 	 * @param goodsId
-	 * @return
+	 * @return 
 	 * @throws Exception
 	 */
 	public RedisInventoryDO getNotSeleInventory (final long goodsId) throws Exception;
+	/**
+	 * 根据zset score 状态取队列数据
+	 * @param status
+	 * @return
+	 * @throws Exception
+	 */
+	public List<RedisInventoryQueueDO> getInventoryQueueByScoreStatus (final Double status) throws Exception;
+	
+	public List<RedisInventoryLogDO> getInventoryLogsQueue (final String key,final int timeout) throws Exception;
 }

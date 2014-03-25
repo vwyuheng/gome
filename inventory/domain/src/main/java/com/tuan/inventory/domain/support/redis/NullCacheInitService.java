@@ -421,5 +421,6 @@ public class NullCacheInitService {
 		jedis.zadd(QueueConstant.QUEUE_SEND_MESSAGE, Double
 				.valueOf(ResultStatusEnum.LOCKED.getCode()),
 				jsonMember);
+		
 	}
 }

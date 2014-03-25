@@ -6,8 +6,16 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import org.springframework.util.CollectionUtils;
+
+import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 /**
  * map与object对象转换工具类
  * @author henry.yu
@@ -99,5 +107,36 @@ public class ObjectUtil {
 		}
 		return obj;
 	}
-
+	/**
+	 * 用于返回队列列表信息
+	 * @param members
+	 * @return
+	 */
+	public static List<RedisInventoryQueueDO> convertSet(Set<String> members/*,String score*/) {
+		List<RedisInventoryQueueDO> result = null;
+		if (!CollectionUtils.isEmpty(members)) {
+			result = new ArrayList<RedisInventoryQueueDO>();
+			for(String member:members) {
+				RedisInventoryQueueDO memberDO = (RedisInventoryQueueDO) LogUtil.jsonToObject(member, RedisInventoryQueueDO.class);
+				//更新状态为真实状态
+				//memberDO.setStatus(score);
+				result.add(memberDO);
+			}
+		}
+		return result;
+	}
+	
+	public static List<RedisInventoryLogDO> convertList(List<String> elements) {
+		List<RedisInventoryLogDO> result = null;
+		if (!CollectionUtils.isEmpty(elements)) {
+			result = new ArrayList<RedisInventoryLogDO>();
+			for(String element:elements) {
+				RedisInventoryLogDO memberDO = (RedisInventoryLogDO) LogUtil.jsonToObject(element, RedisInventoryLogDO.class);
+				//更新状态为真实状态
+				//memberDO.setStatus(score);
+				result.add(memberDO);
+			}
+		}
+		return result;
+	}
 }

@@ -3,6 +3,7 @@ package com.tuan.inventory.domain.repository.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -14,6 +15,8 @@ import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.exception.RedisRunException;
@@ -24,6 +27,7 @@ import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
+import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 
 /**
@@ -262,5 +266,78 @@ public class InventoryProviderReadServiceImpl implements
 		gsrModel.setGoodTypeId(resultTmp.getGoodTypeId());
 
 		return gsrModel;
+	}
+	@Override
+	public List<RedisInventoryQueueDO> getInventoryQueueByScoreStatus(
+			final Double status) throws Exception {
+		
+		return readJedisFactory.withJedisDo(new JWork<List<RedisInventoryQueueDO>>() {
+			@Override
+			public List<RedisInventoryQueueDO> work(Jedis j) throws Exception {
+				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getNotSeleInventory(goodsId)");
+				long startTime = System.currentTimeMillis();
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_SEND_MESSAGE)
+						.addMetaData("status", String.valueOf(status))
+						.addMetaData("startTime", startTime).toJson());
+				List<RedisInventoryQueueDO> result = null;
+				if (j == null)
+					return result;
+				try {
+					Set<String> members = j.zrangeByScore(QueueConstant.QUEUE_SEND_MESSAGE, status, status);
+					result = ObjectUtil.convertSet(members);
+					
+				} catch (Exception e) {
+					log.error(lm.addMetaData("key", QueueConstant.QUEUE_SEND_MESSAGE)
+							.addMetaData("status", String.valueOf(status))
+							.addMetaData("endTime", System.currentTimeMillis())
+							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					throw new RedisRunException("InventoryProviderReadService:getInventoryQueueByScoreStatus run exception!",e);
+				}
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_SEND_MESSAGE)
+						.addMetaData("status", String.valueOf(status))
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", LogUtil.getRunTime(startTime))
+						.addMetaData("result", result).toJson());
+				return result;
+			}
+			
+		});
+		
+	}
+	@Override
+	public List<RedisInventoryLogDO> getInventoryLogsQueue(final String key,
+			final int timeout) throws Exception {
+		return readJedisFactory.withJedisDo(new JWork<List<RedisInventoryLogDO>>() {
+			@Override
+			public List<RedisInventoryLogDO> work(Jedis j) throws Exception {
+				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryLogsQueue(key,timeout)");
+				long startTime = System.currentTimeMillis();
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+						.addMetaData("timeout", String.valueOf(timeout))
+						.addMetaData("startTime", startTime).toJson());
+				List<RedisInventoryLogDO> result = null;
+				if (j == null)
+					return result;
+				try {
+					List<String> elements = j.brpop(timeout, QueueConstant.QUEUE_LOGS_MESSAGE);
+					result = ObjectUtil.convertList(elements);
+					
+				} catch (Exception e) {
+					log.error(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+							.addMetaData("timeout", String.valueOf(timeout))
+							.addMetaData("endTime", System.currentTimeMillis())
+							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					throw new RedisRunException("InventoryProviderReadService:getInventoryLogsQueue run exception!",e);
+				}
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+						.addMetaData("timeout", String.valueOf(timeout))
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", LogUtil.getRunTime(startTime))
+						.addMetaData("result", result).toJson());
+				return result;
+			}
+			
+		});
+		
 	}
 }

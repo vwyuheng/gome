@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
+	default-autowire="byName">
+	<!-- 配置map信息 -->
+    <bean id="handleMap" class="org.springframework.beans.factory.config.MapFactoryBean">
+		<property name="targetMapClass">
+			<value>java.util.HashMap</value>
+		</property>
+		<property name="sourceMap">
+	        <map key-type="com.tuan.inventory.domain.support.enu.EventType">
+	            <!-- 支付队列消息的处理 -->
+				<entry key="LOG" value-ref="logsEventHandle" />
+				
+			</map>
+		</property>
+	</bean>
+	
+    <bean id="logsEventHandle" class="com.tuan.inventory.domain.job.event.handle.LogsEventHandle"/>	
+    
+	<!-- 配置线程池 -->
+	<bean id="threadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">                  
+	    <property name="corePoolSize" value="25" />          
+	    <!-- 最大线程数，默认为Integer.MAX_VALUE -->          
+	    <property name="maxPoolSize" value="400" />          
+	    <!-- 队列最大长度 -->          
+	    <property name="queueCapacity" value="1000" />          
+	    <!-- 线程池维护线程所允许的空闲时间-->          
+	    <property name="keepAliveSeconds" value="200" />          
+	    <!-- 线程池对拒绝任务（无线程可用）的处理策略，目前只支持AbortPolicy、CallerRunsPolicy；默认为后者 -->          
+	    <property name="rejectedExecutionHandler">              
+	        <!-- CallerRunsPolicy:主线程直接执行该任务，执行完之后尝试添加下一个任务到线程池中，可以有效降低向线程池内添加任务的速度 -->              
+	        <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />          
+	    </property>          
+    </bean> 
+  
+	<bean id="eventManager" class="com.tuan.inventory.domain.job.event.manager.EventManagerImpl" init-method="init">
+	</bean>
+	
+	
+	<!-- 固定周期的调度任务 -->
+	<!-- <bean id="payScheduledExecutorFactoryBean"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
+		lazy-init="false">
+		<property name="continueScheduledExecutionAfterException"
+			value="true" />
+		<property name="poolSize" value="3" />
+		<property name="scheduledExecutorTasks">
+			<list>
+				<ref bean="queueConsumeTask" />
+			</list>
+		</property>
+	</bean>	 -->
+	<!-- 消息消费线程  -->
+	<!-- <bean id="queueConsumeTask"
+		class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
+		<property name="runnable" ref="queueConsumeTaskExecutor" />
+		延迟3秒启动该任务
+		<property name="delay" value="3000" />
+		每隔4秒执行一次该任务
+		<property name="period" value="4000" />
+	</bean> -->
+	<!-- <bean id="queueConsumeTaskExecutor" class="com.tuan.inventory.domain.job.task.LogQueueConsumeTask" >
+	    <property name="maxsize" value="20" />
+
+	</bean> -->
+
+</beans>

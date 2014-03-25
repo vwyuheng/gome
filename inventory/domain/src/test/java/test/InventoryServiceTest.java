@@ -7,11 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import redis.clients.jedis.Jedis;
 
+import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.domain.job.event.EventManager;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
+import com.tuan.inventory.domain.repository.LogOfWaterHandleService;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
-import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
+import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 
@@ -21,13 +24,15 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	InventoryDeductWriteService inventoryDeductReadWriteService;
 	@Autowired
 	InventoryProviderReadService inventoryProviderReadService;
+	@Resource
+	LogOfWaterHandleService logOfWaterHandleService;
 	
 	@Resource 
 	ReadJedisFactory readJedisFactory;
+	@Resource
+	SequenceUtil sequenceUtil;
 	//JedisSentinelPool jedisSentinelPool;
-	//@Resource
-	//RedisMap redisMap;
-	
+	EventManager eventManager;
 	@Test
 	public void test() {
 		try {
@@ -42,6 +47,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		Jedis jedis = null;
 		try {
 			jedis = WriteJedisFactory.getRes();
+			//jedis.brpop(timeout, keys);
 			jedis.set("test77", "100");
 			System.out.println(jedis.get("test77"));
 		} catch (Exception e) {
@@ -57,9 +63,9 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Test
 	public void testSelectionRelation() {
-		Jedis jedis = WriteJedisFactory.getRes();
+		//Jedis jedis = WriteJedisFactory.getRes();
 		//inventoryDeductReadWriteService.getSelectionRelationLeftNumberBySrId(1);
-		System.out.println(SequenceUtil.getSequence(SEQNAME.seq_log, jedis));
+		System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
 	}
 	@Test
@@ -76,8 +82,10 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Test
 	public void  RedisMapTest() {
+		eventManager.addEvent(null);
 		//System.out.println(test1("myhash11"));
 		try {
+			 Thread.sleep(6000);  
 			//inventoryProviderReadService.getSelection(1);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -107,5 +115,35 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	@Test
+	public void testLogInsert() {
+		
+		RedisInventoryLogDO logDO = new RedisInventoryLogDO();
+		logDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+		logDO.setGoodsId(2L);
+		logDO.setOrderId(4L);
+		logDO.setUserId(3L);
+		logDO.setClientIp("127.0.0.1");
+		logDO.setSystem("inventory system");
+		logDO.setContent("content:11");
+		logDO.setCreateTime(1000111);
+		logDO.setItem("dfasds");
+		logDO.setOperateType("ÉÌÆ·");
+		logDO.setRemark("±¸×¢");
+		logDO.setVariableQuantity("numL:10");
+		logDO.setType("¿â´æ¿Û¼õ");
+		try {
+			logOfWaterHandleService.createLogOfWater(logDO);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void main(String[] args){
+		
 	}
 }

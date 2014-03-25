@@ -28,5 +28,5 @@ mvn clean -DAPP_ENV=prod
 
 打包+装配+安装二进制：
 mvn install -DAPP_ENV=prod -Dmaven.test.skip=true
-
+mvn install -DAPP_ENV=test -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.dev_test
 

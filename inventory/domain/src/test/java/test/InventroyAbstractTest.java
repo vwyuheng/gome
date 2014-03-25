@@ -19,7 +19,7 @@ import com.tuan.core.common.datasource.msloadbalancer.MSDataSourceType;
 		"classpath:/bean/inventory-dao-bean-test.xml",
 		"classpath:/bean/inventory-dao-env-bean-test.xml",
 		"classpath:/bean/inventory-notifyserver-bean.xml",
-//		"classpath:/bean/order-activemq-bean.xml",
+		//"classpath:/bean/inventory-tasks-bean.xml",
 		//"classpath:/log4j.xml"
         })        
 public abstract class InventroyAbstractTest extends AbstractJUnit4SpringContextTests {

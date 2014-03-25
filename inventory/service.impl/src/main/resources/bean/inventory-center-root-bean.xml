@@ -18,4 +18,8 @@
 	<import resource="classpath:/bean/inventory-center-ext-bean.xml" />
 	<import resource="classpath:/bean/inventory-remoting-servlet.xml" />
 	
+	<import resource="classpath:/bean/inventory-notifyserver-bean.xml" />
+	<import resource="classpath:/bean/inventory-redis.xml" />
+	<import resource="classpath:/bean/inventory-redis.xml" />
+	<import resource="classpath:/bean/inventory-tasks-bean.xml" />
 </beans>

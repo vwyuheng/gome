@@ -19,6 +19,7 @@ public class RedisInventoryQueueDO extends TuanBaseDO {
 	private java.lang.Integer limitStorage; // 0:库存无限制；1：限制库存
 	//private Integer updateTime;  //更新时间[状态被更新]
 	private String variableQuantityJsonData;// 库存变化量 商品主体信息中的库存变化量、选型商品或分店则其分别对应的库存变化保存在json数据中
+	//该状态对日志无意义，仅是为了区分事件的类型而保留的，
 	//private String status;  //处理状态位 : 1:正常：有效可处理（active） 3：初始状态（locked），超过一定时间该标记未被更新为正常1的消息做超期处理，（会有个队列定时扫这个标记的消息） 5：标记可以被用作异常队列处(exception)
 	public Long getId() {
 		return id;

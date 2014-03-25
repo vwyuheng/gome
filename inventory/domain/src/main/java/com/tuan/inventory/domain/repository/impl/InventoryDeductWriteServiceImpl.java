@@ -62,7 +62,8 @@ public class InventoryDeductWriteServiceImpl  implements
 	WriteJedisFactory writeJedisFactory;
 	@Resource
 	NotifyServerSendMessage notifyServerSendMessage;
-	
+	@Resource 
+	SequenceUtil sequenceUtil;
 	private final static LocalLogger log = LocalLogger.getLog("InventoryDeductWriteService.LOG");
 	@Override
 	public Boolean createInventory(final long goodsId,final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,
@@ -174,7 +175,7 @@ public class InventoryDeductWriteServiceImpl  implements
 		public void workAfter(Jedis p) throws Exception {
 			// 构建库存操作日志对象
 			RedisInventoryLogDO logDO = asemblyLogDO(
-					SequenceUtil.getSequence(SEQNAME.seq_log, p),
+					sequenceUtil.getSequence(SEQNAME.seq_log),
 					goodsId, 0L, "", "",
 					 "",
 					ResultStatusEnum.INVENTORYINIT.getDescription(),
@@ -238,7 +239,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				json.put("value", value);
 				// 构建库存操作日志对象
 				RedisInventoryLogDO logDO = asemblyLogDO(
-						SequenceUtil.getSequence(SEQNAME.seq_log, p),
+						sequenceUtil.getSequence(SEQNAME.seq_log),
 						goodsId, 0L, "", "",
 						 "",
 						ResultStatusEnum.MANUALADAPT.getDescription(),
@@ -301,7 +302,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				json.put("value", value);
 				// 构建库存操作日志对象
 				RedisInventoryLogDO logDO = asemblyLogDO(
-						SequenceUtil.getSequence(SEQNAME.seq_log, p),
+						sequenceUtil.getSequence(SEQNAME.seq_log),
 						goodsId, 0L, "", "",
 						 "",
 						ResultStatusEnum.MANUALADAPT.getDescription(),
@@ -421,7 +422,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				json.put("goodsSelectionList", goodsSelectionList);
 				// 构建库存操作日志对象
 				RedisInventoryLogDO logDO = asemblyLogDO(
-						SequenceUtil.getSequence(SEQNAME.seq_log, p),
+						sequenceUtil.getSequence(SEQNAME.seq_log),
 						goodsId, 0L, beanResult.getSelectType(), beanResult.getSuppliersType(),
 						 "",
 						ResultStatusEnum.MANUALADAPT.getDescription(),
@@ -795,13 +796,13 @@ public class InventoryDeductWriteServiceImpl  implements
 				UpdateInventoryBeanResult beanResult = callResult.getBusinessResult();
 				// 构建库存更新的队列信息 每个队列成员(member)都自己的唯一的序列id值
 				RedisInventoryQueueDO queueDO = asemblyQueueDO(
-						SequenceUtil.getSequence(
-								SEQNAME.seq_queue_send, p), goodsId,
-						orderId, limitStorage,beanResult.getSelectType(), beanResult.getSuppliersType(),
+						sequenceUtil.getSequence(
+								SEQNAME.seq_queue_send), goodsId,
+						orderId, limitStorage,/*ResultStatusEnum.LOCKED.getCode(),*/beanResult.getSelectType(), beanResult.getSuppliersType(),
 									 beanResult.getJsonData());
 				// 构建库存操作日志对象
 				RedisInventoryLogDO logDO = asemblyLogDO(
-						SequenceUtil.getSequence(SEQNAME.seq_log, p),
+						sequenceUtil.getSequence(SEQNAME.seq_log),
 						goodsId, orderId, beanResult.getSelectType(), beanResult.getSuppliersType(),
 						 beanResult.getJsonData(),
 						ResultStatusEnum.DEDUCTION.getDescription(),
@@ -1034,7 +1035,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				json.put("num", num);
 				// 构建库存操作日志对象
 				RedisInventoryLogDO logDO = asemblyLogDO(
-						SequenceUtil.getSequence(SEQNAME.seq_log, p),
+						sequenceUtil.getSequence(SEQNAME.seq_log),
 						Long.valueOf(key), 0L, "", "",
 						 "",
 						ResultStatusEnum.MANUALADAPT.getDescription(),
@@ -1112,7 +1113,7 @@ public class InventoryDeductWriteServiceImpl  implements
 	 * @return
 	 */
 	private RedisInventoryQueueDO asemblyQueueDO(Long id, Long goodsId,
-			Long orderId, int limitStorage,String selectType, String suppliersType, String num) {
+			Long orderId, int limitStorage,/*String status,*/String selectType, String suppliersType, String num) {
 		// 构建一个连接池bean对象
 		RedisInventoryQueueDO queueDO = new RedisInventoryQueueDO();
 		queueDO.setId(id);
@@ -1120,7 +1121,7 @@ public class InventoryDeductWriteServiceImpl  implements
 		queueDO.setOrderId(orderId);
 		queueDO.setLimitStorage(limitStorage);
 		// 队列初始状态
-		// queueDO.setStatus(status);
+		//queueDO.setStatus(status);
 		if (StringUtils.isNotEmpty(selectType)) {
 			queueDO.setType(QueueConstant.SELECTION);
 			queueDO.setItem(selectType);
