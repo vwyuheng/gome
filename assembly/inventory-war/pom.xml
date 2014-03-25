@@ -248,10 +248,18 @@
 									<artifactId>ezmorph</artifactId>
 								</artifactItem>
 								<!-- 新增 -->
+								<!-- jedis start -->
 								<dependency>
 									<groupId>redis.clients</groupId>
 									<artifactId>jedis</artifactId>
 								</dependency>
+								<dependency>
+									<groupId>org.apache.commons</groupId>
+									<artifactId>commons-pool2</artifactId>
+									<version>2.0</version>
+									<type>jar</type>
+								</dependency>
+								<!-- jedis end -->
 								<dependency>
 									<groupId>jackson</groupId>
 									<artifactId>jackson-all</artifactId>
