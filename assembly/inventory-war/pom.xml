@@ -68,7 +68,7 @@
 									<groupId>commons-beanutils</groupId>
 									<artifactId>commons-beanutils</artifactId>
 								</artifactItem>
-								
+
 								<artifactItem>
 									<groupId>commons-dbcp</groupId>
 									<artifactId>commons-dbcp</artifactId>
@@ -247,6 +247,19 @@
 									<groupId>com.tuan.ezmorph</groupId>
 									<artifactId>ezmorph</artifactId>
 								</artifactItem>
+								<!-- 新增 -->
+								<dependency>
+									<groupId>redis.clients</groupId>
+									<artifactId>jedis</artifactId>
+								</dependency>
+								<dependency>
+									<groupId>jackson</groupId>
+									<artifactId>jackson-all</artifactId>
+								</dependency>
+								<dependency>
+									<groupId>commons-validator</groupId>
+									<artifactId>commons-validator</artifactId>
+								</dependency>
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/lib</outputDirectory>
 						</configuration>
@@ -259,7 +272,56 @@
 						</goals>
 						<configuration>
 							<artifactItems>
-
+								<!-- notifyserver jar -->
+								<artifactItem>
+									<groupId>com.tuan.notifyserver.client</groupId>
+									<artifactId>notifyserver-client</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.notifyserver.common</groupId>
+									<artifactId>notifyserver-common</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.notifyserver.core</groupId>
+									<artifactId>notifyserver-core</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.notifyserver.console</groupId>
+									<artifactId>notifyserver-console</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>io.netty</groupId>
+									<artifactId>netty</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.eclipse.jetty</groupId>
+									<artifactId>jetty-server</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.eclipse.jetty.orbit</groupId>
+									<artifactId>javax.servlet</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.eclipse.jetty</groupId>
+									<artifactId>jetty-continuation</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.eclipse.jetty</groupId>
+									<artifactId>jetty-http</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.eclipse.jetty</groupId>
+									<artifactId>jetty-io</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.eclipse.jetty</groupId>
+									<artifactId>jetty-util</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.alibaba</groupId>
+									<artifactId>fastjson</artifactId>
+								</artifactItem>
+								<!-- notifyserver jar end -->
 
 								<artifactItem>
 									<groupId>com.tuan.jeehe</groupId>
@@ -322,7 +384,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-resources-plugin</artifactId>
 				<configuration>
-				<encoding>UTF-8</encoding>
+					<encoding>UTF-8</encoding>
 				</configuration>
 				<executions>
 					<!-- 过滤处理日志文件 -->
@@ -333,7 +395,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-						<encoding>UTF-8</encoding>
+							<encoding>UTF-8</encoding>
 							<resources>
 								<resource>
 									<directory>${project.build.directory}/${assembly.name}.war/log/</directory>
@@ -354,7 +416,7 @@
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
-						<encoding>UTF-8</encoding>
+							<encoding>UTF-8</encoding>
 							<resources>
 								<resource>
 									<directory>${project.build.directory}/${assembly.name}.war/conf/</directory>
