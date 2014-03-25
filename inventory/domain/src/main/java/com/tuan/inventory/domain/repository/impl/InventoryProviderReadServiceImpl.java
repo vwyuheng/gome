@@ -25,6 +25,7 @@ import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
+import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.domain.support.util.QueueConstant;
@@ -339,5 +340,42 @@ public class InventoryProviderReadServiceImpl implements
 			
 		});
 		
+	}
+	
+	@Override
+	public List<RedisInventoryLogDO> getInventoryLogsQueue() throws Exception {
+		return readJedisFactory.withJedisDo(new JWork<List<RedisInventoryLogDO>>() {
+			@Override
+			public List<RedisInventoryLogDO> work(Jedis j) throws Exception {
+				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryLogsQueue(key,timeout)");
+				long startTime = System.currentTimeMillis();
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+						//.addMetaData("timeout", String.valueOf(timeout))
+						.addMetaData("startTime", startTime).toJson());
+				List<RedisInventoryLogDO> result = null;
+				if (j == null)
+					return result;
+				try {
+					String elements = j.rpop(QueueConstant.QUEUE_LOGS_MESSAGE);
+					//result = ObjectUtil.convertList(elements);
+					result =  new ArrayList<RedisInventoryLogDO>();
+					RedisInventoryLogDO tmpResult = JsonUtils.convertStringToObject(elements, RedisInventoryLogDO.class);
+					result.add(tmpResult);
+				} catch (Exception e) {
+					log.error(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+							//.addMetaData("timeout", String.valueOf(timeout))
+							.addMetaData("endTime", System.currentTimeMillis())
+							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					throw new RedisRunException("InventoryProviderReadService:getInventoryLogsQueue run exception!",e);
+				}
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+						//.addMetaData("timeout", String.valueOf(timeout))
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", LogUtil.getRunTime(startTime))
+						.addMetaData("result", result).toJson());
+				return result;
+			}
+			
+		});
 	}
 }

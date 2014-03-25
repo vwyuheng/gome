@@ -52,7 +52,7 @@ public class LogQueueConsumeTask implements Runnable {
 			//queueList = this.inventoryProviderReadService
 					//.getInventoryQueueByScoreStatus(Double
 					//		.valueOf(ResultStatusEnum.ACTIVE.getCode()));
-			queueLogList = this.inventoryProviderReadService.getInventoryLogsQueue("", 30);
+			queueLogList = this.inventoryProviderReadService.getInventoryLogsQueue();
 		} catch (Exception e) {
 			logger.error("LogQueueConsumeTask.run error", e);
 		}

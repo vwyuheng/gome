@@ -48,4 +48,6 @@ public interface InventoryProviderReadService {
 	public List<RedisInventoryQueueDO> getInventoryQueueByScoreStatus (final Double status) throws Exception;
 	
 	public List<RedisInventoryLogDO> getInventoryLogsQueue (final String key,final int timeout) throws Exception;
+	
+	public List<RedisInventoryLogDO> getInventoryLogsQueue() throws Exception;
 }
