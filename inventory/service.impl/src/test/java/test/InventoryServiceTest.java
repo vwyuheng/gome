@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
-import com.tuan.inventory.domain.job.event.EventManager;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.LogOfWaterHandleService;
@@ -31,8 +30,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	ReadJedisFactory readJedisFactory;
 	@Resource
 	SequenceUtil sequenceUtil;
-	//JedisSentinelPool jedisSentinelPool;
-	EventManager eventManager;
+	
 	@Test
 	public void test() {
 		try {

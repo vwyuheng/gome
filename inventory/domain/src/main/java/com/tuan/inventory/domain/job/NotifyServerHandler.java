@@ -8,7 +8,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.tuan.inventory.domain.support.bean.job.NotifyMessage;
 import com.tuan.notifyserver.core.pclient.ProducerClientQueue;
 
 public class NotifyServerHandler {
@@ -78,12 +77,5 @@ public class NotifyServerHandler {
 		this.threadNum = threadNum;
 		this.exec = Executors.newFixedThreadPool(threadNum);
 	}
-	/**
-	 * 将Object对象转换为json字符串
-	 * @param message
-	 * @return
-	 */
-	private String objToJsonString(NotifyMessage message) {
-		return JSONObject.fromObject(message).toString();
-	}
+	
 }
