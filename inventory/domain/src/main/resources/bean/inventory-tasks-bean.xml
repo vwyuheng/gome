@@ -40,11 +40,18 @@
 	        <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />          
 	    </property>          
     </bean> 
-  
-	<bean id="eventManager" class="com.tuan.inventory.domain.job.event.manager.EventManagerImpl" init-method="init">
+      <!-- init-method="init" -->
+	<!-- <bean id="eventManager" class="com.tuan.inventory.domain.job.event.manager.EventManagerImpl" >
+	</bean> -->
+	<bean id="LogsEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
+	<!-- 初始化延时 -->
+	<property name="initialDelay" value="0" /> 
+	<!-- 两次开始执行最小间隔时间 -->
+	<property name="delay" value="0" /> 
 	</bean>
-	
-	
+	<!-- 要调用的工作类 -->
+	<!-- <bean id="logQueueConsumeTask" class="com.tuan.inventory.domain.job.task.LogQueueConsumeTask" >
+	</bean> -->
 	<!-- 固定周期的调度任务 -->
 	<!-- <bean id="payScheduledExecutorFactoryBean"
 		class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"

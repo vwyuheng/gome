@@ -7,8 +7,6 @@ package com.tuan.inventory.domain.job.event;
  *
  */
 public interface EventManager {
-	
-	//public void init();
 	/**
 	 * 异步添加事件
 	 * @param event

@@ -25,6 +25,7 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.RedisSelectionNumDO;
 import com.tuan.inventory.dao.data.redis.RedisSuppliersNumDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
+import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.inventory.domain.support.bean.UpdateInventoryBeanResult;
 import com.tuan.inventory.domain.support.bean.job.NotifyMessage;
@@ -64,6 +65,9 @@ public class InventoryDeductWriteServiceImpl  implements
 	NotifyServerSendMessage notifyServerSendMessage;
 	@Resource 
 	SequenceUtil sequenceUtil;
+	@Resource
+	InventoryQueueService inventoryQueueService;
+	
 	private final static LocalLogger log = LocalLogger.getLog("InventoryDeductWriteService.LOG");
 	@Override
 	public Boolean createInventory(final long goodsId,final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,
@@ -182,7 +186,7 @@ public class InventoryDeductWriteServiceImpl  implements
 					userId, system, clientIp, "",
 					asemblyInitJsonData(riDO,rgsrList,rgsiList, pindaoId));
 			//压入日志队列
-			nullCacheInitService.pushLogQueues(p, logDO);
+			inventoryQueueService.pushLogQueues(logDO);
 			//发送库存新增消息[立即发送]，不在走队列发更新消息了
 			notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(asemblyNotifyMessage(userId, 0L, goodsId, limitStorage, riDO.getWaterfloodVal(), asemblyInitJsonData(riDO,rgsrList,rgsiList, pindaoId))));
 		}
@@ -246,7 +250,7 @@ public class InventoryDeductWriteServiceImpl  implements
 						userId, system, clientIp, "",
 						json.toString());
 				//压入日志队列
-				nullCacheInitService.pushLogQueues(p, logDO);
+				inventoryQueueService.pushLogQueues(logDO);
 			}
 			
 		});
@@ -309,7 +313,7 @@ public class InventoryDeductWriteServiceImpl  implements
 						userId, system, clientIp, "",
 						json.toString());
 				//压入日志队列
-				nullCacheInitService.pushLogQueues(p, logDO);
+				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
 				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(asemblyNotifyMessage(userId, 0L, goodsId, 0, 0, json.toString())));
 			}
@@ -429,7 +433,7 @@ public class InventoryDeductWriteServiceImpl  implements
 						userId, system, clientIp, "",
 						json.toString());
 				//压入日志队列
-				nullCacheInitService.pushLogQueues(p, logDO);
+				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
 				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(asemblyNotifyMessage(userId, 0L, goodsId, 0, 0, json.toString())));
 			}
@@ -812,9 +816,9 @@ public class InventoryDeductWriteServiceImpl  implements
 				mapResult.put(QueueConstant.QUEUE_KEY_ID,
 						String.valueOf(queueDO.getId()));
 				//将库存更新消息压入redis zset模拟队列
-				nullCacheInitService.pushQueueSendMsg(p, queueDO);
+				inventoryQueueService.pushQueueSendMsg(queueDO);
 				// 将库存日志队列信息压入到redis list
-				nullCacheInitService.pushLogQueues(p, logDO);
+				inventoryQueueService.pushLogQueues(logDO);
 			}
 			
 		});
@@ -1042,7 +1046,7 @@ public class InventoryDeductWriteServiceImpl  implements
 						userId, system, clientIp, "",
 						json.toString());
 				//压入日志队列
-				nullCacheInitService.pushLogQueues(p, logDO);
+				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
 				WaterfloodValAdjustment wf = new WaterfloodValAdjustment();
 				wf.setGoodsId(Long.valueOf(key));

@@ -10,11 +10,11 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import com.tuan.inventory.domain.job.LogsServerHandler;
 import com.tuan.inventory.domain.job.event.Event;
 import com.tuan.inventory.domain.job.event.EventHandle;
 import com.tuan.inventory.domain.job.event.EventHandleFactory;
 import com.tuan.inventory.domain.job.event.EventManager;
+import com.tuan.inventory.domain.job.event.EventScheduled;
 import com.tuan.inventory.domain.job.event.EventWorker;
 import com.tuan.inventory.domain.job.event.result.EventResult;
 import com.tuan.inventory.domain.support.enu.EventType;
@@ -30,8 +30,7 @@ public class EventManagerImpl implements EventManager{
 	private final static Log logger = LogFactory.getLog(EventManagerImpl.class);
 	
 	/**  开启队列调度线程 */
-	//private EventScheduled eventScheduled;
-	private LogsServerHandler eventScheduled;
+	private EventScheduled eventScheduled;
 	/**  线程池管理 */
 	@Autowired
 	private ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -41,11 +40,9 @@ public class EventManagerImpl implements EventManager{
 	 */
 	public void init(){
 		//构造调度任务
-		//eventScheduled = new EventScheduled();
-		eventScheduled = new LogsServerHandler();
+		eventScheduled = new EventScheduled();
 		//启动调度线程
-		//eventScheduled.start();
-		eventScheduled.execFixedRate4Logs();
+		eventScheduled.start();
 	}
 
 	/**
@@ -60,7 +57,7 @@ public class EventManagerImpl implements EventManager{
 			}
 			return;
 		}
-		//eventScheduled.addEvent(event);
+		eventScheduled.addEvent(event);
 	}
 	
 	@Override

@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
@@ -17,18 +15,14 @@ import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
-import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryNumDO;
-import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.RedisSelectionNumDO;
 import com.tuan.inventory.dao.data.redis.RedisSuppliersNumDO;
 import com.tuan.inventory.domain.repository.NullCacheLoadService;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
-import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
-import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 /**
  * 缓存初始化工具类
@@ -389,38 +383,5 @@ public class NullCacheInitService {
 
 		return result;
 	}
-	/**
-	 * 将库存日志队列信息压入到redis list
-	 * @param jedis
-	 * @param logDO
-	 */
-	public void pushLogQueues(Jedis jedis,RedisInventoryLogDO logDO) {
-		// 将库存日志队列信息压入到redis list
-		jedis.lpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSONObject
-				.fromObject(logDO).toString());
-	}
-	/**
-	 * 将库存更新队列信息压入到redis zset集合 便于统计
-	 * @param jedis
-	 * @param queueDO
-	 */
-	public void pushQueueSendMsg(Jedis jedis,RedisInventoryQueueDO queueDO) {
-		// 将库存更新队列信息压入到redis zset集合 便于统计
-		// job程序中会每次将score为1的元素取出，做库存消息更新的处理，处理完根据key score member(因id都是唯一的，因此每个member都是不一样的)立即清空源集合中的相关元素，并重复操作
-		// 如下 可以指定score值取值 ZADD salary 2500 jack
-		// ZRANGEBYSCORE salary 2500 2500 WITHSCORES
-		// ，2取到相应member后，按照member及其删除 [ZREM key member]
-		// 删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
-		String jsonMember = JSONObject.fromObject(queueDO)
-				.toString();
-		// 缓存队列的key、member信息 1小时失效
-		jedis.setex(QueueConstant.QUEUE_KEY_MEMBER + ":"
-				+ String.valueOf(queueDO.getId()), 3600,
-				jsonMember);
-		// zset key score value 其中score作为status用
-		jedis.zadd(QueueConstant.QUEUE_SEND_MESSAGE, Double
-				.valueOf(ResultStatusEnum.LOCKED.getCode()),
-				jsonMember);
-		
-	}
+	
 }

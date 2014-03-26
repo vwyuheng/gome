@@ -8,13 +8,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import redis.clients.jedis.Jedis;
 
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
-import com.tuan.inventory.domain.job.event.EventManager;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
+import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.LogOfWaterHandleService;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
 import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
+import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 
@@ -32,7 +33,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Resource
 	SequenceUtil sequenceUtil;
 	//JedisSentinelPool jedisSentinelPool;
-	EventManager eventManager;
+	//EventManager eventManager;
+	@Resource
+	NullCacheInitService nullCacheInitService;
+	@Resource
+	InventoryQueueService inventoryQueueService;
+	
 	@Test
 	public void test() {
 		try {
@@ -82,7 +88,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Test
 	public void  RedisMapTest() {
-		eventManager.addEvent(null);
+		//eventManager.addEvent(null);
 		//System.out.println(test1("myhash11"));
 		try {
 			 Thread.sleep(6000);  
@@ -133,17 +139,21 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		logDO.setOperateType("ÉÌÆ·");
 		logDO.setRemark("±¸×¢");
 		logDO.setVariableQuantity("numL:10");
-		logDO.setType("¿â´æ¿Û¼õ");
+		
+		
+		
 		try {
-			logOfWaterHandleService.createLogOfWater(logDO);
+			for(int i=0;i<100;i++) {
+				logDO.setType("¿â´æ¿Û¼õ"+i);
+				inventoryQueueService.pushLogQueues(logDO);
+			}
+			
+			//logOfWaterHandleService.createLogOfWater(logDO);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	
-	public static void main(String[] args){
-		
-	}
+
 }

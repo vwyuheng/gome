@@ -23,17 +23,15 @@ import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 /**
- * 定时消费正常队列线程
+ * 定时消费日志队列线程
+ * 事实上就是一个用于产生日志事件的线程
  */
 public class LogQueueConsumeTask implements Runnable {
 
 	private static final Log logger = LogFactory.getLog(LogQueueConsumeTask.class);
-	
+	private volatile long lastStartTime = System.currentTimeMillis();
 	@Resource
 	private InventoryProviderReadService inventoryProviderReadService;
-	
-	private volatile long lastStartTime = System.currentTimeMillis();
-	
 	/**
 	 * 事件处理manager
 	 */
@@ -43,7 +41,7 @@ public class LogQueueConsumeTask implements Runnable {
 	public void run() {
 		JSONObject  logJSON = new JSONObject();
 		long startTime = System.currentTimeMillis();
-		logJSON.put("QueueConsumeTask.run startTime",DataUtil.formatDate(new Date(startTime)));
+		logJSON.put("LogQueueConsumeTask.run startTime",DataUtil.formatDate(new Date(startTime)));
 		//刷新上一次活跃时间
 		lastStartTime = startTime;
 		List<RedisInventoryLogDO> queueLogList = null;
@@ -56,10 +54,9 @@ public class LogQueueConsumeTask implements Runnable {
 		} catch (Exception e) {
 			logger.error("LogQueueConsumeTask.run error", e);
 		}
-			
-		//logJSON.put("count",count);
 		//消费数据
 		if (!CollectionUtils.isEmpty(queueLogList)) {
+			logJSON.put("count",queueLogList.size());
 			Event event = null;
 			AtomicInteger  realCount = new AtomicInteger();
 			for (RedisInventoryLogDO model : queueLogList) {
@@ -105,34 +102,6 @@ public class LogQueueConsumeTask implements Runnable {
 			return null;
 		}
 	}
-	
-	
-	/**
-	 * 验证队列modle 的合法性
-	 * 
-	 * @param model
-	 * @return boolean
-	 */
-	/*public boolean validateQueue(final QueueModel model){
-		int consumeCount = model.getConsumeCount();
-		if (consumeCount >= QueueConstant.QUEUE_MAX_CONSUME_COUNT) {
-			return false;
-		}
-		int consumeStatus = model.getConsumeStatus();
-		if(consumeStatus == QueueConstant.QUEUE_STATUS_CONSUMER_SUCCESS){
-			return false;
-		}
-	    QueueStatusEnum queueStatusEnum  = model.getQueueStatusEnum();
-	    if(queueStatusEnum == null || queueStatusEnum != QueueStatusEnum.LOCKED){
-	    	return false;
-	    }
-	    String jsonData = model.getJsonData();
-	    if(StringUtils.isEmpty(jsonData)){
-	    	return false;
-	    }
-	    return true;
-	}*/
-
 	
 	public void setEventManager(EventManager eventManager) {
 		this.eventManager = eventManager;
