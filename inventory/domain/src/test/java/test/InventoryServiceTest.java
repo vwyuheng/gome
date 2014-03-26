@@ -16,6 +16,7 @@ import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
 import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
+import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 
@@ -53,9 +54,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		Jedis jedis = null;
 		try {
 			jedis = WriteJedisFactory.getRes();
+			//测试用
+			//jedis.del(QueueConstant.QUEUE_LOGS_MESSAGE);
+			//System.out.println(jedis.);
 			//jedis.brpop(timeout, keys);
-			jedis.set("test77", "100");
-			System.out.println(jedis.get("test77"));
+			//jedis.set("test77", "100");
+			//System.out.println(jedis.get("test77"));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}finally {
@@ -126,24 +130,21 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void testLogInsert() {
 		
-		RedisInventoryLogDO logDO = new RedisInventoryLogDO();
-		logDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
-		logDO.setGoodsId(2L);
-		logDO.setOrderId(4L);
-		logDO.setUserId(3L);
-		logDO.setClientIp("127.0.0.1");
-		logDO.setSystem("inventory system");
-		logDO.setContent("content:11");
-		logDO.setCreateTime(1000111);
-		logDO.setItem("dfasds");
-		logDO.setOperateType("商品");
-		logDO.setRemark("备注");
-		logDO.setVariableQuantity("numL:10");
-		
-		
-		
 		try {
-			for(int i=0;i<100;i++) {
+			for(int i=0;i<1000;i++) {
+				RedisInventoryLogDO logDO = new RedisInventoryLogDO();
+				logDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+				logDO.setGoodsId(2L);
+				logDO.setOrderId(4L);
+				logDO.setUserId(3L);
+				logDO.setClientIp("127.0.0.1");
+				logDO.setSystem("inventory system");
+				logDO.setContent("content:11");
+				logDO.setCreateTime(1000111);
+				logDO.setItem("dfasds");
+				logDO.setOperateType("商品");
+				logDO.setRemark("备注");
+				logDO.setVariableQuantity("numL:10");
 				logDO.setType("库存扣减"+i);
 				inventoryQueueService.pushLogQueues(logDO);
 			}

@@ -44,6 +44,7 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 								.addMetaData("element",logDO)
 								.addMetaData("startTime", startTime).toJson());
 						try {
+							
 							// 将库存日志队列信息压入到redis list
 							p.lpush(QueueConstant.QUEUE_LOGS_MESSAGE,
 									JSONObject.fromObject(logDO).toString());

@@ -9,74 +9,15 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 	default-autowire="byName">
-	<!-- 配置map信息 -->
-    <bean id="handleMap" class="org.springframework.beans.factory.config.MapFactoryBean">
-		<property name="targetMapClass">
-			<value>java.util.HashMap</value>
-		</property>
-		<property name="sourceMap">
-	        <map key-type="com.tuan.inventory.domain.support.enu.EventType">
-	            <!-- 支付队列消息的处理 -->
-				<entry key="LOG" value-ref="logsEventHandle" />
-				
-			</map>
-		</property>
-	</bean>
-	
+	<!-- 日志消费处理类 -->
     <bean id="logsEventHandle" class="com.tuan.inventory.domain.job.event.handle.LogsEventHandle"/>	
-    
-	<!-- 配置线程池 -->
-	<bean id="threadPoolTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">                  
-	    <property name="corePoolSize" value="25" />          
-	    <!-- 最大线程数，默认为Integer.MAX_VALUE -->          
-	    <property name="maxPoolSize" value="400" />          
-	    <!-- 队列最大长度 -->          
-	    <property name="queueCapacity" value="1000" />          
-	    <!-- 线程池维护线程所允许的空闲时间-->          
-	    <property name="keepAliveSeconds" value="200" />          
-	    <!-- 线程池对拒绝任务（无线程可用）的处理策略，目前只支持AbortPolicy、CallerRunsPolicy；默认为后者 -->          
-	    <property name="rejectedExecutionHandler">              
-	        <!-- CallerRunsPolicy:主线程直接执行该任务，执行完之后尝试添加下一个任务到线程池中，可以有效降低向线程池内添加任务的速度 -->              
-	        <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />          
-	    </property>          
-    </bean> 
-      <!-- init-method="init" -->
-	<!-- <bean id="eventManager" class="com.tuan.inventory.domain.job.event.manager.EventManagerImpl" >
-	</bean> -->
+   <!-- 日志固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
 	<bean id="LogsEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
 	<!-- 初始化延时 -->
 	<property name="initialDelay" value="0" /> 
 	<!-- 两次开始执行最小间隔时间 -->
 	<property name="delay" value="0" /> 
 	</bean>
-	<!-- 要调用的工作类 -->
-	<!-- <bean id="logQueueConsumeTask" class="com.tuan.inventory.domain.job.task.LogQueueConsumeTask" >
-	</bean> -->
-	<!-- 固定周期的调度任务 -->
-	<!-- <bean id="payScheduledExecutorFactoryBean"
-		class="org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean"
-		lazy-init="false">
-		<property name="continueScheduledExecutionAfterException"
-			value="true" />
-		<property name="poolSize" value="3" />
-		<property name="scheduledExecutorTasks">
-			<list>
-				<ref bean="queueConsumeTask" />
-			</list>
-		</property>
-	</bean>	 -->
-	<!-- 消息消费线程  -->
-	<!-- <bean id="queueConsumeTask"
-		class="org.springframework.scheduling.concurrent.ScheduledExecutorTask">
-		<property name="runnable" ref="queueConsumeTaskExecutor" />
-		延迟3秒启动该任务
-		<property name="delay" value="3000" />
-		每隔4秒执行一次该任务
-		<property name="period" value="4000" />
-	</bean> -->
-	<!-- <bean id="queueConsumeTaskExecutor" class="com.tuan.inventory.domain.job.task.LogQueueConsumeTask" >
-	    <property name="maxsize" value="20" />
-
-	</bean> -->
+	
 
 </beans>

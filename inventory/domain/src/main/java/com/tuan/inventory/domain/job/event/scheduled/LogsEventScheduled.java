@@ -17,12 +17,11 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.domain.job.event.Event;
-import com.tuan.inventory.domain.job.event.EventManager;
+import com.tuan.inventory.domain.job.event.EventHandle;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.support.enu.EventType;
 import com.tuan.inventory.domain.support.util.DataUtil;
@@ -59,12 +58,8 @@ public class LogsEventScheduled {
 
 	@Resource
 	private InventoryProviderReadService inventoryProviderReadService;
-	/**
-	 * 事件处理manager
-	 */
-	@Autowired
-	private EventManager eventManager;
-
+	@Resource
+	private EventHandle logsEventHandle;
 	/**
 	 * 构造带不带缓存的客户端
 	 */
@@ -157,10 +152,10 @@ public class LogsEventScheduled {
 			lastStartTime = startTime;
 			List<RedisInventoryLogDO> queueLogList = null;
 			try {
-				System.out.println("LogQueueConsumeTask:run1");
+				
 				queueLogList = inventoryProviderReadService
 						.getInventoryLogsQueue();
-				System.out.println("LogQueueConsumeTask:run2");
+				System.out.println("LogQueueConsumeTask:run2="+queueLogList);
 			} catch (Exception e) {
 				logger.error("LogQueueConsumeTask.run error", e);
 			}
@@ -168,9 +163,10 @@ public class LogsEventScheduled {
 			if (!CollectionUtils.isEmpty(queueLogList)) {
 				logJSON.put("count", queueLogList.size());
 				Event event = null;
+				//Future<EventResult>  future = null;
 				AtomicInteger realCount = new AtomicInteger();
 				for (RedisInventoryLogDO model : queueLogList) {
-					// if (validateQueue(model)) {
+					System.out.println("model="+model.getId());
 					event = new Event();
 					event.setData(model);
 					// 发送的不再重新进行发送
@@ -178,19 +174,25 @@ public class LogsEventScheduled {
 					event.setEventType(getEventType(ResultStatusEnum.LOG
 							.getCode()));
 					event.setUUID(String.valueOf(model.getId()));
-					eventManager.addEventSyn(event);
+					try {
+						 //从队列中取事件
+						logsEventHandle.handleEvent(event);
+					} catch (Exception e) {
+						
+						e.printStackTrace();
+					}
 					realCount.incrementAndGet();
-
-					System.out.println(realCount.get());
-					// }
+					
 				}
 				logJSON.put("realcount", realCount.get());
+			
 			}
 			long endTime = System.currentTimeMillis();
 			logJSON.put("costTime", endTime - startTime);
 			if (logger.isDebugEnabled()) {
 				logger.debug(logJSON.toString());
 			}
+			
 		}
 
 		/**
