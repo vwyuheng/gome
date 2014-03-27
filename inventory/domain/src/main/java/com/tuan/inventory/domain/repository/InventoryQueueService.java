@@ -13,4 +13,6 @@ public interface InventoryQueueService {
 	public void pushLogQueues(final RedisInventoryLogDO logDO) throws Exception;
 	
 	public void pushQueueSendMsg(final RedisInventoryQueueDO queueDO) throws Exception;
+	
+	public void lremLogQueue(final RedisInventoryLogDO logDO) throws Exception;
 }

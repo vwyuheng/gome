@@ -15,8 +15,8 @@ public interface EventHandle {
 	 * @param event
 	 * @return boolean
 	 */
-	public EventResult handleEvent(final Event event) throws Exception;
-	
+	public boolean handleEvent(final Event event) throws Exception;
+	//public boolean handleEvent(final Event event) throws Exception;
 	
 	public static String HANDLE_LOG = "BUSINESS.TASK";
 

@@ -41,11 +41,11 @@ import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
-import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
+import com.tuan.inventory.model.enu.QueueConstant;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.result.CallResult;
 

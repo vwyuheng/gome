@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import redis.clients.jedis.Jedis;
@@ -28,8 +29,8 @@ import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
-import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
+import com.tuan.inventory.model.enu.QueueConstant;
 
 /**
  * 用于库存相关的读取服务接口
@@ -347,7 +348,7 @@ public class InventoryProviderReadServiceImpl implements
 		return readJedisFactory.withJedisDo(new JWork<List<RedisInventoryLogDO>>() {
 			@Override
 			public List<RedisInventoryLogDO> work(Jedis j) throws Exception {
-				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryLogsQueue(key,timeout)");
+				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryLogsQueue");
 				long startTime = System.currentTimeMillis();
 				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
 						//.addMetaData("timeout", String.valueOf(timeout))
@@ -357,10 +358,52 @@ public class InventoryProviderReadServiceImpl implements
 					return result;
 				try {
 					String elements = j.rpop(QueueConstant.QUEUE_LOGS_MESSAGE);
-					//result = ObjectUtil.convertList(elements);
-					result =  new ArrayList<RedisInventoryLogDO>();
-					RedisInventoryLogDO tmpResult = JsonUtils.convertStringToObject(elements, RedisInventoryLogDO.class);
-					result.add(tmpResult);
+					if(StringUtils.isNotEmpty(elements)){
+						result =  new ArrayList<RedisInventoryLogDO>();
+						RedisInventoryLogDO tmpResult = JsonUtils.convertStringToObject(elements, RedisInventoryLogDO.class);
+						result.add(tmpResult);
+					}
+					
+				} catch (Exception e) {
+					log.error(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+							//.addMetaData("timeout", String.valueOf(timeout))
+							.addMetaData("endTime", System.currentTimeMillis())
+							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					throw new RedisRunException("InventoryProviderReadService:getInventoryLogsQueue run exception!",e);
+				}
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+						//.addMetaData("timeout", String.valueOf(timeout))
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", LogUtil.getRunTime(startTime))
+						.addMetaData("result", result).toJson());
+				return result;
+			}
+			
+		});
+	}
+	@Override
+	public List<RedisInventoryLogDO> getInventoryLogsQueueByIndex()
+			throws Exception {
+		return readJedisFactory.withJedisDo(new JWork<List<RedisInventoryLogDO>>() {
+			@Override
+			public List<RedisInventoryLogDO> work(Jedis j) throws Exception {
+				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryLogsQueue");
+				long startTime = System.currentTimeMillis();
+				log.info(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
+						//.addMetaData("timeout", String.valueOf(timeout))
+						.addMetaData("startTime", startTime).toJson());
+				List<RedisInventoryLogDO> result = null;
+				if (j == null)
+					return result;
+				try {
+					//总是取最后一个元素
+					String elements = j.lindex(QueueConstant.QUEUE_LOGS_MESSAGE, (-1));
+					if(StringUtils.isNotEmpty(elements)){
+						result =  new ArrayList<RedisInventoryLogDO>();
+						RedisInventoryLogDO tmpResult = JsonUtils.convertStringToObject(elements, RedisInventoryLogDO.class);
+						result.add(tmpResult);
+					}
+					
 				} catch (Exception e) {
 					log.error(lm.addMetaData("key", QueueConstant.QUEUE_LOGS_MESSAGE)
 							//.addMetaData("timeout", String.valueOf(timeout))

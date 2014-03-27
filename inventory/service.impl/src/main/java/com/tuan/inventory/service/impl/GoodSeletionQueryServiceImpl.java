@@ -7,6 +7,7 @@ import com.tuan.inventory.domain.repository.GoodTypeDomainRepository;
 import com.tuan.inventory.domain.repository.GoodTypeService;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.res.InventoryQueryEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.result.InventoryQueryResult;
@@ -102,9 +103,10 @@ public class GoodSeletionQueryServiceImpl extends AbstractService implements Goo
 				}
 				
 				);
+		final int resultCode = result.getResultCode();
 		writeBusLog(lm.addMetaData("result", result.isSuccess()).addMetaData("resultCode", result.getResultCode()).toJson(false));
 		writeSysLog(lm.toJson());
-		return new CallResult<InventoryQueryResult>(result.isSuccess(),
+		return new CallResult<InventoryQueryResult>(result.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
 				(InventoryQueryResult) result.getBusinessObject(),
 				result.getThrowable());
 	}

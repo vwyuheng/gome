@@ -23,6 +23,7 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.domain.job.event.Event;
 import com.tuan.inventory.domain.job.event.EventHandle;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
+import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.support.enu.EventType;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
@@ -60,6 +61,9 @@ public class LogsEventScheduled {
 	private InventoryProviderReadService inventoryProviderReadService;
 	@Resource
 	private EventHandle logsEventHandle;
+	@Resource
+	InventoryQueueService inventoryQueueService;
+	
 	/**
 	 * 构造带不带缓存的客户端
 	 */
@@ -152,9 +156,9 @@ public class LogsEventScheduled {
 			lastStartTime = startTime;
 			List<RedisInventoryLogDO> queueLogList = null;
 			try {
-				
+				//取日志队列信息
 				queueLogList = inventoryProviderReadService
-						.getInventoryLogsQueue();
+						.getInventoryLogsQueueByIndex();
 				System.out.println("LogQueueConsumeTask:run2="+queueLogList);
 			} catch (Exception e) {
 				logger.error("LogQueueConsumeTask.run error", e);
@@ -176,7 +180,12 @@ public class LogsEventScheduled {
 					event.setUUID(String.valueOf(model.getId()));
 					try {
 						 //从队列中取事件
-						logsEventHandle.handleEvent(event);
+						boolean eventResult = logsEventHandle.handleEvent(event);
+						System.out.println("eventresult="+eventResult);
+						if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
+							//移除最后一个元素
+							inventoryQueueService.lremLogQueue(model);
+						}
 					} catch (Exception e) {
 						
 						e.printStackTrace();

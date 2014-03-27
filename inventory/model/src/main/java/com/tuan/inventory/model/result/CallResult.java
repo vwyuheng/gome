@@ -1,30 +1,30 @@
 package com.tuan.inventory.model.result;
 
 import com.tuan.core.common.lang.TuanBaseDO;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 
 /**
- * Service层返回结果封装类，将结果业务对象泛化
- * @author wowo
- *
- * @param <T> 泛化的业务返回对象
+ * 结果数据 
+ * 		是否成功 --不代表业务结果
+ *      系统错误枚举
+ *      业务结果对象    包含具体的业务枚举
+ *      业务附件对象（一般是异常对象或者其他信息）
+ * @param <T extends Serializable > 
  */
-public class CallResult<T> extends TuanBaseDO  {
-
-	private static final long serialVersionUID = 1797164626045714280L;
-
-	/** 事务状态，是否提交完整事务 */
-	private boolean callResult = true;
-
-    /** 业务返回对象 */
-    private T businessResult;
-
-    /** 附加的业务对象 */
-    private Object businessObject;
-
-	public CallResult(boolean callResult, T businessResult,
-			Object businessObject) {
+public class CallResult<T> extends TuanBaseDO {
+	
+	private static final long serialVersionUID = 1L;
+	private boolean isSuccess;    
+	private PublicCodeEnum publicCodeEnum;
+	private T businessResult;
+	private Object businessObject;
+	
+	
+	public CallResult(boolean isSuccess, PublicCodeEnum publicCodeEnum,
+			T businessResult,Object businessObject) {
 		super();
-		this.callResult = callResult;
+		this.isSuccess = isSuccess;
+		this.publicCodeEnum = publicCodeEnum;
 		this.businessResult = businessResult;
 		this.businessObject = businessObject;
 	}
@@ -32,13 +32,21 @@ public class CallResult<T> extends TuanBaseDO  {
 	public CallResult() {
 		super();
 	}
-
-	public boolean getCallResult() {
-		return callResult;
+	
+	public boolean isSuccess() {
+		return isSuccess;
 	}
 
-	public void setCallResult(boolean callResult) {
-		this.callResult = callResult;
+	public void setSuccess(boolean isSuccess) {
+		this.isSuccess = isSuccess;
+	}
+
+	public PublicCodeEnum getPublicCodeEnum() {
+		return publicCodeEnum;
+	}
+
+	public void setPublicCodeEnum(PublicCodeEnum publicCodeEnum) {
+		this.publicCodeEnum = publicCodeEnum;
 	}
 
 	public T getBusinessResult() {
@@ -56,4 +64,6 @@ public class CallResult<T> extends TuanBaseDO  {
 	public void setBusinessObject(Object businessObject) {
 		this.businessObject = businessObject;
 	}
+	
+	
 }

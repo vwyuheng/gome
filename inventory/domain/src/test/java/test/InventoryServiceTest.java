@@ -16,9 +16,9 @@ import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
 import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
-import com.tuan.inventory.domain.support.util.QueueConstant;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.model.enu.QueueConstant;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
@@ -134,6 +134,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			for(int i=0;i<1000;i++) {
 				RedisInventoryLogDO logDO = new RedisInventoryLogDO();
 				logDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+				//logDO.setId(1056l);
 				logDO.setGoodsId(2L);
 				logDO.setOrderId(4L);
 				logDO.setUserId(3L);
@@ -149,6 +150,22 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 				inventoryQueueService.pushLogQueues(logDO);
 			}
 			
+			/*RedisInventoryLogDO logDO = new RedisInventoryLogDO();
+			//logDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+			logDO.setId(2091l);
+			logDO.setGoodsId(2L);
+			logDO.setOrderId(4L);
+			logDO.setUserId(3L);
+			logDO.setClientIp("127.0.0.1");
+			logDO.setSystem("inventory system");
+			logDO.setContent("content:11");
+			logDO.setCreateTime(1000111);
+			logDO.setItem("dfasds");
+			logDO.setOperateType("ÉÌÆ·");
+			logDO.setRemark("±¸×¢");
+			logDO.setVariableQuantity("numL:10");
+			logDO.setType("¿â´æ¿Û¼õ");
+			inventoryQueueService.pushLogQueues(logDO);*/
 			//logOfWaterHandleService.createLogOfWater(logDO);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

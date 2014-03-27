@@ -14,7 +14,7 @@ import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory.JWork;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.LogUtil;
-import com.tuan.inventory.domain.support.util.QueueConstant;
+import com.tuan.inventory.model.enu.QueueConstant;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 public class InventoryQueueServiceImpl implements InventoryQueueService {
@@ -119,5 +119,42 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 		});
 
 	}
+	@Override
+	public void lremLogQueue(final RedisInventoryLogDO logDO) throws Exception {
+		writeJedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public boolean work(Jedis j) throws Exception {
+				boolean result = false;
+				if (j == null){
+					return result;
+				}
+				return true;
+			}
+
+			@Override
+			public void workAfter(Jedis p) throws Exception {
+				LogModel lm = LogModel.newLogModel("InventoryQueueServiceImpl.lremLogQueue");
+				long startTime = System.currentTimeMillis();
+				log.info(lm.addMetaData("key",QueueConstant.QUEUE_LOGS_MESSAGE)
+						.addMetaData("element",logDO)
+						.addMetaData("startTime", startTime).toJson());
+				try {
+					// 将库存日志队列信息移除:总是移除最后一条从list最末端往前找 value 相同的对象
+					p.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (-1), JSONObject.fromObject(logDO).toString());
+				} catch (Exception e) {
+					log.error(lm.addMetaData("key",QueueConstant.QUEUE_LOGS_MESSAGE)
+							.addMetaData("element",logDO)
+							.addMetaData("endTime", System.currentTimeMillis())
+							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					throw new RedisRunException("InventoryQueueServiceImpl.lremLogQueue run exception!",e);
+				}
+				log.info(lm.addMetaData("key",QueueConstant.QUEUE_LOGS_MESSAGE)
+						.addMetaData("element",logDO)
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+				
+			}
+		});
+}
 
 }

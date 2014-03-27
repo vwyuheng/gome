@@ -1,4 +1,4 @@
-package com.tuan.inventory.domain.support.util;
+package com.tuan.inventory.model.enu;
 
 /**
  * 队列名称定义
@@ -34,4 +34,19 @@ public class QueueConstant {
 	public static final int QUEUE_STATUS_CONSUMER_FAILED = 3;//消费失败
 
 	public static final int QUEUE_MAX_CONSUME_COUNT = 8;//最大消费次数
+	
+	
+	
+	/** 系统异常常数 */
+	public static final int SUCCESS = 0xFF0001;// 日志操作成功
+	public static final int SERVICE_SYSTEM_FALIURE = 0xFF0002;// 系统级别异常
+	public static final int SERVICE_DATABASE_FALIURE = 0xFF0003;// 数据库异常
+	public static final int NO_ALIVE_DATASOURCE = 0xFF0004;// 没有可用的数据源
+	public static final int NOT_SUPPORT = 0xFF0005;// 当前不支持
+	public static final int PARAMS_INVALID = 0xFF0006;// 参数无效
+	public static final int NO_DATA = 0xFF0007;// 没有日志数据
+	public static final int NOT_SAFE_IPADDRESS = 0xFF0008;// 不在安全ip列表以内
+	public static final int OVER_TOP_VALUE = 0xFF0009;// 参数超出了期限值,一般是取得数值太大
+	public static final int DATA_EXISTED = 0xFF0010;// 数据已经存在
+	public static final int UNKNOW_ERROR = 0xFF0012;// 未知错误
 }

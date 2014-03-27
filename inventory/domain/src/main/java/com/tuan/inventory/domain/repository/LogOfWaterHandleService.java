@@ -5,5 +5,5 @@ import com.tuan.inventory.model.result.CallResult;
 
 public interface LogOfWaterHandleService {
 
-	public CallResult<Integer> createLogOfWater(RedisInventoryLogDO logDO) throws Exception;
+	public CallResult<RedisInventoryLogDO> createLogOfWater(RedisInventoryLogDO logDO) throws Exception;
 }
