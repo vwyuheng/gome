@@ -30,7 +30,7 @@ import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
-import com.tuan.inventory.model.enu.QueueConstant;
+import com.tuan.inventory.model.util.QueueConstant;
 
 /**
  * 用于库存相关的读取服务接口

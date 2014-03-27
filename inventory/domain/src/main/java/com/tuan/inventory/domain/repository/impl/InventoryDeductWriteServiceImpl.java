@@ -45,9 +45,9 @@ import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
-import com.tuan.inventory.model.enu.QueueConstant;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.model.util.QueueConstant;
 
 /**
  * 库存扣减相关写服务 新增库存、库存扣减[更新]、库存更新后的回调确认、新增注水、修改注水值、删除库存

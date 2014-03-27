@@ -14,8 +14,8 @@ import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory.JWork;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.LogUtil;
-import com.tuan.inventory.model.enu.QueueConstant;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
+import com.tuan.inventory.model.util.QueueConstant;
 
 public class InventoryQueueServiceImpl implements InventoryQueueService {
 	private final static LocalLogger log = LocalLogger.getLog("InventoryQueueService.LOG");

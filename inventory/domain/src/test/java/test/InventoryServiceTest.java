@@ -18,7 +18,6 @@ import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
-import com.tuan.inventory.model.enu.QueueConstant;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 

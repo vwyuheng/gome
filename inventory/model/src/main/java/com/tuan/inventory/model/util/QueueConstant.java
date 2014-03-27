@@ -1,4 +1,4 @@
-package com.tuan.inventory.model.enu;
+package com.tuan.inventory.model.util;
 
 /**
  * 队列名称定义

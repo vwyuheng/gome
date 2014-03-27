@@ -1,5 +1,7 @@
 package com.tuan.inventory.model.enu;
 
+import com.tuan.inventory.model.util.QueueConstant;
+
 
 /**
  * 公共类型信息枚举

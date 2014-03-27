@@ -14,8 +14,8 @@ import com.tuan.inventory.dao.LogOfWaterDAO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.domain.repository.LogOfWaterHandleService;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
-import com.tuan.inventory.model.enu.QueueConstant;
 import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.model.util.QueueConstant;
 
 public class LogOfWaterHandleServiceImpl  extends TuanServiceTemplateImpl implements LogOfWaterHandleService {
 	private static final Log logger = LogFactory.getLog(LogOfWaterHandleServiceImpl.class);
