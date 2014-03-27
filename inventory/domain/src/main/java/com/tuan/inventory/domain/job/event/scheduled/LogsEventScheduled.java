@@ -49,9 +49,9 @@ public class LogsEventScheduled {
 
 	/** 队列监听等待时间 */
 	private long waitTime = 200;
-	// 默认初始化延时
+	// 默认初始化延时 单位：毫秒
 	private static final long DEFAULTINITIALDELAY = 3 * 1000;
-	// 默认两次开始执行最小间隔时间
+	// 默认两次开始执行最小间隔时间 单位：毫秒
 	private static final long DEFAULTDELAY = 4 * 1000;
 	// 支持配置
 	private long initialDelay = 0;

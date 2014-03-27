@@ -13,9 +13,9 @@
     <bean id="logsEventHandle" class="com.tuan.inventory.domain.job.event.handle.LogsEventHandle"/>	
    <!-- 日志固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
 	<bean id="LogsEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
-	<!-- 初始化延时 -->
+	<!-- 初始化延时 单位：毫秒-->
 	<property name="initialDelay" value="0" /> 
-	<!-- 两次开始执行最小间隔时间 -->
+	<!-- 两次开始执行最小间隔时间 单位：毫秒-->
 	<property name="delay" value="0" /> 
 	</bean>
 	

@@ -119,6 +119,9 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 		});
 
 	}
+	/**
+	 * 用于将持久化到mysql中的日志队列从redis list中删除
+	 */
 	@Override
 	public void lremLogQueue(final RedisInventoryLogDO logDO) throws Exception {
 		writeJedisFactory.withJedisDo(new JWork<Boolean>() {
