@@ -5,8 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.tuan.core.common.lang.TuanBaseDO;
 import com.tuan.inventory.domain.support.enu.EventType;
 
-
-
 /**
  * 消息事件实体类
  * @author xianglei
