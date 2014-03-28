@@ -1,5 +1,7 @@
 package test;
 
+import java.net.MalformedURLException;
+
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -7,21 +9,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import redis.clients.jedis.Jedis;
 
+import com.tuan.back.model.SingleOrderModel;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.LogOfWaterHandleService;
+import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
 import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
+import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
-import com.tuan.ordercenter.OrderCenterFacade;
+import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.param.OrderQueryIncParam;
 import com.tuan.ordercenter.model.result.CallResult;
 import com.tuan.ordercenter.model.result.SingleOrderQueryResult;
+
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
@@ -42,12 +48,34 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	NullCacheInitService nullCacheInitService;
 	@Resource
 	InventoryQueueService inventoryQueueService;
-	@Resource
-	OrderCenterFacade orderCenterFacade;
+	/*@Resource
+	OrderCenterFacade orderCenterFacade;*/
+	
+	@Test
+	public void singleOrderSummaryQuery() throws MalformedURLException, ClassNotFoundException{
+		//String url = "http://ordercenter53.55tuan.me:8086/remoting/orderQueryBack";
+		//HessianProxyFactory factory = new HessianProxyFactory();
+		//OrderQueryService basic = (OrderQueryService) factory.create(url);
+
+		OrderQueryService basic = (OrderQueryService) HessianProxyUtil
+				.getObject(OrderQueryService.class,
+						InventoryConfig.QUERY_URL);
+		
+		
+		final OrderQueryIncParam incParam = new OrderQueryIncParam();
+		
+		
+		CallResult<SingleOrderQueryResult>  cllResult= basic.singleOrderQuery("61.135.132.59", "USER_CENTER", "38110009159", 19204477L, null,incParam);
+		SingleOrderModel model = (SingleOrderModel) cllResult.getBusinessResult().getResultObject();
+		//model.getOrderInfoModel().getPayStatus();
+		System.out.print("singleOrderQueryResult="+model.getOrderInfoModel().getPayStatus());
+	     //System.out.print("成功"+cllResult.getBusinessResult().getResult());
+	}
+
 	
 	@Test
 	public void testSingleOrderQuery(){
-		OrderQueryIncParam incParam= new OrderQueryIncParam();
+		/*OrderQueryIncParam incParam= new OrderQueryIncParam();
 		incParam.setIncExtend(true);
 		incParam.setIncGoods(true);
 		incParam.setIncLogistic(true);
@@ -61,7 +89,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			System.out.print("singleOrderQueryResult="+singleOrderQueryResult);
 	       System.out.print("成功"+cllResult.getBusinessResult().getResult());
 			
-		}
+		}*/
 	}
 	
 	@Test

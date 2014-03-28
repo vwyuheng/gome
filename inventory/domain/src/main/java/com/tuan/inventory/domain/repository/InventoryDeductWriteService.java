@@ -95,5 +95,5 @@ public interface InventoryDeductWriteService {
 	 */
 	public boolean waterfloodValAdjustment(final String key,final int num,final Long userId, final String system, final String clientIp) throws Exception;
 	
-	//public void callbackAck(final String ack, final String key) throws Exception;
+	
 }

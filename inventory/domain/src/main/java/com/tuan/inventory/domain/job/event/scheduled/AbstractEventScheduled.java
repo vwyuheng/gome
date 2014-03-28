@@ -2,7 +2,11 @@ package com.tuan.inventory.domain.job.event.scheduled;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
+/***
+ * 调度线程池的基类
+ * @author henry.yu
+ * @date 2014/3/28
+ */
 public abstract class AbstractEventScheduled {
 
 	/**
@@ -14,7 +18,7 @@ public abstract class AbstractEventScheduled {
 	 */
 	protected final int POOL_SIZE = 5;
 
-	/** 队列监听等待时间 */
+	/** 监听等待时间 */
 	protected long waitTime = 200;
 	
 	/**

@@ -13,14 +13,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.Transaction;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
-import com.tuan.inventory.dao.data.redis.RedisInventoryNumDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.RedisSelectionNumDO;
 import com.tuan.inventory.dao.data.redis.RedisSuppliersNumDO;
@@ -801,7 +799,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				// 构建库存更新的队列信息 每个队列成员(member)都自己的唯一的序列id值
 				RedisInventoryQueueDO queueDO = asemblyQueueDO(
 						sequenceUtil.getSequence(
-								SEQNAME.seq_queue_send), goodsId,
+								SEQNAME.seq_queue_send), goodsId,userId,
 						orderId, limitStorage,/*ResultStatusEnum.LOCKED.getCode(),*/beanResult.getSelectType(), beanResult.getSuppliersType(),
 									 beanResult.getJsonData());
 				// 构建库存操作日志对象
@@ -854,30 +852,34 @@ public class InventoryDeductWriteServiceImpl  implements
 					//j.watch(QueueConstant.QUEUE_KEY_MEMBER + ":" + key,
 							//QueueConstant.QUEUE_SEND_MESSAGE);
 					// 事务声明、开启事务
-					Transaction ts = j.multi();
+					//Transaction ts = j.multi();
 					
 					if (StringUtils.isNotBlank(ack)
 							&& ack.equalsIgnoreCase(ResultStatusEnum.ACTIVE
 									.getCode())) {
-						
+						// 将消息发送队列状态更新为:1>正常：有效可处理（active）
+						inventoryQueueService.markQueueStatus(key, (-2));
+						/*
 						// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
 						String member = j.get(QueueConstant.QUEUE_KEY_MEMBER
 								+ ":" + key);
 						// 将消息发送队列状态更新为:1>正常：有效可处理（active）
 						Double scoreAck = j
 								.zincrby(
-										QueueConstant.QUEUE_SEND_MESSAGE/* +":"+key */,
+										QueueConstant.QUEUE_SEND_MESSAGE +":"+key ,
 										-(2), member);
 						// 执行事务
 						ts.exec();
 						if (scoreAck == 1) { // scoreAck返回的是对于的结果值
 							//result = true;
-						}
+						}*/
 					} else if (StringUtils.isNotBlank(ack)
 							&& ack.equalsIgnoreCase(ResultStatusEnum.EXCEPTION
 									.getCode())) { //EXCEPTION    ("5",   "异常队列")
-						
-						// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
+						//还原库存,并将消息状态更新为处理完毕，删除状态 :7
+						inventoryQueueService.rollbackInventoryCache(QueueConstant.QUEUE_KEY_MEMBER
+									+ ":" + key,(2));  //DELETE  ("7", "处理完毕:标记删除（deleted）")
+						/*// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
 						String member = j.get(QueueConstant.QUEUE_KEY_MEMBER
 								+ ":" + key);
 						//JSONObject.toBean(JSONObject.fromObject(member));
@@ -898,16 +900,13 @@ public class InventoryDeductWriteServiceImpl  implements
 						ts.exec();
 						if (scoreAck == 1) { //  删除N个member就返回数值N
 							//result = true;
-						}
+						}*/
 						
-					}else {
-						// 保证下一个事务的执行不受影响
-						//j.unwatch();
 						
 					}
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+						//ts.discard();
 				} catch (Exception e) {
 					log.error(lm.addMetaData("ack",ack)
 							.addMetaData("key",QueueConstant.QUEUE_KEY_MEMBER
@@ -1116,7 +1115,7 @@ public class InventoryDeductWriteServiceImpl  implements
 	 * @param num
 	 * @return
 	 */
-	private RedisInventoryQueueDO asemblyQueueDO(Long id, Long goodsId,
+	private RedisInventoryQueueDO asemblyQueueDO(Long id, Long goodsId,Long userId,
 			Long orderId, int limitStorage,/*String status,*/String selectType, String suppliersType, String num) {
 		// 构建一个连接池bean对象
 		RedisInventoryQueueDO queueDO = new RedisInventoryQueueDO();
@@ -1202,4 +1201,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				
 				return message;
 	}
+
+	
+
 }

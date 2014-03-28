@@ -6,7 +6,11 @@ public enum ResultStatusEnum {
 	ACTIVE		("1",	"正常：有效可处理（active）"),
 	LOCKED		("3",	"初始状态（locked）"),
 	EXCEPTION    ("5",   "异常队列"),
-	LOG		("7",	"日志"),
+	DELETE  ("7", "处理完毕:标记删除（deleted）"),
+	
+	
+	LOG		("9",	"日志"),
+	
 	
 	//业务类型type
 	DEDUCTION   ("14",   "库存扣减"),

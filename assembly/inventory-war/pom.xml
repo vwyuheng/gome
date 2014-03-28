@@ -289,10 +289,10 @@
 									<groupId>com.tuan.ordercenter</groupId>
 									<artifactId>ordercenter-service</artifactId>
 								</artifactItem>
-								<artifactItem>
+								<!-- <artifactItem>
 									<groupId>com.tuan.ordercenter</groupId>
 									<artifactId>ordercenter-client</artifactId>
-								</artifactItem>
+								</artifactItem> -->
 								<!-- order end -->
 								<!-- notifyserver jar -->
 								<artifactItem>
