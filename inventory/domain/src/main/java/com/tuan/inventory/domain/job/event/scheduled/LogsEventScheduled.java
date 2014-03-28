@@ -4,9 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,21 +32,11 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
  * @author henry.yu
  * @Date 2014/3/24
  */
-public class LogsEventScheduled {
+public class LogsEventScheduled extends AbstractEventScheduled {
 
 	private final static Log logger = LogFactory
 			.getLog(LogsEventScheduled.class);
-	/**
-	 * 调度线程池，用于初始化日志事件数据
-	 */
-	private ScheduledExecutorService scheduledExecutorService;
-	/**
-	 * 单个cpu的线程数
-	 */
-	private final int POOL_SIZE = 5;
-
-	/** 队列监听等待时间 */
-	private long waitTime = 200;
+	
 	// 默认初始化延时 单位：毫秒
 	private static final long DEFAULTINITIALDELAY = 3 * 1000;
 	// 默认两次开始执行最小间隔时间 单位：毫秒
@@ -68,10 +56,7 @@ public class LogsEventScheduled {
 	 * 构造带不带缓存的客户端
 	 */
 	public LogsEventScheduled() {
-		// 初始化ScheduledExecutorService 服务
-		this.scheduledExecutorService = Executors
-				.newScheduledThreadPool(Runtime.getRuntime()
-						.availableProcessors() * POOL_SIZE);
+		super();
 	}
 
 	/**

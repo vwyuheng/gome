@@ -280,6 +280,20 @@
 						</goals>
 						<configuration>
 							<artifactItems>
+								<!-- order start -->
+								<artifactItem>
+									<groupId>com.tuan.ordercenter</groupId>
+									<artifactId>ordercenter-model</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.ordercenter</groupId>
+									<artifactId>ordercenter-service</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.tuan.ordercenter</groupId>
+									<artifactId>ordercenter-client</artifactId>
+								</artifactItem>
+								<!-- order end -->
 								<!-- notifyserver jar -->
 								<artifactItem>
 									<groupId>com.tuan.notifyserver.client</groupId>
