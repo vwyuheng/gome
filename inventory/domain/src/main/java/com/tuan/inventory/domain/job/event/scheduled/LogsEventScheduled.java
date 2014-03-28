@@ -97,30 +97,28 @@ public class LogsEventScheduled {
 							Object result = future.get();
 							if (result == null) {
 								if (logger.isDebugEnabled()) {
-									logger.debug("ExecuteTask scheduled return null");
+									logger.debug("LogsEventScheduled scheduled return null");
 								}
 								return;
 							}
 							if (logger.isDebugEnabled()) {
-								logger.debug("ExecuteTask scheduled :"
+								logger.debug("LogsEventScheduled scheduled :"
 										+ result.toString());
 							}
-							System.out.println("execFixedRate4Logs3");
-						}else {
-							System.out.println("execFixedRate4Logs4");
+							
 						}
 					} catch (InterruptedException e) {
 						logger.error(
-								"ExecuteTask scheduled Interrupted exception :",
+								"LogsEventScheduled scheduled Interrupted exception :",
 								e);
 						future.cancel(true);// 中断执行此任务的线程
 					} catch (ExecutionException e) {
 						logger.error(
-								"ExecuteTask scheduled Execution exception:", e);
+								"LogsEventScheduled scheduled Execution exception:", e);
 						future.cancel(true);// 中断执行此任务的线程
 					}
 				} catch (Throwable e) {
-					logger.error("scheduled Exception:", e);
+					logger.error("LogsEventScheduled scheduled Exception:", e);
 				}
 			}
 

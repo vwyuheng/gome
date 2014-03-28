@@ -18,6 +18,10 @@ import com.tuan.inventory.domain.support.jedistools.WriteJedisFactory;
 import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.ordercenter.OrderCenterFacade;
+import com.tuan.ordercenter.model.param.OrderQueryIncParam;
+import com.tuan.ordercenter.model.result.CallResult;
+import com.tuan.ordercenter.model.result.SingleOrderQueryResult;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
@@ -38,6 +42,27 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	NullCacheInitService nullCacheInitService;
 	@Resource
 	InventoryQueueService inventoryQueueService;
+	@Resource
+	OrderCenterFacade orderCenterFacade;
+	
+	@Test
+	public void testSingleOrderQuery(){
+		OrderQueryIncParam incParam= new OrderQueryIncParam();
+		incParam.setIncExtend(true);
+		incParam.setIncGoods(true);
+		incParam.setIncLogistic(true);
+		incParam.setIncSelection(true);
+		incParam.setIncTicket(true);
+		CallResult<SingleOrderQueryResult>  cllResult=  orderCenterFacade.singleOrderQuery("61.135.132.59", "USER_CENTER", 38110009159L, 19204477, null, null);
+		System.out.print("成功1"+cllResult.getBusinessResult().getResult());
+		if(cllResult.getCallResult())
+		{
+			SingleOrderQueryResult singleOrderQueryResult =cllResult.getBusinessResult();
+			System.out.print("singleOrderQueryResult="+singleOrderQueryResult);
+	       System.out.print("成功"+cllResult.getBusinessResult().getResult());
+			
+		}
+	}
 	
 	@Test
 	public void test() {

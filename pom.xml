@@ -25,6 +25,7 @@
 		<cozy.common.sequence.version>1.0.1.20140307</cozy.common.sequence.version>
 		<!-- notify server -->
 		<notifyserver.version>1.0.2</notifyserver.version>
+		<ordercenter.version>1.0.1.20140306</ordercenter.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -107,6 +108,23 @@
 		  		<version>${cozy.common.sequence.version}</version>
 			</dependency>
 			<!-- user core jars -->
+			<!-- order @20140328 -->
+			<dependency>
+				<groupId>com.tuan.ordercenter</groupId>
+				<artifactId>ordercenter-client</artifactId>
+				<version>${ordercenter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.tuan.ordercenter</groupId>
+				<artifactId>ordercenter-model</artifactId>
+				<version>${ordercenter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.tuan.ordercenter</groupId>
+				<artifactId>ordercenter-service</artifactId>
+				<version>${ordercenter.version}</version>
+			</dependency>
+				<!-- order @20140328 -->
 			<dependency>
 				<groupId>com.tuan.inventory</groupId>
 				<artifactId>inventory-model</artifactId>

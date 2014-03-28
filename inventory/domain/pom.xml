@@ -14,6 +14,18 @@
 	<url>http://www.55tuan.com</url>
 	<dependencies>
 	<dependency>
+				<groupId>com.tuan.ordercenter</groupId>
+				<artifactId>ordercenter-client</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.tuan.ordercenter</groupId>
+				<artifactId>ordercenter-model</artifactId>
+			</dependency>
+			<dependency>
+				<groupId>com.tuan.ordercenter</groupId>
+				<artifactId>ordercenter-service</artifactId>
+			</dependency>
+	<dependency>
 			<groupId>jackson</groupId>
 			<artifactId>jackson-all</artifactId>
 		</dependency>
