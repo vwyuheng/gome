@@ -70,14 +70,14 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 					latch.await(waitTime, TimeUnit.MILLISECONDS);
 					Future<?> future = null;
 					try {
-						//System.out.println("execFixedRate4Logs1");
+						System.out.println("execFixedRate4Logs1");
 						future = scheduledExecutorService.scheduleAtFixedRate(
 								new LogQueueConsumeTask(),
 								(getInitialDelay() == 0 ? DEFAULTINITIALDELAY
 										: getInitialDelay()),
 								(getDelay() == 0 ? DEFAULTDELAY : getDelay()),
 								TimeUnit.MILLISECONDS);
-						//System.out.println("execFixedRate4Logs2");
+						System.out.println("execFixedRate4Logs2");
 						if (future != null) {
 							Object result = future.get();
 							if (result == null) {
@@ -142,7 +142,7 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 				//取日志队列信息
 				queueLogList = inventoryProviderReadService
 						.getInventoryLogsQueueByIndex();
-				//System.out.println("LogQueueConsumeTask:run2="+queueLogList);
+				System.out.println("LogQueueConsumeTask:run2="+queueLogList);
 			} catch (Exception e) {
 				logger.error("LogQueueConsumeTask.run error", e);
 			}
@@ -164,7 +164,7 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 					try {
 						 //从队列中取事件
 						boolean eventResult = logsEventHandle.handleEvent(event);
-						//System.out.println("eventresult="+eventResult);
+						System.out.println("eventresult="+eventResult);
 						if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
 							//移除最后一个元素
 							inventoryQueueService.lremLogQueue(model);

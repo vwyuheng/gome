@@ -4,18 +4,20 @@ import java.net.MalformedURLException;
 
 import javax.annotation.Resource;
 
+import net.sf.json.JSONObject;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import redis.clients.jedis.Jedis;
 
-import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.LogOfWaterHandleService;
+import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory.JWork;
@@ -26,6 +28,7 @@ import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.util.DateUtils;
 import com.tuan.inventory.model.util.QueueConstant;
+import com.tuan.notifyserver.core.pclient.ProducerClient;
 import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
 import com.tuan.ordercenter.model.result.CallResult;
@@ -51,8 +54,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	NullCacheInitService nullCacheInitService;
 	@Resource
 	InventoryQueueService inventoryQueueService;
-	/*@Resource
-	OrderCenterFacade orderCenterFacade;*/
+	@Resource
+	NotifyServerSendMessage notifyServerSendMessage;
 	
 	@Test
 	public void singleOrderSummaryQuery() throws MalformedURLException, ClassNotFoundException{
@@ -250,6 +253,26 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			}
 		}
 		
+	}
+	
+	@Test
+	public void testNotifyServer() {
+		try {
+			RedisInventoryQueueDO queue = new RedisInventoryQueueDO();
+			queue.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
+			queue.setGoodsId(2L);
+			queue.setOrderId(3L);
+			queue.setType(QueueConstant.GOODS);
+			queue.setItem("≤‚ ‘");
+			queue.setLimitStorage(1);
+			queue.setUserId(5L);
+			queue.setVariableQuantityJsonData("numL:10");
+			queue.setCreateTime(DateUtils.getBeforXTimestamp10Long(6));
+			notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(queue));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
