@@ -20,7 +20,9 @@ public interface InventoryDeductWriteService {
 	 * List<RedisGoodsSelectionRelationDO>[商品选型],List<RedisGoodsSuppliersInventoryDO>[商品分店]
 	 * @return
 	 */
-	public Boolean createInventory(final long goodsId, final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,final RedisInventoryDO riDO,final List<RedisGoodsSelectionRelationDO> rgsrList,final List<RedisGoodsSuppliersInventoryDO> rgsiList) throws Exception;
+	public Boolean createInventory(final long goodsId, final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,
+			final int totalNumber,final int leftNumber,final int waterfloodVal,
+			final List<OrderGoodsSelectionModel> goodsSelectionList) throws Exception;
 	/**
 	 * 更新库存
 	 * @param orderId

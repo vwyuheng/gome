@@ -9,8 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import redis.clients.jedis.Jedis;
 
-import com.tuan.back.model.SingleOrderModel;
+import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
@@ -23,10 +24,12 @@ import com.tuan.inventory.domain.support.redis.NullCacheInitService;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.model.util.DateUtils;
+import com.tuan.inventory.model.util.QueueConstant;
 import com.tuan.ordercenter.backservice.OrderQueryService;
-import com.tuan.ordercenter.model.param.OrderQueryIncParam;
+import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
 import com.tuan.ordercenter.model.result.CallResult;
-import com.tuan.ordercenter.model.result.SingleOrderQueryResult;
+import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 
 public class InventoryServiceTest extends InventroyAbstractTest {
@@ -62,13 +65,14 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 						InventoryConfig.QUERY_URL);
 		
 		
-		final OrderQueryIncParam incParam = new OrderQueryIncParam();
+		//final OrderQueryIncParam incParam = new OrderQueryIncParam();
 		
 		
-		CallResult<SingleOrderQueryResult>  cllResult= basic.singleOrderQuery("61.135.132.59", "USER_CENTER", "38110009159", 19204477L, null,incParam);
-		SingleOrderModel model = (SingleOrderModel) cllResult.getBusinessResult().getResultObject();
+		//CallResult<SingleOrderQueryResult>  cllResult= basic.singleOrderQuery("61.135.132.59", "USER_CENTER", "38110009159", 19204477L, null,incParam);
+		CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "USER_CENTER","61.135.132.59", "38110009159");
+		OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
 		//model.getOrderInfoModel().getPayStatus();
-		System.out.print("singleOrderQueryResult="+model.getOrderInfoModel().getPayStatus());
+		System.out.print("singleOrderQueryResult="+(statEnum.equals(OrderInfoPayStatusEnum.PAIED)));
 	     //System.out.print("³É¹¦"+cllResult.getBusinessResult().getResult());
 	}
 
@@ -225,5 +229,27 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		}
 	}
 	
+	@Test
+	public void testQueueInsert() {
+		for(int i=0;i<1000;i++) {
+			RedisInventoryQueueDO queue = new RedisInventoryQueueDO();
+			queue.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
+			queue.setGoodsId(2L);
+			queue.setOrderId(3L);
+			queue.setType(QueueConstant.GOODS);
+			queue.setItem("²âÊÔ");
+			queue.setLimitStorage(1);
+			queue.setUserId(5L);
+			queue.setVariableQuantityJsonData("numL:10");
+			queue.setCreateTime(DateUtils.getBeforXTimestamp10Long(6));
+			try {
+				inventoryQueueService.pushQueueSendMsg(queue);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+	}
 
 }

@@ -14,10 +14,21 @@
    <!-- 日志固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
 	<bean id="LogsEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
 	<!-- 初始化延时 单位：毫秒-->
-	<property name="initialDelay" value="0" /> 
+	<property name="initialDelay" value="2000" /> 
 	<!-- 两次开始执行最小间隔时间 单位：毫秒-->
-	<property name="delay" value="0" /> 
+	<property name="delay" value="3000" /> 
 	</bean>
 	
 
+
+
+ <!-- 非正常情况下固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
+	<bean id="AbnormalEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.AbnormalEventScheduled" init-method="execFixedRate4Abnormal">
+	<!-- 初始化延时 单位：毫秒 默认延迟3秒-->
+	<property name="initialDelay" value="0" /> 
+	<!-- 两次开始执行最小间隔时间 单位：毫秒,默认是间隔4秒-->
+	<property name="delay" value="0" /> 
+	<!-- 间隔时长,与当前时间相比  单位:分种,默认是5分钟-->
+	<property name="period" value="0" /> 
+	</bean>
 </beans>

@@ -19,6 +19,7 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
+import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.exception.RedisRunException;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
@@ -30,6 +31,7 @@ import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
+import com.tuan.inventory.model.OrderGoodsSelectionModel;
 import com.tuan.inventory.model.util.QueueConstant;
 
 /**
@@ -421,4 +423,74 @@ public class InventoryProviderReadServiceImpl implements
 			
 		});
 	}
+	@Override
+	public RedisInventoryBean getInventoryInfosByKey(final String key)
+			throws Exception {
+		
+		return readJedisFactory.withJedisDo(new JWork<RedisInventoryBean>() {
+			@Override
+			public RedisInventoryBean work(Jedis j) throws Exception {
+				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryInfosByKey");
+				long startTime = System.currentTimeMillis();
+				log.info(lm.addMetaData("key", key)
+						.addMetaData("startTime", startTime).toJson());
+				RedisInventoryBean result = null;
+				RedisInventoryDO resultTmp = null;
+				OrderGoodsSelectionModel resultSelOrSup = null;
+				List<OrderGoodsSelectionModel> goodsSelectionList = null;
+				// TODO 测试用
+				// j.del(String.valueOf(InventoryEnum.HASHCACHE+ ":"+
+				// SelectionRelationId));
+				if (j == null)
+					return result;
+				try {
+					//根据key取消息实体
+					Map<String, String> objMap = j
+							.hgetAll(InventoryEnum.HASHCACHE + ":"+ key);
+					if (!CollectionUtils.isEmpty(objMap)) { // if1
+						resultTmp = (RedisInventoryDO) ObjectUtil
+								.convertMap(RedisInventoryDO.class,
+										objMap);
+					}
+					if(resultTmp==null) {
+						return result;
+					}
+					//将resultTmp 转换为RedisInventoryBean
+					result = ObjectUtil.switchBean(resultTmp);
+					//根据key获取对应的商品选型或商品分店关系
+					Set<String> sets = j.smembers(InventoryEnum.SETCACHE + ":"+ key);
+					if(!CollectionUtils.isEmpty(sets)) {
+						goodsSelectionList =  new ArrayList<OrderGoodsSelectionModel>();
+						 for (String element : sets) {
+							//根据key取消息实体
+								Map<String, String> selOrSupObjMap = j
+										.hgetAll(InventoryEnum.HASHCACHE + ":"+ element);
+								if (!CollectionUtils.isEmpty(selOrSupObjMap)) { // if1
+									resultSelOrSup = (OrderGoodsSelectionModel) ObjectUtil
+											.convertMap(OrderGoodsSelectionModel.class,
+													selOrSupObjMap);
+									if(resultSelOrSup!=null)
+									       goodsSelectionList.add(resultSelOrSup);
+						 }
+					}
+					}
+					result.setGoodsSelectionList(goodsSelectionList);
+				} catch (Exception e) {
+					log.error(lm.addMetaData("key", InventoryEnum.HASHCACHE + ":"
+							+ key)
+							.addMetaData("endTime", System.currentTimeMillis())
+							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					throw new RedisRunException("InventoryProviderReadService:getInventoryInfosByKey run exception!",e);
+				}
+				log.info(lm.addMetaData("key", InventoryEnum.HASHCACHE + ":"
+						+ key)
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", LogUtil.getRunTime(startTime))
+						.addMetaData("result", result).toJson());
+				return result;
+			}
+		});
+
+	}
+	
 }

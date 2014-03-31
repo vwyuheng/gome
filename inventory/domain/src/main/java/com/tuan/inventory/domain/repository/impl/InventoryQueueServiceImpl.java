@@ -310,8 +310,8 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 							//.zrem(QueueConstant.QUEUE_SEND_MESSAGE,member);
 					// 将消息发送队列状态更新为:ResultStatusEnum :对应的业务状态
 					//Double scoreAck = //  返回的是当前修改后的结果
-					p.zincrby(QueueConstant.QUEUE_SEND_MESSAGE,
-									(upStatusNum), member);
+					/*p.zincrby(QueueConstant.QUEUE_SEND_MESSAGE,
+									(upStatusNum), member);*/
 					// 执行事务
 					ts.exec();
 				

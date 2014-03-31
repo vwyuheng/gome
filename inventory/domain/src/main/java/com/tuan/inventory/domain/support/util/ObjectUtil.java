@@ -14,8 +14,12 @@ import java.util.Set;
 
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
+import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
+import com.tuan.inventory.domain.support.bean.job.NotifyMessage;
+import com.tuan.inventory.model.OrderGoodsSelectionModel;
 /**
  * map与object对象转换工具类
  * @author henry.yu
@@ -139,4 +143,102 @@ public class ObjectUtil {
 		}
 		return result;
 	}
+	
+	/**
+	 * 装配notifyserver消息对象
+	 * @param userId
+	 * @param orderId
+	 * @param goodsId
+	 * @param limitStorage
+	 * @param waterfloodVal
+	 * @param variableQuantityJsonData
+	 * @return
+	 */
+	public static NotifyMessage asemblyNotifyMessage(Long userId, long orderId,
+			Long goodsId, int limitStorage,int waterfloodVal,int totalNumber, int leftNumber,List<OrderGoodsSelectionModel> goodsSelectionList) {
+		//构建消息体
+				NotifyMessage message = new NotifyMessage();
+				message.setUserId(userId);
+				message.setOrderId(orderId);
+				message.setGoodsId(goodsId);
+				message.setLimitStorage(limitStorage);
+				message.setWaterfloodVal(waterfloodVal);
+				message.setTotalNumber(totalNumber);
+				message.setLeftNumber(leftNumber);
+				message.setGoodsSelectionList(goodsSelectionList);
+				
+				return message;
+	}
+	
+	public static NotifyMessage asemblyNotifyMessage(Long userId,RedisInventoryBean result) {
+		//构建消息体
+				NotifyMessage message = new NotifyMessage();
+				message.setUserId(userId);
+				//message.setOrderId(result.get);
+				if(result==null) {
+					return null;
+				}
+				message.setGoodsId(result.getGoodsId());
+				message.setLimitStorage(result.getLimitStorage());
+				message.setWaterfloodVal(result.getWaterfloodVal());
+				message.setTotalNumber(result.getTotalNumber());
+				message.setLeftNumber(result.getLeftNumber());
+				message.setGoodsSelectionList(result.getGoodsSelectionList());
+				
+				return message;
+	}
+	
+	public static RedisInventoryBean asemblyRedisInventoryBean(Long goodsId,int totalNumber,int leftNumber, int limitStorage,int waterfloodVal,List<OrderGoodsSelectionModel> goodsSelectionList) {
+		RedisInventoryBean  riBean = new RedisInventoryBean();
+		riBean.setGoodsId(goodsId);
+		riBean.setTotalNumber(totalNumber);
+		riBean.setLeftNumber(leftNumber);
+		riBean.setLimitStorage(limitStorage);
+		riBean.setWaterfloodVal(waterfloodVal);
+		riBean.setGoodsSelectionList(goodsSelectionList);
+		return riBean;
+	}
+	
+	public static RedisInventoryBean asemblyRedisInventoryBean(RedisInventoryDO riDo,List<OrderGoodsSelectionModel> goodsSelectionList) {
+		RedisInventoryBean  riBean = new RedisInventoryBean();
+		if(riDo==null) {
+			return null;
+		}
+		riBean.setGoodsId(Long.valueOf(riDo.getGoodsId()));
+		riBean.setTotalNumber(riDo.getTotalNumber());
+		riBean.setLeftNumber(riDo.getLeftNumber());
+		riBean.setLimitStorage(riDo.getLimitStorage());
+		riBean.setWaterfloodVal(riDo.getWaterfloodVal());
+		riBean.setGoodsSelectionList(goodsSelectionList);
+		return riBean;
+	}
+	
+	public static RedisInventoryDO asemblyRedisInventoryDO(Long goodsId,int totalNumber,int leftNumber, int limitStorage,int waterfloodVal) {
+		RedisInventoryDO  riDO = new RedisInventoryDO();
+		if(goodsId==null) {
+			return null;
+		}
+		riDO.setGoodsId(goodsId.intValue());
+		riDO.setTotalNumber(totalNumber);
+		riDO.setLeftNumber(leftNumber);
+		riDO.setLimitStorage(limitStorage);
+		riDO.setWaterfloodVal(waterfloodVal);
+		//riDO.setGoodsSelectionList(goodsSelectionList);
+		return riDO;
+	}
+	
+	public static RedisInventoryBean switchBean(RedisInventoryDO riDo) {
+		RedisInventoryBean  riBean = new RedisInventoryBean();
+		if(riDo==null) {
+			return null;
+		}
+		riBean.setGoodsId(Long.valueOf(riDo.getGoodsId()));
+		riBean.setTotalNumber(riDo.getTotalNumber());
+		riBean.setLeftNumber(riDo.getLeftNumber());
+		riBean.setLimitStorage(riDo.getLimitStorage());
+		riBean.setWaterfloodVal(riDo.getWaterfloodVal());
+		//riBean.setGoodsSelectionList(goodsSelectionList);
+		return riBean;
+	}
+	
 }

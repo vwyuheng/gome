@@ -15,18 +15,18 @@ import org.springframework.util.CollectionUtils;
 import redis.clients.jedis.Jedis;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
-import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.RedisSelectionNumDO;
 import com.tuan.inventory.dao.data.redis.RedisSuppliersNumDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
+import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
+import com.tuan.inventory.domain.support.bean.HandlerResult;
+import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.bean.UpdateInventoryBeanResult;
-import com.tuan.inventory.domain.support.bean.job.NotifyMessage;
 import com.tuan.inventory.domain.support.bean.message.WaterfloodValAdjustment;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
@@ -65,20 +65,21 @@ public class InventoryDeductWriteServiceImpl  implements
 	SequenceUtil sequenceUtil;
 	@Resource
 	InventoryQueueService inventoryQueueService;
+	@Resource
+	InventoryProviderReadService inventoryProviderReadService;
 	
 	private final static LocalLogger log = LocalLogger.getLog("InventoryDeductWriteService.LOG");
 	@Override
-	public Boolean createInventory(final long goodsId,final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,
-			final RedisInventoryDO riDO,
-			final List<RedisGoodsSelectionRelationDO> rgsrList,
-			final List<RedisGoodsSuppliersInventoryDO> rgsiList)
+	public Boolean createInventory(final long goodsId, final int pindaoId,final int limitStorage,final Long userId, final String system, final String clientIp,
+			final int totalNumber,final int leftNumber,final int waterfloodVal,
+			final List<OrderGoodsSelectionModel> goodsSelectionList)
 			throws Exception {
-		//boolean resultReturn = jedisFactory.withJedisDo(new JWork<Boolean>() {
+		//构建业务返回对象
+	    final HandlerResult<RedisInventoryDO> callResult = new HandlerResult<RedisInventoryDO>();
 		return writeJedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
 			public boolean work(Jedis j) throws Exception {
-				LogModel lm = LogModel.newLogModel("InventoryDeductWriteServiceImpl.createInventory(goodsId,RedisInventoryDO,"
-						+ "List<RedisGoodsSelectionRelationDO>,List<RedisGoodsSuppliersInventoryDO>)");
+				LogModel lm = LogModel.newLogModel("InventoryDeductWriteServiceImpl.createInventory");
 				long startTime = System.currentTimeMillis();
 				log.info(lm.addMetaData("goodsId", String.valueOf(goodsId))
 						.addMetaData("pindaoId", String.valueOf(pindaoId))
@@ -86,9 +87,10 @@ public class InventoryDeductWriteServiceImpl  implements
 						.addMetaData("userId", String.valueOf(userId))
 						.addMetaData("system", system)
 						.addMetaData("clientIp", clientIp)
-						.addMetaData("RedisInventoryDO", riDO)
-						.addMetaData("List<RedisGoodsSelectionRelationDO>", rgsrList)
-						.addMetaData("List<RedisGoodsSuppliersInventoryDO>", rgsiList)
+						.addMetaData("totalNumber", totalNumber)
+						.addMetaData("leftNumber", leftNumber)
+						.addMetaData("waterfloodVal", waterfloodVal)
+						.addMetaData("goodsSelectionList", goodsSelectionList)
 						.addMetaData("startTime", startTime).toJson());
 			boolean result = false;
 				if (j == null)
@@ -98,48 +100,47 @@ public class InventoryDeductWriteServiceImpl  implements
 							+ String.valueOf(goodsId))) { // 已存在返回false
 						return result;
 					}
-					// 1.保存商品库存主体信息
-					String redisAck = j.hmset(InventoryEnum.HASHCACHE + ":"
-							+ String.valueOf(goodsId),
-							ObjectUtil.convertBean(riDO));
-					// 商品是否添加配型 0：不添加；1：添加
-					if (riDO.getIsAddGoodsSelection() == 1) {
-						if (!CollectionUtils.isEmpty(rgsrList)) {
-							// jedis.sadd(String.valueOf(goodsId),
-							// StringUtil.getSelectionRelationString(rgsrList));
-							for (RedisGoodsSelectionRelationDO rgsrDO : rgsrList) {
+					RedisInventoryDO  riDO = ObjectUtil.asemblyRedisInventoryDO(goodsId, totalNumber, leftNumber, limitStorage, waterfloodVal);
+					if(riDO==null) 
+						return result;
+					callResult.setBusinessResult(riDO);
+					String redisAck = "";
+					if (goodsId > 0 && limitStorage == 1) { // limitStorage>0:库存无限制；1：限制库存
+						// 1.保存商品库存主体信息
+						 redisAck = j.hmset(InventoryEnum.HASHCACHE + ":"
+								+ String.valueOf(goodsId),
+								ObjectUtil.convertBean(riDO));
+					}
+					if (!CollectionUtils.isEmpty(goodsSelectionList)) { // if1
+						for (OrderGoodsSelectionModel orderGoodsSelectionModel : goodsSelectionList) { // for
+							if (orderGoodsSelectionModel
+									.getSelectionRelationId() != null
+									&& orderGoodsSelectionModel
+											.getSelectionRelationId() > 0) { // if选型
+								
 								// 2.商品id与选型关系
 								j.sadd(InventoryEnum.SETCACHE + ":"
 										+ String.valueOf(goodsId),
-										String.valueOf(rgsrDO.getId()));
+										String.valueOf(orderGoodsSelectionModel.getId()));
 								// 3.保存选型库存主体信息
 								redisAck = j.hmset(InventoryEnum.HASHCACHE
-										+ ":" + String.valueOf(rgsrDO.getId()),
-										ObjectUtil.convertBean(rgsrDO));
+										+ ":" + String.valueOf(orderGoodsSelectionModel.getId()),
+										ObjectUtil.convertBean(orderGoodsSelectionModel));
 							}
-
-						}
-					}
-					// 商品销售是否需要指定分店 0：不指定；1：指定
-					if (riDO.getIsDirectConsumption() == 1) {
-						if (!CollectionUtils.isEmpty(rgsiList)) {
-							// jedis.sadd(String.valueOf(goodsId),
-							// StringUtil.getSuppliersInventoryString(rgsiList));
-							for (RedisGoodsSuppliersInventoryDO rgsiDO : rgsiList) {
+							if (orderGoodsSelectionModel.getSuppliersId() > 0) { // if分店
 								// 2.商品与商家分店关系
 								j.sadd(InventoryEnum.SETCACHE + ":"
 										+ String.valueOf(goodsId),
-										String.valueOf(rgsiDO.getId()));
+										String.valueOf(orderGoodsSelectionModel.getId()));
 								// 3.保存商品分店库存主体信息
 								redisAck = j.hmset(InventoryEnum.HASHCACHE
-										+ ":" + String.valueOf(rgsiDO.getId()),
-										ObjectUtil.convertBean(rgsiDO));
+										+ ":" + String.valueOf(orderGoodsSelectionModel.getId()),
+										ObjectUtil.convertBean(orderGoodsSelectionModel));
 							}
+							
 						}
 					}
-					// 执行事务
-					// List<Object> redisAckList =
-					// ts.exec();
+					
 					if (redisAck.equalsIgnoreCase("ok")) {
 						result = true;
 					}
@@ -151,9 +152,10 @@ public class InventoryDeductWriteServiceImpl  implements
 							.addMetaData("userId", String.valueOf(userId))
 							.addMetaData("system", system)
 							.addMetaData("clientIp", clientIp)
-							.addMetaData("RedisInventoryDO", riDO)
-							.addMetaData("List<RedisGoodsSelectionRelationDO>", rgsrList)
-							.addMetaData("List<RedisGoodsSuppliersInventoryDO>", rgsiList)
+							.addMetaData("totalNumber", totalNumber)
+						    .addMetaData("leftNumber", leftNumber)
+						    .addMetaData("waterfloodVal", waterfloodVal)
+						    .addMetaData("goodsSelectionList", goodsSelectionList)
 							.addMetaData("endTime", System.currentTimeMillis())
 							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
 					throw new RedisRunException("InventoryDeductWriteServiceImpl:createInventory run exception!",e);
@@ -164,9 +166,10 @@ public class InventoryDeductWriteServiceImpl  implements
 						.addMetaData("userId", String.valueOf(userId))
 						.addMetaData("system", system)
 						.addMetaData("clientIp", clientIp)
-						.addMetaData("RedisInventoryDO", riDO)
-						.addMetaData("List<RedisGoodsSelectionRelationDO>", rgsrList)
-						.addMetaData("List<RedisGoodsSuppliersInventoryDO>", rgsiList)
+						.addMetaData("totalNumber", totalNumber)
+						.addMetaData("leftNumber", leftNumber)
+						.addMetaData("waterfloodVal", waterfloodVal)
+						.addMetaData("goodsSelectionList", goodsSelectionList)
 						.addMetaData("endTime", System.currentTimeMillis())
 						.addMetaData("useTime", LogUtil.getRunTime(startTime))
 						.addMetaData("result", result).toJson());
@@ -182,11 +185,11 @@ public class InventoryDeductWriteServiceImpl  implements
 					 "",
 					ResultStatusEnum.INVENTORYINIT.getDescription(),
 					userId, system, clientIp, "",
-					asemblyInitJsonData(riDO,rgsrList,rgsiList, pindaoId));
+					asemblyInitJsonData(callResult.getBusinessResult(),goodsSelectionList, pindaoId));
 			//压入日志队列
 			inventoryQueueService.pushLogQueues(logDO);
 			//发送库存新增消息[立即发送]，不在走队列发更新消息了
-			notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(asemblyNotifyMessage(userId, 0L, goodsId, limitStorage, riDO.getWaterfloodVal(), asemblyInitJsonData(riDO,rgsrList,rgsiList, pindaoId))));
+			notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId, 0L, goodsId, limitStorage, waterfloodVal, totalNumber, leftNumber,goodsSelectionList)));
 		}
 
 	  });
@@ -312,8 +315,13 @@ public class InventoryDeductWriteServiceImpl  implements
 						json.toString());
 				//压入日志队列
 				inventoryQueueService.pushLogQueues(logDO);
-				//发送库存新增消息[立即发送]，不在走队列发更新消息了
-				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(asemblyNotifyMessage(userId, 0L, goodsId, 0, 0, json.toString())));
+				//根据key取消息实体
+				RedisInventoryBean result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
+				if(result!=null) {
+					//发送库存新增消息[立即发送]，不在走队列发更新消息了
+					notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
+				}
+				
 			}
 			
 			
@@ -330,7 +338,7 @@ public class InventoryDeductWriteServiceImpl  implements
 		return writeJedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
 			public boolean work(Jedis j) throws Exception {
-				LogModel lm = LogModel.newLogModel("InventoryDeductWriteServiceImpl.deleteInventory(goodsId,List<OrderGoodsSelectionModel>)");
+				LogModel lm = LogModel.newLogModel("InventoryDeductWriteServiceImpl.deleteInventory");
 				long startTime = System.currentTimeMillis();
 				log.info(lm.addMetaData("goodsId",String.valueOf(goodsId))
 						.addMetaData("List<OrderGoodsSelectionModel>",goodsSelectionList)
@@ -433,7 +441,9 @@ public class InventoryDeductWriteServiceImpl  implements
 				//压入日志队列
 				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
-				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(asemblyNotifyMessage(userId, 0L, goodsId, 0, 0, json.toString())));
+				//notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId, 0L, goodsId, 0, 0, json.toString())));
+				RedisInventoryBean result = ObjectUtil.asemblyRedisInventoryBean(goodsId, 0, 0, 0, 0, goodsSelectionList);
+				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
 			}
 			
 		});
@@ -879,6 +889,8 @@ public class InventoryDeductWriteServiceImpl  implements
 						//还原库存,并将消息状态更新为处理完毕，删除状态 :7
 						inventoryQueueService.rollbackInventoryCache(QueueConstant.QUEUE_KEY_MEMBER
 									+ ":" + key,(2));  //DELETE  ("7", "处理完毕:标记删除（deleted）")
+						//将该非正常状况队列状态由初始状态：锁定：3，置为删除:7
+						inventoryQueueService.markQueueStatus(key, (4));
 						/*// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
 						String member = j.get(QueueConstant.QUEUE_KEY_MEMBER
 								+ ":" + key);
@@ -1163,45 +1175,14 @@ public class InventoryDeductWriteServiceImpl  implements
 	 * @param pindaoId
 	 * @return
 	 */
-	private String asemblyInitJsonData(RedisInventoryDO riDO,List<RedisGoodsSelectionRelationDO> rgsrList,
-			 List<RedisGoodsSuppliersInventoryDO> rgsiList ,int pindaoId) {
+	private String asemblyInitJsonData(RedisInventoryDO  riDO,List<OrderGoodsSelectionModel> goodsSelectionList,int pindaoId) {
 		JSONObject json = JSONObject.fromObject(riDO);
 		json.put("频道", pindaoId);
-		if(!CollectionUtils.isEmpty(rgsrList)){
-			json.put("选型商品", rgsrList);
+		if(!CollectionUtils.isEmpty(goodsSelectionList)){
+			json.put("选型&分店商品", goodsSelectionList);
 		}
-		if(!CollectionUtils.isEmpty(rgsiList)){
-			json.put("分店商品", rgsiList);
-		}
-		json.put("频道", pindaoId);
-		// json.put("库存变化",jsonData);
 		return json.toString();
 	}
 	
-	/**
-	 * 装配notifyserver消息对象
-	 * @param userId
-	 * @param orderId
-	 * @param goodsId
-	 * @param limitStorage
-	 * @param waterfloodVal
-	 * @param variableQuantityJsonData
-	 * @return
-	 */
-	private NotifyMessage asemblyNotifyMessage(Long userId, long orderId,
-			Long goodsId, int limitStorage,int waterfloodVal,String variableQuantityJsonData) {
-		//构建消息体
-				NotifyMessage message = new NotifyMessage();
-				message.setUserId(userId);
-				message.setOrderId(orderId);
-				message.setGoodsId(goodsId);
-				message.setLimitStorage(limitStorage);
-				message.setWaterfloodVal(waterfloodVal);
-				message.setVariableQuantityJsonData(variableQuantityJsonData);
-				
-				return message;
-	}
-
 	
-
 }

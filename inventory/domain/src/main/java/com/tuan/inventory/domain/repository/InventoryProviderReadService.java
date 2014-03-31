@@ -7,6 +7,7 @@ import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
+import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 
 public interface InventoryProviderReadService {
@@ -52,4 +53,6 @@ public interface InventoryProviderReadService {
 	public List<RedisInventoryLogDO> getInventoryLogsQueue() throws Exception;
 	
 	public List<RedisInventoryLogDO> getInventoryLogsQueueByIndex() throws Exception;
+	
+	public RedisInventoryBean getInventoryInfosByKey(final String key) throws Exception;
 }

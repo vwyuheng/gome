@@ -1,6 +1,9 @@
 package com.tuan.inventory.domain.support.bean.job;
 
 import java.io.Serializable;
+import java.util.List;
+
+import com.tuan.inventory.model.OrderGoodsSelectionModel;
 
 public class NotifyMessage implements Serializable {
 
@@ -11,9 +14,12 @@ public class NotifyMessage implements Serializable {
 	private Long goodsId;
 	private Long orderId;
 	private java.lang.Integer limitStorage; // 0:库存无限制；1：限制库存
-	private String variableQuantityJsonData;// 库存变化量 商品主体信息中的库存变化量、选型商品或分店则其分别对应的库存变化保存在json数据中
+	//private String variableQuantityJsonData;// 库存变化量 商品主体信息中的库存变化量、选型商品或分店则其分别对应的库存变化保存在json数据中
+	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
+	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
 	private java.lang.Integer waterfloodVal;  //注水值
-	
+	//包括商品选型库存和商品分店库存信息
+	private List<OrderGoodsSelectionModel> goodsSelectionList;
 	public String getSendMsg() {
 		StringBuffer msg = new StringBuffer();
 		msg.append("userId=").append(getUserId()).append("|");
@@ -21,8 +27,10 @@ public class NotifyMessage implements Serializable {
 		msg.append("goodsId=").append(getGoodsId()).append("|");
 		msg.append("orderId=").append(getOrderId()).append("|");
 		msg.append("limitStorage=").append(getLimitStorage()).append("|");
-		msg.append("variableQuantityJsonData=").append(getVariableQuantityJsonData()).append("|");
-		msg.append("waterfloodVal=").append(getWaterfloodVal());
+		msg.append("totalNumber=").append(getTotalNumber()).append("|");
+		msg.append("leftNumber=").append(getLeftNumber()).append("|");
+		msg.append("waterfloodVal=").append(getWaterfloodVal()).append("|");
+		msg.append("goodsSelectionList=").append(getGoodsSelectionList());
 		return msg.toString();
 	}
 
@@ -58,12 +66,20 @@ public class NotifyMessage implements Serializable {
 		this.limitStorage = limitStorage;
 	}
 
-	public String getVariableQuantityJsonData() {
-		return variableQuantityJsonData;
+	public java.lang.Integer getTotalNumber() {
+		return totalNumber;
 	}
 
-	public void setVariableQuantityJsonData(String variableQuantityJsonData) {
-		this.variableQuantityJsonData = variableQuantityJsonData;
+	public void setTotalNumber(java.lang.Integer totalNumber) {
+		this.totalNumber = totalNumber;
+	}
+
+	public java.lang.Integer getLeftNumber() {
+		return leftNumber;
+	}
+
+	public void setLeftNumber(java.lang.Integer leftNumber) {
+		this.leftNumber = leftNumber;
 	}
 
 	public java.lang.Integer getWaterfloodVal() {
@@ -72,6 +88,15 @@ public class NotifyMessage implements Serializable {
 
 	public void setWaterfloodVal(java.lang.Integer waterfloodVal) {
 		this.waterfloodVal = waterfloodVal;
+	}
+
+	public List<OrderGoodsSelectionModel> getGoodsSelectionList() {
+		return goodsSelectionList;
+	}
+
+	public void setGoodsSelectionList(
+			List<OrderGoodsSelectionModel> goodsSelectionList) {
+		this.goodsSelectionList = goodsSelectionList;
 	}
 
 	

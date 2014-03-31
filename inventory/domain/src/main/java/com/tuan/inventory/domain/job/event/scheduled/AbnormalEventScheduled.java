@@ -13,30 +13,28 @@ import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
-import com.tuan.back.model.SingleOrderModel;
+import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
-import com.tuan.inventory.domain.job.event.Event;
-import com.tuan.inventory.domain.job.event.EventHandle;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
+import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
+import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
-import com.tuan.inventory.domain.support.enu.EventType;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
+import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.model.enu.ClientNameEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.util.DateUtils;
 import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
-import com.tuan.ordercenter.model.param.OrderQueryIncParam;
 import com.tuan.ordercenter.model.result.CallResult;
-import com.tuan.ordercenter.model.result.SingleOrderQueryResult;
+import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 /**
  * 调度线程，主要用于非正常情况下的库存消息更新事件调度
@@ -65,9 +63,9 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 	@Resource
 	private InventoryDeductWriteService inventoryDeductWriteService;
 	@Resource
-	private EventHandle logsEventHandle;
-	@Resource
 	InventoryQueueService inventoryQueueService;
+	@Resource
+	NotifyServerSendMessage notifyServerSendMessage;
 	
 	/**
 	 * 构造带不带缓存的客户端
@@ -87,40 +85,40 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 					latch.await(waitTime, TimeUnit.MILLISECONDS);
 					Future<?> future = null;
 					try {
-						System.out.println("execFixedRate4Logs1");
+						System.out.println("execFixedRate4Abnormal1");
 						future = scheduledExecutorService.scheduleAtFixedRate(
 								new AbnormalQueueConsumeTask(),
 								(getInitialDelay() == 0 ? DEFAULTINITIALDELAY
 										: getInitialDelay()),
 								(getDelay() == 0 ? DEFAULTDELAY : getDelay()),
 								TimeUnit.MILLISECONDS);
-						System.out.println("execFixedRate4Logs2");
+						System.out.println("execFixedRate4Abnormal2");
 						if (future != null) {
 							Object result = future.get();
 							if (result == null) {
 								if (logger.isDebugEnabled()) {
-									logger.debug("LogsEventScheduled scheduled return null");
+									logger.debug("AbnormalEventScheduled scheduled return null");
 								}
 								return;
 							}
 							if (logger.isDebugEnabled()) {
-								logger.debug("LogsEventScheduled scheduled :"
+								logger.debug("AbnormalEventScheduled scheduled :"
 										+ result.toString());
 							}
 							
 						}
 					} catch (InterruptedException e) {
 						logger.error(
-								"LogsEventScheduled scheduled Interrupted exception :",
+								"AbnormalEventScheduled scheduled Interrupted exception :",
 								e);
 						future.cancel(true);// 中断执行此任务的线程
 					} catch (ExecutionException e) {
 						logger.error(
-								"LogsEventScheduled scheduled Execution exception:", e);
+								"AbnormalEventScheduled scheduled Execution exception:", e);
 						future.cancel(true);// 中断执行此任务的线程
 					}
 				} catch (Throwable e) {
-					logger.error("LogsEventScheduled scheduled Exception:", e);
+					logger.error("AbnormalEventScheduled scheduled Exception:", e);
 				}
 			}
 
@@ -172,68 +170,74 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 			} catch (Exception e) {
 				logger.error("AbnormalQueueConsumeTask.run error", e);
 			}
+			System.out.println("queueList1="+queueList.size());
 			// 消费数据
 			if (!CollectionUtils.isEmpty(queueList)) {
 				logJSON.put("count", queueList.size());
-				Event event = null;
-				//Future<EventResult>  future = null;
 				AtomicInteger realCount = new AtomicInteger();
+				System.out.println("queueList2="+queueList.size());
 				for (RedisInventoryQueueDO model : queueList) {
 					System.out.println("model="+model.getId());
-					//判断该队列创建时间与当前时间相比，是否过了5分钟还未被处理(更新状态为：ACTIVE 1 正常：有效可处理),此时将它作为异常队列处理
+					System.out.println("创建时间="+TimeUtil.dateFormat(model.getCreateTime()));
+					System.out.println("当前时间="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
+					System.out.println("5分钟前时间="+TimeUtil.dateFormat(DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())));
+					
+					System.out.println("比较结果="+(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())));
+					//判断该队列创建时间与当前时间相比，是否过了Period分钟还未被处理(更新状态为：ACTIVE 1 正常：有效可处理),此时将它作为异常队列处理
 					if(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())) {
 						try {
+							//走hessian调用取订单支付状态
 							OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 									.getObject(OrderQueryService.class,
 											InventoryConfig.QUERY_URL);
-							final OrderQueryIncParam incParam = new OrderQueryIncParam();
-							CallResult<SingleOrderQueryResult>  cllResult= basic.singleOrderQuery("", ClientNameEnum.INNER_SYSTEM.getValue(), String.valueOf(model.getOrderId()), model.getUserId(), null,incParam);
-							if(cllResult.getCallResult())
+							CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
+							OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
+							System.out.println("statEnum="+statEnum);
+							if(statEnum!=null)
 							{
-								//SingleOrderQueryResult singleOrderQueryResult =cllResult.getBusinessResult();
-								SingleOrderModel smodel = (SingleOrderModel) cllResult.getBusinessResult().getResultObject();
 								//1.当订单状态为已付款时
-								if(smodel.getOrderInfoModel().getPayStatus().equals(OrderInfoPayStatusEnum.PAIED)) {
+								if(statEnum.equals(OrderInfoPayStatusEnum.PAIED)) {
 									//TODO 1 发送notifyserver消息通知 2.将队列状态标记删除
+									//根据key取消息实体
+									RedisInventoryBean result = null;
+									try {
+										result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(model.getGoodsId()));
+										System.out.println("result="+result);
+									} catch (Exception e) {
+										// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+									if(result!=null) {
+										//发送库存新增消息[立即发送]，不在走队列发更新消息了
+										notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(model.getUserId(),result)));
+										System.out.println("notifyServerSendMessage,sended");
+									}
 								}else {  //仍然为初始状态时:3
 									//TODO 还原被扣减的库存
 									try {
-										//还款库存并标记删除队列信息
+										// 回滚库存
 										inventoryQueueService.rollbackInventoryCache(String.valueOf(model.getId()), (4));
+										
+										System.out.println("rollbackInventoryCache,rollbacked");
 									} catch (Exception e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
 									}
 									
-									
-									
-									
+								}
+								try {
+									//将该非正常状况队列状态由初始状态：锁定：3，置为删除:7
+									inventoryQueueService.markQueueStatus(String.valueOf(model.getId()), (4));
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
 								}
 							}
 						} catch (MalformedURLException e) {
 							logger.error(e);
 							e.printStackTrace();
 						}
-						//CallResult<SingleOrderQueryResult>  cllResult=  orderCenterFacade.singleOrderQuery("61.135.132.59", "USER_CENTER", 38110009159L, 19204477, null, null);
-					}
-					event = new Event();
-					event.setData(model);
-					// 发送的不再重新进行发送
-					event.setTryCount(0);
-					event.setEventType(getEventType(ResultStatusEnum.LOG
-							.getCode()));
-					event.setUUID(String.valueOf(model.getId()));
-					try {
-						 //从队列中取事件
-						boolean eventResult = logsEventHandle.handleEvent(event);
-						System.out.println("eventresult="+eventResult);
-						if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
-							//移除最后一个元素
-							//inventoryQueueService.lremLogQueue(model);
-						}
-					} catch (Exception e) {
 						
-						e.printStackTrace();
 					}
 					realCount.incrementAndGet();
 					
@@ -247,27 +251,6 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 				logger.debug(logJSON.toString());
 			}
 			
-		}
-
-		/**
-		 * 通过队列类型，获取事件类型,充值和支付都算是支付的事件进行处理
-		 * 
-		 * @param queueTypeEnum
-		 * @return EventType
-		 */
-		public EventType getEventType(final String status) {
-			if (StringUtils.isEmpty(status)) {
-				return null;
-			}
-			if (status.equals(ResultStatusEnum.LOCKED.getCode())) {
-				return EventType.ABNORMAL;
-			} else if (status.equals(ResultStatusEnum.ACTIVE.getCode())) {
-				return EventType.NORMAL;
-			} else if (status.equals(ResultStatusEnum.LOG.getCode())) {
-				return EventType.LOG;
-			} else {
-				return null;
-			}
 		}
 
 		/** 获取上一次的 活动时间 供检测用 */
