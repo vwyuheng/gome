@@ -3,7 +3,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.inventory.domain.job.event.CopyOfLogsEventScheduled;
 public class Test1 {
 	
 	public static void main(String[] args) throws ParseException {

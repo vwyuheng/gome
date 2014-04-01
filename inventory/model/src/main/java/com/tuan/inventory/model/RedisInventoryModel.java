@@ -1,15 +1,14 @@
-package com.tuan.inventory.domain.support.bean;
+package com.tuan.inventory.model;
 
 import java.util.List;
 
 import com.tuan.core.common.lang.TuanBaseDO;
-import com.tuan.inventory.model.OrderGoodsSelectionModel;
 /**
  * 商品库存主体信息
  * @author henry.yu
  * @date 20140310
  */
-public class RedisInventoryBean extends TuanBaseDO {
+public class RedisInventoryModel extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	

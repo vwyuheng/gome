@@ -25,7 +25,6 @@ import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.inventory.domain.support.bean.HandlerResult;
-import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.bean.UpdateInventoryBeanResult;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
@@ -42,6 +41,7 @@ import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
+import com.tuan.inventory.model.RedisInventoryModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
@@ -312,7 +312,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				//压入日志队列
 				inventoryQueueService.pushLogQueues(logDO);
 				//根据key取消息实体
-				RedisInventoryBean result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
+				RedisInventoryModel result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
 				if(result!=null) {
 					//发送库存新增消息[立即发送]，不在走队列发更新消息了
 					notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
@@ -430,7 +430,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
 				//删除比较特殊，只发商品id，若有分店、选型则包括这个就可以了
-				RedisInventoryBean result = ObjectUtil.asemblyRedisInventoryBean(goodsId, 0, 0, 0, 0, goodsSelectionList);
+				RedisInventoryModel result = ObjectUtil.asemblyRedisInventoryBean(goodsId, 0, 0, 0, 0, goodsSelectionList);
 				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
 			}
 			
@@ -993,7 +993,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				//压入日志队列
 				inventoryQueueService.pushLogQueues(logDO);
 				//根据key取消息实体
-				RedisInventoryBean result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
+				RedisInventoryModel result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
 				if(result!=null) {
 					//发送库存新增消息[立即发送]，不在走队列发更新消息了
 					notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
@@ -1078,7 +1078,7 @@ public class InventoryDeductWriteServiceImpl  implements
 //				wf.setWaterfloodVal(num);
 //				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(wf));
 				//根据key取消息实体
-				RedisInventoryBean result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
+				RedisInventoryModel result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
 				if(result!=null) {
 					//发送库存新增消息[立即发送]，不在走队列发更新消息了
 					notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));

@@ -19,7 +19,6 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
-import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.exception.RedisRunException;
 import com.tuan.inventory.domain.support.jedistools.ReadJedisFactory;
@@ -32,6 +31,7 @@ import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
 import com.tuan.inventory.model.GoodsSelectionRelationModel;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
+import com.tuan.inventory.model.RedisInventoryModel;
 import com.tuan.inventory.model.util.QueueConstant;
 
 /**
@@ -430,17 +430,17 @@ public class InventoryProviderReadServiceImpl implements
 		});
 	}
 	@Override
-	public RedisInventoryBean getInventoryInfosByKey(final String key)
+	public RedisInventoryModel getInventoryInfosByKey(final String key)
 			throws Exception {
 		
-		return readJedisFactory.withJedisDo(new JWork<RedisInventoryBean>() {
+		return readJedisFactory.withJedisDo(new JWork<RedisInventoryModel>() {
 			@Override
-			public RedisInventoryBean work(Jedis j) throws Exception {
+			public RedisInventoryModel work(Jedis j) throws Exception {
 				LogModel lm = LogModel.newLogModel("InventoryProviderReadServiceImpl.getInventoryInfosByKey");
 				long startTime = System.currentTimeMillis();
 				log.info(lm.addMetaData("key", key)
 						.addMetaData("startTime", startTime).toJson());
-				RedisInventoryBean result = null;
+				RedisInventoryModel result = null;
 				RedisInventoryDO resultTmp = null;
 				OrderGoodsSelectionModel resultSelOrSup = null;
 				List<OrderGoodsSelectionModel> goodsSelectionList = null;

@@ -17,9 +17,9 @@ import org.springframework.util.CollectionUtils;
 import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
-import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.bean.job.NotifyMessage;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
+import com.tuan.inventory.model.RedisInventoryModel;
 /**
  * map与object对象转换工具类
  * @author henry.yu
@@ -170,7 +170,7 @@ public class ObjectUtil {
 				return message;
 	}
 	
-	public static NotifyMessage asemblyNotifyMessage(Long userId,RedisInventoryBean result) {
+	public static NotifyMessage asemblyNotifyMessage(Long userId,RedisInventoryModel result) {
 		//构建消息体
 				NotifyMessage message = new NotifyMessage();
 				message.setUserId(userId);
@@ -188,8 +188,8 @@ public class ObjectUtil {
 				return message;
 	}
 	
-	public static RedisInventoryBean asemblyRedisInventoryBean(Long goodsId,int totalNumber,int leftNumber, int limitStorage,int waterfloodVal,List<OrderGoodsSelectionModel> goodsSelectionList) {
-		RedisInventoryBean  riBean = new RedisInventoryBean();
+	public static RedisInventoryModel asemblyRedisInventoryBean(Long goodsId,int totalNumber,int leftNumber, int limitStorage,int waterfloodVal,List<OrderGoodsSelectionModel> goodsSelectionList) {
+		RedisInventoryModel  riBean = new RedisInventoryModel();
 		riBean.setGoodsId(goodsId);
 		riBean.setTotalNumber(totalNumber);
 		riBean.setLeftNumber(leftNumber);
@@ -199,8 +199,8 @@ public class ObjectUtil {
 		return riBean;
 	}
 	
-	public static RedisInventoryBean asemblyRedisInventoryBean(RedisInventoryDO riDo,List<OrderGoodsSelectionModel> goodsSelectionList) {
-		RedisInventoryBean  riBean = new RedisInventoryBean();
+	public static RedisInventoryModel asemblyRedisInventoryBean(RedisInventoryDO riDo,List<OrderGoodsSelectionModel> goodsSelectionList) {
+		RedisInventoryModel  riBean = new RedisInventoryModel();
 		if(riDo==null) {
 			return null;
 		}
@@ -227,8 +227,8 @@ public class ObjectUtil {
 		return riDO;
 	}
 	
-	public static RedisInventoryBean switchBean(RedisInventoryDO riDo) {
-		RedisInventoryBean  riBean = new RedisInventoryBean();
+	public static RedisInventoryModel switchBean(RedisInventoryDO riDo) {
+		RedisInventoryModel  riBean = new RedisInventoryModel();
 		if(riDo==null) {
 			return null;
 		}

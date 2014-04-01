@@ -20,9 +20,9 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
-import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
+import com.tuan.inventory.model.RedisInventoryModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 /**
@@ -156,7 +156,7 @@ public class NormalEventScheduled extends AbstractEventScheduled {
 					System.out.println("model="+model.getId());
 						try {
 									//根据key取消息实体
-									RedisInventoryBean result = null;
+									RedisInventoryModel result = null;
 									result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(model.getGoodsId()));
 									System.out.println("result="+result);
 									if(result!=null) {

@@ -22,11 +22,11 @@ import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
-import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtil;
+import com.tuan.inventory.model.RedisInventoryModel;
 import com.tuan.inventory.model.enu.ClientNameEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.util.DateUtils;
@@ -200,7 +200,7 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 											.equals(OrderInfoPayStatusEnum.PAIED)) {
 										//TODO 1 发送notifyserver消息通知 2.将队列状态标记删除
 										//根据key取消息实体
-										RedisInventoryBean result = null;
+										RedisInventoryModel result = null;
 										result = inventoryProviderReadService
 												.getInventoryInfosByKey(String
 														.valueOf(model
