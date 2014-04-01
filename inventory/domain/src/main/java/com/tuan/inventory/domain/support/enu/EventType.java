@@ -8,5 +8,5 @@ package com.tuan.inventory.domain.support.enu;
  * @Date 2014/3/21
  */
 public enum EventType {
-	LOG,NORMAL,ABNORMAL,ERROR,ILLEGAL,SUCCESS;
+	NORMAL,ABNORMAL,ERROR,ILLEGAL,SUCCESS;
 }

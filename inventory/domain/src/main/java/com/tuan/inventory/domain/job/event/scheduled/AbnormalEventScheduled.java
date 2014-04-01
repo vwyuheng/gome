@@ -17,7 +17,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
-import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryDeductWriteService;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
@@ -85,14 +84,14 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 					latch.await(waitTime, TimeUnit.MILLISECONDS);
 					Future<?> future = null;
 					try {
-						System.out.println("execFixedRate4Abnormal1");
+//						System.out.println("execFixedRate4Abnormal1");
 						future = scheduledExecutorService.scheduleAtFixedRate(
 								new AbnormalQueueConsumeTask(),
 								(getInitialDelay() == 0 ? DEFAULTINITIALDELAY
 										: getInitialDelay()),
 								(getDelay() == 0 ? DEFAULTDELAY : getDelay()),
 								TimeUnit.MILLISECONDS);
-						System.out.println("execFixedRate4Abnormal2");
+//						System.out.println("execFixedRate4Abnormal2");
 						if (future != null) {
 							Object result = future.get();
 							if (result == null) {
@@ -166,23 +165,23 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 				queueList = inventoryProviderReadService
 						.getInventoryQueueByScoreStatus(Double
 								.valueOf(ResultStatusEnum.LOCKED.getCode()));
-				System.out.println("AbnormalQueueConsumeTask:run2="+queueList);
+//				System.out.println("AbnormalQueueConsumeTask:run2="+queueList);
 			} catch (Exception e) {
 				logger.error("AbnormalQueueConsumeTask.run error", e);
 			}
-			System.out.println("queueList1="+queueList.size());
+//			System.out.println("queueList1="+queueList.size());
 			// 消费数据
 			if (!CollectionUtils.isEmpty(queueList)) {
 				logJSON.put("count", queueList.size());
 				AtomicInteger realCount = new AtomicInteger();
-				System.out.println("queueList2="+queueList.size());
+//				System.out.println("queueList2="+queueList.size());
 				for (RedisInventoryQueueDO model : queueList) {
-					System.out.println("model="+model.getId());
-					System.out.println("创建时间="+TimeUtil.dateFormat(model.getCreateTime()));
-					System.out.println("当前时间="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
-					System.out.println("5分钟前时间="+TimeUtil.dateFormat(DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())));
-					
-					System.out.println("比较结果="+(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())));
+//					System.out.println("model="+model.getId());
+//					System.out.println("创建时间="+TimeUtil.dateFormat(model.getCreateTime()));
+//					System.out.println("当前时间="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
+//					System.out.println("5分钟前时间="+TimeUtil.dateFormat(DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())));
+//					
+//					System.out.println("比较结果="+(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())));
 					//判断该队列创建时间与当前时间相比，是否过了Period分钟还未被处理(更新状态为：ACTIVE 1 正常：有效可处理),此时将它作为异常队列处理
 					if(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(getPeriod()==0?DEFAULTPERIOD:getPeriod())) {
 						try {
@@ -192,45 +191,47 @@ public class AbnormalEventScheduled extends AbstractEventScheduled {
 											InventoryConfig.QUERY_URL);
 							CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 							OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
-							System.out.println("statEnum="+statEnum);
+//							System.out.println("statEnum="+statEnum);
 							if(statEnum!=null)
 							{
-								//1.当订单状态为已付款时
-								if(statEnum.equals(OrderInfoPayStatusEnum.PAIED)) {
-									//TODO 1 发送notifyserver消息通知 2.将队列状态标记删除
-									//根据key取消息实体
-									RedisInventoryBean result = null;
-									try {
-										result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(model.getGoodsId()));
-										System.out.println("result="+result);
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-									if(result!=null) {
-										//发送库存新增消息[立即发送]，不在走队列发更新消息了
-										notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(model.getUserId(),result)));
-										System.out.println("notifyServerSendMessage,sended");
-									}
-								}else {  //仍然为初始状态时:3
-									//TODO 还原被扣减的库存
-									try {
-										// 回滚库存
-										inventoryQueueService.rollbackInventoryCache(String.valueOf(model.getId()), (4));
-										
-										System.out.println("rollbackInventoryCache,rollbacked");
-									} catch (Exception e) {
-										// TODO Auto-generated catch block
-										e.printStackTrace();
-									}
-									
-								}
 								try {
+									//1.当订单状态为已付款时
+									if (statEnum
+											.equals(OrderInfoPayStatusEnum.PAIED)) {
+										//TODO 1 发送notifyserver消息通知 2.将队列状态标记删除
+										//根据key取消息实体
+										RedisInventoryBean result = null;
+										result = inventoryProviderReadService
+												.getInventoryInfosByKey(String
+														.valueOf(model
+																.getGoodsId()));
+										//System.out.println("result="+result);
+										if (result != null) {
+											//发送库存新增消息[立即发送]，不在走队列发更新消息了
+											notifyServerSendMessage
+													.sendNotifyServerMessage(JSONObject
+															.fromObject(ObjectUtil
+																	.asemblyNotifyMessage(
+																			model.getUserId(),
+																			result)));
+											//System.out.println("notifyServerSendMessage,sended");
+										}
+									} else { //仍然为初始状态时:3
+										//TODO 还原被扣减的库存
+										// 回滚库存
+										inventoryQueueService
+												.rollbackInventoryCache(
+														String.valueOf(model
+																.getId()), (4));
+
+										//System.out.println("rollbackInventoryCache,rollbacked");
+
+									}
 									//将该非正常状况队列状态由初始状态：锁定：3，置为删除:7
-									inventoryQueueService.markQueueStatus(String.valueOf(model.getId()), (4));
+									inventoryQueueService.markQueueStatus(
+											String.valueOf(model.getId()), (4));
 								} catch (Exception e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									logger.error("AbnormalQueueConsumeTask.run error", e);
 								}
 							}
 						} catch (MalformedURLException e) {

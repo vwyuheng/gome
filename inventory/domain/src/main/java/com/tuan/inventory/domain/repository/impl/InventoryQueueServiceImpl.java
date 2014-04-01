@@ -125,6 +125,7 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 					// zset key score value 其中score作为status用
 					p.zadd(QueueConstant.QUEUE_SEND_MESSAGE,
 							Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
+							//Double.valueOf(ResultStatusEnum.ACTIVE.getCode()),  //测试用
 							jsonMember);
 				} catch (Exception e) {
 					log.error(
@@ -229,7 +230,7 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 						.addMetaData("upStatusNum", upStatusNum)
 						.addMetaData("startTime", startTime).toJson());
 				// 事务声明、开启事务
-				Transaction ts = p.multi();
+				//Transaction ts = p.multi();
 				try {
 					// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
 					String member = p.get(QueueConstant.QUEUE_KEY_MEMBER + ":"
@@ -239,7 +240,7 @@ public class InventoryQueueServiceImpl implements InventoryQueueService {
 					p.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),
 							member);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
 				} catch (Exception e) {
 					log.error(
 							lm.addMetaData("key",

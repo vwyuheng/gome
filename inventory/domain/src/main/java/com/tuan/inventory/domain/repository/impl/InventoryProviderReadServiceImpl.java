@@ -400,10 +400,16 @@ public class InventoryProviderReadServiceImpl implements
 				try {
 					//总是取最后一个元素
 					String elements = j.lindex(QueueConstant.QUEUE_LOGS_MESSAGE, (-1));
+					//每次取20个元素[从最后一个元素往前推],为什么不这样取，因为为了保证日志不丢失
+					//List<String> elements = j.lrange(QueueConstant.QUEUE_LOGS_MESSAGE, (-20),(-1));
 					if(StringUtils.isNotEmpty(elements)){
+					//if(!CollectionUtils.isEmpty(elements)){
 						result =  new ArrayList<RedisInventoryLogDO>();
-						RedisInventoryLogDO tmpResult = JsonUtils.convertStringToObject(elements, RedisInventoryLogDO.class);
-						result.add(tmpResult);
+						//for(String element:elements) {
+							RedisInventoryLogDO tmpResult = JsonUtils.convertStringToObject(elements, RedisInventoryLogDO.class);
+							result.add(tmpResult);
+						//}
+						
 					}
 					
 				} catch (Exception e) {
@@ -447,10 +453,15 @@ public class InventoryProviderReadServiceImpl implements
 					//根据key取消息实体
 					Map<String, String> objMap = j
 							.hgetAll(InventoryEnum.HASHCACHE + ":"+ key);
+					// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
+					//String member = j.get(QueueConstant.QUEUE_KEY_MEMBER + ":"
+						//	+ key);
 					if (!CollectionUtils.isEmpty(objMap)) { // if1
+					//if (StringUtils.isNotEmpty(member)) { // if1
 						resultTmp = (RedisInventoryDO) ObjectUtil
 								.convertMap(RedisInventoryDO.class,
 										objMap);
+						//resultTmp = JsonUtils.convertStringToObject(member, RedisInventoryDO.class);
 					}
 					if(resultTmp==null) {
 						return result;

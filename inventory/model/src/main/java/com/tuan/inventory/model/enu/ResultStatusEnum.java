@@ -9,7 +9,7 @@ public enum ResultStatusEnum {
 	DELETE  ("7", "处理完毕:标记删除（deleted）"),
 	
 	
-	LOG		("9",	"日志"),
+	//LOG		("9",	"日志"),
 	
 	
 	//业务类型type

@@ -19,7 +19,13 @@
 	<property name="delay" value="3000" /> 
 	</bean>
 	
-
+ <!-- 正常情况下固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
+	<bean id="NormalEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.NormalEventScheduled" init-method="execFixedRate4Normal">
+	<!-- 初始化延时 单位：毫秒-->
+	<property name="initialDelay" value="2000" /> 
+	<!-- 两次开始执行最小间隔时间 单位：毫秒-->
+	<property name="delay" value="3000" /> 
+	</bean>
 
 
  <!-- 非正常情况下固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->

@@ -16,23 +16,25 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
-import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
-import com.tuan.inventory.domain.job.event.Event;
-import com.tuan.inventory.domain.job.event.EventHandle;
+import com.tuan.inventory.dao.data.redis.RedisInventoryQueueDO;
 import com.tuan.inventory.domain.repository.InventoryProviderReadService;
 import com.tuan.inventory.domain.repository.InventoryQueueService;
+import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
+import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.util.DataUtil;
+import com.tuan.inventory.domain.support.util.ObjectUtil;
+import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 /**
- * 调度线程，主要用于日志事件初始化调度
+ * 调度线程，主要用于确认回调ok情况下的库存消息更新事件调度
  * 
  * @author henry.yu
- * @Date 2014/3/24
+ * @Date 2014/04/01
  */
-public class LogsEventScheduled extends AbstractEventScheduled {
+public class NormalEventScheduled extends AbstractEventScheduled {
 
 	private final static Log logger = LogFactory
-			.getLog(LogsEventScheduled.class);
+			.getLog(NormalEventScheduled.class);
 	
 	// 默认初始化延时 单位：毫秒
 	private static final long DEFAULTINITIALDELAY = 3 * 1000;
@@ -45,21 +47,21 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 	@Resource
 	private InventoryProviderReadService inventoryProviderReadService;
 	@Resource
-	private EventHandle logsEventHandle;
-	@Resource
 	InventoryQueueService inventoryQueueService;
+	@Resource
+	NotifyServerSendMessage notifyServerSendMessage;
 	
 	/**
 	 * 构造带不带缓存的客户端
 	 */
-	public LogsEventScheduled() {
+	public NormalEventScheduled() {
 		super();
 	}
 
 	/**
 	 * 负责按照一定的频率执行日志的消费事件的封装
 	 */
-	public void execFixedRate4Logs() {
+	public void execFixedRate4Normal() {
 		new Thread() {
 			public void run() {
 				try {
@@ -67,40 +69,40 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 					latch.await(waitTime, TimeUnit.MILLISECONDS);
 					Future<?> future = null;
 					try {
-//						System.out.println("execFixedRate4Logs1");
+						System.out.println("execFixedRate4Normal1");
 						future = scheduledExecutorService.scheduleAtFixedRate(
-								new LogQueueConsumeTask(),
+								new NormalQueueConsumeTask(),
 								(getInitialDelay() == 0 ? DEFAULTINITIALDELAY
 										: getInitialDelay()),
 								(getDelay() == 0 ? DEFAULTDELAY : getDelay()),
 								TimeUnit.MILLISECONDS);
-//						System.out.println("execFixedRate4Logs2");
+						System.out.println("execFixedRate4Normal2");
 						if (future != null) {
 							Object result = future.get();
 							if (result == null) {
 								if (logger.isDebugEnabled()) {
-									logger.debug("LogsEventScheduled scheduled return null");
+									logger.debug("NormalEventScheduled scheduled return null");
 								}
 								return;
 							}
 							if (logger.isDebugEnabled()) {
-								logger.debug("LogsEventScheduled scheduled :"
+								logger.debug("NormalEventScheduled scheduled :"
 										+ result.toString());
 							}
 							
 						}
 					} catch (InterruptedException e) {
 						logger.error(
-								"LogsEventScheduled scheduled Interrupted exception :",
+								"NormalEventScheduled scheduled Interrupted exception :",
 								e);
 						future.cancel(true);// 中断执行此任务的线程
 					} catch (ExecutionException e) {
 						logger.error(
-								"LogsEventScheduled scheduled Execution exception:", e);
+								"NormalEventScheduled scheduled Execution exception:", e);
 						future.cancel(true);// 中断执行此任务的线程
 					}
 				} catch (Throwable e) {
-					logger.error("LogsEventScheduled scheduled Exception:", e);
+					logger.error("NormalEventScheduled scheduled Exception:", e);
 				}
 			}
 
@@ -123,55 +125,53 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 		this.delay = delay;
 	}
 
-	class LogQueueConsumeTask implements Runnable {
+	class NormalQueueConsumeTask implements Runnable {
 
 		private volatile long lastStartTime = System.currentTimeMillis();
 
 		public void run() {
 			JSONObject logJSON = new JSONObject();
 			long startTime = System.currentTimeMillis();
-			logJSON.put("LogQueueConsumeTask.run startTime",
+			logJSON.put("NormalQueueConsumeTask.run startTime",
 					DataUtil.formatDate(new Date(startTime)));
 			// 刷新上一次活跃时间
 			lastStartTime = startTime;
-			List<RedisInventoryLogDO> queueLogList = null;
+			List<RedisInventoryQueueDO> queueList = null;
 			try {
-				//取日志队列信息
-				queueLogList = inventoryProviderReadService
-						.getInventoryLogsQueueByIndex();
-//				System.out.println("LogQueueConsumeTask:run2="+queueLogList);
+				//取初始状态队列信息
+				queueList = inventoryProviderReadService
+						.getInventoryQueueByScoreStatus(Double
+								.valueOf(ResultStatusEnum.ACTIVE.getCode()));
+				System.out.println("NormalQueueConsumeTask:run2="+queueList);
 			} catch (Exception e) {
-				logger.error("LogQueueConsumeTask.run error", e);
+				logger.error("NormalQueueConsumeTask.run error", e);
 			}
+			//System.out.println("queueList1="+queueList.size());
 			// 消费数据
-			if (!CollectionUtils.isEmpty(queueLogList)) {
-				logJSON.put("count", queueLogList.size());
-				Event event = null;
-				//Future<EventResult>  future = null;
+			if (!CollectionUtils.isEmpty(queueList)) {
+				logJSON.put("count", queueList.size());
 				AtomicInteger realCount = new AtomicInteger();
-				for (RedisInventoryLogDO model : queueLogList) {
-					//System.out.println("model="+model.getId());
-					event = new Event();
-					event.setData(model);
-					// 发送的不再重新进行发送
-					event.setTryCount(0);
-//					event.setEventType(getEventType(ResultStatusEnum.LOG
-//							.getCode()));
-					event.setUUID(String.valueOf(model.getId()));
-					try {
-						 //从队列中取事件
-						boolean eventResult = logsEventHandle.handleEvent(event);
-//						System.out.println("eventresult="+eventResult);
-						if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
-							//移除最后一个元素
-							inventoryQueueService.lremLogQueue(model);
+				System.out.println("queueList2="+queueList.size());
+				for (RedisInventoryQueueDO model : queueList) {
+					System.out.println("model="+model.getId());
+						try {
+									//根据key取消息实体
+									RedisInventoryBean result = null;
+									result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(model.getGoodsId()));
+									System.out.println("result="+result);
+									if(result!=null) {
+										//发送库存新增消息[立即发送]，不在走队列发更新消息了
+										notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(model.getUserId(),result)));
+										System.out.println("notifyServerSendMessage,sended");
+									}
+									//将该正常状况队列状态由活跃状态：ACTIVE		("1",	"正常：有效可处理（active）")，置为删除:7
+									inventoryQueueService.markQueueStatus(String.valueOf(model.getId()), (6));
+									realCount.incrementAndGet();
+						} catch (Exception e) {
+							logger.error(e);
+							e.printStackTrace();
 						}
-					} catch (Exception e) {
-						logger.error("LogQueueConsumeTask.run error", e);
-						e.printStackTrace();
-					}
-					realCount.incrementAndGet();
-					
+
 				}
 				logJSON.put("realcount", realCount.get());
 			

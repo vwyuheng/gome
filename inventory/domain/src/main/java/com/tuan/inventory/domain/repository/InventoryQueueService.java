@@ -30,4 +30,6 @@ public interface InventoryQueueService {
 	 * @throws Exception
 	 */
 	public void markQueueStatus(final String key,final int upStatusNum) throws Exception ;
+	
+	//public void ltrimLogQueue(final RedisInventoryLogDO logDO) throws Exception;
 }

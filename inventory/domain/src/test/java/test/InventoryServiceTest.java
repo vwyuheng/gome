@@ -237,7 +237,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		for(int i=0;i<1000;i++) {
 			RedisInventoryQueueDO queue = new RedisInventoryQueueDO();
 			queue.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
-			queue.setGoodsId(2L);
+			queue.setGoodsId(Long.valueOf(i));
 			queue.setOrderId(3L);
 			queue.setType(QueueConstant.GOODS);
 			queue.setItem("²âÊÔ");
@@ -246,6 +246,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			queue.setVariableQuantityJsonData("numL:10");
 			queue.setCreateTime(DateUtils.getBeforXTimestamp10Long(6));
 			try {
+				inventoryDeductReadWriteService.createInventory(Long.valueOf(i), 1, 1, 5L, "system", "127.0.0.1", 100, 50, 100, null);
 				inventoryQueueService.pushQueueSendMsg(queue);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
