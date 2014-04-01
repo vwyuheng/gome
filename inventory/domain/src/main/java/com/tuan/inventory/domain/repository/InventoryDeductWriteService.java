@@ -3,9 +3,6 @@ package com.tuan.inventory.domain.repository;
 import java.util.List;
 import java.util.Map;
 
-import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
-import com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO;
-import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
 import com.tuan.inventory.model.OrderGoodsSelectionModel;
 /**
  * 库存扣减写服务接口
