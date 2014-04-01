@@ -84,7 +84,7 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean inventoryAdjustment(final String key,final String field,final int num) throws Exception;
+	public boolean inventoryAdjustment(final long goodsId,final String field,final int num,final Long userId, final String system, final String clientIp) throws Exception;
 	/**
 	 * 注水值调整服务,指定了field：waterfloodVal
 	 * @param key 
@@ -92,7 +92,7 @@ public interface InventoryDeductWriteService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean waterfloodValAdjustment(final String key,final int num,final Long userId, final String system, final String clientIp) throws Exception;
+	public boolean waterfloodValAdjustment(final long goodsId,final int num,final Long userId, final String system, final String clientIp) throws Exception;
 	
 	
 }

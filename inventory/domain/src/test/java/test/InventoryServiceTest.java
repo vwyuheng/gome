@@ -28,7 +28,6 @@ import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.util.DateUtils;
 import com.tuan.inventory.model.util.QueueConstant;
-import com.tuan.notifyserver.core.pclient.ProducerClient;
 import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
 import com.tuan.ordercenter.model.result.CallResult;
@@ -179,7 +178,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void testWrite() {
 		try {
-			inventoryDeductReadWriteService.waterfloodValAdjustment("100", 1,11L,"库存管理系统","127.0.0.1");
+			inventoryDeductReadWriteService.waterfloodValAdjustment(100, 1,11L,"库存管理系统","127.0.0.1");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

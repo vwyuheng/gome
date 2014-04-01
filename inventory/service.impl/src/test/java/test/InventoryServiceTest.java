@@ -108,7 +108,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void testWrite() {
 		try {
-			inventoryDeductReadWriteService.waterfloodValAdjustment("100", 1,11L,"库存管理系统","127.0.0.1");
+			inventoryDeductReadWriteService.waterfloodValAdjustment(100, 1,11L,"库存管理系统","127.0.0.1");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

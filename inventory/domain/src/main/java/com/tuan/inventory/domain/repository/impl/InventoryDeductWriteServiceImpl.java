@@ -27,7 +27,6 @@ import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.inventory.domain.support.bean.HandlerResult;
 import com.tuan.inventory.domain.support.bean.RedisInventoryBean;
 import com.tuan.inventory.domain.support.bean.UpdateInventoryBeanResult;
-import com.tuan.inventory.domain.support.bean.message.WaterfloodValAdjustment;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.enu.InventoryEnum;
 import com.tuan.inventory.domain.support.enu.InventoryVarQttEnum;
@@ -299,9 +298,6 @@ public class InventoryDeductWriteServiceImpl  implements
 
 			@Override
 			public void workAfter(Jedis p) throws Exception {
-				// TODO 记录覆盖更新单条库存信息的日志
-				// TODO 发送相关更新的消息
-				
 				JSONObject json = new JSONObject();
 				json.put("field", field);
 				json.put("value", value);
@@ -392,15 +388,9 @@ public class InventoryDeductWriteServiceImpl  implements
 										+ String.valueOf(goodsId));
 						// 执行事务
 						// ts.exec();
-					}// else {//if1
-						// 保证下一个事务的执行不受影响
-						// jedis.unwatch();
-					// }
+					}
 					if (redisAck > 0) {
-						// TODO 发送库存更新消息
-
 						result = true;
-						
 						UpdateInventoryBeanResult beanResult = new UpdateInventoryBeanResult();
 						beanResult.setCallResult(result);
 						//beanResult.setJsonData(jsonData.toString());
@@ -425,8 +415,6 @@ public class InventoryDeductWriteServiceImpl  implements
 
 			@Override
 			public void workAfter(Jedis p) throws Exception {
-				// TODO 记录库存删除日志
-				// TODO 发送库存更新消息
 				UpdateInventoryBeanResult beanResult = callResult.getBusinessResult();
 				JSONObject json = new JSONObject();
 				json.put("goodsSelectionList", goodsSelectionList);
@@ -441,7 +429,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				//压入日志队列
 				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
-				//notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId, 0L, goodsId, 0, 0, json.toString())));
+				//删除比较特殊，只发商品id，若有分店、选型则包括这个就可以了
 				RedisInventoryBean result = ObjectUtil.asemblyRedisInventoryBean(goodsId, 0, 0, 0, 0, goodsSelectionList);
 				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
 			}
@@ -943,8 +931,8 @@ public class InventoryDeductWriteServiceImpl  implements
 	}
 
 	@Override
-	public boolean inventoryAdjustment(final String key, final String field,
-			final int num) throws Exception {
+	public boolean inventoryAdjustment(final long goodsId, final String field,
+			final int num,final Long userId, final String system, final String clientIp) throws Exception {
 
 		return writeJedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
@@ -952,7 +940,7 @@ public class InventoryDeductWriteServiceImpl  implements
 				LogModel lm = LogModel.newLogModel("InventoryDeductWriteServiceImpl.inventoryAdjustment(key,field,num)");
 				long startTime = System.currentTimeMillis();
 				log.info(lm.addMetaData("key",InventoryEnum.HASHCACHE
-						+ ":"+key)
+						+ ":"+String.valueOf(goodsId))
 						.addMetaData("field",field)
 						.addMetaData("num",String.valueOf(num))
 						.addMetaData("startTime", startTime).toJson());
@@ -965,13 +953,13 @@ public class InventoryDeductWriteServiceImpl  implements
 					 * 如果域 field 不存在，那么在执行命令前，域的值被初始化为 0 。
 					 */
 					Long resultAck = j.hincrBy(InventoryEnum.HASHCACHE
-							+ ":"+key, field, (num));
+							+ ":"+String.valueOf(goodsId), field, (num));
 					if (resultAck >= 0) { // 因为库存、注水等值不能为负数
 						result = true;
 					}
 				} catch (Exception e) {
 					log.error(lm.addMetaData("key",InventoryEnum.HASHCACHE
-							+ ":"+key)
+							+ ":"+String.valueOf(goodsId))
 							.addMetaData("field",field)
 							.addMetaData("num",String.valueOf(num))
 							.addMetaData("endTime", System.currentTimeMillis())
@@ -979,7 +967,7 @@ public class InventoryDeductWriteServiceImpl  implements
 					throw new RedisRunException("InventoryDeductWriteServiceImpl:inventoryCallbackAck run exception!",e);
 				}
 				log.info(lm.addMetaData("key",InventoryEnum.HASHCACHE
-						+ ":"+key)
+						+ ":"+String.valueOf(goodsId))
 						.addMetaData("field",field)
 						.addMetaData("num",String.valueOf(num))
 						.addMetaData("endTime", System.currentTimeMillis())
@@ -990,9 +978,28 @@ public class InventoryDeductWriteServiceImpl  implements
 
 			@Override
 			public void workAfter(Jedis p) throws Exception {
-				//TODO 记录相应调整日志
-				// TODO 也要发送相应调整通知
+				JSONObject json = new JSONObject();
+				json.put("goodsId", goodsId);
+				json.put("field", field);
+				json.put("value", num);
+				// 构建库存操作日志对象
+				RedisInventoryLogDO logDO = asemblyLogDO(
+						sequenceUtil.getSequence(SEQNAME.seq_log),
+						goodsId, 0L, "", "",
+						 "",
+						ResultStatusEnum.MANUALADAPT.getDescription(),
+						userId, system, clientIp, "",
+						json.toString());
+				//压入日志队列
+				inventoryQueueService.pushLogQueues(logDO);
+				//根据key取消息实体
+				RedisInventoryBean result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
+				if(result!=null) {
+					//发送库存新增消息[立即发送]，不在走队列发更新消息了
+					notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
+				}
 				
+			
 			}
 			
 		});
@@ -1000,7 +1007,7 @@ public class InventoryDeductWriteServiceImpl  implements
 	}
 
 	@Override
-	public boolean waterfloodValAdjustment(final String key, final int num,final Long userId, final String system, final String clientIp)
+	public boolean waterfloodValAdjustment(final long goodsId, final int num,final Long userId, final String system, final String clientIp)
 			throws Exception {
 
 		return writeJedisFactory.withJedisDo(new JWork<Boolean>() {
@@ -1009,8 +1016,11 @@ public class InventoryDeductWriteServiceImpl  implements
 				LogModel lm = LogModel.newLogModel("InventoryDeductWriteServiceImpl.waterfloodValAdjustment(key,num)");
 				long startTime = System.currentTimeMillis();
 				log.info(lm.addMetaData("key",InventoryEnum.HASHCACHE
-						+ ":"+key)
+						+ ":"+goodsId)
 						.addMetaData("num",String.valueOf(num))
+						.addMetaData("userId",String.valueOf(userId))
+						.addMetaData("system",system)
+						.addMetaData("clientIp",clientIp)
 						.addMetaData("startTime", startTime).toJson());
 				boolean result = false;
 				if (j == null)
@@ -1018,22 +1028,28 @@ public class InventoryDeductWriteServiceImpl  implements
 				try {
 					// hincrby返回的是field更新后的值
 					Long resultAck = j.hincrBy(InventoryEnum.HASHCACHE
-							+ ":"+key,
+							+ ":"+String.valueOf(goodsId),
 							HashFieldEnum.waterfloodVal.toString(), (num));
 					if (resultAck >= 0) { // 因为注水值不能为负数
 						result = true;
 					}
 				} catch (Exception e) {
 					log.error(lm.addMetaData("key",InventoryEnum.HASHCACHE
-							+ ":"+key)
+							+ ":"+String.valueOf(goodsId))
 							.addMetaData("num",String.valueOf(num))
+							.addMetaData("userId",String.valueOf(userId))
+						    .addMetaData("system",system)
+						    .addMetaData("clientIp",clientIp)
 							.addMetaData("endTime", System.currentTimeMillis())
 							.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
 					throw new RedisRunException("InventoryDeductWriteServiceImpl:waterfloodValAdjustment run exception!",e);
 				}
 				log.info(lm.addMetaData("key",InventoryEnum.HASHCACHE
-						+ ":"+key)
+						+ ":"+String.valueOf(goodsId))
 						.addMetaData("num",String.valueOf(num))
+						.addMetaData("userId",String.valueOf(userId))
+						.addMetaData("system",system)
+						.addMetaData("clientIp",clientIp)
 						.addMetaData("endTime", System.currentTimeMillis())
 						.addMetaData("useTime", LogUtil.getRunTime(startTime))
 						.addMetaData("result", result).toJson());
@@ -1042,16 +1058,14 @@ public class InventoryDeductWriteServiceImpl  implements
 
 			@Override
 			public void workAfter(Jedis p) throws Exception {
-				//TODO 记录相应注水值调整日志
-				// TODO 发送注水值调整通知
 				JSONObject json = new JSONObject();
-				json.put("key", key);
-				json.put("HashFieldEnum.waterfloodVal.toString()", HashFieldEnum.waterfloodVal.toString());
+				json.put("key", String.valueOf(goodsId));
+				json.put("field", HashFieldEnum.waterfloodVal.toString());
 				json.put("num", num);
 				// 构建库存操作日志对象
 				RedisInventoryLogDO logDO = asemblyLogDO(
 						sequenceUtil.getSequence(SEQNAME.seq_log),
-						Long.valueOf(key), 0L, "", "",
+						goodsId, 0L, "", "",
 						 "",
 						ResultStatusEnum.MANUALADAPT.getDescription(),
 						userId, system, clientIp, "",
@@ -1059,10 +1073,16 @@ public class InventoryDeductWriteServiceImpl  implements
 				//压入日志队列
 				inventoryQueueService.pushLogQueues(logDO);
 				//发送库存新增消息[立即发送]，不在走队列发更新消息了
-				WaterfloodValAdjustment wf = new WaterfloodValAdjustment();
-				wf.setGoodsId(Long.valueOf(key));
-				wf.setWaterfloodVal(num);
-				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(wf));
+//				WaterfloodValAdjustment wf = new WaterfloodValAdjustment();
+//				wf.setGoodsId(Long.valueOf(key));
+//				wf.setWaterfloodVal(num);
+//				notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(wf));
+				//根据key取消息实体
+				RedisInventoryBean result = inventoryProviderReadService.getInventoryInfosByKey(String.valueOf(goodsId));
+				if(result!=null) {
+					//发送库存新增消息[立即发送]，不在走队列发更新消息了
+					notifyServerSendMessage.sendNotifyServerMessage(JSONObject.fromObject(ObjectUtil.asemblyNotifyMessage(userId,result)));
+				}
 			}
 			
 		});
