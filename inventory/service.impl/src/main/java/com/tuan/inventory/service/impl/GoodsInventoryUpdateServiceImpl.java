@@ -17,14 +17,14 @@ import com.tuan.inventory.model.param.CreatorInventoryParam;
 import com.tuan.inventory.model.param.DeleteInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
-import com.tuan.inventory.service.InventoryCreateService;
+import com.tuan.inventory.service.GoodsInventoryUpdateService;
 import com.tuan.inventory.service.InventoryUpdateServiceCallback;
 import com.wowotrace.trace.model.Message;
 import com.wowotrace.trace.util.TraceMessageUtil;
 import com.wowotrace.traceEnum.MessageResultEnum;
 import com.wowotrace.traceEnum.MessageTypeEnum;
 
-public class InventoryCreateServiceImpl  extends AbstractInventoryService implements InventoryCreateService {
+public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService implements GoodsInventoryUpdateService {
 	@Resource
 	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
 	@Resource

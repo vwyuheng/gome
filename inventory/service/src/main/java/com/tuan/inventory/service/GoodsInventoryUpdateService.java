@@ -11,7 +11,7 @@ import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.wowotrace.trace.model.Message;
 
-public interface InventoryCreateService {
+public interface GoodsInventoryUpdateService {
 	/** 
 	 * 创建库存接口，根据传入的参数创建库存
 	 * @param clientIp String 客户端ip地址
