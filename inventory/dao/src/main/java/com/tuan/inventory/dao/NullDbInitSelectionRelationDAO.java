@@ -1,6 +1,6 @@
 package com.tuan.inventory.dao;
 
-import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 /**
  * ¿â´æÏµÍ³myql´æ´¢dao
  * @author henry.yu
@@ -8,8 +8,8 @@ import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
  */
 public interface NullDbInitSelectionRelationDAO {
 
-	 int insertSelectionRelation(RedisGoodsSelectionRelationDO rgsrDo);
-	 int updateSelectionRelation(RedisGoodsSelectionRelationDO rgsrDo);
+	 int insertSelectionRelation(GoodsSelectionDO rgsrDo);
+	 int updateSelectionRelation(GoodsSelectionDO rgsrDo);
 	 
 	 int deleteSelectionRelationById(int id);
 }

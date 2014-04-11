@@ -4,28 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.wowotrace.trace.model.Message;
+import com.wowotrace.trace.util.TraceMessageUtil;
+
 import net.sf.json.JSONObject;
 
 public class LogModel {
-	/** 附加信息集 */
-	Map<String, Object> datas;
-	String method;
-	long start=0;
-	private final AtomicInteger serialId = new AtomicInteger(0);   
-	private LogModel(String name) {
+	private Map<String, Object> datas;
+	private String traceId;
+	private final AtomicInteger serialId = new AtomicInteger(0); 
+	
+	private LogModel(String traceId) {
 		datas = new HashMap<String, Object>();
-		start=System.currentTimeMillis();
-		method = name + "#" +start  + "#";
-		datas.put("_method", method);
+		this.traceId = traceId;
+		datas.put("_traceId", traceId);
 	}
 
-	public static LogModel newLogModel(String method) {
-		return new LogModel(method);
+	public static LogModel newLogModel() {
+		Message messageRoot = TraceMessageUtil.newRootMessage();
+		return new LogModel(messageRoot.getTraceHeader().getRootId());
 	}
-
-	public LogModel setResultMessage(long result, String message) {
-		addMetaData("_result", result).addMetaData("_message", message);
-		return this;
+	
+	public static LogModel newLogModel(String traceId) {
+		return new LogModel(traceId);
 	}
 
 	public LogModel addMetaData(String key, Object value) {
@@ -35,11 +36,7 @@ public class LogModel {
 			datas.put(key, "");
 		return this;
 	}
-	public LogModel delMetaData(String key) {
-		if (key != null)
-			datas.remove(key); 		
-		return this;
-	}
+
 	public Map<String, Object> toMap() {
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (Map.Entry<String, Object> entry : datas.entrySet()) {
@@ -47,43 +44,50 @@ public class LogModel {
 		}
 		return map;
 	}
+	
+	public LogModel setMethod(String method){
+		datas.put("_method", method);
+		return this;
+	}
 
 	public String toJson(boolean purge) {
 		try {
 			datas.put("_serialId", serialId.incrementAndGet());
 			if (purge) {
-				datas.put("handleCost", System.currentTimeMillis()-start);
 				JSONObject ja = JSONObject.fromObject(datas);
-				purge();
+				this.datas.clear();
+				datasInit();
 				return ja.toString();
 
 			} else {
 				Map<String, Object> map = toMap();
-				map.put("handleCost", System.currentTimeMillis()-start);
 				if (map != null) {
 					JSONObject ja = JSONObject.fromObject(map);
 					return ja.toString();
 				}
 			}
 		} catch (Exception e) {
-//			System.out.println(e.getMessage()+"### datas ="+datas);
 			e.printStackTrace();
 		}
-
 		return "{data:error}";
 	}
-
-	private void purge() {
-		this.datas.clear();
-		datas.put("_method", method);
-
+	
+	private void datasInit(){
+		datas.put("_traceId", this.traceId);
 	}
+	
+	public String toJson(Object obj) {
+		JSONObject ja = JSONObject.fromObject(obj);
+		return ja.toString();
+	}
+	
 	public String endJson() {
 		return toJson(true);
-
 	}
 	public String toJson() {
 		return toJson(true);
-
+	}
+	public String getTraceId() {
+		return traceId;
 	}
 }

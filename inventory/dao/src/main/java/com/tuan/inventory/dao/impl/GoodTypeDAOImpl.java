@@ -90,9 +90,9 @@ public class GoodTypeDAOImpl extends SqlMapClientDaoSupport implements GoodTypeD
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIds(List<Long> selectionRelationIdList, long goodsId){
-		if(selectionRelationIdList == null || selectionRelationIdList.isEmpty()){
+		/*if(selectionRelationIdList == null || selectionRelationIdList.isEmpty()){
 			return null;
-		}
+		}*/
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("selectionRelationIdList", selectionRelationIdList);
 		if (goodsId > 0) {
@@ -106,6 +106,18 @@ public class GoodTypeDAOImpl extends SqlMapClientDaoSupport implements GoodTypeD
 	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
 		return (GoodsAttributeInventoryDO) super.getSqlMapClientTemplate().
 				queryForObject("selectGoodsNotSelectionInventoryByGoodsId", goodsId);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GoodsSuppliersInventoryDO> selectGoodsSuppliersInventoryByGoodsId(
+			long goodsId) {
+		
+		if (goodsId <= 0) {
+			return null;
+		}
+		return  super.getSqlMapClientTemplate().queryForList("selectGoodsSuppliersInventoryByGoodsId", goodsId);
+	
 	}
 
 }

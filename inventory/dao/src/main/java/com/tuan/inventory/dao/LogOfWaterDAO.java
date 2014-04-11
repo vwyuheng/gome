@@ -1,11 +1,11 @@
 package com.tuan.inventory.dao;
 
-import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 
 
 public interface LogOfWaterDAO {
 
-	void insertInventoryQueue(RedisInventoryLogDO logDO);
+	void insertInventoryQueue(GoodsInventoryActionDO logDO);
 
 }
 

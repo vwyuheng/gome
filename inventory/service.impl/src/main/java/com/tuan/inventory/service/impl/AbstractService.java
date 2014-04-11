@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.tuan.core.common.service.AbstractServiceImpl;
 import com.tuan.core.common.service.TuanCallbackResult;
-import com.tuan.inventory.dao.data.redis.RedisInventoryLogDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.BusiServiceTemplate;

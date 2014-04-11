@@ -32,6 +32,7 @@ public interface GoodTypeDAO {
 	 * @return GoodsSuppliersInventoryDO
 	 */
 	public GoodsSuppliersInventoryDO selectGoodsSuppliersInventoryBySiId(int suppliersInventoryId);
+	public List<GoodsSuppliersInventoryDO> selectGoodsSuppliersInventoryByGoodsId(long goodsId);
 	
 	/**
 	 * @Title: updateSuppliersInventoryLeftNumber

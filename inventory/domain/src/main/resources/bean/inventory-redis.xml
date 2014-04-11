@@ -34,4 +34,6 @@
 	<bean id="writeJedisFactory" class="com.tuan.inventory.domain.support.jedistools.WriteJedisFactory" init-method="init">
 	<property name="jedisSentinelPool" ref="jedisSentinelPool"/>
 	</bean>
+	
+	<bean id="redisCacheUtil" class="com.tuan.inventory.domain.support.jedistools.RedisCacheUtil"/>
 </beans>

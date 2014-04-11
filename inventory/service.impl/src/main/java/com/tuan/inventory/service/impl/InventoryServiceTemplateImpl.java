@@ -14,7 +14,8 @@ import com.tuan.core.common.lang.TuanRuntimeException;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.core.common.service.TuanServiceConstants;
 import com.tuan.core.common.service.TuanServiceException;
-import com.tuan.inventory.service.InventoryServiceCallback;
+import com.tuan.inventory.service.InventoryQueryServiceCallback;
+import com.tuan.inventory.service.InventoryUpdateServiceCallback;
 import com.tuan.inventory.service.InventoryServiceTemplate;
 
 /**
@@ -36,7 +37,7 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     		DataSourceContextHolder.setDataSourceType(MSDataSourceType.SALVE_1);
     	}
     }
-    public TuanCallbackResult execute(final InventoryServiceCallback action) {
+    public TuanCallbackResult execute(final InventoryUpdateServiceCallback action) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("进入模板方法开始处理");
@@ -109,7 +110,7 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
         return result;
     }
    
-    public TuanCallbackResult executeWithoutTransaction(final InventoryServiceCallback action, final Object domain) {
+    public TuanCallbackResult executeWithoutTransaction(final InventoryUpdateServiceCallback action, final Object domain) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("进入模板方法开始处理");
@@ -179,7 +180,7 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
      * @param serviceContext
      * @param domain
      */
-    protected void templateExtensionAfterTransaction(TuanCallbackResult result,final InventoryServiceCallback action) {
+    protected void templateExtensionAfterTransaction(TuanCallbackResult result,final InventoryUpdateServiceCallback action) {
         // DUMY
     	try {
 			action.executeAfter();
@@ -191,7 +192,7 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     }
 
    
-    protected void templateExtensionAfterExecute(TuanCallbackResult result,final InventoryServiceCallback action) {
+    protected void templateExtensionAfterExecute(TuanCallbackResult result,final InventoryUpdateServiceCallback action) {
         // DUMY
     	try {
 			action.executeAfter();
@@ -207,5 +208,10 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
     }
+	@Override
+	public TuanCallbackResult execute(InventoryQueryServiceCallback action) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

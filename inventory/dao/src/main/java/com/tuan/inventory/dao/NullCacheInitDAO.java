@@ -1,6 +1,6 @@
 package com.tuan.inventory.dao;
 
-import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 /**
  * 初始化redis cache商品库存信息dao
  * @author henry.yu
@@ -8,7 +8,7 @@ import com.tuan.inventory.dao.data.redis.RedisInventoryDO;
  */
 public interface NullCacheInitDAO {
 
-	public RedisInventoryDO selectRedisInventory(Long goodsId);
+	public GoodsInventoryDO selectRedisInventory(Long goodsId);
 
 }
 

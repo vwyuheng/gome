@@ -13,6 +13,10 @@
 	<name>inventory-service-impl</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
+	   <dependency>
+			<groupId>com.tuan.cozy</groupId>
+			<artifactId>cozy-utils-trace</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-model</artifactId>

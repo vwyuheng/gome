@@ -4,9 +4,15 @@ import com.tuan.core.common.service.TuanCallbackResult;
 
 public interface InventoryServiceTemplate {
 	/**
-	 * 模板执行
+	 * 更新写入模板执行
 	 * @param action
 	 * @return
 	 */
-	TuanCallbackResult execute(InventoryServiceCallback action);
+	TuanCallbackResult execute(InventoryUpdateServiceCallback action);
+	/**
+	 * 查询模板执行
+	 * @param action
+	 * @return
+	 */
+	TuanCallbackResult execute(InventoryQueryServiceCallback action);
 }

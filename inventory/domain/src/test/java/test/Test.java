@@ -1,15 +1,17 @@
 package test;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import net.sf.json.JSONObject;
 
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
 
 public class Test {
-
+	private static boolean isGoodsOf;
 	public static void main(String[] args) {
 		//RedisGoodsSelectionRelationDO rdo = new RedisGoodsSelectionRelationDO();
 		GoodsSelectionRelationDO rdo = new GoodsSelectionRelationDO();
@@ -27,8 +29,9 @@ public class Test {
 		//jsonObject.accumulate("msg", "success");
 		//jsonObject.accumulate("data", rdo);
 		String objStr = LogUtil.formatObjLog(rdo);
+		Test test = new Test();
 		GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
-		System.out.println(JSONObject.fromObject(rdo));
+		System.out.println("test="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(rdo), Map.class));
 		System.out.println(JSONObject.fromObject(rdo));
 //      GoodsSelectionRelationDO rdo1 = new GoodsSelectionRelationDO();
 //		
@@ -63,14 +66,18 @@ public class Test {
 
 	*/
 		//{id=1, leftNumber=0, totalNumber=0, goodTypeId=333766, limitStorage=0}
-	/*Map<String,String> map = new HashMap<String,String>();
+	Map<String,String> map = new HashMap<String,String>();
 	map.put("id", "1");
 	map.put("leftNumber", "0");
 	map.put("totalNumber", "0");
 	map.put("goodTypeId", "333766");
 	map.put("limitStorage", "0");
 	
-	try {
+	System.out.println("jsonutils="+JsonUtils.convertObjectToString(map));
+	
+	System.out.println("object="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(map), GoodsSelectionRelationDO.class));
+	
+	/*try {
 		System.out.println(ObjectUtil.convertMap(GoodsSelectionRelationDO.class, map));
 	} catch (IllegalAccessException e) {
 		// TODO Auto-generated catch block
@@ -92,11 +99,26 @@ public class Test {
 		map.put("k", "2");*/
 		jsonData.put("k", "1");
 		jsonData.put("k", "2");
-		System.out.println(jsonData.toString());
+		System.out.println(isGoodsOf);
 	}
 	
 	
 	
-	
+	@SuppressWarnings("rawtypes")
+	private Map<String,String> toHashMap(Object object) {
+		Map<String,String> data = new HashMap<String, String>();
+		  JSONObject jsonObject = toJSONObject(object);
+		  Iterator it = jsonObject.keys();
+		  while (it.hasNext()) {
+		   String key = String.valueOf(it.next());
+		   String value = jsonObject.get(key).toString();
+		   data.put(key, value);
+		  }
 
+		  return data;
+		 }
+
+	private JSONObject toJSONObject(Object object) {
+		  return JSONObject.fromObject(object);
+		 }
 }

@@ -85,7 +85,14 @@ public class GoodTypeDomainRepository {
 	public List<GoodsSelectionRelationGoodDO> selectSelectionRelationBySrIds(List<Long> selectionRelationIdList,long goodsId){
 		return getGoodTypeDAO().selectSelectionRelationBySrIds(selectionRelationIdList,goodsId);
 	}
-	
+	/**
+	 * 根据商品id查询商品分店库存信息
+	 * @param goodsId
+	 * @return
+	 */
+	public List<GoodsSuppliersInventoryDO> selectGoodsSuppliersInventoryByGoodsId(long goodsId){
+		return getGoodTypeDAO().selectGoodsSuppliersInventoryByGoodsId(goodsId);
+	}
 	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
 		return goodTypeDAO.getNotSeleInventory(goodsId);
 	}

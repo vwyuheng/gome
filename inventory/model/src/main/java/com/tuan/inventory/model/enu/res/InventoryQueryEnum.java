@@ -8,7 +8,7 @@ public enum InventoryQueryEnum {
 	/**用户id无效*/
 	INVALID_SELECTIONID(-3, "选型id无效"),
 	/**无效客户端*/
-	INVALID_CLIENT(-6, "无效客户端"),
+	INVALID_SUPPLIERSID(-6, "分店id无效"),
 	/**传入参数错误*/
 	INVALID_PARAM(-7, "传入参数错误"),
 	/**数据库错误*/

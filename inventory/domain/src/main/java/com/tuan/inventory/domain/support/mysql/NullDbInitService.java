@@ -1,6 +1,6 @@
 package com.tuan.inventory.domain.support.mysql;
 
-import com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 
 /**
  * @title 初始化mysql
@@ -14,5 +14,5 @@ public interface NullDbInitService {
 	 * mysql db数据
 	 * @throws Exception
 	 */
-	public void insertAndUpdateSelectionRelation(RedisGoodsSelectionRelationDO rgsrDo) throws Exception;
+	public void insertAndUpdateSelectionRelation(GoodsSelectionDO rgsrDo) throws Exception;
 }

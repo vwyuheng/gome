@@ -67,6 +67,16 @@
 		from jeehe_goods_suppliers_inventory gsi where gsi.`STATUS` = 0 and gsi.id = #suppliersSubId:INTEGER#
 	</select>
 	
+	<!-- 通过商品ID查询商品对应的所有分店库存信息 add by henry.yu @2014/4/10 -->	
+	<select id="selectGoodsSuppliersInventoryByGoodsId" resultMap="GoodsSuppliersInventoryResult"  parameterClass="java.lang.Long">
+		select gsi.id,gsi.addTotalNumber,gsi.goods_id,gsi.leftNumber,
+			gsi.limitNumber,gsi.reduceTotalNumber,gsi.settlement,gsi.`STATUS`,gsi.suppliers_id,
+			gsi.totalNumber,gsi.totalNum_display_font,gsi.validMsgGet,gsi.limit_storage 
+		from jeehe_goods_suppliers_inventory gsi where gsi.`STATUS` = 0 and gsi.goods_id = #goodsId:BIGINT#
+	</select>
+	
+	
+	
 	<!-- 通过分店配型关系表ID获得该分店选型信息   -->	
 	<select id="selectSelectionRelationBySrId" resultMap="GoodsSelectionRelationResult" parameterClass="int" >
 		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
