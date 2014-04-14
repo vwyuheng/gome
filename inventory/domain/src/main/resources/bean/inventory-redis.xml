@@ -28,10 +28,7 @@
 		<property name="testOnBorrow" value="true" />
 	</bean>
 	
-	<bean id="readJedisFactory" class="com.tuan.inventory.domain.support.jedistools.ReadJedisFactory" init-method="init">
-	<property name="jedisSentinelPool" ref="jedisSentinelPool"/>
-	</bean>
-	<bean id="writeJedisFactory" class="com.tuan.inventory.domain.support.jedistools.WriteJedisFactory" init-method="init">
+	<bean id="jedisFactory" class="com.tuan.inventory.domain.support.jedistools.JedisFactory" init-method="init">
 	<property name="jedisSentinelPool" ref="jedisSentinelPool"/>
 	</bean>
 	

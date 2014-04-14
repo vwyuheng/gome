@@ -10,9 +10,9 @@
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 	default-autowire="byName">
 	<!-- 日志消费处理类 -->
-    <bean id="logsEventHandle" class="com.tuan.inventory.domain.job.event.handle.LogsEventHandle"/>	
+    <bean id="logsEventHandle" class="com.tuan.inventory.job.handle.LogsEventHandle"/>	
    <!-- 日志固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
-	<bean id="LogsEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
+	<bean id="LogsEventScheduled" class="com.tuan.inventory.job.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
 	<!-- 初始化延时 单位：毫秒-->
 	<property name="initialDelay" value="2000" /> 
 	<!-- 两次开始执行最小间隔时间 单位：毫秒-->
@@ -20,7 +20,7 @@
 	</bean>
 	
  <!-- 正常情况下固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
-	<bean id="NormalEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.NormalEventScheduled" init-method="execFixedRate4Normal">
+	<bean id="ConfirmEventScheduled" class="com.tuan.inventory.job.scheduled.ConfirmEventScheduled" init-method="execFixedRate4Confirm">
 	<!-- 初始化延时 单位：毫秒-->
 	<property name="initialDelay" value="2000" /> 
 	<!-- 两次开始执行最小间隔时间 单位：毫秒-->
@@ -29,7 +29,7 @@
 
 
  <!-- 非正常情况下固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
-	<bean id="AbnormalEventScheduled" class="com.tuan.inventory.domain.job.event.scheduled.AbnormalEventScheduled" init-method="execFixedRate4Abnormal">
+	<bean id="LockedEventScheduled" class="com.tuan.inventory.job.scheduled.LockedEventScheduled" init-method="execFixedRate4Locked">
 	<!-- 初始化延时 单位：毫秒 默认延迟3秒-->
 	<property name="initialDelay" value="0" /> 
 	<!-- 两次开始执行最小间隔时间 单位：毫秒,默认是间隔4秒-->
