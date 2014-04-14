@@ -4,7 +4,7 @@ import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
 
-import com.tuan.inventory.domain.job.NotifyServerHandler;
+import com.tuan.inventory.domain.NotifyServerHandler;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.notifyserver.core.pclient.ProducerClientQueue;
 /**
