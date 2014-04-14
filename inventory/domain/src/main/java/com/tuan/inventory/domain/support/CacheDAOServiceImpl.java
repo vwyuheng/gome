@@ -285,4 +285,10 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		return this.redisCacheUtil.lindex(QueueConstant.QUEUE_LOGS_MESSAGE, (-1));
 	}
 
+	@Override
+	public Long deleteQueueMember(String key) {
+		// 根据选型id删除选型库存信息
+		return this.redisCacheUtil.del(QueueConstant.QUEUE_KEY_MEMBER + ":"
+						+ key);
+	}
 }

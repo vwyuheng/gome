@@ -320,4 +320,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void lremLogQueue(GoodsInventoryActionModel model) {
 		 this.cacheDAOServiceImpl.lremLogQueue(ObjectUtils.toDO(model));
 	}
+	/**
+	 * É¾³ý¶ÓÁÐmember
+	 * @param key
+	 * @return
+	 */
+	public Long deleteQueueMember(String key) {
+		return this.cacheDAOServiceImpl.deleteQueueMember(key);
+	}
 }

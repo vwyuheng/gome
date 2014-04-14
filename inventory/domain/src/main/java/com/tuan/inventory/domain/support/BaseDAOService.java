@@ -101,6 +101,6 @@ public interface BaseDAOService {
 	public Set<String> queryInventoryQueueListByStatus (final Double status);
 	
 	public String queryLastIndexGoodsInventoryAction ();
-	
+	public Long deleteQueueMember(String key);
 	//public GoodsInventoryDO queryGoodsInventory(Long goodsId) 
 }

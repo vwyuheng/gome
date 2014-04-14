@@ -33,7 +33,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionBySelectionId");
 		lm.addMetaData("clientName", clientName).addMetaData("userId", userId)
 				.addMetaData("selectionId", selectionId);
-		TuanCallbackResult result = this.busiServiceTemplate
+		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
@@ -90,7 +90,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsSuppliersBySuppliersId");
 		lm.addMetaData("clientName", clientName).addMetaData("userId", userId)
 				.addMetaData("suppliersId", suppliersId);
-		TuanCallbackResult result = this.busiServiceTemplate
+		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
@@ -147,7 +147,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsInventoryByGoodsId");
 		lm.addMetaData("clientName", clientName).addMetaData("userId", userId)
 				.addMetaData("goodsId", goodsId);
-		TuanCallbackResult result = this.busiServiceTemplate
+		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
@@ -205,7 +205,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListByGoodsId");
 		lm.addMetaData("clientName", clientName).addMetaData("userId", userId)
 				.addMetaData("goodsId", goodsId);
-		TuanCallbackResult result = this.busiServiceTemplate
+		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
@@ -263,7 +263,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListByGoodsId");
 		lm.addMetaData("clientName", clientName).addMetaData("userId", userId)
 				.addMetaData("goodsId", goodsId);
-		TuanCallbackResult result = this.busiServiceTemplate
+		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {

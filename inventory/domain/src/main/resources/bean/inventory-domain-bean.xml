@@ -10,7 +10,7 @@
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 			default-autowire="byName">
 			
-	<!-- <bean id="cardUpdateDomainRepository" class="com.tuan.inventory.domain.repository.CardUpdateDomainRepository"/> -->
+	<bean id="cacheDAOServiceImpl" class="com.tuan.inventory.domain.support.CacheDAOServiceImpl"/>
 	<bean id="goodTypeDomainRepository" class="com.tuan.inventory.domain.repository.GoodTypeDomainRepository"/>
 	<bean id="goodsInventoryDomainRepository" class="com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository"/>
 	<bean id="initCacheDomainRepository" class="com.tuan.inventory.domain.repository.InitCacheDomainRepository"/>

@@ -10,7 +10,7 @@ import com.tuan.inventory.service.InventoryServiceTemplate;
 
 public abstract class AbstractInventoryService  {
 	@Resource
-	protected InventoryServiceTemplate busiServiceTemplate;
+	protected InventoryServiceTemplate inventoryServiceTemplate;
 
 	protected static Log logSys = LogFactory.getLog("SYSERROR.LOG");
 	protected static Log logBus = LogFactory.getLog("BUSINESS.USER");

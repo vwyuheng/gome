@@ -18,7 +18,12 @@ public interface GoodsInventoryScheduledService {
 	@ProductCode(code = "00002", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	public void lockedQueueConsume(String clientIp,
 			String clientName,InventoryScheduledParam param,Message traceMessage);
-	
+	/**
+	 * 日志队列的消费接口
+	 * @param clientIp
+	 * @param clientName
+	 * @param traceMessage
+	 */
 	@ProductCode(code = "00003", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	public void logsQueueConsume(String clientIp,
 			String clientName,Message traceMessage);

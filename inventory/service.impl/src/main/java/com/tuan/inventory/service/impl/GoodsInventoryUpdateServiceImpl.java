@@ -54,7 +54,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryCreatorDomain.setUpdateInventoryDomainRepository(updateInventoryDomainRepository);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
-		TuanCallbackResult result = this.busiServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
 				CreateInventoryResultEnum resultEnum = inventoryCreatorDomain.checkParam();
@@ -121,7 +121,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryUpdateDomain.setUpdateInventoryDomainRepository(updateInventoryDomainRepository);
 		inventoryUpdateDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
-		TuanCallbackResult result = this.busiServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
 				CreateInventoryResultEnum resultEnum = inventoryUpdateDomain.checkParam();
@@ -184,7 +184,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryCallbackDomain.setUpdateInventoryDomainRepository(updateInventoryDomainRepository);
 		inventoryCallbackDomain.setSequenceUtil(sequenceUtil);
-		TuanCallbackResult result = this.busiServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
 				CreateInventoryResultEnum resultEnum = inventoryCallbackDomain.checkParam();
@@ -248,7 +248,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setUpdateInventoryDomainRepository(updateInventoryDomainRepository);
 		inventoryAdjustDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
-		TuanCallbackResult result = this.busiServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
 				CreateInventoryResultEnum resultEnum = inventoryAdjustDomain.checkParam();
@@ -313,7 +313,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		waterfloodAdjustmentDomain.setUpdateInventoryDomainRepository(updateInventoryDomainRepository);
 		waterfloodAdjustmentDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		waterfloodAdjustmentDomain.setSequenceUtil(sequenceUtil);
-		TuanCallbackResult result = this.busiServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
 				CreateInventoryResultEnum resultEnum = waterfloodAdjustmentDomain.checkParam();
