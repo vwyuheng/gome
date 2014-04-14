@@ -1,19 +1,19 @@
-package com.tuan.inventory.job.handle;
+package com.tuan.inventory.domain.support.job.handle;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.tuan.inventory.domain.LogOfWaterHandleService;
 import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
+import com.tuan.inventory.domain.support.job.event.Event;
+import com.tuan.inventory.domain.support.job.event.EventHandle;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.LogUtil;
-import com.tuan.inventory.job.event.Event;
-import com.tuan.inventory.job.event.EventHandle;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
-import com.tuan.inventory.service.LogOfWaterHandleService;
 
 /**
  * 日志异步处理事件

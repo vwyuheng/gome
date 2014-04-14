@@ -10,13 +10,12 @@ import com.tuan.inventory.domain.support.jedistools.JedisFactory;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
-import com.tuan.inventory.service.LogOfWaterHandleService;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
 	
-	@Resource
-	LogOfWaterHandleService logOfWaterHandleService;
+	//@Resource
+	//LogOfWaterHandleService logOfWaterHandleService;
 	
 	@Resource 
 	JedisFactory readJedisFactory;

@@ -1,4 +1,4 @@
-package com.tuan.inventory.service;
+package com.tuan.inventory.domain;
 
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.result.CallResult;

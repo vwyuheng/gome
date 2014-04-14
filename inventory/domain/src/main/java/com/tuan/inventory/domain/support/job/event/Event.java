@@ -1,4 +1,4 @@
-package com.tuan.inventory.job.event;
+package com.tuan.inventory.domain.support.job.event;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

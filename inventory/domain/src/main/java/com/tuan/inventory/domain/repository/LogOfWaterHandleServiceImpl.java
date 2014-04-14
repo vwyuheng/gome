@@ -1,4 +1,4 @@
-package com.tuan.inventory.service.impl;
+package com.tuan.inventory.domain.repository;
 
 import javax.annotation.Resource;
 
@@ -8,12 +8,11 @@ import org.apache.commons.logging.LogFactory;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.core.common.service.TuanServiceCallback;
 import com.tuan.core.common.service.TuanServiceTemplateImpl;
+import com.tuan.inventory.domain.LogOfWaterHandleService;
 import com.tuan.inventory.domain.LogQueueDomain;
-import com.tuan.inventory.domain.repository.LogQueueDomainRepository;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
-import com.tuan.inventory.service.LogOfWaterHandleService;
 
 public class LogOfWaterHandleServiceImpl  extends TuanServiceTemplateImpl implements LogOfWaterHandleService {
 	private static final Log logger = LogFactory.getLog(LogOfWaterHandleServiceImpl.class);

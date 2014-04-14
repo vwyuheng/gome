@@ -1,12 +1,11 @@
 package com.tuan.inventory.job.scheduled;
 
 import java.util.Date;
-import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.Resource;
 
@@ -14,13 +13,15 @@ import net.sf.json.JSONObject;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.util.CollectionUtils;
 
-import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.util.DataUtil;
-import com.tuan.inventory.job.event.Event;
-import com.tuan.inventory.job.event.EventHandle;
-import com.tuan.inventory.model.GoodsInventoryActionModel;
+import com.tuan.inventory.job.result.RequestPacket;
+import com.tuan.inventory.job.util.JobUtils;
+import com.tuan.inventory.model.enu.ClientNameEnum;
+import com.tuan.inventory.service.GoodsInventoryScheduledService;
+import com.wowotrace.trace.model.Message;
+import com.wowotrace.trace.util.TraceMessageUtil;
+import com.wowotrace.traceEnum.MessageTypeEnum;
 
 /**
  * 调度线程，主要用于日志事件初始化调度
@@ -42,9 +43,7 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 	private long delay = 0;
 
 	@Resource
-	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	@Resource
-	private EventHandle logsEventHandle;
+	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	
 	
 	/**
@@ -132,47 +131,19 @@ public class LogsEventScheduled extends AbstractEventScheduled {
 					DataUtil.formatDate(new Date(startTime)));
 			// 刷新上一次活跃时间
 			lastStartTime = startTime;
-			List<GoodsInventoryActionModel> queueLogList = null;
+			RequestPacket packet = new RequestPacket();
+			packet.setTraceId(UUID.randomUUID().toString());
+			packet.setTraceRootId(UUID.randomUUID().toString());
+			Message traceMessage = JobUtils.makeTraceMessage(packet);
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "LogQueueConsumeTask", "thread");
 			try {
 				//取日志队列信息
-				queueLogList = goodsInventoryDomainRepository.queryLastIndexGoodsInventoryAction();
+				goodsInventoryScheduledService.logsQueueConsume(ClientNameEnum.INNER_SYSTEM.getValue(),"", traceMessage);
 //				System.out.println("LogQueueConsumeTask:run2="+queueLogList);
 			} catch (Exception e) {
 				logger.error("LogQueueConsumeTask.run error", e);
 			}
-			// 消费数据
-			if (!CollectionUtils.isEmpty(queueLogList)) {
-				logJSON.put("count", queueLogList.size());
-				Event event = null;
-				//Future<EventResult>  future = null;
-				AtomicInteger realCount = new AtomicInteger();
-				for (GoodsInventoryActionModel model : queueLogList) {
-					//System.out.println("model="+model.getId());
-					event = new Event();
-					event.setData(model);
-					// 发送的不再重新进行发送
-					event.setTryCount(0);
-//					event.setEventType(getEventType(ResultStatusEnum.LOG
-//							.getCode()));
-					event.setUUID(String.valueOf(model.getId()));
-					try {
-						 //从队列中取事件
-						boolean eventResult = logsEventHandle.handleEvent(event);
-//						System.out.println("eventresult="+eventResult);
-						if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
-							//移除最后一个元素
-							goodsInventoryDomainRepository.lremLogQueue(model);
-						}
-					} catch (Exception e) {
-						logger.error("LogQueueConsumeTask.run error", e);
-						e.printStackTrace();
-					}
-					realCount.incrementAndGet();
-					
-				}
-				logJSON.put("realcount", realCount.get());
 			
-			}
 			long endTime = System.currentTimeMillis();
 			logJSON.put("costTime", endTime - startTime);
 			if (logger.isDebugEnabled()) {
