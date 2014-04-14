@@ -28,6 +28,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private AdjustWaterfloodParam param;
 	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
+	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
 	private GoodsSelectionDO selectionInventory;
@@ -47,7 +48,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private Long suppliersId;
 	//调整后库存
 	private long resultACK;
-	private SequenceUtil sequenceUtil;
 	//是否需要初始化
 	private boolean isInit;
 	

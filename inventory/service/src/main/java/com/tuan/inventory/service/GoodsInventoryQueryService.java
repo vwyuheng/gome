@@ -33,7 +33,8 @@ public interface GoodsInventoryQueryService {
 	CallResult<GoodsSuppliersModel> findGoodsSuppliersBySuppliersId(final String clientIp, final String clientName, final long userId,
 			final long suppliersId);
 	/**
-	 * 根据商品id获取商品库存信息
+	 * 根据商品id获取商品库存信息，
+	 * 包含(若有的话)选型的库存及分店的库存
 	 * @param clientIp
 	 * @param clientName
 	 * @param userId

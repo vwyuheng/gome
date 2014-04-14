@@ -31,12 +31,12 @@ public class QueueConstant {
 	
 	
 	/** 队列结果状态 status */
-	public static final int QUEUE_STATUS_NOT_CONSUMER = 1;//未消费
+	/*public static final int QUEUE_STATUS_NOT_CONSUMER = 1;//未消费
 	public static final int QUEUE_STATUS_CONSUMER_SUCCESS = 2;//消费成功(包括消费次数已经用完，也标记成功，但是队列的阿状态不一样)
 	public static final int QUEUE_STATUS_CONSUMER_FAILED = 3;//消费失败
 
 	public static final int QUEUE_MAX_CONSUME_COUNT = 8;//最大消费次数
-	
+*/	
 	
 	
 	/** 系统异常常数 */

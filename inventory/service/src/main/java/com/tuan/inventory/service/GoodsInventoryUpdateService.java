@@ -6,7 +6,6 @@ import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreatorInventoryParam;
-import com.tuan.inventory.model.param.DeleteInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.wowotrace.trace.model.Message;
@@ -35,19 +34,40 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00002", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult updateInventory(
 			final String clientIp, final String clientName,final UpdateInventoryParam param,Message traceMessage);
-	
+	/***
+	 * 库存扣减完成后，回调确认接口
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
 	@ProductCode(code = "00003", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult callbackAckInventory(
 			final String clientIp, final String clientName,final CallbackParam param,Message traceMessage);
-	
+	/**
+	 * 手工调整库存
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
 	@ProductCode(code = "00004", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult adjustmentInventory(
 			final String clientIp, final String clientName,final AdjustInventoryParam param,Message traceMessage);
-	
+	/**
+	 * 手工调整注水值
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
 	@ProductCode(code = "00005", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult adjustmentWaterflood(
 			final String clientIp, final String clientName,final AdjustWaterfloodParam param,Message traceMessage);
-	@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	/*@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult deleteInventory(
-			final String clientIp, final String clientName,final DeleteInventoryParam param,Message traceMessage);
+			final String clientIp, final String clientName,final DeleteInventoryParam param,Message traceMessage);*/
 }
