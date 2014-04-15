@@ -26,7 +26,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 	private String clientIp;
 	private String clientName;
 	private DeleteInventoryParam param;
-	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 
@@ -53,7 +53,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		try {
 			goodsId = Long.valueOf(param.getGoodsId());
 			// 判断商品库存是否已经存在
-			boolean isExists = this.updateInventoryDomainRepository
+			boolean isExists = this.goodsInventoryDomainRepository
 					.isExists(goodsId);
 			// 填充商品库存信息
 			if (!isExists) {
@@ -90,17 +90,17 @@ public class InventoryDeleteDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
 			// 插入日志
-			this.updateInventoryDomainRepository.pushLogQueues(updateActionDO);
+			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			// 删除商品库存信息
-			this.updateInventoryDomainRepository.deleteGoodsInventory(goodsId);
+			this.goodsInventoryDomainRepository.deleteGoodsInventory(goodsId);
 			if (!CollectionUtils.isEmpty(selectionList)) {
 				// 删除商品所属选型库存信息
-				this.updateInventoryDomainRepository
+				this.goodsInventoryDomainRepository
 						.deleteSelectionInventory(selectionList);
 			}
 			if (!CollectionUtils.isEmpty(suppliersList)) {
 				// 删除商品所属分店库存信息
-				this.updateInventoryDomainRepository
+				this.goodsInventoryDomainRepository
 						.deleteSuppliersInventory(suppliersList);
 			}
 
@@ -117,7 +117,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			updateInventoryDomainRepository.sendNotifyServerMessage(JSONObject
+			goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject
 					.fromObject(notifyParam));
 			/*
 			 * Type orderParamType = new
@@ -210,9 +210,9 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void setUpdateInventoryDomainRepository(
-			GoodsInventoryDomainRepository updateInventoryDomainRepository) {
-		this.updateInventoryDomainRepository = updateInventoryDomainRepository;
+	public void setGoodsInventoryDomainRepository(
+			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
+		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {

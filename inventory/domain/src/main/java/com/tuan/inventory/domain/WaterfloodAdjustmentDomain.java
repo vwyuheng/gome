@@ -26,7 +26,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private String clientIp;
 	private String clientName;
 	private AdjustWaterfloodParam param;
-	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
@@ -82,7 +82,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				this.businessType = ResultStatusEnum.GOODS_SELECTION
 						.getDescription();
 				// 查询商品选型库存
-				this.selectionInventory = this.updateInventoryDomainRepository
+				this.selectionInventory = this.goodsInventoryDomainRepository
 						.querySelectionRelationById(selectionId);
 				if (selectionInventory != null) {
 					this.originalWaterfloodVal = selectionInventory
@@ -96,7 +96,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				this.businessType = ResultStatusEnum.GOODS_SUPPLIERS
 						.getDescription();
 				// 查询商品分店库存
-				this.suppliersInventory = this.updateInventoryDomainRepository
+				this.suppliersInventory = this.goodsInventoryDomainRepository
 						.querySuppliersInventoryById(suppliersId);
 				if (suppliersInventory != null) {
 					this.originalWaterfloodVal = suppliersInventory
@@ -122,27 +122,27 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
 			// 插入日志
-			this.updateInventoryDomainRepository.pushLogQueues(updateActionDO);
+			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
-				this.resultACK = this.updateInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (adjustNum));
+				this.resultACK = this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (adjustNum));
 				if(!verifyWaterflood()) {
 					//将注水还原到调整前
-					this.updateInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (-adjustNum));
+					this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
-				this.resultACK = this.updateInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (adjustNum));
+				this.resultACK = this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (adjustNum));
 				if(!verifyWaterflood()) {
 					//将注水还原到调整前
-					this.updateInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (-adjustNum));
+					this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
-				this.resultACK = this.updateInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (adjustNum));
+				this.resultACK = this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (adjustNum));
 				if(!verifyWaterflood()) {
 					//将注水还原到调整前
-					this.updateInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (-adjustNum));
+					this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
 			}
@@ -170,7 +170,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		this.fillParam();
 		this.goodsId = Long.valueOf(id);
 		//查询商品库存
-		this.inventoryDO = this.updateInventoryDomainRepository.queryGoodsInventory(goodsId);
+		this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 		if(inventoryDO==null) {
 			//初始化库存
 			this.isInit = true;
@@ -185,13 +185,13 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	public void init() {
 		//保存商品库存
 		if(inventoryDO!=null)
-		      this.updateInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
+		      this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
 		//保选型库存
 		if(!CollectionUtils.isEmpty(selectionInventoryList))
-		      this.updateInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
+		      this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
 		//保存分店库存
 		if(!CollectionUtils.isEmpty(suppliersInventoryList))
-		      this.updateInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
+		      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
 	}
 	// 填充日志信息
 	public boolean fillInventoryUpdateActionDO() {
@@ -248,9 +248,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void setUpdateInventoryDomainRepository(
-			GoodsInventoryDomainRepository updateInventoryDomainRepository) {
-		this.updateInventoryDomainRepository = updateInventoryDomainRepository;
+	public void setGoodsInventoryDomainRepository(
+			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
+		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 
 	public void setInitCacheDomainRepository(

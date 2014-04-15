@@ -19,7 +19,7 @@ public interface GoodsInventoryQueryService {
 	 * @return
 	 */
 	@ProductCode(code = "00001", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
-	CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(final String clientIp, final String clientName, final long userId,
+	CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(final String clientIp, final String clientName, final long goodsId,
 			final long selectionId);
 	/**
 	 * 根据商品分店id获取分店库存
@@ -30,7 +30,7 @@ public interface GoodsInventoryQueryService {
 	 * @return
 	 */
 	@ProductCode(code = "00002", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
-	CallResult<GoodsSuppliersModel> findGoodsSuppliersBySuppliersId(final String clientIp, final String clientName, final long userId,
+	CallResult<GoodsSuppliersModel> findGoodsSuppliersBySuppliersId(final String clientIp, final String clientName, final long goodsId,
 			final long suppliersId);
 	/**
 	 * 根据商品id获取商品库存信息，
@@ -42,7 +42,7 @@ public interface GoodsInventoryQueryService {
 	 * @return
 	 */
 	@ProductCode(code = "00003", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
-	CallResult<GoodsInventoryModel> findGoodsInventoryByGoodsId(final String clientIp, final String clientName, final long userId,
+	CallResult<GoodsInventoryModel> findGoodsInventoryByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
 	/**
 	 * 根据商品id获取商品选型库存列表
@@ -53,7 +53,7 @@ public interface GoodsInventoryQueryService {
 	 * @return
 	 */
 	@ProductCode(code = "00004", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
-	CallResult<List<GoodsSelectionModel>> findGoodsSelectionListByGoodsId(final String clientIp, final String clientName, final long userId,
+	CallResult<List<GoodsSelectionModel>> findGoodsSelectionListByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
 	/**
 	 * 根据商品id获取商品分店库存列表
@@ -64,6 +64,6 @@ public interface GoodsInventoryQueryService {
 	 * @return
 	 */
 	@ProductCode(code = "00005", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
-	CallResult<List<GoodsSuppliersModel>> findGoodsSuppliersListByGoodsId(final String clientIp, final String clientName, final long userId,
+	CallResult<List<GoodsSuppliersModel>> findGoodsSuppliersListByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
 }

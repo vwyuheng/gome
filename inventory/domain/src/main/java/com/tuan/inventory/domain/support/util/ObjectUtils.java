@@ -1,7 +1,10 @@
 package com.tuan.inventory.domain.support.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.json.JSONObject;
@@ -166,4 +169,23 @@ public class ObjectUtils {
 		}
 		return result;
 	}
+	
+
+	@SuppressWarnings("rawtypes")
+	public static Map<String,String> toHashMap(Object object) {
+		Map<String,String> data = new HashMap<String, String>();
+		  JSONObject jsonObject = toJSONObject(object);
+		  Iterator it = jsonObject.keys();
+		  while (it.hasNext()) {
+		   String key = String.valueOf(it.next());
+		   String value = jsonObject.get(key).toString();
+		   data.put(key, value);
+		  }
+
+		  return data;
+		 }
+
+	private static JSONObject toJSONObject(Object object) {
+		  return JSONObject.fromObject(object);
+		 }
 }

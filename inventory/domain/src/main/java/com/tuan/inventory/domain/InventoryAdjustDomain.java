@@ -10,11 +10,11 @@ import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
-import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -30,7 +30,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private String clientIp;
 	private String clientName;
 	private AdjustInventoryParam param;
-	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
@@ -78,7 +78,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.businessType = ResultStatusEnum.GOODS_SELF.getDescription();
 				//查询商品库存
-				this.inventoryDO = this.updateInventoryDomainRepository.queryGoodsInventory(goodsId);
+				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if(inventoryDO!=null) {
 					this.originalGoodsInventory = inventoryDO.getLeftNumber();
 				}
@@ -86,7 +86,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				this.selectionId = Long.valueOf(id);
 				this.businessType = ResultStatusEnum.GOODS_SELECTION.getDescription();
 				//查询商品选型库存
-				this.selectionInventory = this.updateInventoryDomainRepository.querySelectionRelationById(selectionId);
+				this.selectionInventory = this.goodsInventoryDomainRepository.querySelectionRelationById(selectionId);
 				if(selectionInventory!=null) {
 					this.originalGoodsInventory = selectionInventory.getLeftNumber();
 				}
@@ -95,7 +95,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				this.suppliersId = Long.valueOf(id);
 				this.businessType = ResultStatusEnum.GOODS_SUPPLIERS.getDescription();
 				//查询商品分店库存
-				this.suppliersInventory = this.updateInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
+				this.suppliersInventory = this.goodsInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
 				if(suppliersInventory!=null) {
 					this.originalGoodsInventory = suppliersInventory.getLeftNumber();
 				}
@@ -118,27 +118,27 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
 			// 插入日志
-			this.updateInventoryDomainRepository.pushLogQueues(updateActionDO);
+			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
-				this.resultACK = this.updateInventoryDomainRepository.updateGoodsInventory(goodsId, (adjustNum));
+				this.resultACK = this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (adjustNum));
 				if(!verifyInventory()) {
 					//将库存还原到调整前
-					this.updateInventoryDomainRepository.updateGoodsInventory(goodsId, (-adjustNum));
+					this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 				}
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
-				this.resultACK = this.updateInventoryDomainRepository.updateSelectionInventoryById(selectionId, (adjustNum));
+				this.resultACK = this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (adjustNum));
 				if(!verifyInventory()) {
 					//将库存还原到调整前
-					this.updateInventoryDomainRepository.updateSelectionInventoryById(selectionId, (-adjustNum));
+					this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 				}
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
-				this.resultACK = this.updateInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (adjustNum));
+				this.resultACK = this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (adjustNum));
 				if(!verifyInventory()) {
 					//将库存还原到调整前
-					this.updateInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (-adjustNum));
+					this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 				}
 			}
@@ -156,7 +156,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		public void sendNotify(){
 			try {
 				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-				updateInventoryDomainRepository.sendNotifyServerMessage(JSONObject.fromObject(notifyParam));
+				goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject.fromObject(notifyParam));
 				/*Type orderParamType = new TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType();
 				String paramJson = new Gson().toJson(notifyParam, orderParamType);
 				extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
@@ -200,7 +200,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			this.fillParam();
 			this.goodsId = Long.valueOf(id);
 			//查询商品库存
-			this.inventoryDO = this.updateInventoryDomainRepository.queryGoodsInventory(goodsId);
+			this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 			if(inventoryDO==null) {
 				//初始化库存
 				this.isInit = true;
@@ -215,13 +215,13 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		public void init() {
 			//保存商品库存
 			if(inventoryDO!=null)
-			      this.updateInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
+			      this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
 			//保选型库存
 			if(!CollectionUtils.isEmpty(selectionInventoryList))
-			      this.updateInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
+			      this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
 			//保存分店库存
 			if(!CollectionUtils.isEmpty(suppliersInventoryList))
-			      this.updateInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
+			      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
 		}
 		
 	// 填充日志信息
@@ -321,11 +321,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void setUpdateInventoryDomainRepository(
-			GoodsInventoryDomainRepository updateInventoryDomainRepository) {
-		this.updateInventoryDomainRepository = updateInventoryDomainRepository;
+	public void setGoodsInventoryDomainRepository(
+			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
+		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
-	
 	public void setInitCacheDomainRepository(
 			InitCacheDomainRepository initCacheDomainRepository) {
 		this.initCacheDomainRepository = initCacheDomainRepository;

@@ -13,14 +13,12 @@
 	 </resultMap> -->
 	 	
   	 <!-- 商品主体库存信息-->	
-	<resultMap id="RedisInventoryResult" class="com.tuan.inventory.dao.data.redis.RedisInventoryDO">
+	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
 	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+	     <result column="user_id" property="userId" jdbcType="INTEGER" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
-	    <result column="add_goods_selection" property="isAddGoodsSelection" jdbcType="INTEGER" />
-	    <result column="direct_consumption" property="isDirectConsumption" jdbcType="INTEGER" />
-	     <result column="is_be_delivery" property="isBeDelivery" jdbcType="INTEGER" />
 	     <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	 
@@ -35,8 +33,8 @@
 	 </resultMap> -->
 	
 	<!-- 通过商品ID查询非选型实物商品的库存  -->	
-	<select id="selectRedisInventoryByGoodsId" resultMap="RedisInventoryResult"  parameterClass="java.lang.Long">
-	select goods_id,total_num,left_num,limit_storage ,add_goods_selection,direct_consumption,is_be_delivery,0 AS waterflood_val
+	<select id="selectRedisInventoryByGoodsId" resultMap="GoodsInventoryResult"  parameterClass="java.lang.Long">
+	select goods_id,0 AS user_id,total_num,left_num,limit_storage,0 AS waterflood_val
 	from (select ga.goods_id,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption,wms.is_be_delivery
 		from jeehe_goods_attribute ga ,jeehe_goods_wms wms where ga.goods_id=wms.id AND ga.goods_id = #goodsId:BIGINT#) AS tmp
 	</select>

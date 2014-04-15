@@ -15,8 +15,8 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -32,7 +32,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private String clientIp;
 	private String clientName;
 	private UpdateInventoryParam param;
-	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
@@ -83,7 +83,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					GoodsSelectionAndSuppliersResult selection = null;
 					Long selectionId = Long.valueOf(model.getId());
 					// 查询商品选型库存
-					GoodsSelectionDO selectionDO = this.updateInventoryDomainRepository
+					GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
 							.querySelectionRelationById(selectionId);
 					if (selectionDO != null
 							&& selectionDO.getLimitStorage() == 1) {
@@ -127,7 +127,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				if (model.getId() > 0) { // if分店
 					GoodsSelectionAndSuppliersResult suppliers = null;
 					Long suppliersId = Long.valueOf(model.getId());
-					GoodsSuppliersDO suppliersDO = this.updateInventoryDomainRepository
+					GoodsSuppliersDO suppliersDO = this.goodsInventoryDomainRepository
 							.querySuppliersInventoryById(suppliersId);
 
 					if (suppliersDO != null
@@ -160,7 +160,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	private void calculateInventory() {
 		// 再次查询商品库存信息[确保最新数据]
-		this.inventoryInfoDO = this.updateInventoryDomainRepository
+		this.inventoryInfoDO = this.goodsInventoryDomainRepository
 				.queryGoodsInventory(goodsId);
 		// 扣减库存
 		this.deductNum = param.getNum();
@@ -215,46 +215,46 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
 			// 插入日志
-			this.updateInventoryDomainRepository.pushLogQueues(updateActionDO);
+			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			// 更新商品库存
 			if (isEnough) {
 				// 扣减库存
-				resultACK = this.updateInventoryDomainRepository
+				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId, (-deductNum));
 				// 校验库存
 				if (!verifyInventory()) {
 					// 回滚库存
-					this.updateInventoryDomainRepository.updateGoodsInventory(
+					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}
 			// 更新选型库存
 			if (isSelectionEnough) {
-				resultACK = this.updateInventoryDomainRepository
+				resultACK = this.goodsInventoryDomainRepository
 						.updateSelectionInventory(selectionParam);
 				// 校验库存
 				if (!verifyInventory()) {
 					// 回滚库存
 					// 先回滚总的 再回滚选型的
-					this.updateInventoryDomainRepository.updateGoodsInventory(
+					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
-					this.updateInventoryDomainRepository
+					this.goodsInventoryDomainRepository
 							.rollbackSelectionInventory(selectionParam);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}
 			// 更新分店库存
 			if (isSuppliersEnough) {
-				resultACK = this.updateInventoryDomainRepository
+				resultACK = this.goodsInventoryDomainRepository
 						.updateSuppliersInventory(suppliersParam);
 				// 校验库存
 				if (!verifyInventory()) {
 					// 回滚库存
 					// 先回滚总的 再回滚分店的
-					this.updateInventoryDomainRepository.updateGoodsInventory(
+					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
-					this.updateInventoryDomainRepository
+					this.goodsInventoryDomainRepository
 							.rollbackSuppliersInventory(suppliersParam);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
@@ -272,7 +272,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public void pushSendMsgQueue() {
 		// 填充队列
 		if (fillInventoryQueueDO()) {
-			this.updateInventoryDomainRepository.pushQueueSendMsg(queueDO);
+			this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
 		}
 	}
 
@@ -280,7 +280,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public void initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
 		if (goodsId > 0 && param.getLimitStorage() == 1) { // limitStorage>0:库存无限制；1：限制库存
-			boolean isExists = this.updateInventoryDomainRepository
+			boolean isExists = this.goodsInventoryDomainRepository
 					.isGoodsExists(goodsId);
 			if (isExists) { // 不存在
 				// 初始化库存
@@ -301,15 +301,15 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public void init() {
 		// 保存商品库存
 		if (inventoryInfoDO != null)
-			this.updateInventoryDomainRepository.saveGoodsInventory(goodsId,
+			this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 					inventoryInfoDO);
 		// 保选型库存
 		if (!CollectionUtils.isEmpty(selectionInventoryList))
-			this.updateInventoryDomainRepository.saveGoodsSelectionInventory(
+			this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 					goodsId, selectionInventoryList);
 		// 保存分店库存
 		if (!CollectionUtils.isEmpty(suppliersInventoryList))
-			this.updateInventoryDomainRepository.saveGoodsSuppliersInventory(
+			this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 					goodsId, suppliersInventoryList);
 	}
 
@@ -414,9 +414,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void setUpdateInventoryDomainRepository(
-			GoodsInventoryDomainRepository updateInventoryDomainRepository) {
-		this.updateInventoryDomainRepository = updateInventoryDomainRepository;
+	public void setGoodsInventoryDomainRepository(
+			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
+		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 
 	public void setInitCacheDomainRepository(

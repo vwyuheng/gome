@@ -19,6 +19,7 @@ import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.util.QueueConstant;
 
@@ -42,17 +43,14 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void saveInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
 
 		this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
-				+ String.valueOf(goodsId), JsonUtils.convertStringToObject(
-				JsonUtils.convertObjectToString(inventoryInfoDO), Map.class));
+				+ String.valueOf(goodsId), ObjectUtils.toHashMap(inventoryInfoDO));
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
 		this.redisCacheUtil.sadd(
@@ -60,14 +58,10 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 						+ String.valueOf(goodsId),
 				String.valueOf(selectionDO.getId()));
 		this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
-				+ ":" + String.valueOf(selectionDO.getId()), JsonUtils
-				.convertStringToObject(
-						JsonUtils.convertObjectToString(selectionDO),
-						Map.class));
+				+ ":" + String.valueOf(selectionDO.getId()), ObjectUtils.toHashMap(selectionDO));
 
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
 		this.redisCacheUtil.sadd(
@@ -75,10 +69,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 						+ String.valueOf(goodsId),
 				String.valueOf(suppliersDO.getId()));
 		this.redisCacheUtil.hmset(QueueConstant.SUPPLIERS_INVENTORY_PREFIX
-				+ ":" + String.valueOf(suppliersDO.getId()), JsonUtils
-				.convertStringToObject(
-						JsonUtils.convertObjectToString(suppliersDO),
-						Map.class));
+				+ ":" + String.valueOf(suppliersDO.getId()), ObjectUtils.toHashMap(suppliersDO));
 
 	}
 

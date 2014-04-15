@@ -27,7 +27,7 @@ import com.tuan.inventory.model.GoodsSuppliersModel;
 
 public class GoodsInventoryDomainRepository extends AbstractInventoryRepository {
 	@Resource
-	private BaseDAOService  cacheDAOServiceImpl;
+	private BaseDAOService  baseDAOService;
 	@Resource
 	private NotifyServerSendMessage notifyServerSendMessage;
 	
@@ -36,31 +36,31 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	//保存商品库存
 	public void saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
-		this.cacheDAOServiceImpl.saveInventory(goodsId, inventoryInfoDO);
+		this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
 	//将日志压入队列
 	public void pushLogQueues(final GoodsInventoryActionDO logActionDO){
-		this.cacheDAOServiceImpl.pushLogQueues(logActionDO);
+		this.baseDAOService.pushLogQueues(logActionDO);
 	}
 	public void pushQueueSendMsg(final GoodsInventoryQueueDO queueDO) {
-		this.cacheDAOServiceImpl.pushQueueSendMsg(queueDO);
+		this.baseDAOService.pushQueueSendMsg(queueDO);
 	}
 	//判断库存是否已存在
 	public boolean isExists(Long goodsId) {
 		//已存在返回false,不存在返回true
-		return cacheDAOServiceImpl.isExists(goodsId);
+		return baseDAOService.isExists(goodsId);
 	}
 	public boolean isGoodsExists(Long goodsId) {
 		//已存在返回false,不存在返回true
-		return cacheDAOServiceImpl.isGoodsExists(goodsId,HashFieldEnum.leftNumber.toString());
+		return baseDAOService.isGoodsExists(goodsId,HashFieldEnum.leftNumber.toString());
 	}
 	public boolean isSelectionExists(Long selectionId) {
 		//已存在返回false,不存在返回true
-		return cacheDAOServiceImpl.isSelectionExists(selectionId,HashFieldEnum.leftNumber.toString());
+		return baseDAOService.isSelectionExists(selectionId,HashFieldEnum.leftNumber.toString());
 	}
 	public boolean isSupplierExists(Long suppliesId) {
 		//已存在返回false,不存在返回true
-		return cacheDAOServiceImpl.isSupplierExists(suppliesId,HashFieldEnum.leftNumber.toString());
+		return baseDAOService.isSupplierExists(suppliesId,HashFieldEnum.leftNumber.toString());
 	}
 	
 	
@@ -69,7 +69,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
-					this.cacheDAOServiceImpl.saveGoodsSelectionInventory(goodsId, srDO);
+					this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 				}
 				
 			}//for
@@ -82,7 +82,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
 				if (sDO.getId() > 0) { // if分店
-					this.cacheDAOServiceImpl.saveGoodsSuppliersInventory(goodsId, sDO);
+					this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
 				}
 				
 			}//for
@@ -93,33 +93,33 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	
 	//根据商品id查询库存信息
 	public GoodsInventoryDO queryGoodsInventory(long goodsId) {
-		return this.cacheDAOServiceImpl.queryGoodsInventory(goodsId);
+		return this.baseDAOService.queryGoodsInventory(goodsId);
 	}
 	
 	// 根据商品选型id查询库存信息
 	public GoodsSelectionDO querySelectionRelationById(long selectionId) {
-		return this.cacheDAOServiceImpl.querySelectionRelationById(selectionId);
+		return this.baseDAOService.querySelectionRelationById(selectionId);
 	}
 	public GoodsSuppliersDO querySuppliersInventoryById(Long suppliersId) {
-		return this.cacheDAOServiceImpl.querySuppliersInventoryById(suppliersId);
+		return this.baseDAOService.querySuppliersInventoryById(suppliersId);
 	}
 	
 	public Long updateGoodsInventory(Long goodsId, int num) {
-		return this.cacheDAOServiceImpl.updateGoodsInventory(goodsId, num);
+		return this.baseDAOService.updateGoodsInventory(goodsId, num);
 	}
 	
 	public Long updateSelectionInventoryById(Long selectionId, int num) {
-		return this.cacheDAOServiceImpl.updateSelectionInventory(selectionId, (num));
+		return this.baseDAOService.updateSelectionInventory(selectionId, (num));
 	}
 	public Long updateSuppliersInventoryById(Long suppliersId, int num) {
-		return this.cacheDAOServiceImpl.updateSelectionInventory(suppliersId, (num));
+		return this.baseDAOService.updateSelectionInventory(suppliersId, (num));
 	}
 	public Long updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
 		long result = 0;
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.cacheDAOServiceImpl.updateSelectionInventory(param.getId(), (-param.getGoodsInventory()));
+					result = this.baseDAOService.updateSelectionInventory(param.getId(), (-param.getGoodsInventory()));
 				}
 			}
 		}
@@ -132,7 +132,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.cacheDAOServiceImpl.updateSelectionInventory(param.getId(), (param.getGoodsInventory()));
+					result = this.baseDAOService.updateSelectionInventory(param.getId(), (param.getGoodsInventory()));
 				}
 			}
 		}
@@ -144,7 +144,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.cacheDAOServiceImpl.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
+					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
 				}
 			}
 		}
@@ -157,7 +157,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.cacheDAOServiceImpl.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
+					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
 				}
 			}
 		}
@@ -171,33 +171,33 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @throws Exception
 	 */
 	public void markQueueStatus(String key,int upStatusNum) {
-		this.cacheDAOServiceImpl.markQueueStatus(key, upStatusNum);
+		this.baseDAOService.markQueueStatus(key, upStatusNum);
 	}
 	
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key) {
-		return this.cacheDAOServiceImpl.queryInventoryQueueDO(key);
+		return this.baseDAOService.queryInventoryQueueDO(key);
 	}
 	
 	public Long adjustGoodsWaterflood(Long goodsId, int num) {
-		return this.cacheDAOServiceImpl.adjustGoodsWaterflood(goodsId, num);
+		return this.baseDAOService.adjustGoodsWaterflood(goodsId, num);
 	}
 	
 	public Long adjustSelectionWaterfloodById(Long selectionId, int num) {
-		return this.cacheDAOServiceImpl.adjustSelectionWaterflood(selectionId, (num));
+		return this.baseDAOService.adjustSelectionWaterflood(selectionId, (num));
 	}
 	public Long adjustSuppliersWaterfloodById(Long suppliersId, int num) {
-		return this.cacheDAOServiceImpl.adjustSuppliersWaterflood(suppliersId, (num));
+		return this.baseDAOService.adjustSuppliersWaterflood(suppliersId, (num));
 	}
 	
 	public Long deleteGoodsInventory(Long goodsId) {
-		return this.cacheDAOServiceImpl.deleteGoodsInventory(goodsId);
+		return this.baseDAOService.deleteGoodsInventory(goodsId);
 	}
 	public Long deleteSelectionInventory(List<GoodsSelectionModel> selectionList){
 		long result = 0;
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
 			for (GoodsSelectionModel param : selectionList) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.cacheDAOServiceImpl.deleteSelectionInventory(param.getId());
+					result = this.baseDAOService.deleteSelectionInventory(param.getId());
 				}
 			}
 		}
@@ -208,7 +208,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersList)) { // if1
 			for (GoodsSuppliersModel param : suppliersList) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.cacheDAOServiceImpl.deleteSuppliersInventory(param.getId());
+					result = this.baseDAOService.deleteSuppliersInventory(param.getId());
 				}
 			}
 		}
@@ -219,7 +219,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @param logActionDO
 	 */
 	public void lremLogQueue(GoodsInventoryActionDO logActionDO) {
-		 this.cacheDAOServiceImpl.lremLogQueue(logActionDO);
+		 this.baseDAOService.lremLogQueue(logActionDO);
 	}
 	/**
 	 * 根据选型id获取选型库存
@@ -237,7 +237,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public List<GoodsSelectionModel> queryGoodsSelectionListByGoodsId(long goodsId) {
 		List<GoodsSelectionModel> result = null;
-		Set<String> selectionIdsSet = this.cacheDAOServiceImpl.queryGoodsSelectionRelation(goodsId);
+		Set<String> selectionIdsSet = this.baseDAOService.queryGoodsSelectionRelation(goodsId);
 		if(!CollectionUtils.isEmpty(selectionIdsSet)) {
 			result = new ArrayList<GoodsSelectionModel>();
 			for(String selectionId: selectionIdsSet) {
@@ -266,7 +266,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public List<GoodsSuppliersModel> queryGoodsSuppliersListByGoodsId(long goodsId) {
 		List<GoodsSuppliersModel> result = null;
-		Set<String> suppliersIdsSet = this.cacheDAOServiceImpl.queryGoodsSuppliersRelation(goodsId);
+		Set<String> suppliersIdsSet = this.baseDAOService.queryGoodsSuppliersRelation(goodsId);
 		if(!CollectionUtils.isEmpty(suppliersIdsSet)) {
 			result = new ArrayList<GoodsSuppliersModel>();
 			for(String suppliersId: suppliersIdsSet) {
@@ -297,7 +297,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public List<GoodsInventoryQueueModel> queryInventoryQueueListByStatus (final Double status) {
 		
-		return ObjectUtils.convertSet(this.cacheDAOServiceImpl.queryInventoryQueueListByStatus(status));
+		return ObjectUtils.convertSet(this.baseDAOService.queryInventoryQueueListByStatus(status));
 	}
 	/**
 	 * 获取list中最后一条日志
@@ -306,7 +306,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public List<GoodsInventoryActionModel> queryLastIndexGoodsInventoryAction () {
 		
-		return ObjectUtils.getList(this.cacheDAOServiceImpl.queryLastIndexGoodsInventoryAction());
+		return ObjectUtils.getList(this.baseDAOService.queryLastIndexGoodsInventoryAction());
 	}
 	
 	public GoodsInventoryQueueModel queryGoodsInventoryQueue(String key) {
@@ -318,7 +318,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @param model
 	 */
 	public void lremLogQueue(GoodsInventoryActionModel model) {
-		 this.cacheDAOServiceImpl.lremLogQueue(ObjectUtils.toDO(model));
+		 this.baseDAOService.lremLogQueue(ObjectUtils.toDO(model));
 	}
 	/**
 	 * 删除队列member
@@ -326,6 +326,6 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @return
 	 */
 	public Long deleteQueueMember(String key) {
-		return this.cacheDAOServiceImpl.deleteQueueMember(key);
+		return this.baseDAOService.deleteQueueMember(key);
 	}
 }

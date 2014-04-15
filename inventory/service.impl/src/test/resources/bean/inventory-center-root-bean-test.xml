@@ -7,19 +7,17 @@
 			http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 			http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
 	default-autowire="byName">
+	  
 	<context:property-placeholder location="classpath:META-INF/app.properties" />
+
+   
+	<import resource="classpath:/bean/inventory-domain-bean.xml" />
+	<import resource="classpath:/bean/inventory-service-impl-bean.xml" />
+	<import resource="classpath:/bean/inventory-service-framework-bean.xml" />
+	<import resource="classpath:/bean/inventory-center-ext-bean.xml" />
+	<!-- <import resource="classpath:/bean/inventory-remoting-servlet.xml" /> -->
 	
-	<!-- notifyServer发送客户端 -->
-	<import resource="classpath:com/tuan/notifyserver/core/bean/client/notifyserver-pclient.xml" />
-	<bean id="connectParam" abstract="true">
-		<property name="timeout" value="2000"/>
-	</bean>
-	<bean id="notifyClient" class="com.tuan.notifyserver.core.pclient.ProducerClientQueue">
-		<property name="queueName">
-			<value>${notify.server.queueName}</value>
-			<!-- <value>InventoryDevTest</value> -->
-		</property>
-	</bean>
-	<bean id="notifyServerSendMessage" class="com.tuan.inventory.domain.repository.impl.NotifyServerSendMessageImpl" />
-	
+	<import resource="classpath:/bean/inventory-notifyserver-bean.xml" />
+	<import resource="classpath:/bean/inventory-redis.xml" />
+	<!-- <import resource="classpath:/bean/inventory-tasks-bean.xml" /> -->
 </beans>

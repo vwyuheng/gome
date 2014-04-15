@@ -30,7 +30,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	private String clientIp;
 	private String clientName;
 	private CreatorInventoryParam param;
-	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -63,7 +63,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 		this.goodsId = Long.valueOf(param.getGoodsId());
 		// 商品库存是否存在
-		isExists = this.updateInventoryDomainRepository.isExists(goodsId);
+		isExists = this.goodsInventoryDomainRepository.isExists(goodsId);
 		if (isExists) { // 不存在
 			// 根据接口参数填充商品库存信息
 			this.fillRedisInventoryDO();
@@ -119,18 +119,18 @@ public class InventoryCreatorDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
 			// 插入日志
-			this.updateInventoryDomainRepository.pushLogQueues(updateActionDO);
+			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			// 保存商品库存
 			if (isExists && inventoryInfoDO != null)
-				this.updateInventoryDomainRepository.saveGoodsInventory(
+				this.goodsInventoryDomainRepository.saveGoodsInventory(
 						goodsId, inventoryInfoDO);
 			// 保选型库存
 			if (!CollectionUtils.isEmpty(selectionRelation))
-				this.updateInventoryDomainRepository
+				this.goodsInventoryDomainRepository
 						.saveGoodsSelectionInventory(goodsId, selectionRelation);
 			// 保存分店库存
 			if (!CollectionUtils.isEmpty(suppliersRelation))
-				this.updateInventoryDomainRepository
+				this.goodsInventoryDomainRepository
 						.saveGoodsSuppliersInventory(goodsId, suppliersRelation);
 
 		} catch (Exception e) {
@@ -146,7 +146,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			updateInventoryDomainRepository.sendNotifyServerMessage(JSONObject
+			goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject
 					.fromObject(notifyParam));
 			/*
 			 * Type orderParamType = new
@@ -325,11 +325,10 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		this.inventoryInfoDO = inventoryInfoDO;
 	}
 
-	public void setUpdateInventoryDomainRepository(
-			GoodsInventoryDomainRepository updateInventoryDomainRepository) {
-		this.updateInventoryDomainRepository = updateInventoryDomainRepository;
+	public void setGoodsInventoryDomainRepository(
+			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
+		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
-
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}

@@ -9,8 +9,7 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 	default-autowire="byName">
-	<!-- 日志消费处理类 -->
-    <bean id="logsEventHandle" class="com.tuan.inventory.job.handle.LogsEventHandle"/>	
+	
    <!-- 日志固定周期的调度任务  默认：初始化延时：3秒，两次开始执行最小间隔时间：4秒-->
 	<bean id="LogsEventScheduled" class="com.tuan.inventory.job.scheduled.LogsEventScheduled" init-method="execFixedRate4Logs">
 	<!-- 初始化延时 单位：毫秒-->

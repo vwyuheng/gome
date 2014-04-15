@@ -3,60 +3,64 @@
 <sqlMap namespace="tuan-inventory" >
 
 	<!-- 商品配型信息-->	
-	<resultMap id="RedisGoodsSelectionRelationResult" class="com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO">
+	<resultMap id="GoodsSelectionResult" class="com.tuan.inventory.dao.data.redis.GoodsSelectionDO">
 	    <result column="id" property="id" jdbcType="INTEGER" />
 	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+	    <result column="user_id" property="userId" jdbcType="INTEGER" />
 	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
 	    <result column="totalNumber" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="leftNumber" property="leftNumber" jdbcType="INTEGER" />
+	     <result column="waterfloodVal" property="waterfloodVal" jdbcType="INTEGER" />
 	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   	    
 	 </resultMap>
 	 	
-  	 <!-- 商品主体库存信息-->	
-	<resultMap id="RedisInventoryResult" class="com.tuan.inventory.dao.data.redis.RedisInventoryDO">
+   <!-- 商品主体库存信息-->	
+	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
 	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+	     <result column="user_id" property="userId" jdbcType="INTEGER" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
-	    <result column="add_goods_selection" property="isAddGoodsSelection" jdbcType="INTEGER" />
-	    <result column="direct_consumption" property="isDirectConsumption" jdbcType="INTEGER" />
-	    <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
+	     <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	 
 	 <!-- 分店库存信息-->	
-	<resultMap id="RedisGoodsSuppliersInventoryResult" class="com.tuan.inventory.dao.data.redis.RedisGoodsSuppliersInventoryDO">
+	<resultMap id="GoodsSuppliersResult" class="com.tuan.inventory.dao.data.redis.GoodsSuppliersDO">
 	    <result column="id" property="id" jdbcType="INTEGER" />
 	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
+	     <result column="user_id" property="userId" jdbcType="INTEGER" />
 	    <result column="suppliers_id" property="suppliersId" jdbcType="INTEGER" />
 	    <result column="totalNumber" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="leftNumber" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
+	    <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	  <!-- 记录库存日志流水信息-->	
-	<resultMap id="RedisInventoryLogResult" class="com.tuan.inventory.dao.data.redis.RedisInventoryLogDO">
+	<resultMap id="GoodsInventoryActionResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO">
 	    <result column="id" property="id" jdbcType="BIGINT"/>
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
 	    <result column="order_id" property="orderId" jdbcType="BIGINT" />
 	    <result column="user_id" property="userId" jdbcType="BIGINT" />
-	    <result column="type" property="type" jdbcType="VARCHAR" />
+	    <result column="type" property="businessType" jdbcType="VARCHAR" />
 	    <result column="item" property="item" jdbcType="VARCHAR" />
 	     <result column="create_time" property="createTime" jdbcType="INTEGER" />
-	    <result column="inventory_vara" property="variableQuantity" jdbcType="VARCHAR" />
-	     <result column="opt_type" property="operateType" jdbcType="VARCHAR" />
+	    <result column="inventory_vara" property="inventoryChange" jdbcType="VARCHAR" />
+	    <result column="original_inventory" property="originalInventory" jdbcType="VARCHAR" />
+	     <result column="opt_type" property="actionType" jdbcType="VARCHAR" />
 	    <result column="content" property="content" jdbcType="VARCHAR" />
-	    <result column="system" property="system" jdbcType="VARCHAR" />
+	    <result column="system" property="clientName" jdbcType="VARCHAR" />
 	    <result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
 	    <result column="remark" property="remark" jdbcType="VARCHAR" />
 	 </resultMap>
   	 <!-- 插入分店配型表信息 -->
-  	<insert id="insertSelectionRelation" parameterClass="com.tuan.inventory.dao.data.redis.RedisGoodsSelectionRelationDO" >
+  	<insert id="insertSelectionRelation" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
     insert into jeehe_inventory_selection_relation (id, goods_id, good_type_id, totalNumber, leftNumber, suppliers_inventory_id,limit_storage)
     values (#id:INTEGER#, #goodsId:INTEGER#,#goodTypeId:INTEGER#,#totalNumber:INTEGER#,#leftNumber:INTEGER#,#suppliersInventoryId:INTEGER#,
     		#limitStorage:INTEGER#)
      </insert>
   <!-- 插入库存日志流水表信息 -->
-  	<insert id="insertInventoryQueue" parameterClass="com.tuan.inventory.dao.data.redis.RedisInventoryLogDO" >
+  	<insert id="insertInventoryQueue" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO" >
     insert into jeehe_inventory_log 
     (id, 
     goods_id, 
@@ -66,6 +70,7 @@
     item,
     create_time,
     inventory_vara,
+    original_inventory,
     opt_type,
     content,
     system,
@@ -75,13 +80,14 @@
             #goodsId:BIGINT#,
             #orderId:BIGINT#,
             #userId:BIGINT#,
-            #type:VARCHAR#,
+            #businessType:VARCHAR#,
             #item:VARCHAR#,
             #createTime:INTEGER#,
-    		#variableQuantity:VARCHAR#,
-    		#operateType:VARCHAR#,
+    		#inventoryChange:VARCHAR#,
+    		#originalInventory:VARCHAR#,
+    		#actionType:VARCHAR#,
     		#content:VARCHAR#,
-    		#system:VARCHAR#,
+    		#clientName:VARCHAR#,
     		#clientIp:VARCHAR#,
     		#remark:VARCHAR#)
     		

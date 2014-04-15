@@ -8,10 +8,12 @@ import org.junit.Test;
 
 import redis.clients.jedis.Jedis;
 
+import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
+import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -25,10 +27,13 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 
 	
 	@Resource 
-	JedisFactory readJedisFactory;
+	RedisCacheUtil redisCacheUtil;
+	@Resource 
+	JedisFactory jedisFactory;
 	@Resource
 	SequenceUtil sequenceUtil;
-	
+	@Resource
+	GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	NotifyServerSendMessage notifyServerSendMessage;
 	
@@ -77,7 +82,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void test() {
 		try {
-			//inventoryProviderReadService.getNotSeleInventory(100);
+			System.out.println(redisCacheUtil.get("test77"));
+			//System.out.println(test1("test77"));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -119,16 +125,17 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	}
 	
 	@SuppressWarnings("unused")
-	private int test1(final String key) {
-		return readJedisFactory.withJedisDo(new JWork<Integer>() 
+	private String test1(final String key) {
+		return jedisFactory.withJedisDo(new JWork<String>() 
 				{
 					@Override
-					public Integer work(Jedis j)
+					public String work(Jedis j)
 					{
-						return j.hlen(key).intValue();				
+						return j.get(key);				
 					}
 		
 				});
+		
 		
 	}
 	

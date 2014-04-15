@@ -1,5 +1,9 @@
 package test;
 
+import java.beans.BeanInfo;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -31,8 +35,9 @@ public class Test {
 		String objStr = LogUtil.formatObjLog(rdo);
 		Test test = new Test();
 		GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
-		System.out.println("test="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(rdo), Map.class));
-		System.out.println(JSONObject.fromObject(rdo));
+		//System.out.println("test="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(rdo), Map.class));
+		//System.out.println(JSONObject.fromObject(rdo));
+		System.out.println("11test11="+toHashMap(rdo));
 //      GoodsSelectionRelationDO rdo1 = new GoodsSelectionRelationDO();
 //		
 //      rdo1.setId(1);
@@ -105,7 +110,7 @@ public class Test {
 	
 	
 	@SuppressWarnings("rawtypes")
-	private Map<String,String> toHashMap(Object object) {
+	private static Map<String,String> toHashMap(Object object) {
 		Map<String,String> data = new HashMap<String, String>();
 		  JSONObject jsonObject = toJSONObject(object);
 		  Iterator it = jsonObject.keys();
@@ -118,7 +123,40 @@ public class Test {
 		  return data;
 		 }
 
-	private JSONObject toJSONObject(Object object) {
+	private static JSONObject toJSONObject(Object object) {
 		  return JSONObject.fromObject(object);
 		 }
+	
+	
+	
+	// Bean --> Map 1: 利用Introspector和PropertyDescriptor 将Bean --> Map  
+    public static Map<String, Object> transBean2Map(Object obj) {  
+  
+        if(obj == null){  
+            return null;  
+        }          
+        Map<String, Object> map = new HashMap<String, Object>();  
+        try {  
+            BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());  
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();  
+            for (PropertyDescriptor property : propertyDescriptors) {  
+                String key = property.getName();  
+  
+                // 过滤class属性  
+                if (!key.equals("class")) {  
+                    // 得到property对应的getter方法  
+                    Method getter = property.getReadMethod();  
+                    Object value = getter.invoke(obj);  
+  
+                    map.put(key, value);  
+                }  
+  
+            }  
+        } catch (Exception e) {  
+            System.out.println("transBean2Map Error " + e);  
+        }  
+  
+        return map;  
+  
+    }  
 }

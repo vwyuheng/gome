@@ -10,22 +10,26 @@ import com.tuan.inventory.domain.support.jedistools.JedisFactory;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.model.GoodsInventoryModel;
+import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.service.GoodsInventoryQueryService;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
 	
-	//@Resource
-	//LogOfWaterHandleService logOfWaterHandleService;
+	@Resource
+	GoodsInventoryQueryService goodsInventoryQueryService;
 	
 	@Resource 
-	JedisFactory readJedisFactory;
+	JedisFactory jedisFactory;
 	@Resource
 	SequenceUtil sequenceUtil;
 	
 	@Test
 	public void test() {
-		try {
-			//inventoryProviderReadService.getNotSeleInventory(100);
+		try {  
+			CallResult<GoodsInventoryModel> result =	goodsInventoryQueryService.findGoodsInventoryByGoodsId(clientIP, clientName, 100);
+			System.out.println("11GoodsInventoryModel11="+result.getBusinessResult());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,7 +72,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@SuppressWarnings("unused")
 	private int test1(final String key) {
-		return readJedisFactory.withJedisDo(new JWork<Integer>() 
+		return jedisFactory.withJedisDo(new JWork<Integer>() 
 				{
 					@Override
 					public Integer work(Jedis j)

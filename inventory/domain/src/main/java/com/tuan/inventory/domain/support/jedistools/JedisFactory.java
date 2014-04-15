@@ -135,10 +135,10 @@ public class JedisFactory extends RedisBaseObject
     		m_logger.error("jedisFactory.withJedisDo invoke error", e);
     		e.printStackTrace();
     		return null;
-    	}finally {
+    	}/*finally {
     		if(j!=null) 
     			returnRes(j);
-    	}
+    	}*/
     }        
     
     public interface Work<Return,Param>

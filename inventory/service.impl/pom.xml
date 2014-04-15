@@ -13,6 +13,12 @@
 	<name>inventory-service-impl</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
+	 <!-- notifyserver start -->
+	   <!--  <dependency>
+			<groupId>com.tuan.notifyserver.client</groupId>
+			<artifactId>notifyserver-client</artifactId>
+		</dependency> -->
+		<!-- notifyserver end -->
 	   <dependency>
 			<groupId>com.tuan.cozy</groupId>
 			<artifactId>cozy-utils-trace</artifactId>

@@ -24,7 +24,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	private String clientIp;
 	private String clientName;
 	private CallbackParam param;
-	private GoodsInventoryDomainRepository updateInventoryDomainRepository;
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
 	private String ack;
@@ -83,7 +83,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			this.preHandler();
 			if (isRollback) {
 				// 根据key查询缓存的队列信息
-				this.queueDO = this.updateInventoryDomainRepository
+				this.queueDO = this.goodsInventoryDomainRepository
 						.queryInventoryQueueDO(key);
 				if (this.queueDO != null) {
 					this.goodsId = queueDO.getGoodsId();
@@ -114,29 +114,29 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
 			// 插入日志
-			this.updateInventoryDomainRepository.pushLogQueues(updateActionDO);
+			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			//确认
 			if (isConfirm) {
-				this.updateInventoryDomainRepository.markQueueStatus(key,
+				this.goodsInventoryDomainRepository.markQueueStatus(key,
 						(upStatusNum));
 			}
 			//回滚
 			if (isRollback) {
 				// 回滚库存
 				if (goodsId > 0) {
-					this.updateInventoryDomainRepository.updateGoodsInventory(
+					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
 				}
 				if(!CollectionUtils.isEmpty(selectionParam)) {
-					 this.updateInventoryDomainRepository
+					 this.goodsInventoryDomainRepository
 						.rollbackSelectionInventory(selectionParam);
 				}
 				if(!CollectionUtils.isEmpty(suppliersParam)) {
-					this.updateInventoryDomainRepository
+					this.goodsInventoryDomainRepository
 					.rollbackSuppliersInventory(suppliersParam);
 				}
 				// 将队列标记删除
-				this.updateInventoryDomainRepository.markQueueStatus(key,
+				this.goodsInventoryDomainRepository.markQueueStatus(key,
 						(upStatusNum));
 			}
 
@@ -197,9 +197,13 @@ public class InventoryCallbackDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void setUpdateInventoryDomainRepository(
-			GoodsInventoryDomainRepository updateInventoryDomainRepository) {
-		this.updateInventoryDomainRepository = updateInventoryDomainRepository;
+	public GoodsInventoryDomainRepository getGoodsInventoryDomainRepository() {
+		return goodsInventoryDomainRepository;
+	}
+
+	public void setGoodsInventoryDomainRepository(
+			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
+		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
