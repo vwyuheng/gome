@@ -206,10 +206,10 @@
 									<groupId>json-object</groupId>
 									<artifactId>json-object</artifactId>
 								</artifactItem>
-								<artifactItem>
+								<!-- <artifactItem>
 									<groupId>org.springframework</groupId>
 									<artifactId>spring-webmvc</artifactId>
-								</artifactItem>
+								</artifactItem> -->
 								<artifactItem>
 									<groupId>freemarker</groupId>
 									<artifactId>freemarker</artifactId>
@@ -280,6 +280,12 @@
 						</goals>
 						<configuration>
 							<artifactItems>
+							<!-- wowo trace @2014/4/15 start-->
+							<artifactItem>
+									<groupId>com.tuan.cozy</groupId>
+			                        <artifactId>cozy-utils-trace</artifactId>
+								</artifactItem>
+		                      <!-- wowo trace @2014/4/15 end-->
 								<!-- order start -->
 								<artifactItem>
 									<groupId>com.tuan.ordercenter</groupId>

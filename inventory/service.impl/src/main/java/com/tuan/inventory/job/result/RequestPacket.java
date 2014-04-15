@@ -2,15 +2,12 @@ package com.tuan.inventory.job.result;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @description
  * 窝窝内部统一的请求报文头
  * @author tianzq
  * @date 2013.11.20
  */
-@XmlRootElement(name = "Packet")
 public class RequestPacket implements Serializable {
 
 	private static final long serialVersionUID = 3335312131615418151L;
@@ -19,18 +16,13 @@ public class RequestPacket implements Serializable {
 	 */
 	private String ip;
 	/**
-	 * 客户端名�?
+	 * 客户端名
 	 */
 	private String client;
 	/**
-	 * 时间�?10�?
+	 * 时间戳 10位
 	 */
 	private String t;
-	
-	/**
-	 * 合作�?
-	 */
-	private String cooperator;
 	
 	/**
 	 * trace父ID
@@ -61,12 +53,6 @@ public class RequestPacket implements Serializable {
 		this.t = t;
 	}
 	
-	public String getCooperator() {
-		return cooperator;
-	}
-	public void setCooperator(String cooperator) {
-		this.cooperator = cooperator;
-	}
 	public String getTraceId() {
 		return traceId;
 	}
@@ -82,7 +68,7 @@ public class RequestPacket implements Serializable {
 	@Override
 	public String toString() {
 		return "RequestPacket [ip=" + ip + ", client=" + client + ", t=" + t
-				+ ", cooperator=" + cooperator + ", traceId=" + traceId 
+				+ ", traceId=" + traceId 
 				+ ", traceRootId=" + traceRootId + ", toString()="
 				+ super.toString() + "]";
 	}

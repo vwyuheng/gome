@@ -23,8 +23,11 @@ public enum ResultStatusEnum {
 	ADD_INVENTORY   ("15",   "新增库存"),
 	REFUND_RESTORE_INVENTORY   ("16",   "商品退款还库存"),
 	ADJUST_INVENTORY   ("17",   "手工调整库存"),
-	FAULT_COMPENSATION_INVENTORY   ("18",   "出错补偿还库存");
+	FAULT_COMPENSATION_INVENTORY   ("18",   "出错补偿还库存"),
 	
+	//servlet接口
+	SUCCESS		("0000",	"成功"),
+	NO_PARAMETER		("1009",	"请求参数不能为空");
 	
 	
 	private String code;

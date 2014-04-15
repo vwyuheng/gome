@@ -12,13 +12,13 @@
 	</description>
 	<!-- start2 -->
 	 <servlet>
-		<servlet-name>dispatcher</servlet-name>
+		<servlet-name>inventory</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>dispatcher</servlet-name>
-		<url-pattern>/rest/i/*</url-pattern>
+		<servlet-name>inventory</servlet-name>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	<!-- end2 -->
 	<!-- 配置 hessian-->
@@ -74,27 +74,6 @@
 			org.springframework.web.context.ContextLoaderListener
 		</listener-class>
 	</listener>
-<!-- start3 -->
-	<error-page>
-		<error-code>500</error-code>
-		<location>/error/500.jsp</location>
-	</error-page>
-	<error-page>
-		<error-code>400</error-code>
-		<location>/error/400.jsp</location>
-	</error-page>
-	<error-page>
-		<error-code>401</error-code>
-		<location>/error/401.jsp</location>
-	</error-page>
-	<error-page>
-		<error-code>404</error-code>
-		<location>/error/404.jsp</location>
-	</error-page>
-	<welcome-file-list>
-		<welcome-file>index.jsp</welcome-file>
-		<welcome-file>check.html</welcome-file>
-	</welcome-file-list>
-<!-- end3 -->
+
 
 </web-app>

@@ -21,5 +21,5 @@
 	
 	<import resource="classpath:/bean/inventory-notifyserver-bean.xml" />
 	<import resource="classpath:/bean/inventory-redis.xml" />
-	<import resource="classpath:/bean/inventory-tasks-bean.xml" />
+	<!-- <import resource="classpath:/bean/inventory-tasks-bean.xml" /> -->
 </beans>
