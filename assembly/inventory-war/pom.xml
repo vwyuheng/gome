@@ -16,9 +16,6 @@
 	<properties>
 		<assembly.name>inventory</assembly.name>
 	</properties>
-	<dependencies>
-
-	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
