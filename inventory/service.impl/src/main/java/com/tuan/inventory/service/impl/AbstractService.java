@@ -4,9 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.core.common.service.AbstractServiceImpl;
-import com.tuan.core.common.service.TuanCallbackResult;
-import com.tuan.inventory.model.enu.PublicCodeEnum;
-import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.BusiServiceTemplate;
 import com.tuan.inventory.service.InventoryServiceTemplate;
 
@@ -33,10 +30,10 @@ public abstract class AbstractService extends AbstractServiceImpl {
 	}
 	
 
-	<T> CallResult<T> makeResult(Class<T> t, TuanCallbackResult result) {
+/*	<T> CallResult<T> makeResult(Class<T> t, TuanCallbackResult result) {
 		return (CallResult<T>) new CallResult(result.isSuccess(),PublicCodeEnum.valuesOf(result.getResultCode()),
 				result.getBusinessObject(), result.getThrowable());
-	}
+	}*/
 	protected static Log logBus = LogFactory.getLog("BUSINESS.USER");
 	private static Log logSys = LogFactory.getLog("SYSERROR.LOG");
 	

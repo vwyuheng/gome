@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- @version $Id$ -->
-
-<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
-
-	<display-name>55tuan App Core Framework</display-name>
-
-	<description>
-		55tuan App Core Framework for service application
-	</description>
-	<!-- start2 -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5">
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<!-- <param-value>/WEB-INF/inventory-root-bean.xml</param-value> -->
+		<param-value>/WEB-INF/test.xml</param-value>
+	</context-param>
+	<!-- 配置日志初始文件 -->
+	<!-- <context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>/WEB-INF/log4j.xml</param-value>
+	</context-param> -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>
+			org.springframework.web.util.Log4jConfigListener
+		</listener-class>
+	</listener>
 	 <servlet>
 		<servlet-name>inventory</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -18,33 +28,10 @@
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>inventory</servlet-name>
-		<url-pattern>/*</url-pattern>
+		<url-pattern>/rest/j/*</url-pattern>
+		<url-pattern>/rest/x/*</url-pattern>
 	</servlet-mapping>
 	<!-- end2 -->
-	<!-- 配置 hessian-->
-	<!-- <servlet>
-	  	<servlet-name>remoting</servlet-name>
-	  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-	  	<init-param>
-	  		<param-name>namespace</param-name>
-	  		<param-value>remoting-servlet</param-value>
-	  	</init-param>
-	  	<load-on-startup>1</load-on-startup>
-  	</servlet>
-  <servlet-mapping>
-  	<servlet-name>remoting</servlet-name>
-  	<url-pattern>/remoting/*</url-pattern>
-  </servlet-mapping> -->
-	<!-- 配置Spring初始文件 -->
-	<context-param>
-		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/inventory-root-bean.xml</param-value>
-	</context-param>
-	<!-- 配置日志初始文件 -->
-	<context-param>
-		<param-name>log4jConfigLocation</param-name>
-		<param-value>/WEB-INF/log4j.xml</param-value>
-	</context-param>
 	<!-- start -->
     <filter>
 		<filter-name>encodingFilter</filter-name>
@@ -61,19 +48,30 @@
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>/rest/j/*</url-pattern>
+		<url-pattern>/rest/x/*</url-pattern>
 	</filter-mapping>
 	<!-- end -->
-	<listener>
-		<listener-class>
-			org.springframework.web.util.Log4jConfigListener
-		</listener-class>
-	</listener>
+	<!-- 配置Spring初始文件 -->
 
-	<listener>
-		<listener-class>
-			org.springframework.web.context.ContextLoaderListener
-		</listener-class>
-	</listener>
-
+<error-page>
+		<error-code>500</error-code>
+		<location>/error/500.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/error/400.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>401</error-code>
+		<location>/error/401.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/error/404.jsp</location>
+	</error-page>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>check.jsp</welcome-file>
+	</welcome-file-list>
 
 </web-app>

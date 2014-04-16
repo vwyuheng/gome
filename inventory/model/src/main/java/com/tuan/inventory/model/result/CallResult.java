@@ -20,7 +20,7 @@ public class CallResult<T> extends TuanBaseDO {
 	private Object businessObject;
 	
 	
-	public CallResult(boolean isSuccess, PublicCodeEnum publicCodeEnum,
+	public CallResult(boolean isSuccess,  PublicCodeEnum publicCodeEnum,
 			T businessResult,Object businessObject) {
 		super();
 		this.isSuccess = isSuccess;
@@ -40,6 +40,8 @@ public class CallResult<T> extends TuanBaseDO {
 	public void setSuccess(boolean isSuccess) {
 		this.isSuccess = isSuccess;
 	}
+
+	
 
 	public PublicCodeEnum getPublicCodeEnum() {
 		return publicCodeEnum;

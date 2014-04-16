@@ -38,6 +38,7 @@
 									<artifactId>inventory-app</artifactId>
 								</artifactItem>
 							</artifactItems>
+
 							<outputDirectory>
 								${project.build.directory}/${assembly.name}.war
 							</outputDirectory>
@@ -114,10 +115,10 @@
 									<groupId>org.apache.xbean</groupId>
 									<artifactId>xbean-spring</artifactId>
 								</artifactItem>
-								<artifactItem>
+								<!-- <artifactItem>
 									<groupId>org.springframework</groupId>
 									<artifactId>spring</artifactId>
-								</artifactItem>
+								</artifactItem> -->
 								<artifactItem>
 									<groupId>org.springframework</groupId>
 									<artifactId>spring-core</artifactId>
@@ -157,6 +158,15 @@
 								<artifactItem>
 									<groupId>org.springframework</groupId>
 									<artifactId>spring-webmvc</artifactId>
+								</artifactItem>
+								<!-- @2014416 add new  -->
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-asm</artifactId>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.springframework</groupId>
+									<artifactId>spring-expression</artifactId>
 								</artifactItem>
 								<!-- spring depency -->
 								<artifactItem>
@@ -395,15 +405,86 @@
 									<groupId>com.tuan.inventory</groupId>
 									<artifactId>inventory-ext</artifactId>
 								</artifactItem>
+								<!-- <artifactItem>
+									<groupId>com.tuan.inventory</groupId>
+									<artifactId>inventory-app</artifactId>
+								</artifactItem> -->
+								
 								<!-- for activemq -->
 								<artifactItem>
 									<groupId>com.tuan.cozy</groupId>
 									<artifactId>cozy-common-activemq</artifactId>
 								</artifactItem>
+             <!-- @20140416 start-->
+           <artifactItem>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-oxm</artifactId>
+			</artifactItem>
 
+                <artifactItem>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			</artifactItem>
+		 <!-- <artifactItem>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-core-asl</artifactId>
+			<type>jar</type>
+			<scope>compile</scope>
+		</artifactItem>
+		 <artifactItem>
+			<groupId>org.codehaus.jackson </groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<type>jar</type>
+			<scope>compile</scope>
+		</artifactItem> -->
+		 <artifactItem>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			</artifactItem>
+	
+	 <artifactItem>
+			<groupId>org.spring.aopalliance</groupId>
+			<artifactId>aopalliance</artifactId>
+		</artifactItem>
+			
+		 <artifactItem>
+			<groupId>urlrewrite</groupId>
+			<artifactId>urlrewrite</artifactId>
+		</artifactItem>
+
+		 <artifactItem>
+			<groupId>net.sf.ezmorph</groupId>
+			<artifactId>ezmorph</artifactId>
+			</artifactItem>
+		 <artifactItem>
+			<groupId>net.sf.morph</groupId>
+			<artifactId>morph</artifactId>
+			</artifactItem>
+		 <artifactItem>
+			<groupId>com.gbi</groupId>
+			<artifactId>ssoclient</artifactId>
+			</artifactItem>
+
+		 <artifactItem>
+			<groupId>com.google.code</groupId>
+			<artifactId>kaptcha</artifactId>
+			</artifactItem>
+		 <artifactItem>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			</artifactItem>
+		 <artifactItem>
+			<groupId>servlet-api</groupId>
+			<artifactId>servlet-api</artifactId>
+			</artifactItem>
+		 <artifactItem>
+			<groupId>commons-fileupload</groupId>
+			<artifactId>commons-fileupload</artifactId>
+			</artifactItem>
+		<!-- @20140416 end-->
 							</artifactItems>
 							<outputDirectory>${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/lib</outputDirectory>
-						</configuration>
+						</configuration>	
 					</execution>
 				</executions>
 			</plugin>
@@ -458,6 +539,33 @@
 						</configuration>
 					</execution>
 					<!-- 过滤处理数据库配置 -->
+					
+					<!--处理class文件 add new @2014/4/16 start-->
+					<execution>
+						<id>class-filter</id>
+						<phase>process-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<encoding>UTF-8</encoding>
+							<tasks>
+								<mkdir
+									dir="${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/com" />
+							</tasks>
+							<resources>
+								<resource>
+									<directory>${project.build.directory}/${assembly.name}.war/com</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+							<outputDirectory>
+								${project.build.directory}/${assembly.name}.war/webapp/WEB-INF/classes/com
+							</outputDirectory>
+							<overwrite>true</overwrite>
+						</configuration>
+					</execution>
+					<!--处理class文件 add new @2014/4/16 end-->
 					<!-- 过滤处理Apache配置 -->
 				</executions>
 			</plugin>
@@ -486,6 +594,9 @@
 							</tasks>
 						</configuration>
 					</execution>
+					
+					
+					
 					<execution>
 						<id>rename-app-config</id>
 						<phase>process-resources</phase>
@@ -535,6 +646,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
+				
+				
 					<execution>
 						<id>rename-war</id>
 						<phase>package</phase>

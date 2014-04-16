@@ -6,22 +6,27 @@ import com.tuan.inventory.model.util.QueueConstant;
 /**
  * 公共类型信息枚举
  * 
- * @author shaolong zhang
+ * @author
  * 
  */
 public enum PublicCodeEnum {
 
 	SYSTEM_EXCETION(QueueConstant.SERVICE_SYSTEM_FALIURE,"SERVICE_SYSTEM_FALIURE"),
-	DB_EXCEPTION(QueueConstant.NO_ALIVE_DATASOURCE,"NO_ALIVE_DATASOURCE"),
+	INVALID_GOODSID(QueueConstant.INVALID_GOODSID,"INVALID_GOODSID"),
 	SYSTEM_DB_EXCEPTION(QueueConstant.SERVICE_DATABASE_FALIURE,"SERVICE_DATABASE_FAILURE"),
 	SUCCESS(QueueConstant.SUCCESS,"SUCCESS"),
-	PARAM_INVALID(QueueConstant.PARAMS_INVALID,"PARAMS_INVALID"),
+	PARAM_INVALID(QueueConstant.INVALID_PARAM,"INVALID_PARAM"),
 	NO_DATA(QueueConstant.NO_DATA,"NO_DATA"),
-	NOT_SAFE_IPADDRESS(QueueConstant.NOT_SAFE_IPADDRESS,"NOT_SAFE_IPADDRESS"),
-	OVER_TOP_VALUE(QueueConstant.OVER_TOP_VALUE,"OVER_TOP_VALUE"),
+	INVALID_SELECTIONID(QueueConstant.INVALID_SELECTIONID,"INVALID_SELECTIONID"),
+	INVALID_SUPPLIERSID(QueueConstant.INVALID_SUPPLIERSID,"INVALID_SUPPLIERSID"),
 	DATA_EXISTED(QueueConstant.DATA_EXISTED,"DATA_EXISTED"),
-	NOT_SUPPORT(QueueConstant.NOT_SUPPORT,"NOT_SUPPORT"),
-	UNKNOW_ERROR(QueueConstant.UNKNOW_ERROR,"UNKNOW_ERROR");
+	UNKNOW_ERROR(QueueConstant.UNKNOW_ERROR,"UNKNOW_ERROR"),
+	
+	//addd
+	INVALID_IP(QueueConstant.INVALID_IP,"INVALID_IP"),
+	INVALID_CLIENT(QueueConstant.INVALID_CLIENT,"INVALID_CLIENT"),
+	INVALID_TIME(QueueConstant.INVALID_TIME,"INVALID_TIME"),
+	INVALID_RETURN(QueueConstant.INVALID_RETURN,"INVALID_RETURN");
 	
 	private int code;
 	private String message;
@@ -34,25 +39,35 @@ public enum PublicCodeEnum {
 	public static PublicCodeEnum valuesOf(int code) {
 		if (code == QueueConstant.SERVICE_SYSTEM_FALIURE) {
 			return SYSTEM_EXCETION;
-		} else if (code == QueueConstant.NO_ALIVE_DATASOURCE) {
-			return DB_EXCEPTION;
-		} else if (code == QueueConstant.SUCCESS) {
+		}else if (code == QueueConstant.SUCCESS) {
 			return SUCCESS;
-		} else if (code == QueueConstant.PARAMS_INVALID) {
+		} else if (code == QueueConstant.INVALID_PARAM) {
 			return PARAM_INVALID;
 		} else if (code == QueueConstant.NO_DATA) {
 			return NO_DATA;
-		} else if (code == QueueConstant.NOT_SAFE_IPADDRESS) {
-			return NOT_SAFE_IPADDRESS;
-		} else if(code == QueueConstant.DATA_EXISTED){
+		} else if (code == QueueConstant.DATA_EXISTED) {
 			return DATA_EXISTED;
+		} else if(code == QueueConstant.INVALID_GOODSID){
+			return INVALID_GOODSID;
+		} else if(code == QueueConstant.INVALID_SELECTIONID){
+			return INVALID_SELECTIONID;
+		} else if(code == QueueConstant.INVALID_SUPPLIERSID){
+			return INVALID_SUPPLIERSID;
 		} else if(code == QueueConstant.SERVICE_DATABASE_FALIURE){
 			return SYSTEM_DB_EXCEPTION;
-		} else if(code == QueueConstant.NOT_SUPPORT){
-			return NOT_SUPPORT;
-		} else if(code == QueueConstant.OVER_TOP_VALUE){
-			return OVER_TOP_VALUE;
-		}
+		} 
+		else if(code == QueueConstant.INVALID_IP){
+			return INVALID_IP;
+		} else if(code == QueueConstant.INVALID_CLIENT){
+			return INVALID_CLIENT;
+		} else if(code == QueueConstant.INVALID_TIME){
+			return INVALID_TIME;
+		} else if(code == QueueConstant.INVALID_RETURN){
+			return INVALID_RETURN;
+		} 
+		
+		
+		
 		return UNKNOW_ERROR;
 	}
 
