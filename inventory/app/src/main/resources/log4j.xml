@@ -2,14 +2,14 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <!-- @version $Id$ -->
 <!--
-  - Log4jÅäÖÃÎÄ¼þ¡£
+  - Log4jé…ç½®æ–‡ä»¶ã€‚
 -->
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 	<!-- ===================================================================== -->
 	<!-- Appenders                                                             -->
 	<!-- ===================================================================== -->
-	<!-- ===== [¹«¹²Appender] ===== -->
-	<!-- [¹«¹²Appender] Ä¬ÈÏ -->
+	<!-- ===== [å…¬å…±Appender] ===== -->
+	<!-- [å…¬å…±Appender] é»˜è®¤ -->
 	<appender name="DEFAULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/common-default.log"/>
 		<param name="append" value="true"/>
@@ -19,7 +19,7 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - &quot;%m&quot;%n"/>
 		</layout>
 	</appender>
-	<!-- [¹«¹²Appender] »ã×Ü´íÎó -->
+	<!-- [å…¬å…±Appender] æ±‡æ€»é”™è¯¯ -->
 	<appender name="ERROR-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/common-error.log"/>
 		<param name="append" value="true"/>
@@ -30,7 +30,7 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - &quot;%m&quot;%n"/>
 		</layout>
 	</appender>
-	<!-- [¹«¹²Appender] »ã×ÜÐÔÄÜÍ³¼Æ -->
+	<!-- [å…¬å…±Appender] æ±‡æ€»æ€§èƒ½ç»Ÿè®¡ -->
 	<appender name="PERF-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/common-perf.log"/>
 		<param name="append" value="true"/>
@@ -40,7 +40,7 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - %m%n"/>
 		</layout>
 	</appender>
-	<!-- [¹«¹²Appender] ¿ØÖÆÌ¨STDOUT -->
+	<!-- [å…¬å…±Appender] æŽ§åˆ¶å°STDOUT -->
 	<appender name="STDOUT-APPENDER" class="org.apache.log4j.ConsoleAppender">
 		<param name="encoding" value="UTF-8"/>
 		<param name="target" value="System.out"/>
@@ -48,7 +48,7 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - &quot;%m&quot;%n"/>
 		</layout>
 	</appender>
-	<!-- [¹«¹²Appender] ¿ØÖÆÌ¨STDERR -->
+	<!-- [å…¬å…±Appender] æŽ§åˆ¶å°STDERR -->
 	<appender name="STDERR-APPENDER" class="org.apache.log4j.ConsoleAppender">
 		<param name="encoding" value="UTF-8"/>
 		<param name="target" value="System.err"/>
@@ -56,9 +56,9 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - &quot;%m&quot;%n"/>
 		</layout>
 	</appender>
-	<!-- [¹«¹²Appender] ¿Õ -->
+	<!-- [å…¬å…±Appender] ç©º -->
 	<appender name="NULL-APPENDER" class="org.apache.log4j.varia.NullAppender"/>
-	<!-- [¹«¹²Appender] Jakarta commons -->
+	<!-- [å…¬å…±Appender] Jakarta commons -->
 	<appender name="APACHE-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/common-apache.log"/>
 		<param name="append" value="true"/>
@@ -68,7 +68,7 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - %m%n"/>
 		</layout>
 	</appender>
-	<!-- [¹«¹²Appender] Êý¾Ý·ÃÎÊ²ã -->
+	<!-- [å…¬å…±Appender] æ•°æ®è®¿é—®å±‚ -->
 	<appender name="DAO-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/common-dao.log"/>
 		<param name="append" value="true"/>
@@ -78,8 +78,8 @@
 			<param name="ConversionPattern" value="%d [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - %m%n"/>
 		</layout>
 	</appender>
-	<!-- ===== [¿ò¼ÜAppender] ===== -->
-	<!-- [¿ò¼ÜAppender] USFP »ù´¡ÉèÊ© - Ä¬ÈÏ -->
+	<!-- ===== [æ¡†æž¶Appender] ===== -->
+	<!-- [æ¡†æž¶Appender] USFP åŸºç¡€è®¾æ–½ - é»˜è®¤ -->
 	<appender name="USFP-DEFAULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/usfp-default.log"/>
 		<param name="append" value="true"/>
@@ -89,8 +89,8 @@
 			<param name="ConversionPattern" value="%d [%t] [%X{loginUserEmail}/%X{loginUserID}/%X{remoteAddr}/%X{clientId} - %X{requestURIWithQueryString}] %-5p %c{2} - %m%n"/>
 		</layout>
 	</appender>
-	<!-- ===== [Ó¦ÓÃAppender] ===== -->
-	<!-- [Ó¦ÓÃAppender] Ä¬ÈÏ -->
+	<!-- ===== [åº”ç”¨Appender] ===== -->
+	<!-- [åº”ç”¨Appender] é»˜è®¤ -->
 	<appender name="UCORE-DEFAULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/inventory-default.log"/>
 		<param name="append" value="true"/>
@@ -101,7 +101,7 @@
 		</layout>
 	</appender>
 	
-	<!-- [Ó¦ÓÃAppender] Ó¦ÓÃÒµÎñ´¦Àí½á¹ûÈÕÖ¾ -->
+	<!-- [åº”ç”¨Appender] åº”ç”¨ä¸šåŠ¡å¤„ç†ç»“æžœæ—¥å¿— -->
 	<appender name="UCORE-BUSINESS-RESULT-APPENDER" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="file" value="${loggingRoot}/inventory-biz-result.log"/>
 		<param name="append" value="true"/>
@@ -135,48 +135,48 @@
 	<!-- ===================================================================== -->
 	<!-- Loggers                                                               -->
 	<!-- ===================================================================== -->
-	<!-- ===== [¹«¹²Logger] ===== -->
-	<!-- [¹«¹²Logger] ÐÔÄÜ - serviceÐÔÄÜ  -->
+	<!-- ===== [å…¬å…±Logger] ===== -->
+	<!-- [å…¬å…±Logger] æ€§èƒ½ - serviceæ€§èƒ½  -->
 	<logger name="com.tuan.core.common.aop.pref.PerformanceMonitorInterceptor" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="PERF-APPENDER"/>
 	</logger>
-	<!-- [¹«¹²Logger] ¿ØÖÆÌ¨STDOUT - STDOUT -->
+	<!-- [å…¬å…±Logger] æŽ§åˆ¶å°STDOUT - STDOUT -->
 	<logger name="STDOUT" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="STDOUT-APPENDER"/>
 	</logger>
-	<!-- [¹«¹²Logger] ¿ØÖÆÌ¨STDERR - STDERR -->
+	<!-- [å…¬å…±Logger] æŽ§åˆ¶å°STDERR - STDERR -->
 	<logger name="STDERR" additivity="false">
 		<level value="ERROR"/>
 		<appender-ref ref="STDERR-APPENDER"/>
 	</logger>
-	<!-- ===== [¿ò¼ÜLogger] ===== -->
-	<!-- [¿ò¼ÜLogger] Jakarta commons - Ä¬ÈÏ -->
+	<!-- ===== [æ¡†æž¶Logger] ===== -->
+	<!-- [æ¡†æž¶Logger] Jakarta commons - é»˜è®¤ -->
 	<logger name="org.apache" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="APACHE-APPENDER"/>
 		<appender-ref ref="ERROR-APPENDER"/>
 	</logger>
-	<!-- [¿ò¼ÜLogger] Jakarta commons - beanutils -->
+	<!-- [æ¡†æž¶Logger] Jakarta commons - beanutils -->
 	<logger name="org.apache.commons.beanutils">
 		<level value="ERROR"/>
 		<appender-ref ref="APACHE-APPENDER"/>
 		<appender-ref ref="ERROR-APPENDER"/>
 	</logger>
-	<!-- [¿ò¼ÜLogger] Êý¾Ý·ÃÎÊ²ã - Ibatis -->
+	<!-- [æ¡†æž¶Logger] æ•°æ®è®¿é—®å±‚ - Ibatis -->
 	<logger name="com.ibatis" additivity="false">
 		<level value="ERROR"/>
 		<appender-ref ref="DAO-APPENDER"/>
 		<appender-ref ref="ERROR-APPENDER"/>
 	</logger>
-	<!-- [¿ò¼ÜLogger] Êý¾Ý·ÃÎÊ²ã - SQL -->
+	<!-- [æ¡†æž¶Logger] æ•°æ®è®¿é—®å±‚ - SQL -->
 	<logger name="java.sql" additivity="false">
 		<level value="ERROR"/>
 		<appender-ref ref="DAO-APPENDER"/>
 		<appender-ref ref="ERROR-APPENDER"/>
 	</logger>
-	<!-- [¿ò¼ÜLogger] USFP »ù´¡ÉèÊ©²ã - Ä¬ÈÏÈÕÖ¾ -->
+	<!-- [æ¡†æž¶Logger] USFP åŸºç¡€è®¾æ–½å±‚ - é»˜è®¤æ—¥å¿— -->
 	<logger name="com.tuan.core.common" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="USFP-DEFAULT-APPENDER"/>
@@ -184,7 +184,7 @@
 	</logger>
 	
 	
-	<!-- [Ó¦ÓÃLogger] ÓÃ»§ºËÐÄ - ÒµÎñ½á¹ûÈÕÖ¾ -->
+	<!-- [åº”ç”¨Logger] ç”¨æˆ·æ ¸å¿ƒ - ä¸šåŠ¡ç»“æžœæ—¥å¿— -->
 	<logger name="com.tuan.core.common.aop.product" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="UCORE-BUSINESS-RESULT-APPENDER"/>
@@ -197,7 +197,7 @@
 		<level value="INFO"/>
 		<appender-ref ref="SYSTEM-ERROR-APPENDER"/>
 	</logger>
-	<!-- [Ó¦ÓÃLogger] Memcache -->
+	<!-- [åº”ç”¨Logger] Memcache -->
 	<logger name="com.danga">
 		<level value="WARN"/>
 		<appender-ref ref="DEFAULT-APPENDER"/>

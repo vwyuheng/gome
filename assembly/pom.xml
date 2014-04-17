@@ -13,7 +13,7 @@
 	<dependencyManagement>
 		<dependencies/>
 	</dependencyManagement>
-	<modules>
+	<!-- <modules>
 		<module>inventory-war</module>
-	</modules>
+	</modules> -->
 </project>
