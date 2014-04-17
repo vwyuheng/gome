@@ -16,7 +16,7 @@ import com.tuan.inventory.service.OrderServiceCallback;
 
 /**
  * @ClassName: OrderQueryServiceImpl
- * @Description: ¶©µ¥²éÑ¯½Ó¿ÚÊµÏÖÀà£¬ÊµÏÖ¶©µ¥²éÑ¯Ä£¿éÌá¹©µÄ²Ù×÷½Ó¿Ú °üÀ¨µ¥¸ö¶©µ¥²éÑ¯¡¢ÉÌÆ·¶©µ¥ÁĞ±í²éÑ¯¡¢ÓÃ»§¶©µ¥»ã×Ü²éÑ¯¡¢ÓÃ»§¶©µ¥ÁĞ±í²éÑ¯
+ * @Description: è®¢å•æŸ¥è¯¢æ¥å£å®ç°ç±»ï¼Œå®ç°è®¢å•æŸ¥è¯¢æ¨¡å—æä¾›çš„æ“ä½œæ¥å£ åŒ…æ‹¬å•ä¸ªè®¢å•æŸ¥è¯¢ã€å•†å“è®¢å•åˆ—è¡¨æŸ¥è¯¢ã€ç”¨æˆ·è®¢å•æ±‡æ€»æŸ¥è¯¢ã€ç”¨æˆ·è®¢å•åˆ—è¡¨æŸ¥è¯¢
  * @author wanghongwei
  * @date 2011-12-20
  */
@@ -47,7 +47,7 @@ public class GoodSeletionQueryServiceImpl extends AbstractService implements Goo
 	@Override
 	public CallResult<InventoryQueryResult> querySelectionRelation(final String clientIp,
 			final String clientName,final long goodsId,final long SelectionRelationId) {
-		// »ñÈ¡½Ó¿ÚÃû³Æ
+		// ï¿½ï¿½È¡ï¿½Ó¿ï¿½ï¿½ï¿½ï¿½
 		//final String interfaceMehtodName = ClientNameEnum.getCurrentMethodName(
 				//Thread.currentThread().getStackTrace(),
 			//	getClass().getInterfaces()[0].getName());
@@ -64,7 +64,7 @@ public class GoodSeletionQueryServiceImpl extends AbstractService implements Goo
 						if (goodsId <= 0 ) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
-						// ¼ì²é³öÏÖ´íÎó
+						// ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,

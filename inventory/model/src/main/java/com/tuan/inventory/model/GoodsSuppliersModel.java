@@ -4,7 +4,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
  * @ClassName: RedisGoodsSuppliersInventoryDO
- * @Description: ÉÌÆ·ÉÌ¼Ò¿â´æ
+ * @Description: å•†å“å•†å®¶åº“å­˜
  * @author henry.yu
  * @date 2014.3.10
  */
@@ -12,14 +12,14 @@ public class GoodsSuppliersModel extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private Long  id;
-	private Long goodsId;// ÉÌÆ·ID(FK)
+	private Long goodsId;// å•†å“ID(FK)
 	private Long userId;
-	private Long suppliersId;// ·ÖµêID(FK)
-	private java.lang.Integer totalNumber;// µ±Ç°·Öµê×Ü¿â´æ999999£ºÎŞÏŞÖÆ
-	private java.lang.Integer leftNumber;// µ±Ç°·ÖµêÊ£ÓàÊı¿â´æÄ¬ÈÏÖµ:0
-	private java.lang.Integer limitStorage; // 0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
-	private Integer waterfloodVal;  //×¢Ë®Öµ
-	private int num;  //¿â´æ¿Û¼õÁ¿
+	private Long suppliersId;// åˆ†åº—ID(FK)
+	private java.lang.Integer totalNumber;// å½“å‰åˆ†åº—æ€»åº“å­˜999999ï¼šæ— é™åˆ¶
+	private java.lang.Integer leftNumber;// å½“å‰åˆ†åº—å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼:0
+	private java.lang.Integer limitStorage; // 0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
+	private Integer waterfloodVal;  //æ³¨æ°´å€¼
+	private int num;  //åº“å­˜æ‰£å‡é‡
 	public Long getId() {
 		return id;
 	}

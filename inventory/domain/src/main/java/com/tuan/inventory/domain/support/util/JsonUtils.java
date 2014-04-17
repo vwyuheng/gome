@@ -10,7 +10,7 @@ public class JsonUtils {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	/**
-	 * ½«¶ÔÏó×ª»»Îªjson×Ö·û´®
+	 * å°†å¯¹è±¡è½¬æ¢ä¸ºjsonå­—ç¬¦ä¸²
 	 * 
 	 * @param object
 	 * @return
@@ -31,7 +31,7 @@ public class JsonUtils {
 	}
 
 	/**
-	 * ½«json×Ö·û´®×ª»»Îª ¶ÔÏó
+	 * å°†jsonå­—ç¬¦ä¸²è½¬æ¢ä¸º å¯¹è±¡
 	 * 
 	 * @param jsonData
 	 * @return

@@ -16,7 +16,7 @@ import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 
 /**
- * ÈÕÖ¾Òì²½´¦ÀíÊÂ¼ş
+ * æ—¥å¿—å¼‚æ­¥å¤„ç†äº‹ä»¶
  * @author henry.yu
  * @Date  2014/3/21
  */
@@ -43,14 +43,14 @@ public class LogsEventHandle implements EventHandle {
 		try {
 			logModel = (GoodsInventoryActionModel) event.getData();
 			if (logModel != null) {
-				// Ïû·Ñ¶ÔÁĞµÄĞÅÏ¢
+				// æ¶ˆè´¹å¯¹åˆ—çš„ä¿¡æ¯
 				callResult = logOfWaterHandleService.createLogOfWater(logModel);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS
-						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //µ±Êı¾İÒÑ¾­´æÔÚÊ±·µ»Øtrue,ÎªµÄÊÇÉ¾³ı»º´æÖĞµÄ¶ÓÁĞÊı¾İ
-					// ÏûÏ¢Êı¾İ²»´æ²¢ÇÒ²»³É¹¦
+						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //å½“æ•°æ®å·²ç»å­˜åœ¨æ—¶è¿”å›true,ä¸ºçš„æ˜¯åˆ é™¤ç¼“å­˜ä¸­çš„é˜Ÿåˆ—æ•°æ®
+					// æ¶ˆæ¯æ•°æ®ä¸å­˜å¹¶ä¸”ä¸æˆåŠŸ
 					isSuccess = false;
 					message = "queue_error[" + publicCodeEnum.getMessage()
 							+ "]logid:" + logModel.getId();

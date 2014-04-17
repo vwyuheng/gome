@@ -4,7 +4,7 @@ import com.tuan.inventory.domain.support.BaseQueueDomain;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 
 /**
- *  ÈÕÖ¾¶ÓÁĞÁìÓò
+ *  æ—¥å¿—é˜Ÿåˆ—é¢†åŸŸ
  * @Date  2014-4-4
  */
 public class LogQueueDomain extends BaseQueueDomain {
@@ -14,7 +14,7 @@ public class LogQueueDomain extends BaseQueueDomain {
 	}
 
 	/**
-     * ´´½¨Ò»¸öĞÂµÄ¶ÓÁĞÁìÓò £¬¸ù¾İ´«µİµÄ²ÎÊı
+     * åˆ›å»ºä¸€ä¸ªæ–°çš„é˜Ÿåˆ—é¢†åŸŸ ï¼Œæ ¹æ®ä¼ é€’çš„å‚æ•°
 	 */
 	public LogQueueDomain(GoodsInventoryActionModel logModel) {
 		super(logModel);

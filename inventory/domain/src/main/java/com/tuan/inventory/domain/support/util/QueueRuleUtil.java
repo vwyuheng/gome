@@ -3,7 +3,7 @@ package com.tuan.inventory.domain.support.util;
 import com.tuan.core.common.lang.utils.TimeUtil;
 
 /**
- * ¶ÓÁÐÏû·Ñ ¿ªÊ¼Ê±¼ä ¿ØÖÆ
+ * é˜Ÿåˆ—æ¶ˆè´¹ å¼€å§‹æ—¶é—´ æŽ§åˆ¶
  */
 public class QueueRuleUtil {
 	

@@ -3,29 +3,29 @@ package com.tuan.inventory.job.scheduled;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 /***
- * µ÷¶ÈÏß³Ì³ØµÄ»ùÀà
+ * è°ƒåº¦çº¿ç¨‹æ± çš„åŸºç±»
  * @author henry.yu
  * @date 2014/3/28
  */
 public abstract class AbstractEventScheduled {
 
 	/**
-	 * µ÷¶ÈÏß³Ì³Ø£¬ÓÃÓÚ³õÊ¼»¯ÈÕÖ¾ÊÂ¼şÊı¾İ
+	 * è°ƒåº¦çº¿ç¨‹æ± ï¼Œç”¨äºåˆå§‹åŒ–æ—¥å¿—äº‹ä»¶æ•°æ®
 	 */
 	protected ScheduledExecutorService scheduledExecutorService;
 	/**
-	 * µ¥¸öcpuµÄÏß³ÌÊı
+	 * å•ä¸ªcpuçš„çº¿ç¨‹æ•°
 	 */
 	protected final int POOL_SIZE = 5;
 
-	/** ¼àÌıµÈ´ıÊ±¼ä */
+	/** ç›‘å¬ç­‰å¾…æ—¶é—´ */
 	protected long waitTime = 200;
 	
 	/**
-	 * ¹¹Ôì´ø²»´ø»º´æµÄ¿Í»§¶Ë
+	 * æ„é€ å¸¦ä¸å¸¦ç¼“å­˜çš„å®¢æˆ·ç«¯
 	 */
 	public AbstractEventScheduled() {
-		// ³õÊ¼»¯ScheduledExecutorService ·şÎñ
+		// åˆå§‹åŒ–ScheduledExecutorService æœåŠ¡
 		this.scheduledExecutorService = Executors
 				.newScheduledThreadPool(Runtime.getRuntime()
 						.availableProcessors() * POOL_SIZE);

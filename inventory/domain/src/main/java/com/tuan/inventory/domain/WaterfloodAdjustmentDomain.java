@@ -33,22 +33,22 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private GoodsInventoryDO inventoryDO;
 	private GoodsSelectionDO selectionInventory;
 	private GoodsSuppliersDO suppliersInventory;
-	//³õÊ¼»¯ÓÃ
+	//åˆå§‹åŒ–ç”¨
 	private List<GoodsSuppliersDO> suppliersInventoryList;
 	private List<GoodsSelectionDO> selectionInventoryList;
 	private String type;
 	private String id;
-	//×¢Ë®µ÷ÕûÖµ
+	//æ³¨æ°´è°ƒæ•´å€¼
 	private int adjustNum;
 	private String businessType;
-	// Ô­×¢Ë®
+	// åŸæ³¨æ°´
 	private int originalWaterfloodVal = 0;
 	private Long goodsId;
 	private Long selectionId;
 	private Long suppliersId;
-	//µ÷Õûºó¿â´æ
+	//è°ƒæ•´ååº“å­˜
 	private long resultACK;
-	//ÊÇ·ñĞèÒª³õÊ¼»¯
+	//æ˜¯å¦éœ€è¦åˆå§‹åŒ–
 	private boolean isInit;
 	
 	public WaterfloodAdjustmentDomain(String clientIp, String clientName,
@@ -59,15 +59,15 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 
-	// ÒµÎñ¼ì²é
+	// ä¸šåŠ¡æ£€æŸ¥
 	public CreateInventoryResultEnum busiCheck() {
 		try {
-			// ³õÊ¼»¯¼ì²é
+			// åˆå§‹åŒ–æ£€æŸ¥
 			this.initCheck();
 			if (isInit) {
 				this.init();
 			}
-			// ÕæÕıµÄÒµÎñ¼ì²é´¦Àí
+			// çœŸæ­£çš„ä¸šåŠ¡æ£€æŸ¥å¤„ç†
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.businessType = ResultStatusEnum.GOODS_SELF
 						.getDescription();
@@ -81,7 +81,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				this.selectionId = Long.valueOf(id);
 				this.businessType = ResultStatusEnum.GOODS_SELECTION
 						.getDescription();
-				// ²éÑ¯ÉÌÆ·Ñ¡ĞÍ¿â´æ
+				// æŸ¥è¯¢å•†å“é€‰å‹åº“å­˜
 				this.selectionInventory = this.goodsInventoryDomainRepository
 						.querySelectionRelationById(selectionId);
 				if (selectionInventory != null) {
@@ -95,7 +95,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				this.suppliersId = Long.valueOf(id);
 				this.businessType = ResultStatusEnum.GOODS_SUPPLIERS
 						.getDescription();
-				// ²éÑ¯ÉÌÆ··Öµê¿â´æ
+				// æŸ¥è¯¢å•†å“åˆ†åº—åº“å­˜
 				this.suppliersInventory = this.goodsInventoryDomainRepository
 						.querySuppliersInventoryById(suppliersId);
 				if (suppliersInventory != null) {
@@ -114,34 +114,34 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// µ÷Õû×¢Ë®
+	// è°ƒæ•´æ³¨æ°´
 	public CreateInventoryResultEnum adjustWaterfloodVal() {
 		try {
-			// Ê×ÏÈÌî³äÈÕÖ¾ĞÅÏ¢
+			// é¦–å…ˆå¡«å……æ—¥å¿—ä¿¡æ¯
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
-			// ²åÈëÈÕÖ¾
+			// æ’å…¥æ—¥å¿—
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (adjustNum));
 				if(!verifyWaterflood()) {
-					//½«×¢Ë®»¹Ô­µ½µ÷ÕûÇ°
+					//å°†æ³¨æ°´è¿˜åŸåˆ°è°ƒæ•´å‰
 					this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (adjustNum));
 				if(!verifyWaterflood()) {
-					//½«×¢Ë®»¹Ô­µ½µ÷ÕûÇ°
+					//å°†æ³¨æ°´è¿˜åŸåˆ°è°ƒæ•´å‰
 					this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (adjustNum));
 				if(!verifyWaterflood()) {
-					//½«×¢Ë®»¹Ô­µ½µ÷ÕûÇ°
+					//å°†æ³¨æ°´è¿˜åŸåˆ°è°ƒæ•´å‰
 					this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
@@ -156,44 +156,44 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 	
-	// ³õÊ¼»¯²ÎÊı
+	// åˆå§‹åŒ–å‚æ•°
 	private void fillParam() {
-		// 2:ÉÌÆ· 4£ºÑ¡ĞÍ 6£º·Öµê
+		// 2:å•†å“ 4ï¼šé€‰å‹ 6ï¼šåˆ†åº—
 		this.type = param.getType();
-		// 2£ºÉÌÆ·id 4£ºÑ¡ĞÍid 6 ·Öµêid
+		// 2ï¼šå•†å“id 4ï¼šé€‰å‹id 6 åˆ†åº—id
 		this.id = param.getId();
 		this.adjustNum = param.getNum();
 		
 	}
-	//³õÊ¼»¯¼ì²é
+	//åˆå§‹åŒ–æ£€æŸ¥
 	public void initCheck() {
 		this.fillParam();
 		this.goodsId = Long.valueOf(id);
-		//²éÑ¯ÉÌÆ·¿â´æ
+		//æŸ¥è¯¢å•†å“åº“å­˜
 		this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 		if(inventoryDO==null) {
-			//³õÊ¼»¯¿â´æ
+			//åˆå§‹åŒ–åº“å­˜
 			this.isInit = true;
-			//³õÊ¼»¯ÉÌÆ·¿â´æĞÅÏ¢
+			//åˆå§‹åŒ–å•†å“åº“å­˜ä¿¡æ¯
 			this.inventoryDO = this.initCacheDomainRepository
 					.getInventoryInfoByGoodsId(goodsId);
-			//²éÑ¯¸ÃÉÌÆ··Öµê¿â´æĞÅÏ¢
+			//æŸ¥è¯¢è¯¥å•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 			selectionInventoryList = this.initCacheDomainRepository.querySelectionByGoodsId(goodsId);
 			suppliersInventoryList =  this.initCacheDomainRepository.selectGoodsSuppliersInventoryByGoodsId(goodsId);
 		}
 	}
 	public void init() {
-		//±£´æÉÌÆ·¿â´æ
+		//ä¿å­˜å•†å“åº“å­˜
 		if(inventoryDO!=null)
 		      this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
-		//±£Ñ¡ĞÍ¿â´æ
+		//ä¿é€‰å‹åº“å­˜
 		if(!CollectionUtils.isEmpty(selectionInventoryList))
 		      this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
-		//±£´æ·Öµê¿â´æ
+		//ä¿å­˜åˆ†åº—åº“å­˜
 		if(!CollectionUtils.isEmpty(suppliersInventoryList))
 		      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
 	}
-	// Ìî³äÈÕÖ¾ĞÅÏ¢
+	// å¡«å……æ—¥å¿—ä¿¡æ¯
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
@@ -211,8 +211,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent(JSONObject.fromObject(param).toString()); // ²Ù×÷ÄÚÈİ
-			updateActionDO.setRemark("×¢Ë®µ÷Õû");
+					.setContent(JSONObject.fromObject(param).toString()); // æ“ä½œå†…å®¹
+			updateActionDO.setRemark("æ³¨æ°´è°ƒæ•´");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
@@ -231,7 +231,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		}
 	}
 	/**
-	 * ²ÎÊı¼ì²é
+	 * å‚æ•°æ£€æŸ¥
 	 * 
 	 * @return
 	 */

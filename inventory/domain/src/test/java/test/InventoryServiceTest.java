@@ -56,7 +56,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
 		//model.getOrderInfoModel().getPayStatus();
 		System.out.print("singleOrderQueryResult="+(statEnum.equals(OrderInfoPayStatusEnum.PAIED)));
-	     //System.out.print("成功"+cllResult.getBusinessResult().getResult());
+	     //System.out.print("鎴愬姛"+cllResult.getBusinessResult().getResult());
 	}
 
 	
@@ -69,12 +69,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		incParam.setIncSelection(true);
 		incParam.setIncTicket(true);
 		CallResult<SingleOrderQueryResult>  cllResult=  orderCenterFacade.singleOrderQuery("61.135.132.59", "USER_CENTER", 38110009159L, 19204477, null, null);
-		System.out.print("成功1"+cllResult.getBusinessResult().getResult());
+		System.out.print("鎴愬姛1"+cllResult.getBusinessResult().getResult());
 		if(cllResult.getCallResult())
 		{
 			SingleOrderQueryResult singleOrderQueryResult =cllResult.getBusinessResult();
 			System.out.print("singleOrderQueryResult="+singleOrderQueryResult);
-	       System.out.print("成功"+cllResult.getBusinessResult().getResult());
+	       System.out.print("鎴愬姛"+cllResult.getBusinessResult().getResult());
 			
 		}*/
 	}
@@ -142,7 +142,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void testWrite() {
 		try {
-			//inventoryDeductReadWriteService.waterfloodValAdjustment(100, 1,11L,"库存管理系统","127.0.0.1");
+			//inventoryDeductReadWriteService.waterfloodValAdjustment(100, 1,11L,"搴撳瓨绠＄悊绯荤粺","127.0.0.1");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -165,10 +165,10 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 				logDO.setContent("content:11");
 				logDO.setCreateTime(1000111);
 				logDO.setItem("dfasds");
-				logDO.setOperateType("商品");
-				logDO.setRemark("备注");
+				logDO.setOperateType("鍟嗗搧");
+				logDO.setRemark("澶囨敞");
 				logDO.setVariableQuantity("numL:10");
-				logDO.setType("库存扣减"+i);
+				logDO.setType("搴撳瓨鎵ｅ噺"+i);
 				inventoryQueueService.pushLogQueues(logDO);*/
 			}
 			
@@ -183,10 +183,10 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			logDO.setContent("content:11");
 			logDO.setCreateTime(1000111);
 			logDO.setItem("dfasds");
-			logDO.setOperateType("商品");
-			logDO.setRemark("备注");
+			logDO.setOperateType("鍟嗗搧");
+			logDO.setRemark("澶囨敞");
 			logDO.setVariableQuantity("numL:10");
-			logDO.setType("库存扣减");
+			logDO.setType("搴撳瓨鎵ｅ噺");
 			inventoryQueueService.pushLogQueues(logDO);*/
 			//logOfWaterHandleService.createLogOfWater(logDO);
 		} catch (Exception e) {
@@ -203,7 +203,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			queue.setGoodsId(Long.valueOf(i));
 			queue.setOrderId(3L);
 			queue.setType(QueueConstant.GOODS);
-			queue.setItem("测试");
+			queue.setItem("娴嬭瘯");
 			queue.setLimitStorage(1);
 			queue.setUserId(5L);
 			queue.setVariableQuantityJsonData("numL:10");
@@ -227,7 +227,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			queue.setGoodsId(2L);
 			queue.setOrderId(3L);
 			queue.setType(QueueConstant.GOODS);
-			queue.setItem("测试");
+			queue.setItem("娴嬭瘯");
 			queue.setLimitStorage(1);
 			queue.setUserId(5L);
 			queue.setVariableQuantityJsonData("numL:10");

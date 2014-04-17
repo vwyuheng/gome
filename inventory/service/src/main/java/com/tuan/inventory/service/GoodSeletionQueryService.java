@@ -5,11 +5,11 @@ import com.tuan.inventory.model.result.InventoryQueryResult;
 
 public interface GoodSeletionQueryService {
 	/**
-	 * 库存信息查询
+	 * 搴撳瓨淇℃伅鏌ヨ
 	 * @param clientIp
 	 * @param clientName
-	 * @param goodsId 商品id
-	 * @param SelectionRelationId 选型id
+	 * @param goodsId 鍟嗗搧id
+	 * @param SelectionRelationId 閫夊瀷id
 	 * @return
 	 */
 	public CallResult<InventoryQueryResult> querySelectionRelation(final String clientIp,

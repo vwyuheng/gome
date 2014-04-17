@@ -4,31 +4,31 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
  * @ClassName: OrderGoodsSelectionModel
- * @Description: ¶©µ¥ÉÌÆ·Ñ¡ĞÍĞÅÏ¢BeanÀà£¬¶ÔÓ¦OrderGoodsSelectionDO
- * 		¶ÔÓ¦¶©µ¥ÉÌÆ·Ñ¡ĞÍĞÅÏ¢±í order_center.jeehe_order_info_detail
+ * @Description: è®¢å•å•†å“é€‰å‹ä¿¡æ¯Beanç±»ï¼Œå¯¹åº”OrderGoodsSelectionDO
+ * 		å¯¹åº”è®¢å•å•†å“é€‰å‹ä¿¡æ¯è¡¨ order_center.jeehe_order_info_detail
  * @author wowo
  * @date 2011-12-21
  */
 public class OrderGoodsSelectionModel extends TuanBaseDO {
-	/** ĞòÁĞ»¯±êÊ¶*/
+	/** åºåˆ—åŒ–æ ‡è¯†*/
 	private static final long serialVersionUID = 1L;
-	/** ¼ÇÂ¼id */
+	/** è®°å½•id */
     private Long id;
-    /** ¶©µ¥id */
+    /** è®¢å•id */
 	private Long orderId;
-	/** ÉÌÆ·id */
+	/** å•†å“id */
 	private Long goodsId;
-	/** ÉÌÆ·µÄ¹ºÂòÊıÁ¿ */
+	/** å•†å“çš„è´­ä¹°æ•°é‡ */
 	private Short count;
-	/** Ñ¡ĞÍid */
+	/** é€‰å‹id */
 	private Integer selectionRelationId;
-	/** ×´Ì¬ 0£­ÓĞĞ§£»1£­ÎŞĞ§ */
+	/** çŠ¶æ€ 0ï¼æœ‰æ•ˆï¼›1ï¼æ— æ•ˆ */
 	private Byte status;
-	/** ´´½¨»òĞŞ¸ÄÊ±¼ä */
+	/** åˆ›å»ºæˆ–ä¿®æ”¹æ—¶é—´ */
 	private int dateTime;
-	/** ·Öµêid */
+	/** åˆ†åº—id */
 	private int suppliersId;
-	/** ÃèÊö×Ö¶Î */
+	/** æè¿°å­—æ®µ */
 	private String description;
 	public Long getId() {
 		return id;

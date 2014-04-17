@@ -1,9 +1,9 @@
 package com.tuan.inventory.domain.support.enu;
 
 /**
- * ÏûÏ¢ÀàĞÍÒµÎñÂë
- * Õı³£
- * ·ÇÕı³£
+ * æ¶ˆæ¯ç±»å‹ä¸šåŠ¡ç 
+ * æ­£å¸¸
+ * éæ­£å¸¸
  * @author henry.yu
  * @Date 2014/3/21
  */

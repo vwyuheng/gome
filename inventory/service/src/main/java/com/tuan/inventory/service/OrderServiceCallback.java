@@ -3,31 +3,31 @@ package com.tuan.inventory.service;
 import com.tuan.core.common.service.TuanCallbackResult;
 
 /**
- * ¶©µ¥·şÎñ»Øµ÷½Ó¿Ú
- * @author ÎÑÎÑÍÅ
+ * è®¢å•æœåŠ¡å›è°ƒæ¥å£
+ * @author çªçªå›¢
  * @date 2012.10.25
  */
 public interface OrderServiceCallback {
     /**
-     * ²ÎÊı¼ì²é
+     * å‚æ•°æ£€æŸ¥
      * @return
      */
     public TuanCallbackResult executeParamsCheck(); 
     
     /**
-     * ÒµÎñ¼ì²é
+     * ä¸šåŠ¡æ£€æŸ¥
      * @return
      */
     public TuanCallbackResult executeBusiCheck();
     
     /**
-     * ÒµÎñÖ´ĞĞ
+     * ä¸šåŠ¡æ‰§è¡Œ
      * @return
      */
     public TuanCallbackResult executeAction();
     
     /**
-     * Ö´ĞĞºó´¦Àí
+     * æ‰§è¡Œåå¤„ç†
      * @return
      */
     public void executeAfter(); 

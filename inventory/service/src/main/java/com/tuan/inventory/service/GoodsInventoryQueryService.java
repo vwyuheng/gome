@@ -11,7 +11,7 @@ import com.tuan.inventory.model.result.CallResult;
 
 public interface GoodsInventoryQueryService {
 	/**
-	 * ¸ù¾İÑ¡ĞÍid»ñÈ¡Ñ¡ĞÍ¿â´æĞÅÏ¢
+	 * æ ¹æ®é€‰å‹idè·å–é€‰å‹åº“å­˜ä¿¡æ¯
 	 * @param clientIp
 	 * @param clientName
 	 * @param userId
@@ -22,7 +22,7 @@ public interface GoodsInventoryQueryService {
 	CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(final String clientIp, final String clientName, final long goodsId,
 			final long selectionId);
 	/**
-	 * ¸ù¾İÉÌÆ··Öµêid»ñÈ¡·Öµê¿â´æ
+	 * æ ¹æ®å•†å“åˆ†åº—idè·å–åˆ†åº—åº“å­˜
 	 * @param clientIp
 	 * @param clientName
 	 * @param userId
@@ -33,8 +33,8 @@ public interface GoodsInventoryQueryService {
 	CallResult<GoodsSuppliersModel> findGoodsSuppliersBySuppliersId(final String clientIp, final String clientName, final long goodsId,
 			final long suppliersId);
 	/**
-	 * ¸ù¾İÉÌÆ·id»ñÈ¡ÉÌÆ·¿â´æĞÅÏ¢£¬
-	 * °üº¬(ÈôÓĞµÄ»°)Ñ¡ĞÍµÄ¿â´æ¼°·ÖµêµÄ¿â´æ
+	 * æ ¹æ®å•†å“idè·å–å•†å“åº“å­˜ä¿¡æ¯ï¼Œ
+	 * åŒ…å«(è‹¥æœ‰çš„è¯)é€‰å‹çš„åº“å­˜åŠåˆ†åº—çš„åº“å­˜
 	 * @param clientIp
 	 * @param clientName
 	 * @param userId
@@ -45,7 +45,7 @@ public interface GoodsInventoryQueryService {
 	CallResult<GoodsInventoryModel> findGoodsInventoryByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
 	/**
-	 * ¸ù¾İÉÌÆ·id»ñÈ¡ÉÌÆ·Ñ¡ĞÍ¿â´æÁĞ±í
+	 * æ ¹æ®å•†å“idè·å–å•†å“é€‰å‹åº“å­˜åˆ—è¡¨
 	 * @param clientIp
 	 * @param clientName
 	 * @param userId
@@ -56,7 +56,7 @@ public interface GoodsInventoryQueryService {
 	CallResult<List<GoodsSelectionModel>> findGoodsSelectionListByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
 	/**
-	 * ¸ù¾İÉÌÆ·id»ñÈ¡ÉÌÆ··Öµê¿â´æÁĞ±í
+	 * æ ¹æ®å•†å“idè·å–å•†å“åˆ†åº—åº“å­˜åˆ—è¡¨
 	 * @param clientIp
 	 * @param clientName
 	 * @param userId

@@ -5,7 +5,7 @@ import java.net.MalformedURLException;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 /**
- * hessian¹¤¾ßÀà
+ * hessianå·¥å…·ç±»
  * @author henry.yu
  *
  */

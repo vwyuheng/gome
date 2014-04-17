@@ -3,14 +3,14 @@ package com.tuan.inventory.service;
 import com.tuan.core.common.service.TuanCallbackResult;
 
 /**
- * ¶©µ¥ÖĞĞÄ×Ô¶¨Òå·şÎñÄ£°æ½Ó¿Ú£¨¶©µ¥ÖĞĞÄÄÚ²¿Ê¹ÓÃ£©
+ * è®¢å•ä¸­å¿ƒè‡ªå®šä¹‰æœåŠ¡æ¨¡ç‰ˆæ¥å£ï¼ˆè®¢å•ä¸­å¿ƒå†…éƒ¨ä½¿ç”¨ï¼‰
  * @author tianzq
  * @date 2012.11.19
  */
 public interface BusiServiceTemplate {
 	
 	/**
-	 * Ä£°åÖ´ĞĞ
+	 * æ¨¡æ¿æ‰§è¡Œ
 	 * @param action
 	 * @return
 	 */

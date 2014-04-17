@@ -10,32 +10,32 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 
 /**
- * ¶ÔÁĞÊı¾İ²ÎÊı
+ * å¯¹åˆ—æ•°æ®å‚æ•°
  * 
  * @author shaolong zhang
- * @Date  2013-4-18 ÉÏÎç11:31:06
+ * @Date  2013-4-18 ä¸Šåˆ11:31:06
  */
 public class BaseQueueDomain extends AbstractDomain{
 	
-	protected Long id;  //ÈÕÖ¾Ö÷¼ü
-	protected Long goodsId;// ÉÌÆ·ID(FK)
-	protected Long orderId;// ¶©µ¥id
-	protected Long userId ;//ÓÃ»§id
-	protected String type;  //±êÊ¶£ºÑ¡ĞÍ¡¢×ÜÊı¡¢·Öµê
-	protected String item; //ÈôÑ¡ĞÍ´æÑ¡ĞÍid£¬Èô·Öµê´æ·Öµêid£¬Èô¼È·ÇÑ¡ĞÍÓÖ·Ç·ÖµêÔò²»´æÊı¾İ
-	protected Integer createTime;  //´´½¨ÈÕÆÚ
-	//protected Integer updateTime;  //¸üĞÂÊ±¼ä[×´Ì¬±»¸üĞÂ]
-	protected String variableQuantity;// ¿â´æ±ä»¯Á¿
-	protected String originalQuantity;// Ô­Ê¼¿â´æÁ¿¡¾¿â´æ¿Û¼õÇ°µÄÊıÖµ¡¿
-	protected String operateType;  //ÒµÎñÀàĞÍ:¿â´æ¿Û¼õ¡¢³õÊ¼»¯¿â´æ¡¢ÉÌÆ·ÍË¿î»¹¿â´æ¡¢ÊÖ¹¤µ÷Õû¿â´æ¡¢³ö´í²¹³¥»¹¿â´æ
-	protected String content; //²Ù×÷ÄÚÈİ
-	protected String system; // À´Ô´ÏµÍ³
-	protected String clientIp; // À´Ô´ip
-	//protected String exception;  //ÊÇ·ñÒì³£ĞÅÏ¢
-	protected String remark;  //±¸×¢
+	protected Long id;  //æ—¥å¿—ä¸»é”®
+	protected Long goodsId;// å•†å“ID(FK)
+	protected Long orderId;// è®¢å•id
+	protected Long userId ;//ç”¨æˆ·id
+	protected String type;  //æ ‡è¯†ï¼šé€‰å‹ã€æ€»æ•°ã€åˆ†åº—
+	protected String item; //è‹¥é€‰å‹å­˜é€‰å‹idï¼Œè‹¥åˆ†åº—å­˜åˆ†åº—idï¼Œè‹¥æ—¢éé€‰å‹åˆéåˆ†åº—åˆ™ä¸å­˜æ•°æ®
+	protected Integer createTime;  //åˆ›å»ºæ—¥æœŸ
+	//protected Integer updateTime;  //æ›´æ–°æ—¶é—´[çŠ¶æ€è¢«æ›´æ–°]
+	protected String variableQuantity;// åº“å­˜å˜åŒ–é‡
+	protected String originalQuantity;// åŸå§‹åº“å­˜é‡ã€åº“å­˜æ‰£å‡å‰çš„æ•°å€¼ã€‘
+	protected String operateType;  //ä¸šåŠ¡ç±»å‹:åº“å­˜æ‰£å‡ã€åˆå§‹åŒ–åº“å­˜ã€å•†å“é€€æ¬¾è¿˜åº“å­˜ã€æ‰‹å·¥è°ƒæ•´åº“å­˜ã€å‡ºé”™è¡¥å¿è¿˜åº“å­˜
+	protected String content; //æ“ä½œå†…å®¹
+	protected String system; // æ¥æºç³»ç»Ÿ
+	protected String clientIp; // æ¥æºip
+	//protected String exception;  //æ˜¯å¦å¼‚å¸¸ä¿¡æ¯
+	protected String remark;  //å¤‡æ³¨
 	
 	/**
-	 * ¸üĞÂ¶ÔÏó
+	 * æ›´æ–°å¯¹è±¡
 	 */
 	//protected QueueDO queueDOUpdate;
 
@@ -93,7 +93,7 @@ public class BaseQueueDomain extends AbstractDomain{
 
 
 	/**
-	 * ´´½¨¶ÓÁĞdao
+	 * åˆ›å»ºé˜Ÿåˆ—dao
 	 */
 	public GoodsInventoryActionDO toLogQueueDO() {
 		GoodsInventoryActionDO logQueueDO = new GoodsInventoryActionDO();
@@ -117,7 +117,7 @@ public class BaseQueueDomain extends AbstractDomain{
 	
 	
 	/**
-	 * ´´½¨¶ÓÁĞÄ£ĞÍ
+	 * åˆ›å»ºé˜Ÿåˆ—æ¨¡å‹
 	 */
 	public GoodsInventoryActionModel toLogQueueModel() {
 		GoodsInventoryActionModel queue = new GoodsInventoryActionModel();

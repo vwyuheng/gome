@@ -8,7 +8,7 @@ import com.tuan.core.common.datasource.DataSourceContextHolder;
 import com.tuan.core.common.datasource.msloadbalancer.MSDataSourceType;
 
 /**
- * ¶©µ¥·şÎñµ¥Ôª²âÊÔ³éÏóÀà
+ * è®¢å•æœåŠ¡å•å…ƒæµ‹è¯•æŠ½è±¡ç±»
  * @author tianzq
  * @date 2012.03.13
  *

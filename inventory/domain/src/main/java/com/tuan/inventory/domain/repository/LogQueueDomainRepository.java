@@ -15,7 +15,7 @@ import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.util.QueueConstant;
 
 /**
- * 队列仓储信息
+ * 闃熷垪浠撳偍淇℃伅
  * 
  * @author henry.yu
  * @Date  2014/04/04
@@ -25,7 +25,7 @@ public class LogQueueDomainRepository {
 	private static final Log logger = LogFactory.getLog(LogQueueDomainRepository.class);
 	
 	/**
-	 * 日志队列信息dao
+	 * 鏃ュ織闃熷垪淇℃伅dao
 	 */
 	@Resource
 	private LogOfWaterDAO logOfWaterDAO;
@@ -36,7 +36,7 @@ public class LogQueueDomainRepository {
 	}
 
 	/**
-	 * 保存消息内容
+	 * 淇濆瓨娑堟伅鍐呭
 	 * @param queueDomain 
 	 */
 	public void saveLogOfWater(BaseQueueDomain logDomain) {
@@ -48,7 +48,7 @@ public class LogQueueDomainRepository {
 			logger.error(
 					"LogQueueDomainRepository.saveLogOfWater error occured!"
 							+ e.getMessage(), e);
-			if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+			if (e instanceof DataIntegrityViolationException) {// 娑堟伅鏁版嵁閲嶅
 				throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
 						"Duplicate entry '" + uniqueSign
 								+ "' for key 'unique_sign'", e);

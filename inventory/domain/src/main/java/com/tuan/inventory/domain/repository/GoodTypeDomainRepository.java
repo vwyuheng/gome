@@ -22,7 +22,7 @@ public class GoodTypeDomainRepository {
 
 	/**
 	 * @Title: selectSelectionRelationBySrId
-	 * @Description: ¸ù¾İ·ÖµêÑ¡ĞÍ¹ØÏµ±íidÈ¡µÃËùÓĞÅäĞÍ
+	 * @Description: æ ¹æ®åˆ†åº—é€‰å‹å…³ç³»è¡¨idå–å¾—æ‰€æœ‰é…å‹
 	 * @param selectionRelationId
 	 * @return GoodsSelectionRelationDO
 	 */
@@ -33,7 +33,7 @@ public class GoodTypeDomainRepository {
 
 	/**
 	 * @Title: selectGoodsSuppliersInventoryBySiId
-	 * @Description: ¸ù¾İ·ÖµêÑ¡ĞÍ¹ØÏµ±íidÈ¡µÃËùÓĞÅäĞÍ
+	 * @Description: æ ¹æ®åˆ†åº—é€‰å‹å…³ç³»è¡¨idå–å¾—æ‰€æœ‰é…å‹
 	 * @param suppliersInventoryId
 	 * @return GoodsSuppliersInventoryDO
 	 */
@@ -59,7 +59,7 @@ public class GoodTypeDomainRepository {
 	}
 
 	/**
-	 * ¸üĞÂÎïÁ÷ÉÌÆ·±í¿â´æ
+	 * æ›´æ–°ç‰©æµå•†å“è¡¨åº“å­˜
 	 * 
 	 * @param wmsGoods
 	 */
@@ -78,7 +78,7 @@ public class GoodTypeDomainRepository {
 	}
 	
 	/**
-	 * ¸ù¾İids²éÑ¯¶ÔÓ¦Ñ¡ĞÍ¶ÔÏó 
+	 * æ ¹æ®idsæŸ¥è¯¢å¯¹åº”é€‰å‹å¯¹è±¡ 
 	 * @param selectionRelationIdList
 	 * @return
 	 */
@@ -86,7 +86,7 @@ public class GoodTypeDomainRepository {
 		return getGoodTypeDAO().selectSelectionRelationBySrIds(selectionRelationIdList,goodsId);
 	}
 	/**
-	 * ¸ù¾İÉÌÆ·id²éÑ¯ÉÌÆ··Öµê¿â´æĞÅÏ¢
+	 * æ ¹æ®å•†å“idæŸ¥è¯¢å•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 	 * @param goodsId
 	 * @return
 	 */

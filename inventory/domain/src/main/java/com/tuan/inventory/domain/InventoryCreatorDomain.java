@@ -42,11 +42,11 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 	private Long goodsId;
 	private Long userId;
-	// ÉÌÆ·¿â´æÊÇ·ñ´æÔÚ
+	// å•†å“åº“å­˜æ˜¯å¦å­˜åœ¨
 	boolean isExists = false;
-	// ĞÂÔöÑ¡ĞÍ
+	// æ–°å¢é€‰å‹
 	boolean addSelection = false;
-	// ĞÂÔö·Öµê
+	// æ–°å¢åˆ†åº—
 	boolean addSuppliers = false;
 
 	public InventoryCreatorDomain(String clientIp, String clientName,
@@ -57,44 +57,44 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 	/***
-	 * ÒµÎñ´¦ÀíÇ°µÄÔ¤´¦Àí
+	 * ä¸šåŠ¡å¤„ç†å‰çš„é¢„å¤„ç†
 	 */
 	public void preHandler() {
 
 		this.goodsId = Long.valueOf(param.getGoodsId());
-		// ÉÌÆ·¿â´æÊÇ·ñ´æÔÚ
+		// å•†å“åº“å­˜æ˜¯å¦å­˜åœ¨
 		isExists = this.goodsInventoryDomainRepository.isExists(goodsId);
-		if (isExists) { // ²»´æÔÚ
-			// ¸ù¾İ½Ó¿Ú²ÎÊıÌî³äÉÌÆ·¿â´æĞÅÏ¢
+		if (isExists) { // ä¸å­˜åœ¨
+			// æ ¹æ®æ¥å£å‚æ•°å¡«å……å•†å“åº“å­˜ä¿¡æ¯
 			this.fillRedisInventoryDO();
-			// Ìî³äÉÌÆ·Ñ¡ĞÍ¿âĞÅÏ¢
+			// å¡«å……å•†å“é€‰å‹åº“ä¿¡æ¯
 			this.fillSelection();
-			// Ìî³äÉÌÆ··Öµê¿â´æĞÅÏ¢
+			// å¡«å……å•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 			this.fillSuppliers();
-		} else { // ÉÌÆ·ÒÑ´æÔÚ
-			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // Ñ¡ĞÍ¿â´æ
+		} else { // å•†å“å·²å­˜åœ¨
+			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // é€‰å‹åº“å­˜
 				addSelection = true;
 			}
-			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // ·Öµê¿â´æ
+			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // åˆ†åº—åº“å­˜
 				addSuppliers = true;
 			}
 		}
 	}
 
-	// ÒµÎñ¼ì²é
+	// ä¸šåŠ¡æ£€æŸ¥
 	public CreateInventoryResultEnum busiCheck() {
 
 		try {
-			// ÒµÎñ¼ì²éÇ°µÄÔ¤´¦Àí
+			// ä¸šåŠ¡æ£€æŸ¥å‰çš„é¢„å¤„ç†
 			this.preHandler();
 
-			if (addSelection) { // Ñ¡ĞÍ¿â´æ
-				// Ìî³äÉÌÆ·Ñ¡ĞÍ¿â¿â´æĞÅÏ¢
+			if (addSelection) { // é€‰å‹åº“å­˜
+				// å¡«å……å•†å“é€‰å‹åº“åº“å­˜ä¿¡æ¯
 				this.fillSelection();
 
 			}
-			if (addSuppliers) { // ·Öµê¿â´æ
-				// Ìî³äÉÌÆ··Öµê¿â´æĞÅÏ¢
+			if (addSuppliers) { // åˆ†åº—åº“å­˜
+				// å¡«å……å•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 				this.fillSuppliers();
 
 			}
@@ -111,24 +111,24 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// ĞÂÔö¿â´æ
+	// æ–°å¢åº“å­˜
 	public CreateInventoryResultEnum createInventory() {
 		try {
-			// Ê×ÏÈÌî³äÈÕÖ¾ĞÅÏ¢
+			// é¦–å…ˆå¡«å……æ—¥å¿—ä¿¡æ¯
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
-			// ²åÈëÈÕÖ¾
+			// æ’å…¥æ—¥å¿—
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			// ±£´æÉÌÆ·¿â´æ
+			// ä¿å­˜å•†å“åº“å­˜
 			if (isExists && inventoryInfoDO != null)
 				this.goodsInventoryDomainRepository.saveGoodsInventory(
 						goodsId, inventoryInfoDO);
-			// ±£Ñ¡ĞÍ¿â´æ
+			// ä¿é€‰å‹åº“å­˜
 			if (!CollectionUtils.isEmpty(selectionRelation))
 				this.goodsInventoryDomainRepository
 						.saveGoodsSelectionInventory(goodsId, selectionRelation);
-			// ±£´æ·Öµê¿â´æ
+			// ä¿å­˜åˆ†åº—åº“å­˜
 			if (!CollectionUtils.isEmpty(suppliersRelation))
 				this.goodsInventoryDomainRepository
 						.saveGoodsSuppliersInventory(goodsId, suppliersRelation);
@@ -142,7 +142,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// ·¢ËÍ¿â´æĞÂÔöÏûÏ¢
+	// å‘é€åº“å­˜æ–°å¢æ¶ˆæ¯
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
@@ -159,7 +159,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		}
 	}
 
-	// Ìî³änotifyserver·¢ËÍ²ÎÊı
+	// å¡«å……notifyserverå‘é€å‚æ•°
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(this.userId);
@@ -177,7 +177,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		return notifyParam;
 	}
 
-	// Ìî³äÈÕÖ¾ĞÅÏ¢
+	// å¡«å……æ—¥å¿—ä¿¡æ¯
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
@@ -214,8 +214,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
-			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // ²Ù×÷ÄÚÈİ
-			updateActionDO.setRemark("ĞÂÔö¿â´æ");
+			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // æ“ä½œå†…å®¹
+			updateActionDO.setRemark("æ–°å¢åº“å­˜");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
@@ -227,7 +227,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		return true;
 	}
 
-	// ²ÎÊı¼ì²é
+	// å‚æ•°æ£€æŸ¥
 	public CreateInventoryResultEnum checkParam() {
 		if (param == null) {
 			return CreateInventoryResultEnum.INVALID_PARAM;
@@ -239,7 +239,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// ÉÌÆ·Ñ¡ĞÍ¿â´æ
+	// å•†å“é€‰å‹åº“å­˜
 	public void fillSelection() {
 		try {
 			selectionList = param.getGoodsSelection();
@@ -274,7 +274,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		}
 	}
 
-	// ÉÌÆ·Ñ¡ĞÍ¿â´æ
+	// å•†å“é€‰å‹åº“å­˜
 	public void fillSuppliers() {
 		try {
 			suppliersList = param.getGoodsSuppliers();

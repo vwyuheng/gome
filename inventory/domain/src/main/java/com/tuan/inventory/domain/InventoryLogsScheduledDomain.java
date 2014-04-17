@@ -15,7 +15,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	private GoodsInventoryActionModel model;
 	private Event event;
-	//»º´æÉÌÆ·id£¬²¢ÅÅÖØ£¬ÒÔ±ã¹é²¢ÏàÍ¬ÉÌÆ·µÄÏûÏ¢·¢ËÍ´ÎÊı
+	//ç¼“å­˜å•†å“idï¼Œå¹¶æ’é‡ï¼Œä»¥ä¾¿å½’å¹¶ç›¸åŒå•†å“çš„æ¶ˆæ¯å‘é€æ¬¡æ•°
 	private EventHandle logsEventHandle;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	public InventoryLogsScheduledDomain(String clientIp,
@@ -25,12 +25,12 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 	/***
-	 * ÒµÎñ´¦ÀíÇ°µÄÔ¤´¦Àí
+	 * ä¸šåŠ¡å¤„ç†å‰çš„é¢„å¤„ç†
 	 */
 	public void preHandler() {
 		try {
-			// ÉÌÆ·¿â´æÊÇ·ñ´æÔÚ
-			//È¡³õÊ¼×´Ì¬¶ÓÁĞĞÅÏ¢
+			// å•†å“åº“å­˜æ˜¯å¦å­˜åœ¨
+			//å–åˆå§‹çŠ¶æ€é˜Ÿåˆ—ä¿¡æ¯
 			List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryLastIndexGoodsInventoryAction();
 			if (!CollectionUtils.isEmpty(queueLogList)) {
 				for (GoodsInventoryActionModel model : queueLogList) {
@@ -46,16 +46,16 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 		
 	}
 
-	// ÒµÎñ´¦Àí
+	// ä¸šåŠ¡å¤„ç†
 	public CreateInventoryResultEnum businessHandler() {
 
 		try {
-			// ÒµÎñ¼ì²éÇ°µÄÔ¤´¦Àí
+			// ä¸šåŠ¡æ£€æŸ¥å‰çš„é¢„å¤„ç†
 			this.preHandler();
-			if (fillActionEvent()) {	 //´Ó¶ÓÁĞÖĞÈ¡ÊÂ¼ş
+			if (fillActionEvent()) {	 //ä»é˜Ÿåˆ—ä¸­å–äº‹ä»¶
 				boolean eventResult = logsEventHandle.handleEvent(event);
-				if(eventResult) {  //Âämysql³É¹¦µÄ»°,Ò²¾ÍÊÇÏû·ÑÈÕÖ¾ÏûÏ¢³É¹¦
-					//ÒÆ³ı×îºóÒ»¸öÔªËØ
+				if(eventResult) {  //è½mysqlæˆåŠŸçš„è¯,ä¹Ÿå°±æ˜¯æ¶ˆè´¹æ—¥å¿—æ¶ˆæ¯æˆåŠŸ
+					//ç§»é™¤æœ€åä¸€ä¸ªå…ƒç´ 
 					this.goodsInventoryDomainRepository.lremLogQueue(model);
 				   }
 				}
@@ -70,7 +70,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	//¼ÓÔØÏûÏ¢Êı¾İ
+	//åŠ è½½æ¶ˆæ¯æ•°æ®
 	public boolean fillActionEvent() {
 		try {
 			if(model==null) {
@@ -78,7 +78,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			}
 			event = new Event();
 			event.setData(model);
-			// ·¢ËÍµÄ²»ÔÙÖØĞÂ½øĞĞ·¢ËÍ
+			// å‘é€çš„ä¸å†é‡æ–°è¿›è¡Œå‘é€
 			event.setTryCount(0);
 			if(!verifyId(model.getId())) {
 				return false;
@@ -93,7 +93,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 		return true;
 	}
 	/**
-	 * Ğ£Ñéid
+	 * æ ¡éªŒid
 	 * @param id
 	 * @return
 	 */

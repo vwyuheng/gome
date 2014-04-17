@@ -2,37 +2,37 @@ package com.tuan.inventory.model;
 
 import com.tuan.core.common.lang.TuanBaseDO;
 /**
- * ÈÕÖ¾½á¹¹bean
+ * æ—¥å¿—ç»“æ„bean
  * @author henry.yu
  * @date 20140311
  */
 public class GoodsInventoryActionModel extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
-	private Long id;  //ÈÕÖ¾Ö÷¼ü
-	private Long goodsId;// ÉÌÆ·ID(FK)
-	private Long orderId;// ¶©µ¥id
-	private Long userId ;//ÓÃ»§id
-	private String businessType;  //ÒµÎñÀà±ğ¡·±êÊ¶£ºÑ¡ĞÍ¡¢×ÜÊı¡¢·Öµê
-	private String item; //ÈôÑ¡ĞÍ´æÑ¡ĞÍid£¬Èô·Öµê´æ·Öµêid£¬Èô¼È·ÇÑ¡ĞÍÓÖ·Ç·ÖµêÔò²»´æÊı¾İ
-	private Integer createTime;  //´´½¨ÈÕÆÚ
-	//private Integer updateTime;  //¸üĞÂÊ±¼ä[×´Ì¬±»¸üĞÂ]
-	private String inventoryChange;// ¿â´æ±ä»¯Á¿
-	private String originalInventory;// Ô­Ê¼¿â´æÁ¿¡¾¿â´æ¿Û¼õÇ°µÄÊıÖµ¡¿
-	private String actionType;  //²Ù×÷Àà±ğ¡·ÀàĞÍ:¿â´æ¿Û¼õ¡¢³õÊ¼»¯¿â´æ¡¢ÉÌÆ·ÍË¿î»¹¿â´æ¡¢ÊÖ¹¤µ÷Õû¿â´æ¡¢³ö´í²¹³¥»¹¿â´æ
-	private String content; //²Ù×÷ÄÚÈİ
-	private String clientName; // À´Ô´ÏµÍ³
-	private String clientIp; // À´Ô´ip
-	//private String exception;  //ÊÇ·ñÒì³£ĞÅÏ¢
-	private String remark;  //±¸×¢
+	private Long id;  //æ—¥å¿—ä¸»é”®
+	private Long goodsId;// å•†å“ID(FK)
+	private Long orderId;// è®¢å•id
+	private Long userId ;//ç”¨æˆ·id
+	private String businessType;  //ä¸šåŠ¡ç±»åˆ«ã€‹æ ‡è¯†ï¼šé€‰å‹ã€æ€»æ•°ã€åˆ†åº—
+	private String item; //è‹¥é€‰å‹å­˜é€‰å‹idï¼Œè‹¥åˆ†åº—å­˜åˆ†åº—idï¼Œè‹¥æ—¢éé€‰å‹åˆéåˆ†åº—åˆ™ä¸å­˜æ•°æ®
+	private Integer createTime;  //åˆ›å»ºæ—¥æœŸ
+	//private Integer updateTime;  //æ›´æ–°æ—¶é—´[çŠ¶æ€è¢«æ›´æ–°]
+	private String inventoryChange;// åº“å­˜å˜åŒ–é‡
+	private String originalInventory;// åŸå§‹åº“å­˜é‡ã€åº“å­˜æ‰£å‡å‰çš„æ•°å€¼ã€‘
+	private String actionType;  //æ“ä½œç±»åˆ«ã€‹ç±»å‹:åº“å­˜æ‰£å‡ã€åˆå§‹åŒ–åº“å­˜ã€å•†å“é€€æ¬¾è¿˜åº“å­˜ã€æ‰‹å·¥è°ƒæ•´åº“å­˜ã€å‡ºé”™è¡¥å¿è¿˜åº“å­˜
+	private String content; //æ“ä½œå†…å®¹
+	private String clientName; // æ¥æºç³»ç»Ÿ
+	private String clientIp; // æ¥æºip
+	//private String exception;  //æ˜¯å¦å¼‚å¸¸ä¿¡æ¯
+	private String remark;  //å¤‡æ³¨
 	
-//	private java.lang.Integer leftNumber;// µ±Ç°Ê£ÓàÊı¿â´æÄ¬ÈÏÖµ:0
-//	private java.lang.Integer limitStorage; // 0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
-//	private int isAddGoodsSelection;  //ÉÌÆ·ÊÇ·ñÌí¼ÓÅäĞÍ 0£º²»Ìí¼Ó£»1£ºÌí¼Ó
-//	private int isDirectConsumption; //ÉÌÆ·ÏúÊÛÊÇ·ñĞèÒªÖ¸¶¨·Öµê 0£º²»Ö¸¶¨£»1£ºÖ¸¶¨
-//	private java.lang.Integer waterfloodVal;  //×¢Ë®Öµ
-//	//ÎïÁ÷ÓĞ¹ØµÄ
-//	private int isBeDelivery; //ÊÇ·ñ·¢»õ
+//	private java.lang.Integer leftNumber;// å½“å‰å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼:0
+//	private java.lang.Integer limitStorage; // 0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
+//	private int isAddGoodsSelection;  //å•†å“æ˜¯å¦æ·»åŠ é…å‹ 0ï¼šä¸æ·»åŠ ï¼›1ï¼šæ·»åŠ 
+//	private int isDirectConsumption; //å•†å“é”€å”®æ˜¯å¦éœ€è¦æŒ‡å®šåˆ†åº— 0ï¼šä¸æŒ‡å®šï¼›1ï¼šæŒ‡å®š
+//	private java.lang.Integer waterfloodVal;  //æ³¨æ°´å€¼
+//	//ç‰©æµæœ‰å…³çš„
+//	private int isBeDelivery; //æ˜¯å¦å‘è´§
 	
 	
 	public Long getId() {

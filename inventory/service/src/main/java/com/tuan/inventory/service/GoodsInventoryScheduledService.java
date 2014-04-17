@@ -7,19 +7,19 @@ import com.wowotrace.trace.model.Message;
 
 public interface GoodsInventoryScheduledService {
 	/***
-	 * »Øµ÷È·ÈÏ¹ıµÄ¶ÓÁĞµÄÏû·Ñ½Ó¿Ú
+	 * å›è°ƒç¡®è®¤è¿‡çš„é˜Ÿåˆ—çš„æ¶ˆè´¹æ¥å£
 	 */
 	@ProductCode(code = "00001", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	public void confirmQueueConsume(String clientIp,
 			String clientName,Message traceMessage);
 	/***
-	 * ±»Ëø¶¨¶ÓÁĞµÄÏû·Ñ½Ó¿Ú
+	 * è¢«é”å®šé˜Ÿåˆ—çš„æ¶ˆè´¹æ¥å£
 	 */
 	@ProductCode(code = "00002", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	public void lockedQueueConsume(String clientIp,
 			String clientName,InventoryScheduledParam param,Message traceMessage);
 	/**
-	 * ÈÕÖ¾¶ÓÁĞµÄÏû·Ñ½Ó¿Ú
+	 * æ—¥å¿—é˜Ÿåˆ—çš„æ¶ˆè´¹æ¥å£
 	 * @param clientIp
 	 * @param clientName
 	 * @param traceMessage

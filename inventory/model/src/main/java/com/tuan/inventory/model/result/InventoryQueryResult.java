@@ -6,10 +6,10 @@ import com.tuan.inventory.model.enu.res.InventoryQueryEnum;
 public class InventoryQueryResult extends TuanBaseDO {
 
 	private static final long serialVersionUID = 549836427059615587L;
-	/**用户订单列表查询结果*/
+	/**鐢ㄦ埛璁㈠崟鍒楄〃鏌ヨ缁撴灉*/
 	private InventoryQueryEnum result;
 
-	/**业务结果对象*/
+	/**涓氬姟缁撴灉瀵硅薄*/
 	private Object resultObject;
 
 	public InventoryQueryResult(InventoryQueryEnum result,

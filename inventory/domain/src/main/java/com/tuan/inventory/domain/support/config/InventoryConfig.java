@@ -2,6 +2,6 @@ package com.tuan.inventory.domain.support.config;
 
 
 public class InventoryConfig {
-	//²éÑ¯¶©µ¥×´Ì¬
+	//æŸ¥è¯¢è®¢å•çŠ¶æ€
 	public static final String QUERY_URL = "http://ordercenter53.55tuan.me:8086/remoting/orderQueryBack";
 }

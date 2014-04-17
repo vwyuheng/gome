@@ -34,32 +34,32 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void sendNotifyServerMessage(JSONObject jsonObj) {
 		this.notifyServerSendMessage.sendNotifyServerMessage(jsonObj);
 	}
-	//±£´æÉÌÆ·¿â´æ
+	//ä¿å­˜å•†å“åº“å­˜
 	public void saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
 		this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
-	//½«ÈÕÖ¾Ñ¹Èë¶ÓÁĞ
+	//å°†æ—¥å¿—å‹å…¥é˜Ÿåˆ—
 	public void pushLogQueues(final GoodsInventoryActionDO logActionDO){
 		this.baseDAOService.pushLogQueues(logActionDO);
 	}
 	public void pushQueueSendMsg(final GoodsInventoryQueueDO queueDO) {
 		this.baseDAOService.pushQueueSendMsg(queueDO);
 	}
-	//ÅĞ¶Ï¿â´æÊÇ·ñÒÑ´æÔÚ
+	//åˆ¤æ–­åº“å­˜æ˜¯å¦å·²å­˜åœ¨
 	public boolean isExists(Long goodsId) {
-		//ÒÑ´æÔÚ·µ»Øfalse,²»´æÔÚ·µ»Øtrue
+		//å·²å­˜åœ¨è¿”å›false,ä¸å­˜åœ¨è¿”å›true
 		return baseDAOService.isExists(goodsId);
 	}
 	public boolean isGoodsExists(Long goodsId) {
-		//ÒÑ´æÔÚ·µ»Øfalse,²»´æÔÚ·µ»Øtrue
+		//å·²å­˜åœ¨è¿”å›false,ä¸å­˜åœ¨è¿”å›true
 		return baseDAOService.isGoodsExists(goodsId,HashFieldEnum.leftNumber.toString());
 	}
 	public boolean isSelectionExists(Long selectionId) {
-		//ÒÑ´æÔÚ·µ»Øfalse,²»´æÔÚ·µ»Øtrue
+		//å·²å­˜åœ¨è¿”å›false,ä¸å­˜åœ¨è¿”å›true
 		return baseDAOService.isSelectionExists(selectionId,HashFieldEnum.leftNumber.toString());
 	}
 	public boolean isSupplierExists(Long suppliesId) {
-		//ÒÑ´æÔÚ·µ»Øfalse,²»´æÔÚ·µ»Øtrue
+		//å·²å­˜åœ¨è¿”å›false,ä¸å­˜åœ¨è¿”å›true
 		return baseDAOService.isSupplierExists(suppliesId,HashFieldEnum.leftNumber.toString());
 	}
 	
@@ -68,7 +68,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
-				if (srDO.getId() > 0) { // ifÑ¡ĞÍ
+				if (srDO.getId() > 0) { // ifé€‰å‹
 					this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 				}
 				
@@ -81,7 +81,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
-				if (sDO.getId() > 0) { // if·Öµê
+				if (sDO.getId() > 0) { // ifåˆ†åº—
 					this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
 				}
 				
@@ -91,12 +91,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	
 	
-	//¸ù¾İÉÌÆ·id²éÑ¯¿â´æĞÅÏ¢
+	//æ ¹æ®å•†å“idæŸ¥è¯¢åº“å­˜ä¿¡æ¯
 	public GoodsInventoryDO queryGoodsInventory(long goodsId) {
 		return this.baseDAOService.queryGoodsInventory(goodsId);
 	}
 	
-	// ¸ù¾İÉÌÆ·Ñ¡ĞÍid²éÑ¯¿â´æĞÅÏ¢
+	// æ ¹æ®å•†å“é€‰å‹idæŸ¥è¯¢åº“å­˜ä¿¡æ¯
 	public GoodsSelectionDO querySelectionRelationById(long selectionId) {
 		return this.baseDAOService.querySelectionRelationById(selectionId);
 	}
@@ -118,7 +118,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		long result = 0;
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
-				if (param.getId() > 0) { // ifÑ¡ĞÍ
+				if (param.getId() > 0) { // ifé€‰å‹
 					result = this.baseDAOService.updateSelectionInventory(param.getId(), (-param.getGoodsInventory()));
 				}
 			}
@@ -126,12 +126,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 		
 	}
-	//»Ø¹öÑ¡ĞÍ¿â´æ
+	//å›æ»šé€‰å‹åº“å­˜
 	public Long rollbackSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
 		long result = 0;
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
-				if (param.getId() > 0) { // ifÑ¡ĞÍ
+				if (param.getId() > 0) { // ifé€‰å‹
 					result = this.baseDAOService.updateSelectionInventory(param.getId(), (param.getGoodsInventory()));
 				}
 			}
@@ -143,7 +143,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		long result = 0;
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
-				if (param.getId() > 0) { // ifÑ¡ĞÍ
+				if (param.getId() > 0) { // ifé€‰å‹
 					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
 				}
 			}
@@ -151,12 +151,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 		
 	}
-	//»Ø¹ö·Öµê¿â´æ
+	//å›æ»šåˆ†åº—åº“å­˜
 	public Long rollbackSuppliersInventory(List<GoodsSelectionAndSuppliersResult> suppliersParam) {
 		long result = 0;
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
-				if (param.getId() > 0) { // ifÑ¡ĞÍ
+				if (param.getId() > 0) { // ifé€‰å‹
 					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
 				}
 			}
@@ -165,9 +165,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		
 	}
 	/**
-	 * ±ê¼Ç¶ÓÁĞ×´Ì¬
+	 * æ ‡è®°é˜Ÿåˆ—çŠ¶æ€
 	 * @param key
-	 * @param upStatusNum :¸Ã²ÎÊıÌØ±ğËµÃ÷£ºµ±ÄãÏë¼õÖµÊ±´«¸ºÖµ£¬µ±ÊÇÔö¼ÓÖµÊ±´«ÕıÕûÊıÖµ
+	 * @param upStatusNum :è¯¥å‚æ•°ç‰¹åˆ«è¯´æ˜ï¼šå½“ä½ æƒ³å‡å€¼æ—¶ä¼ è´Ÿå€¼ï¼Œå½“æ˜¯å¢åŠ å€¼æ—¶ä¼ æ­£æ•´æ•°å€¼
 	 * @throws Exception
 	 */
 	public void markQueueStatus(String key,int upStatusNum) {
@@ -196,7 +196,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		long result = 0;
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
 			for (GoodsSelectionModel param : selectionList) { // for
-				if (param.getId() > 0) { // ifÑ¡ĞÍ
+				if (param.getId() > 0) { // ifé€‰å‹
 					result = this.baseDAOService.deleteSelectionInventory(param.getId());
 				}
 			}
@@ -207,7 +207,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		long result = 0;
 		if (!CollectionUtils.isEmpty(suppliersList)) { // if1
 			for (GoodsSuppliersModel param : suppliersList) { // for
-				if (param.getId() > 0) { // ifÑ¡ĞÍ
+				if (param.getId() > 0) { // ifé€‰å‹
 					result = this.baseDAOService.deleteSuppliersInventory(param.getId());
 				}
 			}
@@ -215,14 +215,14 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 	}
 	/**
-	 * É¾³ıÈÕÖ¾
+	 * åˆ é™¤æ—¥å¿—
 	 * @param logActionDO
 	 */
 	public void lremLogQueue(GoodsInventoryActionDO logActionDO) {
 		 this.baseDAOService.lremLogQueue(logActionDO);
 	}
 	/**
-	 * ¸ù¾İÑ¡ĞÍid»ñÈ¡Ñ¡ĞÍ¿â´æ
+	 * æ ¹æ®é€‰å‹idè·å–é€‰å‹åº“å­˜
 	 * @param selectionId
 	 * @return
 	 */
@@ -231,7 +231,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return ObjectUtils.toModel(this.querySelectionRelationById(selectionId));
 	}
 	/**
-	 * ¸ù¾İÉÌÆ·id»ñÈ¡ÉÌÆ· ËùÓĞµÄÑ¡ĞÍ¿â´æÁĞ±í
+	 * æ ¹æ®å•†å“idè·å–å•†å“ æ‰€æœ‰çš„é€‰å‹åº“å­˜åˆ—è¡¨
 	 * @param goodsId
 	 * @return
 	 */
@@ -251,7 +251,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 	}
 	/**
-	 * ¸ù¾İÉÌÆ··Öµêid»ñÈ¡·Öµê¿â´æ
+	 * æ ¹æ®å•†å“åˆ†åº—idè·å–åˆ†åº—åº“å­˜
 	 * @param suppliersId
 	 * @return
 	 */
@@ -260,7 +260,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return ObjectUtils.toModel(this.querySuppliersInventoryById(suppliersId));
 	}
 	/**
-	 * ¸ù¾İÉÌÆ·id»ñÈ¡ÉÌÆ·ËùÊô·Öµê¿â´æĞÅÏ¢ÁĞ±í
+	 * æ ¹æ®å•†å“idè·å–å•†å“æ‰€å±åˆ†åº—åº“å­˜ä¿¡æ¯åˆ—è¡¨
 	 * @param goodsId
 	 * @return
 	 */
@@ -280,8 +280,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 	}
 	/**
-	 * ¸ù¾İÉÌÆ·id»ñÈ¡ÉÌÆ·¿â´æĞÅÏ¢£¬
-	 * °üº¬(ÈôÓĞµÄ»°)Ñ¡ĞÍµÄ¿â´æ¼°·ÖµêµÄ¿â´æ
+	 * æ ¹æ®å•†å“idè·å–å•†å“åº“å­˜ä¿¡æ¯ï¼Œ
+	 * åŒ…å«(è‹¥æœ‰çš„è¯)é€‰å‹çš„åº“å­˜åŠåˆ†åº—çš„åº“å­˜
 	 * @param goodsId
 	 * @return
 	 */
@@ -291,7 +291,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 				,this.queryGoodsSuppliersListByGoodsId(goodsId));
 	}
 	/**
-	 * ¸ù¾İ¶ÓÁĞ×´Ì¬È¡¶ÓÁĞÁĞ±í
+	 * æ ¹æ®é˜Ÿåˆ—çŠ¶æ€å–é˜Ÿåˆ—åˆ—è¡¨
 	 * @param status
 	 * @return
 	 */
@@ -300,7 +300,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return ObjectUtils.convertSet(this.baseDAOService.queryInventoryQueueListByStatus(status));
 	}
 	/**
-	 * »ñÈ¡listÖĞ×îºóÒ»ÌõÈÕÖ¾
+	 * è·å–listä¸­æœ€åä¸€æ¡æ—¥å¿—
 	 * @param status
 	 * @return
 	 */
@@ -314,14 +314,14 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return ObjectUtils.toModel(this.queryInventoryQueueDO(key));
 	}
 	/**
-	 * É¾³ıÈÕÖ¾
+	 * åˆ é™¤æ—¥å¿—
 	 * @param model
 	 */
 	public void lremLogQueue(GoodsInventoryActionModel model) {
 		 this.baseDAOService.lremLogQueue(ObjectUtils.toDO(model));
 	}
 	/**
-	 * É¾³ı¶ÓÁĞmember
+	 * åˆ é™¤é˜Ÿåˆ—member
 	 * @param key
 	 * @return
 	 */

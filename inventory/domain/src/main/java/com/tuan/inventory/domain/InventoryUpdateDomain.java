@@ -40,7 +40,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	private List<GoodsSelectionModel> selectionList;
 	private List<GoodsSuppliersModel> suppliersList;
-	// ³õÊ¼»¯ÓÃ
+	// åˆå§‹åŒ–ç”¨
 	private List<GoodsSuppliersDO> suppliersInventoryList;
 	private List<GoodsSelectionDO> selectionInventoryList;
 	private Long goodsId;
@@ -48,16 +48,16 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private boolean isEnough;
 	private boolean isSelectionEnough = true;
 	private boolean isSuppliersEnough = true;
-	// ÊÇ·ñĞèÒª³õÊ¼»¯
+	// æ˜¯å¦éœ€è¦åˆå§‹åŒ–
 	private boolean isInit;
-	// Ğè¿Û¼õµÄÉÌÆ·¿â´æ
+	// éœ€æ‰£å‡çš„å•†å“åº“å­˜
 	private int deductNum = 0;
-	// Ô­¿â´æ
+	// åŸåº“å­˜
 	private int originalGoodsInventory = 0;
-	// ÁìÓòÖĞ»º´æÑ¡ĞÍºÍ·ÖµêÔ­Ê¼¿â´æºÍ¿Û¼õ¿â´æµÄlist
+	// é¢†åŸŸä¸­ç¼“å­˜é€‰å‹å’Œåˆ†åº—åŸå§‹åº“å­˜å’Œæ‰£å‡åº“å­˜çš„list
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
-	// µ±Ç°¿â´æ
+	// å½“å‰åº“å­˜
 	private long resultACK;
 	private SequenceUtil sequenceUtil;
 
@@ -70,7 +70,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	/**
-	 * ´¦ÀíÑ¡ĞÍ¿â´æ
+	 * å¤„ç†é€‰å‹åº“å­˜
 	 */
 	private void selectionInventoryHandler() {
 		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // if1
@@ -79,28 +79,28 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			// this.selectionRelation = new
 			// ArrayList<RedisGoodsSelectionRelationDO>();
 			for (GoodsSelectionModel model : selectionList) { // for
-				if (model.getId() != null && model.getId() > 0) { // ifÑ¡ĞÍ
+				if (model.getId() != null && model.getId() > 0) { // ifé€‰å‹
 					GoodsSelectionAndSuppliersResult selection = null;
 					Long selectionId = Long.valueOf(model.getId());
-					// ²éÑ¯ÉÌÆ·Ñ¡ĞÍ¿â´æ
+					// æŸ¥è¯¢å•†å“é€‰å‹åº“å­˜
 					GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
 							.querySelectionRelationById(selectionId);
 					if (selectionDO != null
 							&& selectionDO.getLimitStorage() == 1) {
-						// ¿Û¼õ¿â´æ²¢·µ»Ø¿Û¼õ±êÊ¶,¼ÆËã¿â´æ²¢
+						// æ‰£å‡åº“å­˜å¹¶è¿”å›æ‰£å‡æ ‡è¯†,è®¡ç®—åº“å­˜å¹¶
 						if ((selectionDO.getLeftNumber() - model.getNum()) <= 0) {
-							// ¸Ã´¦ÎªÁË±£Ö¤Ö»ÒªÓĞÒ»¸öÑ¡ĞÍÉÌÆ·¿â´æ²»×ãÔò·µ»Ø¿â´æ²»×ã
+							// è¯¥å¤„ä¸ºäº†ä¿è¯åªè¦æœ‰ä¸€ä¸ªé€‰å‹å•†å“åº“å­˜ä¸è¶³åˆ™è¿”å›åº“å­˜ä¸è¶³
 							this.isSelectionEnough = false;
 						} else {
 							selection = new GoodsSelectionAndSuppliersResult();
 							selection.setId(model.getId());
-							// ¿Û¼õµÄ¿â´æÁ¿
+							// æ‰£å‡çš„åº“å­˜é‡
 							selection.setGoodsInventory(model.getNum());
 							selection.setOriginalGoodsInventory(selectionDO
 									.getLeftNumber());
-							// Ñ¡ĞÍ¿â´æ£¬²¢ÇÒÊÇ¿â´æ³ä×ãÊ±ÓÃ
+							// é€‰å‹åº“å­˜ï¼Œå¹¶ä¸”æ˜¯åº“å­˜å……è¶³æ—¶ç”¨
 							this.selectionParam.add(selection);
-							// ¸üĞÂselectionDO¶ÔÏóµÄ¿â´æÊôĞÔÖµ
+							// æ›´æ–°selectionDOå¯¹è±¡çš„åº“å­˜å±æ€§å€¼
 							selectionDO.setLeftNumber(selection
 									.getOriginalGoodsInventory()
 									- selection.getGoodsInventory());
@@ -117,14 +117,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	/**
-	 * ´¦Àí·Öµê¿â´æ
+	 * å¤„ç†åˆ†åº—åº“å­˜
 	 */
 	public void suppliersInventoryHandler() {
 		if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // if1
 			this.suppliersList = param.getGoodsSuppliers();
 			this.suppliersParam = new ArrayList<GoodsSelectionAndSuppliersResult>();
 			for (GoodsSuppliersModel model : suppliersList) { // for
-				if (model.getId() > 0) { // if·Öµê
+				if (model.getId() > 0) { // ifåˆ†åº—
 					GoodsSelectionAndSuppliersResult suppliers = null;
 					Long suppliersId = Long.valueOf(model.getId());
 					GoodsSuppliersDO suppliersDO = this.goodsInventoryDomainRepository
@@ -132,20 +132,20 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 					if (suppliersDO != null
 							&& suppliersDO.getLimitStorage() == 1) {
-						// ¿Û¼õ¿â´æ²¢·µ»Ø¿Û¼õ±êÊ¶,¼ÆËã¿â´æ²¢
+						// æ‰£å‡åº“å­˜å¹¶è¿”å›æ‰£å‡æ ‡è¯†,è®¡ç®—åº“å­˜å¹¶
 						if ((suppliersDO.getLeftNumber() - model.getNum()) <= 0) {
-							// ¸Ã´¦ÎªÁË±£Ö¤Ö»ÒªÓĞÒ»¸öÑ¡ĞÍÉÌÆ·¿â´æ²»×ãÔò·µ»Ø¿â´æ²»×ã
+							// è¯¥å¤„ä¸ºäº†ä¿è¯åªè¦æœ‰ä¸€ä¸ªé€‰å‹å•†å“åº“å­˜ä¸è¶³åˆ™è¿”å›åº“å­˜ä¸è¶³
 							this.isSuppliersEnough = false;
 
 						} else {
 							suppliers = new GoodsSelectionAndSuppliersResult();
-							// ¿Û¼õµÄ¿â´æÁ¿
+							// æ‰£å‡çš„åº“å­˜é‡
 							suppliers.setId(model.getId());
 							suppliers.setGoodsInventory(model.getNum());
 							suppliers.setOriginalGoodsInventory(suppliersDO
 									.getLeftNumber());
 							this.suppliersParam.add(suppliers);
-							// ¸üĞÂselectionDO¶ÔÏóµÄ¿â´æÊôĞÔÖµ
+							// æ›´æ–°selectionDOå¯¹è±¡çš„åº“å­˜å±æ€§å€¼
 							suppliersDO.setLeftNumber(suppliers
 									.getOriginalGoodsInventory()
 									- suppliers.getGoodsInventory());
@@ -159,17 +159,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	private void calculateInventory() {
-		// ÔÙ´Î²éÑ¯ÉÌÆ·¿â´æĞÅÏ¢[È·±£×îĞÂÊı¾İ]
+		// å†æ¬¡æŸ¥è¯¢å•†å“åº“å­˜ä¿¡æ¯[ç¡®ä¿æœ€æ–°æ•°æ®]
 		this.inventoryInfoDO = this.goodsInventoryDomainRepository
 				.queryGoodsInventory(goodsId);
-		// ¿Û¼õ¿â´æ
+		// æ‰£å‡åº“å­˜
 		this.deductNum = param.getNum();
-		// Ô­Ê¼¿â´æ
+		// åŸå§‹åº“å­˜
 		this.originalGoodsInventory = inventoryInfoDO.getLeftNumber();
-		// ¿Û¼õ¿â´æ²¢·µ»Ø¿Û¼õ±êÊ¶,¼ÆËã¿â´æ²¢
+		// æ‰£å‡åº“å­˜å¹¶è¿”å›æ‰£å‡æ ‡è¯†,è®¡ç®—åº“å­˜å¹¶
 		if ((this.originalGoodsInventory - this.deductNum) >= 0) {
 			this.isEnough = true;
-			// ¸üĞÂinventoryInfoDO¶ÔÏóµÄ¿â´æÊôĞÔÖµ
+			// æ›´æ–°inventoryInfoDOå¯¹è±¡çš„åº“å­˜å±æ€§å€¼
 			this.inventoryInfoDO.setLeftNumber(originalGoodsInventory
 					- deductNum);
 		}
@@ -183,19 +183,19 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 	}
 
-	// ÒµÎñ¼ì²é
+	// ä¸šåŠ¡æ£€æŸ¥
 	public CreateInventoryResultEnum busiCheck() {
-		// ³õÊ¼»¯¼ì²é
+		// åˆå§‹åŒ–æ£€æŸ¥
 		this.initCheck();
 		if (isInit) {
 			this.init();
 		}
-		// ÕæÕıµÄ¿â´æ¸üĞÂÒµÎñ´¦Àí
-		try {// ¼ÆËã²¿·Ö
+		// çœŸæ­£çš„åº“å­˜æ›´æ–°ä¸šåŠ¡å¤„ç†
+		try {// è®¡ç®—éƒ¨åˆ†
 			this.calculateInventory();
-			// ÉÌÆ·Ñ¡ĞÍ´¦Àí
+			// å•†å“é€‰å‹å¤„ç†
 			this.selectionInventoryHandler();
-			// ÉÌÆ··Öµê´¦Àí
+			// å•†å“åˆ†åº—å¤„ç†
 			this.suppliersInventoryHandler();
 		} catch (Exception e) {
 			this.writeBusErrorLog(
@@ -207,36 +207,36 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// ¿â´æÏµÍ³ĞÂÔö¿â´æ
+	// åº“å­˜ç³»ç»Ÿæ–°å¢åº“å­˜
 	public CreateInventoryResultEnum updateInventory() {
 		try {
-			// Ê×ÏÈÌî³äÈÕÖ¾ĞÅÏ¢
+			// é¦–å…ˆå¡«å……æ—¥å¿—ä¿¡æ¯
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
-			// ²åÈëÈÕÖ¾
+			// æ’å…¥æ—¥å¿—
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			// ¸üĞÂÉÌÆ·¿â´æ
+			// æ›´æ–°å•†å“åº“å­˜
 			if (isEnough) {
-				// ¿Û¼õ¿â´æ
+				// æ‰£å‡åº“å­˜
 				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId, (-deductNum));
-				// Ğ£Ñé¿â´æ
+				// æ ¡éªŒåº“å­˜
 				if (!verifyInventory()) {
-					// »Ø¹ö¿â´æ
+					// å›æ»šåº“å­˜
 					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}
-			// ¸üĞÂÑ¡ĞÍ¿â´æ
+			// æ›´æ–°é€‰å‹åº“å­˜
 			if (isSelectionEnough) {
 				resultACK = this.goodsInventoryDomainRepository
 						.updateSelectionInventory(selectionParam);
-				// Ğ£Ñé¿â´æ
+				// æ ¡éªŒåº“å­˜
 				if (!verifyInventory()) {
-					// »Ø¹ö¿â´æ
-					// ÏÈ»Ø¹ö×ÜµÄ ÔÙ»Ø¹öÑ¡ĞÍµÄ
+					// å›æ»šåº“å­˜
+					// å…ˆå›æ»šæ€»çš„ å†å›æ»šé€‰å‹çš„
 					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
 					this.goodsInventoryDomainRepository
@@ -244,14 +244,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}
-			// ¸üĞÂ·Öµê¿â´æ
+			// æ›´æ–°åˆ†åº—åº“å­˜
 			if (isSuppliersEnough) {
 				resultACK = this.goodsInventoryDomainRepository
 						.updateSuppliersInventory(suppliersParam);
-				// Ğ£Ñé¿â´æ
+				// æ ¡éªŒåº“å­˜
 				if (!verifyInventory()) {
-					// »Ø¹ö¿â´æ
-					// ÏÈ»Ø¹ö×ÜµÄ ÔÙ»Ø¹ö·ÖµêµÄ
+					// å›æ»šåº“å­˜
+					// å…ˆå›æ»šæ€»çš„ å†å›æ»šåˆ†åº—çš„
 					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
 					this.goodsInventoryDomainRepository
@@ -270,25 +270,25 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	public void pushSendMsgQueue() {
-		// Ìî³ä¶ÓÁĞ
+		// å¡«å……é˜Ÿåˆ—
 		if (fillInventoryQueueDO()) {
 			this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
 		}
 	}
 
-	// ³õÊ¼»¯¼ì²é
+	// åˆå§‹åŒ–æ£€æŸ¥
 	public void initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
-		if (goodsId > 0 && param.getLimitStorage() == 1) { // limitStorage>0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
+		if (goodsId > 0 && param.getLimitStorage() == 1) { // limitStorage>0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
 			boolean isExists = this.goodsInventoryDomainRepository
 					.isGoodsExists(goodsId);
-			if (isExists) { // ²»´æÔÚ
-				// ³õÊ¼»¯¿â´æ
+			if (isExists) { // ä¸å­˜åœ¨
+				// åˆå§‹åŒ–åº“å­˜
 				this.isInit = true;
-				// ³õÊ¼»¯ÉÌÆ·¿â´æĞÅÏ¢
+				// åˆå§‹åŒ–å•†å“åº“å­˜ä¿¡æ¯
 				this.inventoryInfoDO = this.initCacheDomainRepository
 						.getInventoryInfoByGoodsId(goodsId);
-				// ²éÑ¯¸ÃÉÌÆ··Öµê¿â´æĞÅÏ¢
+				// æŸ¥è¯¢è¯¥å•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 				selectionInventoryList = this.initCacheDomainRepository
 						.querySelectionByGoodsId(goodsId);
 				suppliersInventoryList = this.initCacheDomainRepository
@@ -299,21 +299,21 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	public void init() {
-		// ±£´æÉÌÆ·¿â´æ
+		// ä¿å­˜å•†å“åº“å­˜
 		if (inventoryInfoDO != null)
 			this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 					inventoryInfoDO);
-		// ±£Ñ¡ĞÍ¿â´æ
+		// ä¿é€‰å‹åº“å­˜
 		if (!CollectionUtils.isEmpty(selectionInventoryList))
 			this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 					goodsId, selectionInventoryList);
-		// ±£´æ·Öµê¿â´æ
+		// ä¿å­˜åˆ†åº—åº“å­˜
 		if (!CollectionUtils.isEmpty(suppliersInventoryList))
 			this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 					goodsId, suppliersInventoryList);
 	}
 
-	// Ìî³äÈÕÖ¾ĞÅÏ¢
+	// å¡«å……æ—¥å¿—ä¿¡æ¯
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
@@ -354,8 +354,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(Long.valueOf(param.getOrderId()));
-			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // ²Ù×÷ÄÚÈİ
-			updateActionDO.setRemark("ĞŞ¸Ä¿â´æ");
+			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // æ“ä½œå†…å®¹
+			updateActionDO.setRemark("ä¿®æ”¹åº“å­˜");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
@@ -368,7 +368,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	/**
-	 * Ìî³ä¿â´æ¶ÓÁĞĞÅÏ¢
+	 * å¡«å……åº“å­˜é˜Ÿåˆ—ä¿¡æ¯
 	 * 
 	 * @return
 	 */
@@ -380,7 +380,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			queueDO.setOrderId(Long.valueOf(param.getOrderId()));
 			queueDO.setUserId(Long.valueOf(param.getUserId()));
 			queueDO.setCreateTime(TimeUtil.getNowTimestamp10Long());
-			// ·â×°¿â´æ±ä»¯ĞÅÏ¢µ½¶ÓÁĞ
+			// å°è£…åº“å­˜å˜åŒ–ä¿¡æ¯åˆ°é˜Ÿåˆ—
 			queueDO.setOriginalGoodsInventory(originalGoodsInventory);
 			queueDO.setDeductNum(deductNum);
 			queueDO.setSuppliersParam(suppliersParam);
@@ -397,7 +397,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	/**
-	 * ²ÎÊı¼ì²é
+	 * å‚æ•°æ£€æŸ¥
 	 * 
 	 * @return
 	 */

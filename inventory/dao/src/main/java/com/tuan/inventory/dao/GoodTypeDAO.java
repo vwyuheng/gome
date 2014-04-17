@@ -19,7 +19,7 @@ import com.tuan.inventory.dao.data.WmsGoodsDO;
 public interface GoodTypeDAO {
 	/**
 	 * @Title: selectSelectionRelationBySrId
-	 * @Description: ¸ù¾İ·ÖµêÑ¡ĞÍ¹ØÏµ±íidÈ¡µÃËùÓĞÅäĞÍ
+	 * @Description: æ ¹æ®åˆ†åº—é€‰å‹å…³ç³»è¡¨idå–å¾—æ‰€æœ‰é…å‹
 	 * @param selectionRelationId
 	 * @return GoodsSelectionRelationDO
 	 */
@@ -27,7 +27,7 @@ public interface GoodTypeDAO {
 	
 	/**
 	 * @Title: selectGoodsSuppliersInventoryBySiId
-	 * @Description: ¸ù¾İ·ÖµêÑ¡ĞÍ¹ØÏµ±íidÈ¡µÃËùÓĞÅäĞÍ
+	 * @Description: æ ¹æ®åˆ†åº—é€‰å‹å…³ç³»è¡¨idå–å¾—æ‰€æœ‰é…å‹
 	 * @param suppliersInventoryId
 	 * @return GoodsSuppliersInventoryDO
 	 */
@@ -36,32 +36,32 @@ public interface GoodTypeDAO {
 	
 	/**
 	 * @Title: updateSuppliersInventoryLeftNumber
-	 * @Description: ĞŞ¸Ä·Öµê¿â´æ 
+	 * @Description: ä¿®æ”¹åˆ†åº—åº“å­˜ 
 	 * @param orderInfoDetail void
 	 */
 	public void updateSuppliersInventoryLeftNumber(OrderInfoDetailDO orderInfoDetail);
 	/**
 	 * @Title: updateSelectionRelationLeftNumber
-	 * @Description: ĞŞ¸ÄÑ¡ĞÍ¿â´æ 
+	 * @Description: ä¿®æ”¹é€‰å‹åº“å­˜ 
 	 * @param orderInfoDetail void
 	 */
 	public void updateSelectionRelationLeftNumber(OrderInfoDetailDO orderInfoDetail);
 	/**
 	 * @Title: updateGoodsAttributesLeftNumber
-	 * @Description: ĞŞ¸ÄÉÌÆ·¿â´æ
+	 * @Description: ä¿®æ”¹å•†å“åº“å­˜
 	 * @param orderGoods void
 	 */
 	public void updateGoodsAttributesLeftNumber(OrderGoodsDO orderGoods);
 	
 	/**
-	 * ¸üĞÂÎïÁ÷ÉÌÆ·±í¿â´æ
+	 * æ›´æ–°ç‰©æµå•†å“è¡¨åº“å­˜
 	 * @param wmsGoods
 	 */
 	public void updataGoodsWmsLeftNumByID(WmsGoodsDO wmsGoods);
 	
 	/**
 	 * @Title: selectGoodsSuppliersInventoryBySiId
-	 * @Description: ¸ù¾İ·ÖµêÑ¡ĞÍ¹ØÏµ±íidÈ¡µÃËùÓĞÅäĞÍ
+	 * @Description: æ ¹æ®åˆ†åº—é€‰å‹å…³ç³»è¡¨idå–å¾—æ‰€æœ‰é…å‹
 	 * @param suppliersInventoryId
 	 * @param goodsId
 	 * @return GoodsSuppliersInventoryDO
@@ -70,7 +70,7 @@ public interface GoodTypeDAO {
 			long selectionRelationId, long goodsId);
 	
 	/**
-	 * ¸ù¾İ·ÖµêÑ¡ĞÍ¹ØÏµ±íidÁĞ±íÈ¡µÃËùÓĞ¶ÔÓ¦ÅäĞÍ
+	 * æ ¹æ®åˆ†åº—é€‰å‹å…³ç³»è¡¨idåˆ—è¡¨å–å¾—æ‰€æœ‰å¯¹åº”é…å‹
 	 * @param selectionRelationIdList
 	 * @param goodsId
 	 * @return

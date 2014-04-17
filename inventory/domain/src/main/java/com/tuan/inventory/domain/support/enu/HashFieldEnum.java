@@ -1,6 +1,6 @@
 package com.tuan.inventory.domain.support.enu;
 /**
- * ÓÃÓÚ¶¨Òå¿â´æ´æ´¢µÄÊı¾İ½á¹¹>field³£Á¿
+ * ç”¨äºå®šä¹‰åº“å­˜å­˜å‚¨çš„æ•°æ®ç»“æ„>fieldå¸¸é‡
  * @author henry.yu
  * @date 2014/3/13
  */

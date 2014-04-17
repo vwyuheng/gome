@@ -1,65 +1,65 @@
 package com.tuan.inventory.model.util;
 
 /**
- * ¶ÓÁĞÃû³Æ¶¨Òå
+ * é˜Ÿåˆ—åç§°å®šä¹‰
  * @author henry.yu
  * @date 2014/3/12
  */
 public class QueueConstant {
 	
-	public final static String QUEUE_KEY_MEMBER="queue:key.member";//»º´æ¶ÓÁĞµÄ key memberĞÅÏ¢
-	public final static String QUEUE_SEND_MESSAGE="queue:jobs.send";//Òì²½´¥·¢·¢²¼notifyserver¿â´æĞÅÏ¢µÄ¶ÓÁĞ
-	public final static String QUEUE_LOGS_MESSAGE="queue:jobs.logs";//Òì²½´¥·¢¼ÇÂ¼ÈÕÖ¾Á÷Ë®µÄ¶ÓÁĞÃû³Æ
+	public final static String QUEUE_KEY_MEMBER="queue:key.member";//ç¼“å­˜é˜Ÿåˆ—çš„ key memberä¿¡æ¯
+	public final static String QUEUE_SEND_MESSAGE="queue:jobs.send";//å¼‚æ­¥è§¦å‘å‘å¸ƒnotifyserveråº“å­˜ä¿¡æ¯çš„é˜Ÿåˆ—
+	public final static String QUEUE_LOGS_MESSAGE="queue:jobs.logs";//å¼‚æ­¥è§¦å‘è®°å½•æ—¥å¿—æµæ°´çš„é˜Ÿåˆ—åç§°
 	
-	//¿â´æÔÚredisÖĞ´æ´¢ÀàĞÍ£¬¹ØÁªkeyµÄÇ°×º±íÊ¾
-	public final static String GOODS_INVENTORY_PREFIX="hash_goods.inventory";//ÉÌÆ·×Ü¿â´æÇ°×º
-	public final static String GOODS_SELECTION_RELATIONSHIP_PREFIX="set_goods_selection.relation";//ÉÌÆ·idÓëÑ¡ĞÍid¹ØÁª¹ØÏµÇ°×º
-	public final static String GOODS_SUPPLIERS_RELATIONSHIP_PREFIX="set_goods_suppliers.relation";//ÉÌÆ·idÓë·Öµêid¹ØÁª¹ØÏµÇ°×º
-	public final static String SELECTION_INVENTORY_PREFIX="hash_selection.inventory";//Ñ¡ĞÍÉÌÆ·¿â´æÇ°×º
-	public final static String SUPPLIERS_INVENTORY_PREFIX="hash_suppliers.inventory";//·ÖµêÉÌÆ·¿â´æÇ°×º
-	//¶ÓÁĞ×´Ì¬
-	//public final static String ACTIVE = "1";  // 1:Õı³££ºÓĞĞ§¿É´¦Àí£¨active£©
-	//public final static String LOCKED = "3";  //3£º³õÊ¼×´Ì¬£¨locked£©
-	//public final static String EXCEPTION = "5"; //5£º±ê¼Ç¿ÉÒÔ±»ÓÃ×÷Òì³£¶ÓÁĞ´¦(exception)
+	//åº“å­˜åœ¨redisä¸­å­˜å‚¨ç±»å‹ï¼Œå…³è”keyçš„å‰ç¼€è¡¨ç¤º
+	public final static String GOODS_INVENTORY_PREFIX="hash_goods.inventory";//å•†å“æ€»åº“å­˜å‰ç¼€
+	public final static String GOODS_SELECTION_RELATIONSHIP_PREFIX="set_goods_selection.relation";//å•†å“idä¸é€‰å‹idå…³è”å…³ç³»å‰ç¼€
+	public final static String GOODS_SUPPLIERS_RELATIONSHIP_PREFIX="set_goods_suppliers.relation";//å•†å“idä¸åˆ†åº—idå…³è”å…³ç³»å‰ç¼€
+	public final static String SELECTION_INVENTORY_PREFIX="hash_selection.inventory";//é€‰å‹å•†å“åº“å­˜å‰ç¼€
+	public final static String SUPPLIERS_INVENTORY_PREFIX="hash_suppliers.inventory";//åˆ†åº—å•†å“åº“å­˜å‰ç¼€
+	//é˜Ÿåˆ—çŠ¶æ€
+	//public final static String ACTIVE = "1";  // 1:æ­£å¸¸ï¼šæœ‰æ•ˆå¯å¤„ç†ï¼ˆactiveï¼‰
+	//public final static String LOCKED = "3";  //3ï¼šåˆå§‹çŠ¶æ€ï¼ˆlockedï¼‰
+	//public final static String EXCEPTION = "5"; //5ï¼šæ ‡è®°å¯ä»¥è¢«ç”¨ä½œå¼‚å¸¸é˜Ÿåˆ—å¤„(exception)
 	
-	//ÉÌÆ·ÊôĞÔÀà±ğ
-/*	public final static String SELECTION = "Ñ¡ĞÍÉÌÆ·¿â´æ";  // ±êÊ¶£ºÑ¡ĞÍ¡¢×ÜÊı¡¢·Öµê
-	public final static String SUPPLIERS = "·ÖµêÉÌÆ·¿â´æ";  
-	public final static String GOODS = "ÉÌÆ·×Ü¿â´æ"; */
-	//¿â´æ¿Û¼õ·µ»Ø²ÎÊı£ºÉú³ÉµÄ¶ÓÁĞÖ÷¼üidÖµµÄkeyÃû³Æ¶¨Òå
-	public final static String QUEUE_KEY_ID="queue:key.id";//Òì²½´¥·¢¼ÇÂ¼ÈÕÖ¾Á÷Ë®µÄ¶ÓÁĞÃû³Æ
+	//å•†å“å±æ€§ç±»åˆ«
+/*	public final static String SELECTION = "é€‰å‹å•†å“åº“å­˜";  // æ ‡è¯†ï¼šé€‰å‹ã€æ€»æ•°ã€åˆ†åº—
+	public final static String SUPPLIERS = "åˆ†åº—å•†å“åº“å­˜";  
+	public final static String GOODS = "å•†å“æ€»åº“å­˜"; */
+	//åº“å­˜æ‰£å‡è¿”å›å‚æ•°ï¼šç”Ÿæˆçš„é˜Ÿåˆ—ä¸»é”®idå€¼çš„keyåç§°å®šä¹‰
+	public final static String QUEUE_KEY_ID="queue:key.id";//å¼‚æ­¥è§¦å‘è®°å½•æ—¥å¿—æµæ°´çš„é˜Ÿåˆ—åç§°
 	
 	
-	/** ¶ÓÁĞ½á¹û×´Ì¬ status */
-	/*public static final int QUEUE_STATUS_NOT_CONSUMER = 1;//Î´Ïû·Ñ
-	public static final int QUEUE_STATUS_CONSUMER_SUCCESS = 2;//Ïû·Ñ³É¹¦(°üÀ¨Ïû·Ñ´ÎÊıÒÑ¾­ÓÃÍê£¬Ò²±ê¼Ç³É¹¦£¬µ«ÊÇ¶ÓÁĞµÄ°¢×´Ì¬²»Ò»Ñù)
-	public static final int QUEUE_STATUS_CONSUMER_FAILED = 3;//Ïû·ÑÊ§°Ü
+	/** é˜Ÿåˆ—ç»“æœçŠ¶æ€ status */
+	/*public static final int QUEUE_STATUS_NOT_CONSUMER = 1;//æœªæ¶ˆè´¹
+	public static final int QUEUE_STATUS_CONSUMER_SUCCESS = 2;//æ¶ˆè´¹æˆåŠŸ(åŒ…æ‹¬æ¶ˆè´¹æ¬¡æ•°å·²ç»ç”¨å®Œï¼Œä¹Ÿæ ‡è®°æˆåŠŸï¼Œä½†æ˜¯é˜Ÿåˆ—çš„é˜¿çŠ¶æ€ä¸ä¸€æ ·)
+	public static final int QUEUE_STATUS_CONSUMER_FAILED = 3;//æ¶ˆè´¹å¤±è´¥
 
-	public static final int QUEUE_MAX_CONSUME_COUNT = 8;//×î´óÏû·Ñ´ÎÊı
+	public static final int QUEUE_MAX_CONSUME_COUNT = 8;//æœ€å¤§æ¶ˆè´¹æ¬¡æ•°
 */	
 	
 	
-	/** ÏµÍ³Òì³£³£Êı */
-	public static final int NO_DATA = 0;// Ã»ÓĞ¿ÉÓÃµÄÊı¾İÔ´
-	public static final int SUCCESS = 1;// ÈÕÖ¾²Ù×÷³É¹¦
+	/** ç³»ç»Ÿå¼‚å¸¸å¸¸æ•° */
+	public static final int NO_DATA = 0;// æ²¡æœ‰å¯ç”¨çš„æ•°æ®æº
+	public static final int SUCCESS = 1;// æ—¥å¿—æ“ä½œæˆåŠŸ
 	
-	public static final int DATA_EXISTED = 2;// Êı¾İÒÑ¾­´æÔÚ
+	public static final int DATA_EXISTED = 2;// æ•°æ®å·²ç»å­˜åœ¨
 	
-	public static final int INVALID_PARAM = -1;// ´«Èë²ÎÊı´íÎó
-	public static final int INVALID_GOODSID = -2;// ÉÌÆ·idÎŞĞ§
+	public static final int INVALID_PARAM = -1;// ä¼ å…¥å‚æ•°é”™è¯¯
+	public static final int INVALID_GOODSID = -2;// å•†å“idæ— æ•ˆ
 	
-	public static final int INVALID_SELECTIONID = -3;// Ñ¡ĞÍidÎŞĞ§
-	public static final int INVALID_SUPPLIERSID = -4;// ·ÖµêidÎŞĞ§
+	public static final int INVALID_SELECTIONID = -3;// é€‰å‹idæ— æ•ˆ
+	public static final int INVALID_SUPPLIERSID = -4;// åˆ†åº—idæ— æ•ˆ
 	
 	
-	public static final int UNKNOW_ERROR = -9;// Î´Öª´íÎó
-	public static final int SERVICE_DATABASE_FALIURE = -99;// Êı¾İ¿âÒì³£
-	public static final int SERVICE_SYSTEM_FALIURE = -100;// ÏµÍ³¼¶±ğÒì³£
+	public static final int UNKNOW_ERROR = -9;// æœªçŸ¥é”™è¯¯
+	public static final int SERVICE_DATABASE_FALIURE = -99;// æ•°æ®åº“å¼‚å¸¸
+	public static final int SERVICE_SYSTEM_FALIURE = -100;// ç³»ç»Ÿçº§åˆ«å¼‚å¸¸
 	
-	public static final int INVALID_IP = 5000;// ¿Í·ş¶ËIPÎŞĞ§
-	public static final int INVALID_CLIENT = 5001;// ¿Í»§¶ËÃû³ÆÎŞĞ§
-	public static final int INVALID_TIME = 5002;// Ê±¼ä´ÁÎŞĞ§
-	public static final int INVALID_RETURN = 5003;// ·µ»ØÖµ²»ÕıÈ·
+	public static final int INVALID_IP = 5000;// å®¢æœç«¯IPæ— æ•ˆ
+	public static final int INVALID_CLIENT = 5001;// å®¢æˆ·ç«¯åç§°æ— æ•ˆ
+	public static final int INVALID_TIME = 5002;// æ—¶é—´æˆ³æ— æ•ˆ
+	public static final int INVALID_RETURN = 5003;// è¿”å›å€¼ä¸æ­£ç¡®
 	
 		
 	

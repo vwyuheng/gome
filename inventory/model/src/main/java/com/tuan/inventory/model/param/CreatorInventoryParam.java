@@ -6,7 +6,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 /**
- * ÉÌÆ·¿â´æ²ÎÊı
+ * å•†å“åº“å­˜å‚æ•°
  * @author henry.yu
  * @date 20140310
  */
@@ -14,14 +14,14 @@ public class CreatorInventoryParam extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private String userId;
-	private String goodsId;// ÉÌÆ·ID(FK)
-	private Integer totalNumber;// µ±Ç°×Ü¿â´æ999999£ºÎŞÏŞÖÆ
-	private Integer leftNumber;// µ±Ç°Ê£ÓàÊı¿â´æÄ¬ÈÏÖµ:0
-	private int limitStorage; // 0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
-	private Integer waterfloodVal;  //×¢Ë®Öµ
-	//Ñ¡ĞÍ
+	private String goodsId;// å•†å“ID(FK)
+	private Integer totalNumber;// å½“å‰æ€»åº“å­˜999999ï¼šæ— é™åˆ¶
+	private Integer leftNumber;// å½“å‰å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼:0
+	private int limitStorage; // 0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
+	private Integer waterfloodVal;  //æ³¨æ°´å€¼
+	//é€‰å‹
 	private List<GoodsSelectionModel> goodsSelection;
-	//·Öµê
+	//åˆ†åº—
 	private List<GoodsSuppliersModel> goodsSuppliers;
 	public String getUserId() {
 		return userId;

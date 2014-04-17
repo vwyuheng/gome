@@ -7,15 +7,15 @@ import java.util.Arrays;
 
 
 /**
- * ¿Í»§¶ËÃû³Æ±íÊ¾Ã¶¾Ù£¬code±íÊ¾Î¨Ò»±êÊ¶£¬description±íÊ¾ÃèÊöĞÅÏ¢
- * ¿Í»§¶ËÖ»ÓĞ´«ÈëÕıÈ·µÄ±êÊ¶²ÅÄÜ·ÃÎÊÏàÓ¦µÄ½Ó¿Ú£¬²¢ÇÒ²¿·Ö½Ó¿ÚĞèÒª¸ù¾İ
- * ±êÊ¶ÅĞ¶ÏÊÇ·ñĞ£Ñé¸½¼Ó²ÎÊı£¨Èç²éÑ¯¶©µ¥Ê±£¬´«ÈëÓÃ»§id£©
+ * å®¢æˆ·ç«¯åç§°è¡¨ç¤ºæšä¸¾ï¼Œcodeè¡¨ç¤ºå”¯ä¸€æ ‡è¯†ï¼Œdescriptionè¡¨ç¤ºæè¿°ä¿¡æ¯
+ * å®¢æˆ·ç«¯åªæœ‰ä¼ å…¥æ­£ç¡®çš„æ ‡è¯†æ‰èƒ½è®¿é—®ç›¸åº”çš„æ¥å£ï¼Œå¹¶ä¸”éƒ¨åˆ†æ¥å£éœ€è¦æ ¹æ®
+ * æ ‡è¯†åˆ¤æ–­æ˜¯å¦æ ¡éªŒé™„åŠ å‚æ•°ï¼ˆå¦‚æŸ¥è¯¢è®¢å•æ—¶ï¼Œä¼ å…¥ç”¨æˆ·idï¼‰
  * @author wanghongwei
  *
  */
 public enum ClientNameEnum {
-	/**ÓÃ»§ÖĞĞÄ*/
-	USER_CENTER("USER_CENTER", "ÓÃ»§ÖĞĞÄ", (byte)1,
+	/**ç”¨æˆ·ä¸­å¿ƒ*/
+	USER_CENTER("USER_CENTER", "ç”¨æˆ·ä¸­å¿ƒ", (byte)1,
 			EnumSet.of(
 		    		  OrderInterfaceEnum.ORDER_CREATE,
 		    		  OrderInterfaceEnum.ORDER_UPDATE,
@@ -42,8 +42,8 @@ public enum ClientNameEnum {
 			return ((key != null && key.length() == 16) ? true : false);
 		}
 	},
-	/**Ö§¸¶ÖĞĞÄ*/
-	PAY_CENTER("PAY_CENTER", "Ö§¸¶ÖĞĞÄ", (byte)2,
+	/**æ”¯ä»˜ä¸­å¿ƒ*/
+	PAY_CENTER("PAY_CENTER", "æ”¯ä»˜ä¸­å¿ƒ", (byte)2,
 			EnumSet.of(
 		    		  OrderInterfaceEnum.SINGLE_ORDER_QUERY,
 		    		  OrderInterfaceEnum.ORDER_STATUS_UPDATE,
@@ -58,8 +58,8 @@ public enum ClientNameEnum {
 			return ((key != null && key.length() == 16) ? true : false);
 		}
 	},
-	/**¿Í·şÖĞĞÄ*/
-	SERVICE_CENTER("SERVICE_CENTER", "¿Í·şÖĞĞÄ", (byte)3,
+	/**å®¢æœä¸­å¿ƒ*/
+	SERVICE_CENTER("SERVICE_CENTER", "å®¢æœä¸­å¿ƒ", (byte)3,
 			EnumSet.of(
 		    		  OrderInterfaceEnum.SINGLE_ORDER_QUERY,
 		    		  OrderInterfaceEnum.ORDER_STATUS_UPDATE,
@@ -89,8 +89,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**ÒíÂë¿Í·şÖĞĞÄ*/
-	SUPPLIER_CENTER_IMAGECO("SUPPLIER_CENTER_IMAGECO", "¿Í·şÖĞĞÄ", (byte)3,
+	/**ç¿¼ç å®¢æœä¸­å¿ƒ*/
+	SUPPLIER_CENTER_IMAGECO("SUPPLIER_CENTER_IMAGECO", "å®¢æœä¸­å¿ƒ", (byte)3,
 			EnumSet.of(
 					OrderInterfaceEnum.SINGLE_ORDER_QUERY,
 					OrderInterfaceEnum.ORDER_STATUS_UPDATE,
@@ -108,8 +108,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**ÎïÁ÷ÖĞĞÄ*/
-	LOGISTIC_CENTER("LOGISTIC_CENTER", "ÎïÁ÷ÖĞĞÄ", (byte)4,
+	/**ç‰©æµä¸­å¿ƒ*/
+	LOGISTIC_CENTER("LOGISTIC_CENTER", "ç‰©æµä¸­å¿ƒ", (byte)4,
 			EnumSet.of(
 		    		  OrderInterfaceEnum.ORDER_STATUS_UPDATE),
 		    new HashSet<String>(Arrays.asList(
@@ -121,8 +121,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**ÉÌ»§ÖĞĞÄ*/
-	SUPPLIER_CENTER("SUPPLIER_CENTER", "ÉÌ»§ÖĞĞÄ", (byte)5,
+	/**å•†æˆ·ä¸­å¿ƒ*/
+	SUPPLIER_CENTER("SUPPLIER_CENTER", "å•†æˆ·ä¸­å¿ƒ", (byte)5,
 			EnumSet.of(
 		    		  OrderInterfaceEnum.TICKET_CONFIRM,
 		    		  OrderInterfaceEnum.GOODS_ORDER_QUERY),
@@ -141,8 +141,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**ÏßÏÂÆÁ*/
-	OUTLINE_SCREEN("OUTLINE_SCREEN", "ÏßÏÂÆÁ", (byte)6,
+	/**çº¿ä¸‹å±*/
+	OUTLINE_SCREEN("OUTLINE_SCREEN", "çº¿ä¸‹å±", (byte)6,
 			EnumSet.of(
 					OrderInterfaceEnum.ORDER_CREATE,
 		    		  OrderInterfaceEnum.ORDER_UPDATE,
@@ -163,8 +163,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**ÊÖ»ú¿Í»§¶Ë*/
-	APPAGENT_SYSTEM("APPAGENT_SYSTEM", "ÊÖ»ú¿Í»§¶Ë", (byte)7,
+	/**æ‰‹æœºå®¢æˆ·ç«¯*/
+	APPAGENT_SYSTEM("APPAGENT_SYSTEM", "æ‰‹æœºå®¢æˆ·ç«¯", (byte)7,
 			EnumSet.of(
 					  OrderInterfaceEnum.ORDER_CREATE,
 		    		  OrderInterfaceEnum.ORDER_UPDATE,
@@ -185,8 +185,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**ºóÌ¨ÏµÍ³*/
-	INNER_SYSTEM("INNER_SYSTEM", "ºóÌ¨ÏµÍ³", (byte)11,
+	/**åå°ç³»ç»Ÿ*/
+	INNER_SYSTEM("INNER_SYSTEM", "åå°ç³»ç»Ÿ", (byte)11,
 			EnumSet.of(
 					OrderInterfaceEnum.CREATE_ORDER_ACTION,
 					OrderInterfaceEnum.QUERY_ORDER_ACTION
@@ -200,8 +200,8 @@ public enum ClientNameEnum {
 			return true;
 		}
 	},
-	/**¶©µ¥ÖĞĞÄwebÏµÍ³*/
-	FRONT_ORDER_WEB("FRONT_ORDER_WEB", "¶©µ¥WEBÏµÍ³", (byte)12,
+	/**è®¢å•ä¸­å¿ƒwebç³»ç»Ÿ*/
+	FRONT_ORDER_WEB("FRONT_ORDER_WEB", "è®¢å•WEBç³»ç»Ÿ", (byte)12,
 			EnumSet.of(
 					OrderInterfaceEnum.CREATE_ORDER_ACTION,
 					OrderInterfaceEnum.QUERY_ORDER_ACTION
@@ -216,9 +216,9 @@ public enum ClientNameEnum {
 			return true;
 		}
 	};
-	//ÓÃ»§idÓĞĞ§ĞÔĞ£Ñé
+	//ç”¨æˆ·idæœ‰æ•ˆæ€§æ ¡éªŒ
 	abstract boolean checkUserId(int userId);
-	//±£ÃÜÂëÓĞĞ§ĞÔĞ£Ñé
+	//ä¿å¯†ç æœ‰æ•ˆæ€§æ ¡éªŒ
 	abstract boolean checkKey(String key);
 
 	private String code;
@@ -237,27 +237,27 @@ public enum ClientNameEnum {
 	}
 	
 	/**
-	 * ¼ì²é¸Ã¿Í»§¶ËÊÇ·ñ¿Éµ÷ÓÃÖ¸¶¨µÄ½Ó¿Ú
-	 * @param interfaceEnum OrderInterfaceEnum Ä¿±ê½Ó¿ÚÃ¶¾Ù
-	 * @return Èç¹ûÄ¿±êÃ¶¾ÙÔÚ¼¯ºÏÖĞ£¬·µ»Øtrue£»Èç¹ûÄ¿±êÃ¶¾Ù²»ÔÚ¼¯ºÏÖĞ£¬·µ»Øfalse
+	 * æ£€æŸ¥è¯¥å®¢æˆ·ç«¯æ˜¯å¦å¯è°ƒç”¨æŒ‡å®šçš„æ¥å£
+	 * @param interfaceEnum OrderInterfaceEnum ç›®æ ‡æ¥å£æšä¸¾
+	 * @return å¦‚æœç›®æ ‡æšä¸¾åœ¨é›†åˆä¸­ï¼Œè¿”å›trueï¼›å¦‚æœç›®æ ‡æšä¸¾ä¸åœ¨é›†åˆä¸­ï¼Œè¿”å›false
 	 */
 	public boolean isCanRequest(OrderInterfaceEnum interfaceEnum) {
 		return interfaceEnumSet.contains(interfaceEnum);
 	}
 	
 	/**
-	 * ¼ì²é¸Ã¿Í»§¶ËÊÇ·ñ¿Éµ÷ÓÃÖ¸¶¨µÄ½Ó¿Ú
-	 * @param interfaceMethodName String Ä¿±ê½Ó¿ÚÓë·½·¨Ãû
-	 * @return Èç¹ûÄ¿±êÔÚ¼¯ºÏÖĞ£¬·µ»Øtrue£»Èç¹ûÄ¿±ê²»ÔÚ¼¯ºÏÖĞ£¬·µ»Øfalse
+	 * æ£€æŸ¥è¯¥å®¢æˆ·ç«¯æ˜¯å¦å¯è°ƒç”¨æŒ‡å®šçš„æ¥å£
+	 * @param interfaceMethodName String ç›®æ ‡æ¥å£ä¸æ–¹æ³•å
+	 * @return å¦‚æœç›®æ ‡åœ¨é›†åˆä¸­ï¼Œè¿”å›trueï¼›å¦‚æœç›®æ ‡ä¸åœ¨é›†åˆä¸­ï¼Œè¿”å›false
 	 */
 	public boolean isCanRequest(String interfaceMethodName) {
 		return interfaceMethodSet.contains(interfaceMethodName);
 	}
 
 	/**
-	 * ¸ù¾İ×´Ì¬Öµ»ñÈ¡¶ÔÓ¦µÄÃ¶¾ÙÖµ£¬Èç¹û²»ÔÚÃ¶¾ÙÖµ·¶Î§ÄÚ£¬·µ»Ønull
-	 * @param code int ×´Ì¬Öµ
-	 * @return OrderInfoOrderStatusEnum Ã¶¾ÙÖµ£¬Èç¹û²»´æÔÚ·µ»Ønull
+	 * æ ¹æ®çŠ¶æ€å€¼è·å–å¯¹åº”çš„æšä¸¾å€¼ï¼Œå¦‚æœä¸åœ¨æšä¸¾å€¼èŒƒå›´å†…ï¼Œè¿”å›null
+	 * @param code int çŠ¶æ€å€¼
+	 * @return OrderInfoOrderStatusEnum æšä¸¾å€¼ï¼Œå¦‚æœä¸å­˜åœ¨è¿”å›null
 	 */
 	public static ClientNameEnum valueOfEnum(String code) {
 		if (code == null || code.length() <= 0) {
@@ -289,11 +289,11 @@ public enum ClientNameEnum {
 	}
 
 	/**
-	 * ¸ù¾İ¶Ñ¹ì¼£Êı×éºÍService ÀàÈ«Ãû£¨°üÀ¨°üÃû£©»ñÈ¡µ÷ÓÃ·½·¨µÄÃû³Æ×Ö·û´®
+	 * æ ¹æ®å †è½¨è¿¹æ•°ç»„å’ŒService ç±»å…¨åï¼ˆåŒ…æ‹¬åŒ…åï¼‰è·å–è°ƒç”¨æ–¹æ³•çš„åç§°å­—ç¬¦ä¸²
 	 * 		interfaceName.methodName
-	 * @param ste final StackTraceElement[] µ÷ÓÃ¹ì¼£Êı×é
-	 * @param fullServiceName String ÀàÈ«Ãû£¨°üÀ¨°üÃû£©
-	 * @return String ½Ó¿ÚºÍ·½·¨Ãû£¬Èç¹û²ÎÊıÎŞĞ§·µ»Ønull
+	 * @param ste final StackTraceElement[] è°ƒç”¨è½¨è¿¹æ•°ç»„
+	 * @param fullServiceName String ç±»å…¨åï¼ˆåŒ…æ‹¬åŒ…åï¼‰
+	 * @return String æ¥å£å’Œæ–¹æ³•åï¼Œå¦‚æœå‚æ•°æ— æ•ˆè¿”å›null
 	 */
 	public static String getCurrentMethodName(
 			final StackTraceElement[] ste, final String fullServiceName) {

@@ -21,7 +21,7 @@ import com.wowotrace.trace.util.TraceMessageUtil;
 import com.wowotrace.traceEnum.MessageTypeEnum;
 
 /**
- * µ÷¶ÈÏß³Ì£¬Ö÷ÒªÓÃÓÚ·ÇÕı³£Çé¿öÏÂµÄ¿â´æÏûÏ¢¸üĞÂÊÂ¼şµ÷¶È
+ * è°ƒåº¦çº¿ç¨‹ï¼Œä¸»è¦ç”¨äºéæ­£å¸¸æƒ…å†µä¸‹çš„åº“å­˜æ¶ˆæ¯æ›´æ–°äº‹ä»¶è°ƒåº¦
  * 
  * @author henry.yu
  * @Date 2014/3/24
@@ -31,27 +31,27 @@ public class LockedEventScheduled extends AbstractEventScheduled {
 	private final static Log logger = LogFactory
 			.getLog(LockedEventScheduled.class);
 	
-	// Ä¬ÈÏ³õÊ¼»¯ÑÓÊ± µ¥Î»£ººÁÃë
+	// é»˜è®¤åˆå§‹åŒ–å»¶æ—¶ å•ä½ï¼šæ¯«ç§’
 	private static final long DEFAULTINITIALDELAY = 3 * 1000;
-	// Ä¬ÈÏÁ½´Î¿ªÊ¼Ö´ĞĞ×îĞ¡¼ä¸ôÊ±¼ä µ¥Î»£ººÁÃë
+	// é»˜è®¤ä¸¤æ¬¡å¼€å§‹æ‰§è¡Œæœ€å°é—´éš”æ—¶é—´ å•ä½ï¼šæ¯«ç§’
 	private static final long DEFAULTDELAY = 4 * 1000;
-	//Ä¬ÈÏ¼ä¸ôÊ±³¤,Óëµ±Ç°Ê±¼äÏà±È  µ¥Î»:·ÖÖÖ
+	//é»˜è®¤é—´éš”æ—¶é•¿,ä¸å½“å‰æ—¶é—´ç›¸æ¯”  å•ä½:åˆ†ç§
 	private static final int DEFAULTPERIOD = 5;
-	// Ö§³ÖÅäÖÃ
+	// æ”¯æŒé…ç½®
 	private long initialDelay = 0;
 	private long delay = 0;
 	private int period = 0;
 	@Resource
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	/**
-	 * ¹¹Ôì´ø²»´ø»º´æµÄ¿Í»§¶Ë
+	 * æ„é€ å¸¦ä¸å¸¦ç¼“å­˜çš„å®¢æˆ·ç«¯
 	 */
 	public LockedEventScheduled() {
 		super();
 	}
 
 	/**
-	 * ¸ºÔğ°´ÕÕÒ»¶¨µÄÆµÂÊÖ´ĞĞÈÕÖ¾µÄÏû·ÑÊÂ¼şµÄ·â×°
+	 * è´Ÿè´£æŒ‰ç…§ä¸€å®šçš„é¢‘ç‡æ‰§è¡Œæ—¥å¿—çš„æ¶ˆè´¹äº‹ä»¶çš„å°è£…
 	 */
 	public void execFixedRate4Locked() {
 		new Thread() {
@@ -87,11 +87,11 @@ public class LockedEventScheduled extends AbstractEventScheduled {
 						logger.error(
 								"LockedQueueConsumeTask scheduled Interrupted exception :",
 								e);
-						future.cancel(true);// ÖĞ¶ÏÖ´ĞĞ´ËÈÎÎñµÄÏß³Ì
+						future.cancel(true);// ä¸­æ–­æ‰§è¡Œæ­¤ä»»åŠ¡çš„çº¿ç¨‹
 					} catch (ExecutionException e) {
 						logger.error(
 								"LockedQueueConsumeTask scheduled Execution exception:", e);
-						future.cancel(true);// ÖĞ¶ÏÖ´ĞĞ´ËÈÎÎñµÄÏß³Ì
+						future.cancel(true);// ä¸­æ–­æ‰§è¡Œæ­¤ä»»åŠ¡çš„çº¿ç¨‹
 					}
 				} catch (Throwable e) {
 					logger.error("LockedQueueConsumeTask scheduled Exception:", e);
@@ -134,7 +134,7 @@ public class LockedEventScheduled extends AbstractEventScheduled {
 			long startTime = System.currentTimeMillis();
 			logJSON.put("LockedQueueConsumeTask.run startTime",
 					DataUtil.formatDate(new Date(startTime)));
-			// Ë¢ĞÂÉÏÒ»´Î»îÔ¾Ê±¼ä
+			// åˆ·æ–°ä¸Šä¸€æ¬¡æ´»è·ƒæ—¶é—´
 			lastStartTime = startTime;*/
 			RequestPacket packet = new RequestPacket();
 			packet.setTraceId(UUID.randomUUID().toString());
@@ -145,7 +145,7 @@ public class LockedEventScheduled extends AbstractEventScheduled {
 			try {
 				InventoryScheduledParam param = new InventoryScheduledParam();
 				param.setPeriod(getPeriod()==0?DEFAULTPERIOD:getPeriod());
-				//È¡³õÊ¼×´Ì¬¶ÓÁĞĞÅÏ¢
+				//å–åˆå§‹çŠ¶æ€é˜Ÿåˆ—ä¿¡æ¯
 				goodsInventoryScheduledService.lockedQueueConsume(ClientNameEnum.INNER_SYSTEM.getValue(),"", param, traceMessage);
 			} catch (Exception e) {
 				logger.error("LockedQueueConsumeTask.run error", e);
@@ -159,7 +159,7 @@ public class LockedEventScheduled extends AbstractEventScheduled {
 			
 		}
 
-		/** »ñÈ¡ÉÏÒ»´ÎµÄ »î¶¯Ê±¼ä ¹©¼ì²âÓÃ */
+		/** è·å–ä¸Šä¸€æ¬¡çš„ æ´»åŠ¨æ—¶é—´ ä¾›æ£€æµ‹ç”¨ */
 		public long getLastActiveTime() {
 			return lastStartTime;
 		}

@@ -5,7 +5,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.tuan.inventory.dao.LogOfWaterDAO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 /**
- * ÓÃÓÚ´¦Àí[²åÈë]ÈÕÖ¾Á÷Ë®¼ÇÂ¼µÄ dao
+ * ç”¨äºå¤„ç†[æ’å…¥]æ—¥å¿—æµæ°´è®°å½•çš„ dao
  * @author henry.yu
  * @date 2014/3/19
  */

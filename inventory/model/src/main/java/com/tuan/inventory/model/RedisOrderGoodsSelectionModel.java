@@ -4,7 +4,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /** 
  * @ClassName: RedisGoodsSelectionRelationDO
- * @Description: ÉÌÆ·ÓëÑ¡ĞÍ¹ØÏµ£¨ĞÂ°æ£©
+ * @Description: å•†å“ä¸é€‰å‹å…³ç³»ï¼ˆæ–°ç‰ˆï¼‰
  * @author henry.yu
  * @date 2014.03.06
  */
@@ -12,12 +12,12 @@ public class RedisOrderGoodsSelectionModel extends TuanBaseDO{
 
 	private static final long serialVersionUID = 1L;
 	private java.lang.Integer id;
-	private java.lang.Integer goodsId;	// ÉÌÆ·id
-	private java.lang.Integer goodTypeId; // Ñ¡ĞÍÀàĞÍ±íID(FK)¹ØÁªµ½Ñ¡ĞÍ±íID
-	private java.lang.Integer totalNumber; 	// µ±Ç°Ñ¡ĞÍ×Ü¿â´æ
-	private java.lang.Integer leftNumber; 	// µ±Ç°Ñ¡ĞÍÊ£ÓàÊı¿â´æÄ¬ÈÏÖµ£º0 
-	private java.lang.Integer limitStorage;	//0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
-	private java.lang.Integer suppliersInventoryId; //ÉÌ¼Ò¿â´æ±íID(FK)
+	private java.lang.Integer goodsId;	// å•†å“id
+	private java.lang.Integer goodTypeId; // é€‰å‹ç±»å‹è¡¨ID(FK)å…³è”åˆ°é€‰å‹è¡¨ID
+	private java.lang.Integer totalNumber; 	// å½“å‰é€‰å‹æ€»åº“å­˜
+	private java.lang.Integer leftNumber; 	// å½“å‰é€‰å‹å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼ï¼š0 
+	private java.lang.Integer limitStorage;	//0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
+	private java.lang.Integer suppliersInventoryId; //å•†å®¶åº“å­˜è¡¨ID(FK)
 	
 	public java.lang.Integer getId() {
 		return id;

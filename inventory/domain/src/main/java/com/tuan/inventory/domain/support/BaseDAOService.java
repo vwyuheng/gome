@@ -10,70 +10,70 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 
 public interface BaseDAOService {
 	/**
-	 * ¸ù¾İÉÌÆ·idÅĞ¶Ï¿â´æÊÇ·ñÒÑ´æÔÚ
-	 * ÒÑ´æÔÚ·µ»Øfalse,²»´æÔÚ·µ»Øtrue
+	 * æ ¹æ®å•†å“idåˆ¤æ–­åº“å­˜æ˜¯å¦å·²å­˜åœ¨
+	 * å·²å­˜åœ¨è¿”å›false,ä¸å­˜åœ¨è¿”å›true
 	 * @param goodsId
 	 * @return
 	 */
 	public boolean isExists(Long goodsId);
 	/**
-	 * ¸ù¾İkey ÅĞ¶ÏÉÌÆ·¿â´æhashÖĞÊÇ·ñ´æ¸Ãfield
+	 * æ ¹æ®key åˆ¤æ–­å•†å“åº“å­˜hashä¸­æ˜¯å¦å­˜è¯¥field
 	 * @param goodsId
 	 * @param field
 	 * @return
 	 */
 	public boolean isGoodsExists(Long goodsId,String field);
 	/**
-	 * ¸ù¾İÑ¡ĞÍid ÅĞ¶ÏÉÌÆ·Ñ¡ĞÍ¿â´æ hashÊÇ·ñ´æÔÚ¸Ãfield
+	 * æ ¹æ®é€‰å‹id åˆ¤æ–­å•†å“é€‰å‹åº“å­˜ hashæ˜¯å¦å­˜åœ¨è¯¥field
 	 * @param selectionId
 	 * @param field
 	 * @return
 	 */
 	public boolean isSelectionExists(Long selectionId,String field);
 	/**
-	 * ¸ù¾İ·Öµêid ÅĞ¶ÏÉÌÆ··Öµê¿â´æ hashÊÇ·ñ´æÔÚ¸Ãfield
+	 * æ ¹æ®åˆ†åº—id åˆ¤æ–­å•†å“åˆ†åº—åº“å­˜ hashæ˜¯å¦å­˜åœ¨è¯¥field
 	 * @param suppliesId
 	 * @param field
 	 * @return
 	 */
 	public boolean isSupplierExists(Long suppliesId,String field);
 	/**
-	 * Ñ¹ÈëÈÕÖ¾¶ÓÁĞ
+	 * å‹å…¥æ—¥å¿—é˜Ÿåˆ—
 	 * @param logActionDO
 	 */
 	public void pushLogQueues(final GoodsInventoryActionDO logActionDO);
 	public void pushQueueSendMsg(final GoodsInventoryQueueDO queueDO);
 	/**
-	 * ±£´æÉÌÆ·¿â´æ
+	 * ä¿å­˜å•†å“åº“å­˜
 	 * @param inventoryInfoDO
 	 */
 	public void saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO);
 	/**
-	 * ±£´æÉÌÆ·Ñ¡ĞÍ¿â´æ
+	 * ä¿å­˜å•†å“é€‰å‹åº“å­˜
 	 * @param goodsId
 	 * @param selectionModel
 	 */
 	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO);
 	/**
-	 * ±£´æÉÌÆ··Öµê¿â´æ
+	 * ä¿å­˜å•†å“åˆ†åº—åº“å­˜
 	 * @param goodsId
 	 * @param selectionModel
 	 */
 	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO);
 	/**
-	 * ¸ù¾İÉÌÆ·id²éÑ¯¿â´æĞÅÏ¢
+	 * æ ¹æ®å•†å“idæŸ¥è¯¢åº“å­˜ä¿¡æ¯
 	 * @param goodsId
 	 * @return
 	 */
 	public GoodsInventoryDO queryGoodsInventory(Long goodsId);
 	/**
-	 * ¸ù¾İÑ¡ĞÍid²éÑ¯ÉÌÆ·Ñ¡ĞÍ¿â´æ
+	 * æ ¹æ®é€‰å‹idæŸ¥è¯¢å•†å“é€‰å‹åº“å­˜
 	 * @param selectionId
 	 * @return
 	 */
 	public GoodsSelectionDO querySelectionRelationById(Long selectionId);
 	/**
-	 * ¸ù¾İ·Öµêid²éÑ¯ÉÌÆ··Öµê¿â´æ
+	 * æ ¹æ®åˆ†åº—idæŸ¥è¯¢å•†å“åˆ†åº—åº“å­˜
 	 * @param suppliersId
 	 * @return
 	 */

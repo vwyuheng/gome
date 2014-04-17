@@ -9,13 +9,13 @@ import com.tuan.inventory.model.GoodsSuppliersModel;
 
 public class StringUtil {
     /**
-     * ¶à¸öÑ¡ĞÍid¹ØÏµ ·µ»Ø ÒÔ¿Õ¸ñ·Ö¸ô
+     * å¤šä¸ªé€‰å‹idå…³ç³» è¿”å› ä»¥ç©ºæ ¼åˆ†éš”
      * @param rgsrList
      * @return
      */
 	public static String getSelectionRelationString(List<GoodsSelectionDO> rgsrList) {
 		StringBuffer sb  = new StringBuffer();
-		//¶à¸öÑ¡ĞÍidÒÔ¿Õ¸ñ¼ä¸ôµÄ×Ö·û´®
+		//å¤šä¸ªé€‰å‹idä»¥ç©ºæ ¼é—´éš”çš„å­—ç¬¦ä¸²
 		for(GoodsSelectionDO rgsr:rgsrList) {
 			sb.append(rgsr.getId());
 			sb.append(String.valueOf((char) 29));
@@ -25,13 +25,13 @@ public class StringUtil {
 	
 	
 	/**
-     * ¶à¸ö·Öµêid¹ØÏµ ·µ»Ø ÒÔ¿Õ¸ñ·Ö¸ô
+     * å¤šä¸ªåˆ†åº—idå…³ç³» è¿”å› ä»¥ç©ºæ ¼åˆ†éš”
      * @param rgsrList
      * @return
      */
 	public static String getSuppliersInventoryString(List<GoodsSuppliersDO> rgsiList) {
 		StringBuffer sb  = new StringBuffer();
-		//i.Ê×ÏÈ±£´æÉÌÆ·idÓëÑ¡ĞÍidµÄ¹ØÁª¹ØÏµ
+		//i.é¦–å…ˆä¿å­˜å•†å“idä¸é€‰å‹idçš„å…³è”å…³ç³»
 		for(GoodsSuppliersDO rgsi:rgsiList) {
 			sb.append(rgsi.getId());
 			sb.append(String.valueOf((char) 29));
@@ -40,8 +40,8 @@ public class StringUtil {
 	}
 	
 	/**
-	 * Æ´×°·µ»ØÑ¡ĞÍ»ò·ÖµêidµÄ×Ö·û´® 
-	 * ÒÔ¿Õ¸ñ·Ö¸ô
+	 * æ‹¼è£…è¿”å›é€‰å‹æˆ–åˆ†åº—idçš„å­—ç¬¦ä¸² 
+	 * ä»¥ç©ºæ ¼åˆ†éš”
 	 * @param goodsSelectionList
 	 * @return
 	 */
@@ -50,7 +50,7 @@ public class StringUtil {
 			
 			for(GoodsSelectionModel ogsm:goodsSelectionList) {  
 				if (ogsm.getId()!= null
-						&& ogsm.getId()> 0) { //ÉÌÆ·Ñ¡ĞÍµÄid,¶à¸öÑ¡ĞÍidÒÔ¿Õ¸ñ¼ä¸ôµÄ×Ö·û´®
+						&& ogsm.getId()> 0) { //å•†å“é€‰å‹çš„id,å¤šä¸ªé€‰å‹idä»¥ç©ºæ ¼é—´éš”çš„å­—ç¬¦ä¸²
 					sb.append(ogsm.getId());
 					//sb.append(":");
 					//sb.append(ogsm.getCount().intValue());
@@ -68,7 +68,7 @@ public class StringUtil {
 			
 			for(GoodsSuppliersModel ogsm:goodsSelectionList) {  
 				if (ogsm.getId()!= null
-						&& ogsm.getId()> 0) { //ÉÌÆ·Ñ¡ĞÍµÄid,¶à¸öÑ¡ĞÍidÒÔ¿Õ¸ñ¼ä¸ôµÄ×Ö·û´®
+						&& ogsm.getId()> 0) { //å•†å“é€‰å‹çš„id,å¤šä¸ªé€‰å‹idä»¥ç©ºæ ¼é—´éš”çš„å­—ç¬¦ä¸²
 					sb.append(ogsm.getId());
 					//sb.append(":");
 					//sb.append(ogsm.getCount().intValue());

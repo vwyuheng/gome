@@ -2,7 +2,7 @@ package com.tuan.inventory.dao.data.redis;
 
 import com.tuan.core.common.lang.TuanBaseDO;
 /**
- * ÉÌÆ·¿â´æÖ÷ÌåĞÅÏ¢
+ * å•†å“åº“å­˜ä¸»ä½“ä¿¡æ¯
  * @author henry.yu
  * @date 20140310
  */
@@ -10,12 +10,12 @@ public class GoodsInventoryDO extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	
-	private Long goodsId;// ÉÌÆ·ID(FK)
-	private Long userId;// ÉÌÆ·ID(FK)
-	private java.lang.Integer totalNumber;// µ±Ç°×Ü¿â´æ999999£ºÎŞÏŞÖÆ
-	private java.lang.Integer leftNumber;// µ±Ç°Ê£ÓàÊı¿â´æÄ¬ÈÏÖµ:0
-	private java.lang.Integer limitStorage; // 0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
-	private java.lang.Integer waterfloodVal;  //×¢Ë®Öµ
+	private Long goodsId;// å•†å“ID(FK)
+	private Long userId;// å•†å“ID(FK)
+	private java.lang.Integer totalNumber;// å½“å‰æ€»åº“å­˜999999ï¼šæ— é™åˆ¶
+	private java.lang.Integer leftNumber;// å½“å‰å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼:0
+	private java.lang.Integer limitStorage; // 0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
+	private java.lang.Integer waterfloodVal;  //æ³¨æ°´å€¼
 	public Long getGoodsId() {
 		return goodsId;
 	}

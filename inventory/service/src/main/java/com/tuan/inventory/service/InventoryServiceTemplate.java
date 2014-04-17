@@ -4,13 +4,13 @@ import com.tuan.core.common.service.TuanCallbackResult;
 
 public interface InventoryServiceTemplate {
 	/**
-	 * 更新写入模板执行
+	 * 鏇存柊鍐欏叆妯℃澘鎵ц
 	 * @param action
 	 * @return
 	 */
 	TuanCallbackResult execute(InventoryUpdateServiceCallback action);
 	/**
-	 * 查询模板执行
+	 * 鏌ヨ妯℃澘鎵ц
 	 * @param action
 	 * @return
 	 */

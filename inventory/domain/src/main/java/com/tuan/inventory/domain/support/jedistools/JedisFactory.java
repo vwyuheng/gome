@@ -12,7 +12,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
 
 /**
- * redis×é¼ş:Ä£°å·½·¨,Í³Ò»¹ÜÀíredisÁ¬½Ó×ÊÔ´µÄÉêÇëÓëÊÍ·Å
+ * redisç»„ä»¶:æ¨¡æ¿æ–¹æ³•,ç»Ÿä¸€ç®¡ç†redisè¿æ¥èµ„æºçš„ç”³è¯·ä¸é‡Šæ”¾
  * @author henry.yu
  * @date 2014/3/14
  */
@@ -20,17 +20,17 @@ public class JedisFactory extends RedisBaseObject
 {
 	protected static Logger m_logger = Logger.getLogger(JedisFactory.class.getName());
 	/**
-	 * spring ×¢ÈëµÄ The connection pool.
+	 * spring æ³¨å…¥çš„ The connection pool.
 	 */
 	@Resource 
 	JedisSentinelPool jedisSentinelPool;
 	/**
-	 * spring ¾²Ì¬×¢ÈëµÄ½â¾ö·½Ê½
+	 * spring é™æ€æ³¨å…¥çš„è§£å†³æ–¹å¼
 	 * The connection pool.
 	 */
 	protected static JedisFactory jf;
     /**
-     * ½â¾öspring¾²Ì¬×¢ÈëÎÊÌâ
+     * è§£å†³springé™æ€æ³¨å…¥é—®é¢˜
      */
 	@PostConstruct
 	public void init() {
@@ -38,7 +38,7 @@ public class JedisFactory extends RedisBaseObject
 		jf.jedisSentinelPool = this.jedisSentinelPool;
 	}
 	/**
-	 * ¾²Ì¬×¢ÈëÊ±£¬springĞèÒª¸øjedisSentinelPoolÊôĞÔsetÖµ
+	 * é™æ€æ³¨å…¥æ—¶ï¼Œspringéœ€è¦ç»™jedisSentinelPoolå±æ€§setå€¼
 	 * @param jedisSentinelPool
 	 */
 	public void setJedisSentinelPool(JedisSentinelPool jedisSentinelPool) {
@@ -61,7 +61,7 @@ public class JedisFactory extends RedisBaseObject
 	}
 	
 	/**
-	 * »ñÈ¡ÓĞĞ§Á¬½Ó
+	 * è·å–æœ‰æ•ˆè¿æ¥
 	 * 
 	 * @return the working {@link Jedis} resource.
 	 */
@@ -88,7 +88,7 @@ public class JedisFactory extends RedisBaseObject
 	}
 	
 	/**
-	 * ½«Á¬½Ó·µ»Ø³Ø×Ó
+	 * å°†è¿æ¥è¿”å›æ± å­
 	 * 
 	 * @param res the object to return
 	 */
@@ -100,7 +100,7 @@ public class JedisFactory extends RedisBaseObject
     	}
     }
     /**
-     * ´İ»ÙÎŞĞ§Á´½Ó
+     * æ‘§æ¯æ— æ•ˆé“¾æ¥
      * @param res
      */
     public static void returnBrokenRes(Jedis res)
@@ -121,14 +121,14 @@ public class JedisFactory extends RedisBaseObject
     		T ret = work.work(j);
     		returnRes(j);
     		return ret;
-    	}catch (CacheRunTimeException ce) {  //²¶»ñ×Ô¶¨ÒåÔËĞĞÊ±Òì³£
+    	}catch (CacheRunTimeException ce) {  //æ•è·è‡ªå®šä¹‰è¿è¡Œæ—¶å¼‚å¸¸
     		returnBrokenRes(j);
     		j = null;
     		m_logger.error("jedisFactory.withJedisDo invoke error", ce);
     		ce.printStackTrace();
     		return null;
     	}
-    	catch (Exception e)  //ÆäËûÒì³£
+    	catch (Exception e)  //å…¶ä»–å¼‚å¸¸
     	{
     		returnBrokenRes(j);
     		j = null;

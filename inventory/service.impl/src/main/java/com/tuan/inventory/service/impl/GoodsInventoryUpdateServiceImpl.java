@@ -34,7 +34,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Resource
 	private SequenceUtil sequenceUtil;
 	/**
-	 * 新增库存
+	 * 鏂板搴撳瓨
 	 */
 	@Override
 	public InventoryCallResult createInventory(String clientIp,
@@ -49,9 +49,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryCreatorDomain inventoryCreatorDomain = new InventoryCreatorDomain(clientIp, clientName, param, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -100,7 +100,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
 	/**
-	 * 更新库存
+	 * 鏇存柊搴撳瓨
 	 */
 	@Override
 	public InventoryCallResult updateInventory(String clientIp,
@@ -115,9 +115,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryUpdateDomain inventoryUpdateDomain = new InventoryUpdateDomain(clientIp, clientName, param, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
@@ -179,9 +179,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "callbackAckInventory");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryCallbackDomain inventoryCallbackDomain = new InventoryCallbackDomain(clientIp, clientName, param, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryCallbackDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCallbackDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -242,9 +242,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentInventory");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryAdjustDomain inventoryAdjustDomain = new InventoryAdjustDomain(clientIp, clientName, param, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
@@ -307,9 +307,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentWaterflood");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final WaterfloodAdjustmentDomain waterfloodAdjustmentDomain = new WaterfloodAdjustmentDomain(clientIp, clientName, param, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		waterfloodAdjustmentDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		waterfloodAdjustmentDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		waterfloodAdjustmentDomain.setSequenceUtil(sequenceUtil);

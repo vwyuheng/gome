@@ -30,11 +30,11 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	private String ack;
 	private String key;
 	private int upStatusNum;
-	//Ğè¿Û¼õµÄÉÌÆ·¿â´æÁ¿
+	//éœ€æ‰£å‡çš„å•†å“åº“å­˜é‡
 	private int deductNum  = 0;
-	// Ô­¿â´æ
+	// åŸåº“å­˜
 	private int originalGoodsInventory = 0;
-	// ÁìÓòÖĞ»º´æÑ¡ĞÍºÍ·ÖµêÔ­Ê¼¿â´æºÍ¿Û¼õ¿â´æµÄlist
+	// é¢†åŸŸä¸­ç¼“å­˜é€‰å‹å’Œåˆ†åº—åŸå§‹åº“å­˜å’Œæ‰£å‡åº“å­˜çš„list
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
 	private Long goodsId;
@@ -50,39 +50,39 @@ public class InventoryCallbackDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 
-	// ³õÊ¼»¯²ÎÊı
+	// åˆå§‹åŒ–å‚æ•°
 	private void fillParam() {
-		// ack:È·ÈÏÂë
+		// ack:ç¡®è®¤ç 
 		this.ack = param.getAck();
 		// key
 		this.key = param.getKey();
 
 	}
 	public void preHandler() {
-		// È·ÈÏ
+		// ç¡®è®¤
 		if (this.ack.equalsIgnoreCase(ResultStatusEnum.CONFIRM.getCode())) {
 			this.isConfirm = true;
-			// ½«¶ÓÁĞ×´Ì¬ÓÉ³õÊ¼Ëø¶¨×´Ì¬3£¬¸üĞÂÎªÈ·¶¨×´Ì¬£º1
+			// å°†é˜Ÿåˆ—çŠ¶æ€ç”±åˆå§‹é”å®šçŠ¶æ€3ï¼Œæ›´æ–°ä¸ºç¡®å®šçŠ¶æ€ï¼š1
 			this.upStatusNum = -2;
 		}
-		//»Ø¹ö
+		//å›æ»š
 		if (ack.equalsIgnoreCase(ResultStatusEnum.ROLLBACK.getCode())) {
 			this.isRollback = true;
-			// ½«¸Ã·ÇÕı³£×´¿ö¶ÓÁĞ×´Ì¬ÓÉ³õÊ¼×´Ì¬£ºËø¶¨£º3£¬ÖÃÎªÉ¾³ı:7
+			// å°†è¯¥éæ­£å¸¸çŠ¶å†µé˜Ÿåˆ—çŠ¶æ€ç”±åˆå§‹çŠ¶æ€ï¼šé”å®šï¼š3ï¼Œç½®ä¸ºåˆ é™¤:7
 			this.upStatusNum = 4;
 		}
 	}
 
-	// ÒµÎñ¼ì²é
+	// ä¸šåŠ¡æ£€æŸ¥
 	public CreateInventoryResultEnum busiCheck() {
 
 		try {
-			// Ìî³ä²ÎÊı
+			// å¡«å……å‚æ•°
 			this.fillParam();
-			//Ô¤´¦Àí
+			//é¢„å¤„ç†
 			this.preHandler();
 			if (isRollback) {
-				// ¸ù¾İkey²éÑ¯»º´æµÄ¶ÓÁĞĞÅÏ¢
+				// æ ¹æ®keyæŸ¥è¯¢ç¼“å­˜çš„é˜Ÿåˆ—ä¿¡æ¯
 				this.queueDO = this.goodsInventoryDomainRepository
 						.queryInventoryQueueDO(key);
 				if (this.queueDO != null) {
@@ -106,23 +106,23 @@ public class InventoryCallbackDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// »Øµ÷È·ÈÏ
+	// å›è°ƒç¡®è®¤
 	public CreateInventoryResultEnum ackInventory() {
 		try {
-			// Ê×ÏÈÌî³äÈÕÖ¾ĞÅÏ¢
+			// é¦–å…ˆå¡«å……æ—¥å¿—ä¿¡æ¯
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
-			// ²åÈëÈÕÖ¾
+			// æ’å…¥æ—¥å¿—
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			//È·ÈÏ
+			//ç¡®è®¤
 			if (isConfirm) {
 				this.goodsInventoryDomainRepository.markQueueStatus(key,
 						(upStatusNum));
 			}
-			//»Ø¹ö
+			//å›æ»š
 			if (isRollback) {
-				// »Ø¹ö¿â´æ
+				// å›æ»šåº“å­˜
 				if (goodsId > 0) {
 					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
@@ -135,7 +135,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository
 					.rollbackSuppliersInventory(suppliersParam);
 				}
-				// ½«¶ÓÁĞ±ê¼ÇÉ¾³ı
+				// å°†é˜Ÿåˆ—æ ‡è®°åˆ é™¤
 				this.goodsInventoryDomainRepository.markQueueStatus(key,
 						(upStatusNum));
 			}
@@ -149,7 +149,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// Ìî³äÈÕÖ¾ĞÅÏ¢
+	// å¡«å……æ—¥å¿—ä¿¡æ¯
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
@@ -166,8 +166,8 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(queueDO.getOrderId());
 			updateActionDO
-					.setContent(JSONObject.fromObject(queueDO).toString()); // ²Ù×÷ÄÚÈİ
-			updateActionDO.setRemark("»Øµ÷È·ÈÏ");
+					.setContent(JSONObject.fromObject(queueDO).toString()); // æ“ä½œå†…å®¹
+			updateActionDO.setRemark("å›è°ƒç¡®è®¤");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
@@ -180,7 +180,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	}
 
 	/**
-	 * ²ÎÊı¼ì²é
+	 * å‚æ•°æ£€æŸ¥
 	 * 
 	 * @return
 	 */

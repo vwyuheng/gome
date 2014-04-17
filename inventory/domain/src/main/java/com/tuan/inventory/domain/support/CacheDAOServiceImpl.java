@@ -30,14 +30,14 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	
 	@Override
 	public boolean isExists(Long goodsId) {
-		//ÒÑ´æÔÚ·µ»Øfalse,²»´æÔÚ·µ»Øtrue
+		//å·²å­˜åœ¨è¿”å›false,ä¸å­˜åœ¨è¿”å›true
 		return this.redisCacheUtil.exists(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId))?false:true;
 	}
 
 	@Override
 	public void pushLogQueues(GoodsInventoryActionDO logActionDO) {
-		// ½«¿â´æÈÕÖ¾¶ÓÁĞĞÅÏ¢Ñ¹Èëµ½redis list
+		// å°†åº“å­˜æ—¥å¿—é˜Ÿåˆ—ä¿¡æ¯å‹å…¥åˆ°redis list
 		this.redisCacheUtil.lpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSONObject
 				.fromObject(logActionDO).toString());
 		
@@ -74,7 +74,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean isGoodsExists(Long goodsId, String field) {  //´æÔÚ·µ»Øfalse ²»´æÔÚ·µ»Øtrue
+	public boolean isGoodsExists(Long goodsId, String field) {  //å­˜åœ¨è¿”å›false ä¸å­˜åœ¨è¿”å›true
 		return this.redisCacheUtil.hexists(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),field)?false:true;
 	}
@@ -153,32 +153,32 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public void pushQueueSendMsg(GoodsInventoryQueueDO queueDO) {
-		// ½«¿â´æ¸üĞÂ¶ÓÁĞĞÅÏ¢Ñ¹Èëµ½redis zset¼¯ºÏ ±ãÓÚÍ³¼Æ
-		// job³ÌĞòÖĞ»áÃ¿´Î½«scoreÎª1µÄÔªËØÈ¡³ö£¬×ö¿â´æÏûÏ¢¸üĞÂµÄ´¦Àí£¬´¦ÀíÍê¸ù¾İkey score
-		// member(Òòid¶¼ÊÇÎ¨Ò»µÄ£¬Òò´ËÃ¿¸ömember¶¼ÊÇ²»Ò»ÑùµÄ)Á¢¼´Çå¿ÕÔ´¼¯ºÏÖĞµÄÏà¹ØÔªËØ£¬²¢ÖØ¸´²Ù×÷
-		// ÈçÏÂ ¿ÉÒÔÖ¸¶¨scoreÖµÈ¡Öµ ZADD salary 2500 jack
+		// å°†åº“å­˜æ›´æ–°é˜Ÿåˆ—ä¿¡æ¯å‹å…¥åˆ°redis zseté›†åˆ ä¾¿äºç»Ÿè®¡
+		// jobç¨‹åºä¸­ä¼šæ¯æ¬¡å°†scoreä¸º1çš„å…ƒç´ å–å‡ºï¼Œåšåº“å­˜æ¶ˆæ¯æ›´æ–°çš„å¤„ç†ï¼Œå¤„ç†å®Œæ ¹æ®key score
+		// member(å› idéƒ½æ˜¯å”¯ä¸€çš„ï¼Œå› æ­¤æ¯ä¸ªmemberéƒ½æ˜¯ä¸ä¸€æ ·çš„)ç«‹å³æ¸…ç©ºæºé›†åˆä¸­çš„ç›¸å…³å…ƒç´ ï¼Œå¹¶é‡å¤æ“ä½œ
+		// å¦‚ä¸‹ å¯ä»¥æŒ‡å®šscoreå€¼å–å€¼ ZADD salary 2500 jack
 		// ZRANGEBYSCORE salary 2500 2500 WITHSCORES
-		// £¬2È¡µ½ÏàÓ¦memberºó£¬°´ÕÕmember¼°ÆäÉ¾³ı [ZREM key member]
-		// É¾³ıÖ¸¶¨scoreµÄÔªËØ ZREMRANGEBYSCORE salary 2500 2500
+		// ï¼Œ2å–åˆ°ç›¸åº”memberåï¼ŒæŒ‰ç…§memberåŠå…¶åˆ é™¤ [ZREM key member]
+		// åˆ é™¤æŒ‡å®šscoreçš„å…ƒç´  ZREMRANGEBYSCORE salary 2500 2500
 		String jsonMember = JSONObject.fromObject(queueDO)
 				.toString();
-		// »º´æ¶ÓÁĞµÄkey¡¢memberĞÅÏ¢ 1Ğ¡Ê±Ê§Ğ§
+		// ç¼“å­˜é˜Ÿåˆ—çš„keyã€memberä¿¡æ¯ 1å°æ—¶å¤±æ•ˆ
 		this.redisCacheUtil.setex(QueueConstant.QUEUE_KEY_MEMBER + ":"
 				+ String.valueOf(queueDO.getId()), 3600, jsonMember);
-		// zset key score value ÆäÖĞscore×÷ÎªstatusÓÃ
+		// zset key score value å…¶ä¸­scoreä½œä¸ºstatusç”¨
 		this.redisCacheUtil.zadd(QueueConstant.QUEUE_SEND_MESSAGE,
 				Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
-				//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //²âÊÔÓÃ
+				//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //æµ‹è¯•ç”¨
 				jsonMember);
 		
 	}
 
 	@Override
 	public void markQueueStatus(String key, int upStatusNum) {
-		// ¸ù¾İkeyÈ¡³ö»º´æµÄ¶ÔÏó£¬½öÏµÍ³ÔËĞĞÕı³£Ê±ÓĞÓÃ£¬ÒòÎªÆäÓĞÓĞĞ§ÆÚÄ¬ÈÏÊÇ60·ÖÖÓ
+		// æ ¹æ®keyå–å‡ºç¼“å­˜çš„å¯¹è±¡ï¼Œä»…ç³»ç»Ÿè¿è¡Œæ­£å¸¸æ—¶æœ‰ç”¨ï¼Œå› ä¸ºå…¶æœ‰æœ‰æ•ˆæœŸé»˜è®¤æ˜¯60åˆ†é’Ÿ
 		String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"
 				+ key);
-		// ½«ÏûÏ¢·¢ËÍ¶ÓÁĞ×´Ì¬¸üĞÂÎª:ResultStatusEnum ¶ÔÓ¦µÄ¶ÓÁĞ×´Ì¬Öµ
+		// å°†æ¶ˆæ¯å‘é€é˜Ÿåˆ—çŠ¶æ€æ›´æ–°ä¸º:ResultStatusEnum å¯¹åº”çš„é˜Ÿåˆ—çŠ¶æ€å€¼
 		// Double scoreAck =
 		this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),
 				member);
@@ -187,7 +187,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key) {
-		        // ¸ù¾İkeyÈ¡³ö»º´æµÄ¶ÔÏó£¬½öÏµÍ³ÔËĞĞÕı³£Ê±[ÄÜÕı³£µ÷ÓÃ¸Ã½Ó¿ÚÊ±]ÓĞÓÃ£¬ÒòÎªÆäÓĞÓĞĞ§ÆÚÄ¬ÈÏÊÇ60·ÖÖÓ
+		        // æ ¹æ®keyå–å‡ºç¼“å­˜çš„å¯¹è±¡ï¼Œä»…ç³»ç»Ÿè¿è¡Œæ­£å¸¸æ—¶[èƒ½æ­£å¸¸è°ƒç”¨è¯¥æ¥å£æ—¶]æœ‰ç”¨ï¼Œå› ä¸ºå…¶æœ‰æœ‰æ•ˆæœŸé»˜è®¤æ˜¯60åˆ†é’Ÿ
 				String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER
 						+ ":" + key);
 				GoodsInventoryQueueDO queueDO = null;
@@ -199,7 +199,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public Long adjustGoodsWaterflood(Long goodsId, int num) {
-		// hincrby·µ»ØµÄÊÇfield¸üĞÂºóµÄÖµ
+		// hincrbyè¿”å›çš„æ˜¯fieldæ›´æ–°åçš„å€¼
 		return this.redisCacheUtil.hincrBy(QueueConstant.GOODS_INVENTORY_PREFIX
 				+ ":"+String.valueOf(goodsId),
 				HashFieldEnum.waterfloodVal.toString(), (num));
@@ -221,7 +221,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public Long deleteGoodsInventory(Long goodsId) {
-		// ¸ù¾İÑ¡ĞÍidÉ¾³ıÑ¡ĞÍ¿â´æĞÅÏ¢
+		// æ ¹æ®é€‰å‹idåˆ é™¤é€‰å‹åº“å­˜ä¿¡æ¯
 		return this.redisCacheUtil.del(QueueConstant.GOODS_INVENTORY_PREFIX
 						+ ":"
 						+ String.valueOf(goodsId));
@@ -245,7 +245,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public void lremLogQueue(GoodsInventoryActionDO logActionDO) {
-		// ½«¿â´æÈÕÖ¾¶ÓÁĞĞÅÏ¢ÒÆ³ı:×ÜÊÇÒÆ³ı×îºóÒ»Ìõ´Ólist×îÄ©¶ËÍùÇ°ÕÒ value ÏàÍ¬µÄ¶ÔÏó
+		// å°†åº“å­˜æ—¥å¿—é˜Ÿåˆ—ä¿¡æ¯ç§»é™¤:æ€»æ˜¯ç§»é™¤æœ€åä¸€æ¡ä»listæœ€æœ«ç«¯å¾€å‰æ‰¾ value ç›¸åŒçš„å¯¹è±¡
 		this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (-1), JSONObject
 				.fromObject(logActionDO).toString());
 	}
@@ -278,7 +278,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public Long deleteQueueMember(String key) {
-		// ¸ù¾İÑ¡ĞÍidÉ¾³ıÑ¡ĞÍ¿â´æĞÅÏ¢
+		// æ ¹æ®é€‰å‹idåˆ é™¤é€‰å‹åº“å­˜ä¿¡æ¯
 		return this.redisCacheUtil.del(QueueConstant.QUEUE_KEY_MEMBER + ":"
 						+ key);
 	}

@@ -5,27 +5,27 @@ import java.util.List;
 import com.tuan.core.common.lang.TuanBaseDO;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 /**
- * ¿â´æ¶ÓÁĞ½á¹¹bean
+ * åº“å­˜é˜Ÿåˆ—ç»“æ„bean
  * @author henry.yu
  * @date 20140311
  */
 public class GoodsInventoryQueueDO extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
-	private Long id;  //¶ÓÁĞÖ÷¼ü
-	private Long goodsId;// ÉÌÆ·ID(FK)
-	private Long orderId;// ¶©µ¥id
-	private Long userId ;//ÓÃ»§id
-	//Ğè¿Û¼õµÄÉÌÆ·¿â´æÁ¿
+	private Long id;  //é˜Ÿåˆ—ä¸»é”®
+	private Long goodsId;// å•†å“ID(FK)
+	private Long orderId;// è®¢å•id
+	private Long userId ;//ç”¨æˆ·id
+	//éœ€æ‰£å‡çš„å•†å“åº“å­˜é‡
 	private int deductNum  = 0;
-	//Ô­¿â´æ
+	//åŸåº“å­˜
 	private int originalGoodsInventory = 0;
-	//Ñ¡ĞÍºÍ·ÖµêÔ­Ê¼¿â´æºÍ¿Û¼õ¿â´æµÄlist
+	//é€‰å‹å’Œåˆ†åº—åŸå§‹åº“å­˜å’Œæ‰£å‡åº“å­˜çš„list
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
 	
 	
-	private Long createTime;  //´´½¨Ê±¼ä£¬¾«È·µ½Ãë
+	private Long createTime;  //åˆ›å»ºæ—¶é—´ï¼Œç²¾ç¡®åˆ°ç§’
 	public Long getId() {
 		return id;
 	}

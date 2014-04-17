@@ -1,26 +1,26 @@
 package com.tuan.inventory.model.enu.res;
 
 public enum CreateInventoryResultEnum {
-	SUCCESS						(0, 	"�ɹ�"),
-	INVALID_USER_ID				(-1, 	"�û�id��Ч"),
-	FAIL_ADJUST_INVENTORY			(-2, 	"������ʧ��"),
-	FAIL_ADJUST_WATERFLOOD			(-3, 	"עˮ����ʧ��"),
-	SHORTAGE_STOCK_INVENTORY				(-4, 	"��治��"),
-	INVALID_PARAM				(-5, 	"������Ч"),
-	INVALID_ORDER_ID			(-6, 	"����ID��Ч"),
-	REPEAT_REQUEST				(-7, 	"�ظ�����"),
-	/**��Ʒid��Ч*/
-	INVALID_GOODSID         (-8, "��Ʒid��Ч"),
-	IS_EXISTED				(-9, 	"��Ʒ����Ѵ���"),
+	SUCCESS						(0, 	"成功"),
+	INVALID_USER_ID				(-1, 	"用户id无效"),
+	FAIL_ADJUST_INVENTORY			(-2, 	"库存调整失败"),
+	FAIL_ADJUST_WATERFLOOD			(-3, 	"注水调整失败"),
+	SHORTAGE_STOCK_INVENTORY				(-4, 	"库存不足"),
+	INVALID_PARAM				(-5, 	"参数无效"),
+	INVALID_ORDER_ID			(-6, 	"订单ID无效"),
+	REPEAT_REQUEST				(-7, 	"重复请求"),
+	/**商品id无效*/
+	INVALID_GOODSID         (-8, "商品id无效"),
+	IS_EXISTED				(-9, 	"商品库存已存在"),
 	
-	DB_ERROR					(-99, 	"���ݿ����"),
-	SYS_ERROR					(-100, 	"ϵͳ����"),
+	DB_ERROR					(-99, 	"数据库错误"),
+	SYS_ERROR					(-100, 	"系统错误"),
 	
-	INVALID_LOG_PARAM				(1, 	"��Ч����־");
-	/**��Ʒ���*//*
-	ADD_INVENTORY_GOODS        (1, "��Ʒ�ܿ��"),
-	ADD_INVENTORY_SELECTION				(2, 	"������Ʒѡ�Ϳ��"),
-	ADD_INVENTORY_SUPPLIERS				(3, 	"��Ʒ�ֵ���");*/
+	INVALID_LOG_PARAM				(1, 	"无效的日志");
+	/**商品库存*//*
+	ADD_INVENTORY_GOODS        (1, "商品总库存"),
+	ADD_INVENTORY_SELECTION				(2, 	"新增商品选型库存"),
+	ADD_INVENTORY_SUPPLIERS				(3, 	"商品分店库存");*/
 	
 	
 	

@@ -2,18 +2,18 @@ package com.tuan.inventory.model.param;
 
 import com.tuan.core.common.lang.TuanBaseDO;
 /**
- * ÉÌÆ·¿â´æ²ÎÊı
+ * å•†å“åº“å­˜å‚æ•°
  * @author henry.yu
  * @date 20140310
  */
 public class AdjustWaterfloodParam extends TuanBaseDO {
 	
 	private static final long serialVersionUID = 1L;
-	//type 2:ÉÌÆ·id£¬4:Ñ¡ĞÍid£¬6:·Öµêid
+	//type 2:å•†å“idï¼Œ4:é€‰å‹idï¼Œ6:åˆ†åº—id
 	private String id;
 	private String userId;
 	private int num;
-	//2:ÉÌÆ·µ÷Õû£¬4.Ñ¡ĞÍ¿â´æµ÷Õû 6.·Öµê¿â´æµ÷Õû
+	//2:å•†å“è°ƒæ•´ï¼Œ4.é€‰å‹åº“å­˜è°ƒæ•´ 6.åˆ†åº—åº“å­˜è°ƒæ•´
 	private String type;
 	
 	

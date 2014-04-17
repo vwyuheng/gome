@@ -4,11 +4,11 @@ import com.tuan.core.common.lang.TuanBaseDO;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 
 /**
- * ½á¹ûÊý¾Ý 
- * 		ÊÇ·ñ³É¹¦ --²»´ú±íÒµÎñ½á¹û
- *      ÏµÍ³´íÎóÃ¶¾Ù
- *      ÒµÎñ½á¹û¶ÔÏó    °üº¬¾ßÌåµÄÒµÎñÃ¶¾Ù
- *      ÒµÎñ¸½¼þ¶ÔÏó£¨Ò»°ãÊÇÒì³£¶ÔÏó»òÕßÆäËûÐÅÏ¢£©
+ * ç»“æžœæ•°æ® 
+ * 		æ˜¯å¦æˆåŠŸ --ä¸ä»£è¡¨ä¸šåŠ¡ç»“æžœ
+ *      ç³»ç»Ÿé”™è¯¯æžšä¸¾
+ *      ä¸šåŠ¡ç»“æžœå¯¹è±¡    åŒ…å«å…·ä½“çš„ä¸šåŠ¡æžšä¸¾
+ *      ä¸šåŠ¡é™„ä»¶å¯¹è±¡ï¼ˆä¸€èˆ¬æ˜¯å¼‚å¸¸å¯¹è±¡æˆ–è€…å…¶ä»–ä¿¡æ¯ï¼‰
  * @param <T extends Serializable > 
  */
 public class CallResult<T> extends TuanBaseDO {

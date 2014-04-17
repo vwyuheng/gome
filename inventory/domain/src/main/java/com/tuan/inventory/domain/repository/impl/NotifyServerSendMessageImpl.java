@@ -8,7 +8,7 @@ import com.tuan.inventory.domain.NotifyServerHandler;
 import com.tuan.inventory.domain.repository.NotifyServerSendMessage;
 import com.tuan.notifyserver.core.pclient.ProducerClientQueue;
 /**
- * 用于发送notifyserver消息的服务类
+ * 鐢ㄤ簬鍙戦�乶otifyserver娑堟伅鐨勬湇鍔＄被
  * @author henry.yu
  * @date 2014/3/19
  */
@@ -18,7 +18,7 @@ public class NotifyServerSendMessageImpl implements NotifyServerSendMessage {
 	ProducerClientQueue notifyClient;
 	@Override
 	public void sendNotifyServerMessage(JSONObject jsonObj) {
-		//构建mq对象
+		//鏋勫缓mq瀵硅薄
 		NotifyServerHandler handler = NotifyServerHandler.create();
 		
 		handler.sendNotifyMessage(notifyClient, jsonObj);

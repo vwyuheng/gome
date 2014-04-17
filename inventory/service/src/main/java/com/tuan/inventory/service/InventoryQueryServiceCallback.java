@@ -3,19 +3,19 @@ package com.tuan.inventory.service;
 import com.tuan.core.common.service.TuanCallbackResult;
 
 /**
- * ¶©µ¥·şÎñ»Øµ÷½Ó¿Ú
- * @author ÎÑÎÑÍÅ
+ * è®¢å•æœåŠ¡å›è°ƒæ¥å£
+ * @author çªçªå›¢
  * @date 2012.10.25
  */
 public interface InventoryQueryServiceCallback {
     /**
-     * ²ÎÊı¼ì²é
+     * å‚æ•°æ£€æŸ¥
      * @return
      */
     public TuanCallbackResult preHandler(); 
     
     /**
-     * ÒµÎñÖ´ĞĞ
+     * ä¸šåŠ¡æ‰§è¡Œ
      * @return
      */
     public TuanCallbackResult doWork();

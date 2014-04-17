@@ -2,7 +2,7 @@ package com.tuan.inventory.dao;
 
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 /**
- * 初始化redis cache商品库存信息dao
+ * 鍒濆鍖杛edis cache鍟嗗搧搴撳瓨淇℃伅dao
  * @author henry.yu
  * @date 2014/3/11
  */

@@ -129,7 +129,7 @@ public class Test {
 	
 	
 	
-	// Bean --> Map 1: ÀûÓÃIntrospectorºÍPropertyDescriptor ½«Bean --> Map  
+	// Bean --> Map 1: åˆ©ç”¨Introspectorå’ŒPropertyDescriptor å°†Bean --> Map  
     public static Map<String, Object> transBean2Map(Object obj) {  
   
         if(obj == null){  
@@ -142,9 +142,9 @@ public class Test {
             for (PropertyDescriptor property : propertyDescriptors) {  
                 String key = property.getName();  
   
-                // ¹ýÂËclassÊôÐÔ  
+                // è¿‡æ»¤classå±žæ€§  
                 if (!key.equals("class")) {  
-                    // µÃµ½property¶ÔÓ¦µÄgetter·½·¨  
+                    // å¾—åˆ°propertyå¯¹åº”çš„getteræ–¹æ³•  
                     Method getter = property.getReadMethod();  
                     Object value = getter.invoke(obj);  
   

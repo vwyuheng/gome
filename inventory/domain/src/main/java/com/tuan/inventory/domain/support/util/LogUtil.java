@@ -14,17 +14,17 @@ import org.apache.log4j.spi.ThrowableInformation;
 /**
  * 
  * @author wanghua
- * ÈÕÖ¾¸ñÊ½×ª»»¹¤¾ß
- * 2012-7-3 ÏÂÎç03:31:44
+ * æ—¥å¿—æ ¼å¼è½¬æ¢å·¥å…·
+ * 2012-7-3 ä¸‹åˆ03:31:44
  */
 public class LogUtil {
 	private static Logger logger=Logger.getLogger(LogUtil.class);
 	
 	/**
 	 *  
-	 * @param jsonObj  ¶ÔÏó·Ç¼¯ºÏ,ÇÒÒªÊÇÄÜ×ª»»³Éjson¶ÔÏó
-	 * @return json´®
-	 * 2012-7-3 ÏÂÎç02:12:07 wh
+	 * @param jsonObj  å¯¹è±¡éé›†åˆ,ä¸”è¦æ˜¯èƒ½è½¬æ¢æˆjsonå¯¹è±¡
+	 * @return jsonä¸²
+	 * 2012-7-3 ä¸‹åˆ02:12:07 wh
 	 */
 	public static String formatObjLog(Object jsonObj){
 		String json=null;
@@ -44,9 +44,9 @@ public class LogUtil {
 	}
 	/**
 	 * 
-	 * @param jsonObj  ¶ÔÏóÎª¼¯ºÏ
-	 * @return json´®
-	 * 2012-7-3 ÏÂÎç02:21:48 wh
+	 * @param jsonObj  å¯¹è±¡ä¸ºé›†åˆ
+	 * @return jsonä¸²
+	 * 2012-7-3 ä¸‹åˆ02:21:48 wh
 	 */
 	public static String formatListLog(Object jsonObj){
 		String json=null;

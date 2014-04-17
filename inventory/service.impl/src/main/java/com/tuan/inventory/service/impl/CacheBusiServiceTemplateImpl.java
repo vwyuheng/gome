@@ -12,7 +12,7 @@ import com.tuan.inventory.service.InventoryUpdateServiceCallback;
 import com.tuan.inventory.service.InventoryServiceTemplate;
 
 /**
- * ¿â´æÒµÎñ´¦ÀíÄ£°åÊµÏÖÀà
+ * åº“å­˜ä¸šåŠ¡å¤„ç†æ¨¡æ¿å®ç°ç±»
  * 
  * @author henry.yu
  * @date 2012.10.25
@@ -22,16 +22,16 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 	private final static Log logger = LogFactory
 			.getLog(CacheBusiServiceTemplateImpl.class);
 	/**
-	 * ¸üĞÂĞ´ÈëÓÃÄ£°å
+	 * æ›´æ–°å†™å…¥ç”¨æ¨¡æ¿
 	 */
 	public TuanCallbackResult execute(final InventoryUpdateServiceCallback action) {
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("½øÈëÄ£°å·½·¨¿ªÊ¼´¦Àí");
+			logger.debug("è¿›å…¥æ¨¡æ¿æ–¹æ³•å¼€å§‹å¤„ç†");
 		}
 		TuanCallbackResult result = TuanCallbackResult.success();
 		try {
-			// ÒµÎñ¼ì²é
+			// ä¸šåŠ¡æ£€æŸ¥
 			result = action.executeParamsCheck();
 
 			if (result.isSuccess()) {
@@ -39,8 +39,8 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 				result = action.executeBusiCheck();
 
 				if (result.isSuccess()) {
-					// 3. »Øµ÷ÒµÎñÂß¼­
-					// 3.1 Í¨¹ıannotationÀ´ÊµÏÖÄ³Ğ©optionÀàĞÍµÄÀ©Õ¹
+					// 3. å›è°ƒä¸šåŠ¡é€»è¾‘
+					// 3.1 é€šè¿‡annotationæ¥å®ç°æŸäº›optionç±»å‹çš„æ‰©å±•
 					TuanCallbackResult iNresult = action.executeAction();
 					if (null == iNresult) {
 						throw new TuanServiceException(
@@ -56,25 +56,25 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 				}
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("Õı³£ÍË³öÄ£°å·½·¨");
+				logger.debug("æ­£å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•");
 			}
 
 		} catch (TuanServiceException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Òì³£ÍË³öÄ£°å·½·¨Aµã", e);
+				logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Aç‚¹", e);
 			}
 			result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
 		} catch (TuanRuntimeException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Òì³£ÍË³öÄ£°å·½·¨Bµã", e);
+				logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Bç‚¹", e);
 			}
 			result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
 		} catch (Throwable e) {
 
 			if (logger.isErrorEnabled()) {
-				logger.error("Òì³£ÍË³öÄ£°å·½·¨Cµã", e);
+				logger.error("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Cç‚¹", e);
 			}
 			result = TuanCallbackResult.failure(
 					TuanServiceConstants.SERVICE_SYSTEM_FALIURE, e);
@@ -85,18 +85,18 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 		return result;
 	}
 	/**
-	 * ²éÑ¯ÓÃÄ£°å
+	 * æŸ¥è¯¢ç”¨æ¨¡æ¿
 	 * @param action
 	 * @return
 	 */
 	public TuanCallbackResult execute(final InventoryQueryServiceCallback action) {
 
 		if (logger.isDebugEnabled()) {
-			logger.debug("½øÈëÄ£°å·½·¨¿ªÊ¼´¦Àí");
+			logger.debug("è¿›å…¥æ¨¡æ¿æ–¹æ³•å¼€å§‹å¤„ç†");
 		}
 		TuanCallbackResult result = TuanCallbackResult.success();
 		try {
-			// Ô¤´¦Àí
+			// é¢„å¤„ç†
 			result = action.preHandler();
 
 			if (result.isSuccess()) {
@@ -113,25 +113,25 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 
 			}
 			if (logger.isDebugEnabled()) {
-				logger.debug("Õı³£ÍË³öÄ£°å·½·¨");
+				logger.debug("æ­£å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•");
 			}
 
 		} catch (TuanServiceException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Òì³£ÍË³öÄ£°å·½·¨Aµã", e);
+				logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Aç‚¹", e);
 			}
 			result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
 		} catch (TuanRuntimeException e) {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Òì³£ÍË³öÄ£°å·½·¨Bµã", e);
+				logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Bç‚¹", e);
 			}
 			result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
 		} catch (Throwable e) {
 
 			if (logger.isErrorEnabled()) {
-				logger.error("Òì³£ÍË³öÄ£°å·½·¨Cµã", e);
+				logger.error("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Cç‚¹", e);
 			}
 			result = TuanCallbackResult.failure(
 					TuanServiceConstants.SERVICE_SYSTEM_FALIURE, e);
@@ -141,7 +141,7 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 	}
 
 	/**
-	 * À©Õ¹µã£ºÄ£°åÌá¹©µÄÔÊĞí²»Í¬ÀàĞÍÒµÎñÔÚ<b>ÊÂÎñÄÚ</b>½øĞĞÀ©Õ¹µÄÒ»¸öµã
+	 * æ‰©å±•ç‚¹ï¼šæ¨¡æ¿æä¾›çš„å…è®¸ä¸åŒç±»å‹ä¸šåŠ¡åœ¨<b>äº‹åŠ¡å†…</b>è¿›è¡Œæ‰©å±•çš„ä¸€ä¸ªç‚¹
 	 * 
 	 * @param serviceContext
 	 * @param domain

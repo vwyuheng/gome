@@ -2,13 +2,13 @@ package com.tuan.inventory.domain.support.job.event;
 
 /**
  * @author henry.yu
- *  处理队列中的各种事件
+ *  澶勭悊闃熷垪涓殑鍚勭浜嬩欢
  * @Date  2014-3-27
  */
 public interface EventHandle {
 	
 	/**
-	 * 处理时间，返回成功与失败
+	 * 澶勭悊鏃堕棿锛岃繑鍥炴垚鍔熶笌澶辫触
 	 * @param event
 	 * @return boolean
 	 */

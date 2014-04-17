@@ -19,7 +19,7 @@ import com.tuan.inventory.service.InventoryUpdateServiceCallback;
 import com.tuan.inventory.service.InventoryServiceTemplate;
 
 /**
- * ¶©µ¥ÖĞĞÄÒµÎñ´¦ÀíÄ£°åÊµÏÖÀà
+ * è®¢å•ä¸­å¿ƒä¸šåŠ¡å¤„ç†æ¨¡æ¿å®ç°ç±»
  * @author tianzq
  * @date 2012.10.25
  */
@@ -40,12 +40,12 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     public TuanCallbackResult execute(final InventoryUpdateServiceCallback action) {
 
         if (logger.isDebugEnabled()) {
-            logger.debug("½øÈëÄ£°å·½·¨¿ªÊ¼´¦Àí");
+            logger.debug("è¿›å…¥æ¨¡æ¿æ–¹æ³•å¼€å§‹å¤„ç†");
         }
         TuanCallbackResult result = TuanCallbackResult.success();
         try {
         	setDataSourceType(MSDataSourceType.MASTER);
-        	 // ÉèÖÃÊı¾İÔ´£¬¶ÁĞ´·ÖÀë
+        	 // è®¾ç½®æ•°æ®æºï¼Œè¯»å†™åˆ†ç¦»
             result = action.executeParamsCheck();
             
             if(result.isSuccess()){
@@ -57,8 +57,8 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
                 result = (TuanCallbackResult) this.transactionTemplate.execute(new TransactionCallback() {
                 	public Object doInTransaction(TransactionStatus status) {
 
-                            // 3. »Øµ÷ÒµÎñÂß¼­
-                            // 3.1 Í¨¹ıannotationÀ´ÊµÏÖÄ³Ğ©optionÀàĞÍµÄÀ©Õ¹
+                            // 3. å›è°ƒä¸šåŠ¡é€»è¾‘
+                            // 3.1 é€šè¿‡annotationæ¥å®ç°æŸäº›optionç±»å‹çš„æ‰©å±•
                             TuanCallbackResult iNresult = action.executeAction();
                             if (null == iNresult) {
                                 throw new TuanServiceException(TuanServiceConstants.SERVICE_NO_RESULT);
@@ -80,25 +80,25 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
             }
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("Õı³£ÍË³öÄ£°å·½·¨");
+                logger.debug("æ­£å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•");
             }
 
         } catch (TuanServiceException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Òì³£ÍË³öÄ£°å·½·¨Aµã", e);
+                logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Aç‚¹", e);
             }
             result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
         } catch (TuanRuntimeException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Òì³£ÍË³öÄ£°å·½·¨Bµã", e);
+                logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Bç‚¹", e);
             }
             result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
         } catch (Throwable e) {
            
             if (logger.isErrorEnabled()) {
-                logger.error("Òì³£ÍË³öÄ£°å·½·¨Cµã", e);
+                logger.error("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Cç‚¹", e);
             }
             result = TuanCallbackResult.failure(TuanServiceConstants.SERVICE_SYSTEM_FALIURE, e);
         
@@ -113,10 +113,10 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     public TuanCallbackResult executeWithoutTransaction(final InventoryUpdateServiceCallback action, final Object domain) {
 
         if (logger.isDebugEnabled()) {
-            logger.debug("½øÈëÄ£°å·½·¨¿ªÊ¼´¦Àí");
+            logger.debug("è¿›å…¥æ¨¡æ¿æ–¹æ³•å¼€å§‹å¤„ç†");
         }
         TuanCallbackResult result = TuanCallbackResult.success();
-        // ÉèÖÃÊı¾İÔ´£¬¶ÁĞ´·ÖÀë
+        // è®¾ç½®æ•°æ®æºï¼Œè¯»å†™åˆ†ç¦»
         
         MSDataSourceModel mSDataSourceModel = MSDataSourcesLoadBalancerManager.getAliveMSDataSource();
         
@@ -136,31 +136,31 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
                     throw new TuanServiceException(TuanServiceConstants.SERVICE_NO_RESULT);
                 }
 
-                // 4. À©Õ¹µã
+                // 4. æ‰©å±•ç‚¹
                 templateExtensionAfterExecute(result,action);
                 if (result.isFailure()) {
                     return result;
                 }
-                // 5. ·¢ËÍÒµÎñÊÂ¼ş
+                // 5. å‘é€ä¸šåŠ¡äº‹ä»¶
                 
             }
         } catch (TuanServiceException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Òì³£ÍË³öÄ£°å·½·¨Dµã", e);
+                logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Dç‚¹", e);
             }
             result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
         } catch (TuanRuntimeException e) {
             if (logger.isDebugEnabled()) {
-                logger.debug("Òì³£ÍË³öÄ£°å·½·¨Eµã", e);
+                logger.debug("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Eç‚¹", e);
             }
             result = TuanCallbackResult.failure(e.getErrorCode(), e);
 
         } catch (Throwable e) {
-            // FIXME: ºóĞø¿ÉÒÔ¿¼ÂÇ°Ñ·ÖÎö¾ßÌåµÄÒì³£ÀàĞÍ
-            // °ÑÏµÍ³Òì³£×ª»»Îª·şÎñÒì³£
+            // FIXME: åç»­å¯ä»¥è€ƒè™‘æŠŠåˆ†æå…·ä½“çš„å¼‚å¸¸ç±»å‹
+            // æŠŠç³»ç»Ÿå¼‚å¸¸è½¬æ¢ä¸ºæœåŠ¡å¼‚å¸¸
             if (logger.isErrorEnabled()) {
-                logger.error("Òì³£ÍË³öÄ£°å·½·¨Fµã", e);
+                logger.error("å¼‚å¸¸é€€å‡ºæ¨¡æ¿æ–¹æ³•Fç‚¹", e);
             }
             result = TuanCallbackResult.failure(TuanServiceConstants.SERVICE_SYSTEM_FALIURE, e);
         }finally{
@@ -168,14 +168,14 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
         	 DataSourceContextHolder.clearDataSourceType();
         }
         if (logger.isDebugEnabled()) {
-            logger.debug("Ä£°åÖ´ĞĞ½áÊø");
+            logger.debug("æ¨¡æ¿æ‰§è¡Œç»“æŸ");
         }
        
         return result;
     }
     
     /**
-     * À©Õ¹µã£ºÄ£°åÌá¹©µÄÔÊĞí²»Í¬ÀàĞÍÒµÎñÔÚ<b>ÊÂÎñÄÚ</b>½øĞĞÀ©Õ¹µÄÒ»¸öµã
+     * æ‰©å±•ç‚¹ï¼šæ¨¡æ¿æä¾›çš„å…è®¸ä¸åŒç±»å‹ä¸šåŠ¡åœ¨<b>äº‹åŠ¡å†…</b>è¿›è¡Œæ‰©å±•çš„ä¸€ä¸ªç‚¹
      * 
      * @param serviceContext
      * @param domain
@@ -203,7 +203,7 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
 		}
     }
 
-    // ---------------- ×¢Èë·½·¨ ------------------------------
+    // ---------------- æ³¨å…¥æ–¹æ³• ------------------------------
 
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;

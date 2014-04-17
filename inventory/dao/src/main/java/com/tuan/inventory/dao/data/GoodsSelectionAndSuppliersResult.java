@@ -4,7 +4,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
  * @ClassName: GoodsSelectionAndSuppliersParam
- * @Description: ±£´æÉÌÆ·Ñ¡ĞÍ»ò·ÖµêµÄÔ­Ê¼¿â´æºÍ¿Û¼õ¿â´æµÄ¶ÔÏó
+ * @Description: ä¿å­˜å•†å“é€‰å‹æˆ–åˆ†åº—çš„åŸå§‹åº“å­˜å’Œæ‰£å‡åº“å­˜çš„å¯¹è±¡
  * @author henry.yu
  * @date 2014-4-8
  */
@@ -14,9 +14,9 @@ public class GoodsSelectionAndSuppliersResult extends TuanBaseDO {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long id;
-	//Ğè¿Û¼õµÄÉÌÆ·¿â´æ
+	//éœ€æ‰£å‡çš„å•†å“åº“å­˜
 	private int goodsInventory;
-	//Ô­¿â´æ
+	//åŸåº“å­˜
 	private int originalGoodsInventory;
 	public int getGoodsInventory() {
 		return goodsInventory;

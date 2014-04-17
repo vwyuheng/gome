@@ -18,7 +18,7 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
-	//»º´æÉÌÆ·id£¬²¢ÅÅÖØ£¬ÒÔ±ã¹é²¢ÏàÍ¬ÉÌÆ·µÄÏûÏ¢·¢ËÍ´ÎÊı
+	//ç¼“å­˜å•†å“idï¼Œå¹¶æ’é‡ï¼Œä»¥ä¾¿å½’å¹¶ç›¸åŒå•†å“çš„æ¶ˆæ¯å‘é€æ¬¡æ•°
 	private ConcurrentHashSet<Long> listGoodsIdSends;
 	private ConcurrentHashSet<Long> listQueueIdMarkDelete;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
@@ -30,23 +30,23 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 	/***
-	 * ÒµÎñ´¦ÀíÇ°µÄÔ¤´¦Àí
+	 * ä¸šåŠ¡å¤„ç†å‰çš„é¢„å¤„ç†
 	 */
 	public void preHandler() {
 		try {
 			listGoodsIdSends = new ConcurrentHashSet<Long>();
 			listQueueIdMarkDelete = new ConcurrentHashSet<Long>();
-			// ÉÌÆ·¿â´æÊÇ·ñ´æÔÚ
-			//È¡³õÊ¼×´Ì¬¶ÓÁĞĞÅÏ¢
+			// å•†å“åº“å­˜æ˜¯å¦å­˜åœ¨
+			//å–åˆå§‹çŠ¶æ€é˜Ÿåˆ—ä¿¡æ¯
 			List<GoodsInventoryQueueModel> queueList = goodsInventoryDomainRepository
 					.queryInventoryQueueListByStatus(Double
 							.valueOf(ResultStatusEnum.CONFIRM.getCode()));
 			if (!CollectionUtils.isEmpty(queueList)) {
 				for (GoodsInventoryQueueModel model : queueList) {
-					//¶ÓÁĞÊı¾İÊı¾İ°´ÉÌÆ·id ¹é¼¯ºó ·¢ËÍÏûÏ¢¸üĞÂÊı¾İ×¼±¸
+					//é˜Ÿåˆ—æ•°æ®æ•°æ®æŒ‰å•†å“id å½’é›†å å‘é€æ¶ˆæ¯æ›´æ–°æ•°æ®å‡†å¤‡
 					if (verifyId(model.getGoodsId()))
 						listGoodsIdSends.add(model.getGoodsId());
-					//¶ÓÁĞÊı¾İÏû·ÑÍê±ê¼ÇÉ¾³ıÊı¾İ×¼±¸
+					//é˜Ÿåˆ—æ•°æ®æ¶ˆè´¹å®Œæ ‡è®°åˆ é™¤æ•°æ®å‡†å¤‡
 					if (verifyId(model.getId()))
 						listQueueIdMarkDelete.add(model.getId());
 				}
@@ -60,11 +60,11 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		
 	}
 
-	// ÒµÎñ´¦Àí
+	// ä¸šåŠ¡å¤„ç†
 	public CreateInventoryResultEnum businessHandler() {
 
 		try {
-			// ÒµÎñ¼ì²éÇ°µÄÔ¤´¦Àí
+			// ä¸šåŠ¡æ£€æŸ¥å‰çš„é¢„å¤„ç†
 			this.preHandler();
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
 				for(long goodsId:listGoodsIdSends) {
@@ -74,7 +74,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 				}
 				
 			}
-			//ÏûÏ¢·¢ËÍÍê³Éºó½«È¡³öµÄ¶ÓÁĞ±ê¼ÇÉ¾³ı×´Ì¬
+			//æ¶ˆæ¯å‘é€å®Œæˆåå°†å–å‡ºçš„é˜Ÿåˆ—æ ‡è®°åˆ é™¤çŠ¶æ€
 			this.markDelete();
 
 		} catch (Exception e) {
@@ -87,7 +87,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	//¼ÓÔØÏûÏ¢Êı¾İ
+	//åŠ è½½æ¶ˆæ¯æ•°æ®
 	public boolean loadMessageData(long goodsId) {
 		try {
 		this.goodsInventoryModel =	this.goodsInventoryDomainRepository.queryGoodsInventoryByGoodsId(goodsId);
@@ -103,7 +103,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		return true;
 	}
 
-	// ·¢ËÍ¿â´æĞÂÔöÏûÏ¢
+	// å‘é€åº“å­˜æ–°å¢æ¶ˆæ¯
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
@@ -120,7 +120,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		}
 	}
 
-	// Ìî³änotifyserver·¢ËÍ²ÎÊı
+	// å¡«å……notifyserverå‘é€å‚æ•°
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
@@ -138,7 +138,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		return notifyParam;
 	}
 
-	// ½«¶ÓÁĞ±ê¼ÇÉ¾³ı£ºÂß¼­É¾³ı
+	// å°†é˜Ÿåˆ—æ ‡è®°åˆ é™¤ï¼šé€»è¾‘åˆ é™¤
 	public void markDelete() {
 		try {
 			if (!CollectionUtils.isEmpty(listQueueIdMarkDelete)) {
@@ -154,7 +154,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		}
 	}
 	/**
-	 * Ğ£Ñéid
+	 * æ ¡éªŒid
 	 * @param id
 	 * @return
 	 */

@@ -4,7 +4,7 @@ import com.tuan.inventory.model.util.QueueConstant;
 
 
 /**
- * 公共类型信息枚举
+ * 鍏叡绫诲瀷淇℃伅鏋氫妇
  * 
  * @author
  * 

@@ -8,7 +8,7 @@ public enum ResultEnum {
 	INVALID_TIME		("1003",	"时间戳无效"),
 	INVALID_GOODSID     ("1004",	"无效的商品id"),
 	INVALID_SELECTIONID     ("1005",	"无效的商品选型id"),
-	
+	INVALID_SUPPLIERSID     ("1006",	"无效的商品选型id"),
 	NO_PARAMETER		("1009",	"请求参数不能为空"),
 	INVALID_RETURN      ("1010",	"返回值不正确"),
 	INVALID_SHOP_NO		("100011",	"无效的门店号"),
@@ -57,6 +57,9 @@ public enum ResultEnum {
 		}
 		if(code.equals("1005")){
 			return ResultEnum.INVALID_SELECTIONID;
+		}
+		if(code.equals("1006")){
+			return ResultEnum.INVALID_SUPPLIERSID;
 		}
 		if(code.equals("1010")){
 			return ResultEnum.INVALID_RETURN;

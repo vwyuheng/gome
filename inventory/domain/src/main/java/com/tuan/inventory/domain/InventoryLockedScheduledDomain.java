@@ -28,9 +28,9 @@ import com.tuan.ordercenter.model.result.OrderQueryResult;
 public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
-	//¿â´æĞè·¢¸üĞÂÏûÏ¢µÄ
+	//åº“å­˜éœ€å‘æ›´æ–°æ¶ˆæ¯çš„
 	private ConcurrentHashSet<Long> inventorySendMsg;
-	//¿â´æĞè»Ø¹öµÄ
+	//åº“å­˜éœ€å›æ»šçš„
 	private ConcurrentHashSet<Long> inventoryRollback;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InventoryScheduledParam param;
@@ -43,28 +43,28 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 	/***
-	 * ÒµÎñ´¦ÀíÇ°µÄÔ¤´¦Àí
+	 * ä¸šåŠ¡å¤„ç†å‰çš„é¢„å¤„ç†
 	 */
 	public void preHandler() {
 		try {
 			inventorySendMsg = new ConcurrentHashSet<Long>();
 			inventoryRollback = new ConcurrentHashSet<Long>();
-			// ÉÌÆ·¿â´æÊÇ·ñ´æÔÚ
-			//È¡³õÊ¼×´Ì¬¶ÓÁĞĞÅÏ¢
+			// å•†å“åº“å­˜æ˜¯å¦å­˜åœ¨
+			//å–åˆå§‹çŠ¶æ€é˜Ÿåˆ—ä¿¡æ¯
 			List<GoodsInventoryQueueModel> queueList = goodsInventoryDomainRepository
 					.queryInventoryQueueListByStatus(Double
 							.valueOf(ResultStatusEnum.LOCKED.getCode()));
 			if (!CollectionUtils.isEmpty(queueList)) {
 				for (GoodsInventoryQueueModel model : queueList) {
 					if(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(param.getPeriod())) {
-						//×ßhessianµ÷ÓÃÈ¡¶©µ¥Ö§¸¶×´Ì¬
+						//èµ°hessianè°ƒç”¨å–è®¢å•æ”¯ä»˜çŠ¶æ€
 						OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 								.getObject(OrderQueryService.class,
 										InventoryConfig.QUERY_URL);
 						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
 						if(statEnum!=null) {
-							//1.µ±¶©µ¥×´Ì¬ÎªÒÑ¸¶¿îÊ±
+							//1.å½“è®¢å•çŠ¶æ€ä¸ºå·²ä»˜æ¬¾æ—¶
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
 								if (verifyId(model.getGoodsId()))
@@ -87,11 +87,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		
 	}
 
-	// ÒµÎñ´¦Àí
+	// ä¸šåŠ¡å¤„ç†
 	public CreateInventoryResultEnum businessHandler() {
 
 		try {
-			// ÒµÎñ¼ì²éÇ°µÄÔ¤´¦Àí
+			// ä¸šåŠ¡æ£€æŸ¥å‰çš„é¢„å¤„ç†
 			this.preHandler();
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
 				for(long goodsId:inventorySendMsg) {
@@ -101,7 +101,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 				
 			}
-			//ÏûÏ¢·¢ËÍÍê³Éºó½«È¡³öµÄ¶ÓÁĞ±ê¼ÇÉ¾³ı×´Ì¬
+			//æ¶ˆæ¯å‘é€å®Œæˆåå°†å–å‡ºçš„é˜Ÿåˆ—æ ‡è®°åˆ é™¤çŠ¶æ€
 			this.rollbackAndMarkDelete();
 
 		} catch (Exception e) {
@@ -114,7 +114,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	//¼ÓÔØÏûÏ¢Êı¾İ
+	//åŠ è½½æ¶ˆæ¯æ•°æ®
 	public boolean loadMessageData(long goodsId) {
 		try {
 		this.goodsInventoryModel =	this.goodsInventoryDomainRepository.queryGoodsInventoryByGoodsId(goodsId);
@@ -130,7 +130,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		return true;
 	}
 
-	// ·¢ËÍ¿â´æĞÂÔöÏûÏ¢
+	// å‘é€åº“å­˜æ–°å¢æ¶ˆæ¯
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
@@ -147,7 +147,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 	}
 
-	// Ìî³änotifyserver·¢ËÍ²ÎÊı
+	// å¡«å……notifyserverå‘é€å‚æ•°
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
@@ -165,15 +165,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		return notifyParam;
 	}
 
-	// »Ø¹ö¿â´æ²¢½«Ïà¹Ø¶ÓÁĞ±ê¼ÇÉ¾³ı£ºÂß¼­É¾³ı
+	// å›æ»šåº“å­˜å¹¶å°†ç›¸å…³é˜Ÿåˆ—æ ‡è®°åˆ é™¤ï¼šé€»è¾‘åˆ é™¤
 	public void rollbackAndMarkDelete() {
 		try {
 			if (!CollectionUtils.isEmpty(inventoryRollback)) {
 				for(long queueId:inventoryRollback) {
 					if(rollback(String.valueOf(queueId))) {
-						//½«»º´æµÄ¶ÓÁĞÉ¾³ı
+						//å°†ç¼“å­˜çš„é˜Ÿåˆ—åˆ é™¤
 						this.goodsInventoryDomainRepository.deleteQueueMember(String.valueOf(queueId));
-						//±ê¼ÇÉ¾³ı
+						//æ ‡è®°åˆ é™¤
 						this.goodsInventoryDomainRepository.markQueueStatus(String.valueOf(queueId), (delStatus));
 					}
 					
@@ -186,14 +186,14 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			
 		}
 	}
-	//»Ø¹ö¿â´æ
+	//å›æ»šåº“å­˜
 	public boolean rollback(String key) {
 		try {
-			//¿â´æ»Ø¹ö
+			//åº“å­˜å›æ»š
 			GoodsInventoryQueueDO queueDO = this.goodsInventoryDomainRepository
 					.queryInventoryQueueDO(key);
 			if (queueDO != null) {
-				// »Ø¹ö¿â´æ
+				// å›æ»šåº“å­˜
 				if (queueDO.getGoodsId() > 0) {
 					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							queueDO.getGoodsId(), (queueDO.getDeductNum()));
@@ -219,7 +219,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	/**
-	 * Ğ£Ñéid
+	 * æ ¡éªŒid
 	 * @param id
 	 * @return
 	 */

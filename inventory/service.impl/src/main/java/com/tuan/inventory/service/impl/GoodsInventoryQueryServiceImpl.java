@@ -42,13 +42,13 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//³õÊ¼»¯¼ì²é
+						//åˆå§‹åŒ–æ£€æŸ¥
 						initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
 						if (selectionId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_SELECTIONID;
 						}
-						// ¼ì²é³öÏÖ´íÎó
+						// æ£€æŸ¥å‡ºç°é”™è¯¯
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,
@@ -103,13 +103,13 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//³õÊ¼»¯¼ì²é
+						//åˆå§‹åŒ–æ£€æŸ¥
 						initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
 						if (suppliersId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_SUPPLIERSID;
 						}
-						// ¼ì²é³öÏÖ´íÎó
+						// æ£€æŸ¥å‡ºç°é”™è¯¯
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,
@@ -164,13 +164,13 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//³õÊ¼»¯¼ì²é
+						//åˆå§‹åŒ–æ£€æŸ¥
 						initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
-						// ¼ì²é³öÏÖ´íÎó
+						// æ£€æŸ¥å‡ºç°é”™è¯¯
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,
@@ -227,13 +227,13 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//³õÊ¼»¯¼ì²é
+						//åˆå§‹åŒ–æ£€æŸ¥
 						initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
-						// ¼ì²é³öÏÖ´íÎó
+						// æ£€æŸ¥å‡ºç°é”™è¯¯
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,
@@ -289,13 +289,13 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//³õÊ¼»¯¼ì²é
+						//åˆå§‹åŒ–æ£€æŸ¥
 						initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
-						// ¼ì²é³öÏÖ´íÎó
+						// æ£€æŸ¥å‡ºç°é”™è¯¯
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,
@@ -340,32 +340,32 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	}
 
 	
-	//³õÊ¼»¯¼ì²é
+	//åˆå§‹åŒ–æ£€æŸ¥
 	public void initCheck(long goodsId) {
 		boolean isInit = false;
 		List<GoodsSelectionDO> selectionInventoryList = null;
 		List<GoodsSuppliersDO> suppliersInventoryList = null;
-			//²éÑ¯ÉÌÆ·¿â´æ
+			//æŸ¥è¯¢å•†å“åº“å­˜
 		GoodsInventoryDO inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 			if(inventoryDO==null) {
-				//³õÊ¼»¯¿â´æ
+				//åˆå§‹åŒ–åº“å­˜
 				isInit = true;
-				//³õÊ¼»¯ÉÌÆ·¿â´æĞÅÏ¢
+				//åˆå§‹åŒ–å•†å“åº“å­˜ä¿¡æ¯
 				inventoryDO = this.initCacheDomainRepository
 						.getInventoryInfoByGoodsId(goodsId);
-				//²éÑ¯¸ÃÉÌÆ··Öµê¿â´æĞÅÏ¢
+				//æŸ¥è¯¢è¯¥å•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 				selectionInventoryList = this.initCacheDomainRepository.querySelectionByGoodsId(goodsId);
 				suppliersInventoryList =  this.initCacheDomainRepository.selectGoodsSuppliersInventoryByGoodsId(goodsId);
 			}
 			
 			if(isInit) {
-				//±£´æÉÌÆ·¿â´æ
+				//ä¿å­˜å•†å“åº“å­˜
 				if(inventoryDO!=null)
 				      this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
-				//±£Ñ¡ĞÍ¿â´æ
+				//ä¿é€‰å‹åº“å­˜
 				if(!CollectionUtils.isEmpty(selectionInventoryList))
 				      this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
-				//±£´æ·Öµê¿â´æ
+				//ä¿å­˜åˆ†åº—åº“å­˜
 				if(!CollectionUtils.isEmpty(suppliersInventoryList))
 				      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
 			}

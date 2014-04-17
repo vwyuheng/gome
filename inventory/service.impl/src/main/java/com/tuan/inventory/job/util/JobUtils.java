@@ -6,7 +6,7 @@ import com.wowotrace.trace.model.Message;
 public class JobUtils {
 
 	/**
-	 * 创建trace对象
+	 * 鍒涘缓trace瀵硅薄
 	 * @param packet
 	 * @return
 	 */

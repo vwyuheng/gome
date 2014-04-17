@@ -6,7 +6,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 import com.tuan.inventory.domain.support.enu.EventType;
 
 /**
- * ÏûÏ¢ÊÂ¼şÊµÌåÀà
+ * æ¶ˆæ¯äº‹ä»¶å®ä½“ç±»
  * @author xianglei
  *
  */
@@ -14,15 +14,15 @@ public class Event extends TuanBaseDO {
 	
 	private static final long serialVersionUID = 1L;
 
-	private Object data;//ÏûÏ¢±¾Ìå
+	private Object data;//æ¶ˆæ¯æœ¬ä½“
 	
-	private EventType eventCode;//ÏûÏ¢ÒµÎñÂë
+	private EventType eventCode;//æ¶ˆæ¯ä¸šåŠ¡ç 
 	
-	private AtomicInteger tryCount= new AtomicInteger(0);//ÏûÏ¢ÖØÊÔ´ÎÊı
+	private AtomicInteger tryCount= new AtomicInteger(0);//æ¶ˆæ¯é‡è¯•æ¬¡æ•°
 	
-	private long waitTime = 0;// ÏûÏ¢µÈ´ı·¢ËÍÊ±¼ä
+	private long waitTime = 0;// æ¶ˆæ¯ç­‰å¾…å‘é€æ—¶é—´
 	
-	private String UUID;   //ÏûÏ¢±êÊ¶
+	private String UUID;   //æ¶ˆæ¯æ ‡è¯†
 
 	public EventType getEventType() {
 		return eventCode;

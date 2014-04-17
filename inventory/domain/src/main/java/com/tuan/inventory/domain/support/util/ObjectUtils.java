@@ -80,7 +80,7 @@ public class ObjectUtils {
 	
 	
 	/**
-	 * 用于返回队列列表信息
+	 * 鐢ㄤ簬杩斿洖闃熷垪鍒楄〃淇℃伅
 	 * @param members
 	 * @return
 	 */

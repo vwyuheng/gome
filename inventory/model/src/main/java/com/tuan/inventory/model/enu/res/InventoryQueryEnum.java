@@ -1,21 +1,21 @@
 package com.tuan.inventory.model.enu.res;
 
 public enum InventoryQueryEnum {
-	/**�ɹ�*/
-	SUCCESS(1, "�ɹ�"),
+	/**成功*/
+	SUCCESS(1, "成功"),
 	
-	/**�����������*/
-	INVALID_PARAM(-1, "�����������"),
-	/**��Ʒid��Ч*/
-	INVALID_GOODSID(-2, "��Ʒid��Ч"),
-	/**�û�id��Ч*/
-	INVALID_SELECTIONID(-3, "ѡ��id��Ч"),
-	/**��Ч�ͻ���*/
-	INVALID_SUPPLIERSID(-4, "�ֵ�id��Ч"),
-	/**���ݿ����*/
-	DB_ERROR(-99, "���ݿ����"),
-	/**ϵͳ����*/
-	SYS_ERROR(-100, "ϵͳ����");
+	/**传入参数错误*/
+	INVALID_PARAM(-1, "传入参数错误"),
+	/**商品id无效*/
+	INVALID_GOODSID(-2, "商品id无效"),
+	/**用户id无效*/
+	INVALID_SELECTIONID(-3, "选型id无效"),
+	/**无效客户端*/
+	INVALID_SUPPLIERSID(-4, "分店id无效"),
+	/**数据库错误*/
+	DB_ERROR(-99, "数据库错误"),
+	/**系统错误*/
+	SYS_ERROR(-100, "系统错误");
 	
 	private int code;
 	private String description;

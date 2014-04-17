@@ -13,12 +13,12 @@ public class NotifyMessage implements Serializable {
 	private Long userId;
 	private Long goodsId;
 	private Long orderId;
-	private java.lang.Integer limitStorage; // 0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
-	//private String variableQuantityJsonData;// ¿â´æ±ä»¯Á¿ ÉÌÆ·Ö÷ÌåĞÅÏ¢ÖĞµÄ¿â´æ±ä»¯Á¿¡¢Ñ¡ĞÍÉÌÆ·»ò·ÖµêÔòÆä·Ö±ğ¶ÔÓ¦µÄ¿â´æ±ä»¯±£´æÔÚjsonÊı¾İÖĞ
-	private java.lang.Integer totalNumber;// µ±Ç°×Ü¿â´æ999999£ºÎŞÏŞÖÆ
-	private java.lang.Integer leftNumber;// µ±Ç°Ê£ÓàÊı¿â´æÄ¬ÈÏÖµ:0
-	private java.lang.Integer waterfloodVal;  //×¢Ë®Öµ
-	//°üÀ¨ÉÌÆ·Ñ¡ĞÍ¿â´æºÍÉÌÆ··Öµê¿â´æĞÅÏ¢
+	private java.lang.Integer limitStorage; // 0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
+	//private String variableQuantityJsonData;// åº“å­˜å˜åŒ–é‡ å•†å“ä¸»ä½“ä¿¡æ¯ä¸­çš„åº“å­˜å˜åŒ–é‡ã€é€‰å‹å•†å“æˆ–åˆ†åº—åˆ™å…¶åˆ†åˆ«å¯¹åº”çš„åº“å­˜å˜åŒ–ä¿å­˜åœ¨jsonæ•°æ®ä¸­
+	private java.lang.Integer totalNumber;// å½“å‰æ€»åº“å­˜999999ï¼šæ— é™åˆ¶
+	private java.lang.Integer leftNumber;// å½“å‰å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼:0
+	private java.lang.Integer waterfloodVal;  //æ³¨æ°´å€¼
+	//åŒ…æ‹¬å•†å“é€‰å‹åº“å­˜å’Œå•†å“åˆ†åº—åº“å­˜ä¿¡æ¯
 	private List<OrderGoodsSelectionModel> goodsSelectionList;
 	public String getSendMsg() {
 		StringBuffer msg = new StringBuffer();

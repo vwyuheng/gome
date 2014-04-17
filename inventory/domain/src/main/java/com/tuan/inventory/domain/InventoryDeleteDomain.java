@@ -47,24 +47,24 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		this.lm = lm;
 	}
 
-	// ÒµÎñ¼ì²é
+	// ä¸šåŠ¡æ£€æŸ¥
 	public CreateInventoryResultEnum busiCheck() {
 
 		try {
 			goodsId = Long.valueOf(param.getGoodsId());
-			// ÅĞ¶ÏÉÌÆ·¿â´æÊÇ·ñÒÑ¾­´æÔÚ
+			// åˆ¤æ–­å•†å“åº“å­˜æ˜¯å¦å·²ç»å­˜åœ¨
 			boolean isExists = this.goodsInventoryDomainRepository
 					.isExists(goodsId);
-			// Ìî³äÉÌÆ·¿â´æĞÅÏ¢
+			// å¡«å……å•†å“åº“å­˜ä¿¡æ¯
 			if (!isExists) {
 				this.doDelete = true;
 			}
 
-			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // Ñ¡ĞÍ¿â´æ
+			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // é€‰å‹åº“å­˜
 				this.selectionList = param.getGoodsSelection();
 			}
 
-			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // ·Öµê¿â´æ
+			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // åˆ†åº—åº“å­˜
 				this.suppliersList = param.getGoodsSuppliers();
 			}
 
@@ -78,28 +78,28 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// ¿â´æÏµÍ³ĞÂÔö¿â´æ
+	// åº“å­˜ç³»ç»Ÿæ–°å¢åº“å­˜
 	public CreateInventoryResultEnum deleteInventory() {
 
 		try {
 			if (!doDelete) {
 				return CreateInventoryResultEnum.IS_EXISTED;
 			}
-			// Ê×ÏÈÌî³äÈÕÖ¾ĞÅÏ¢
+			// é¦–å…ˆå¡«å……æ—¥å¿—ä¿¡æ¯
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
 			}
-			// ²åÈëÈÕÖ¾
+			// æ’å…¥æ—¥å¿—
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			// É¾³ıÉÌÆ·¿â´æĞÅÏ¢
+			// åˆ é™¤å•†å“åº“å­˜ä¿¡æ¯
 			this.goodsInventoryDomainRepository.deleteGoodsInventory(goodsId);
 			if (!CollectionUtils.isEmpty(selectionList)) {
-				// É¾³ıÉÌÆ·ËùÊôÑ¡ĞÍ¿â´æĞÅÏ¢
+				// åˆ é™¤å•†å“æ‰€å±é€‰å‹åº“å­˜ä¿¡æ¯
 				this.goodsInventoryDomainRepository
 						.deleteSelectionInventory(selectionList);
 			}
 			if (!CollectionUtils.isEmpty(suppliersList)) {
-				// É¾³ıÉÌÆ·ËùÊô·Öµê¿â´æĞÅÏ¢
+				// åˆ é™¤å•†å“æ‰€å±åˆ†åº—åº“å­˜ä¿¡æ¯
 				this.goodsInventoryDomainRepository
 						.deleteSuppliersInventory(suppliersList);
 			}
@@ -113,7 +113,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// ·¢ËÍ¿â´æĞÂÔöÏûÏ¢
+	// å‘é€åº“å­˜æ–°å¢æ¶ˆæ¯
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
@@ -130,7 +130,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		}
 	}
 
-	// Ìî³änotifyserver·¢ËÍ²ÎÊı
+	// å¡«å……notifyserverå‘é€å‚æ•°
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(this.userId);
@@ -148,7 +148,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		return notifyParam;
 	}
 
-	// Ìî³äÈÕÖ¾ĞÅÏ¢
+	// å¡«å……æ—¥å¿—ä¿¡æ¯
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
@@ -185,8 +185,8 @@ public class InventoryDeleteDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
-			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // ²Ù×÷ÄÚÈİ
-			updateActionDO.setRemark("É¾³ı¿â´æ");
+			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // æ“ä½œå†…å®¹
+			updateActionDO.setRemark("åˆ é™¤åº“å­˜");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")

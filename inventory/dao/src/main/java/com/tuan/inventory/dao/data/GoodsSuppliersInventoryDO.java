@@ -4,7 +4,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
  * @ClassName: GoodsSuppliersInventoryDO
- * @Description: ÉÌÆ·ÉÌ¼Ò¿â´æ
+ * @Description: å•†å“å•†å®¶åº“å­˜
  * @author tianzq
  * @date 2012.11.30
  */
@@ -12,18 +12,18 @@ public class GoodsSuppliersInventoryDO extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private java.lang.Integer id;
-	private java.lang.Integer goodsId;// ÉÌÆ·ID(FK)
-	private java.lang.Integer suppliersId;// ·ÖµêID(FK)
-	private java.lang.Integer status;// 0:µ±Ç°¼ÇÂ¼ÓĞĞ§1£ºµ±Ç°¼ÇÂ¼ÎŞĞ§;Ä¬ÈÏÖµ£º0
-	private java.lang.Integer totalNumber;// µ±Ç°·Öµê×Ü¿â´æ999999£ºÎŞÏŞÖÆ
-	private java.lang.Integer leftNumber;// µ±Ç°·ÖµêÊ£ÓàÊı¿â´æÄ¬ÈÏÖµ:0
-	private java.lang.Integer addTotalNumber;// µ±Ç°·ÖµêÔö¼Ó¿â´æ×ÜÁ¿Ä¬ÈÏÖµ:0
-	private java.lang.Integer reduceTotalNumber;// µ±Ç°·Öµê¼õÉÙ¿â´æ×ÜÁ¿Ä¬ÈÏÖµ:0
-	private java.lang.Integer limitNumber;// µ±Ç°·ÖµêÉÌ¼ÒÏŞ¹ºÊıÁ¿;0£ºÎŞÏŞÖÆ
-	private java.lang.Integer settlement;// µ±Ç°·Öµê½áËã·½Ê½;0:Í³Ò»½áËã1£º¶ÀÁ¢½áËã
-	private java.lang.Integer validMsgGet;// µ±Ç°·ÖµêÑéÖ¤ĞÅÏ¢µ÷È¡; 0:²»µ÷È¡1£ºµ÷È¡
-	private java.lang.Integer totalNumDisplayFont; // '0£º²»ÏÔÊ¾£»1£ºÏÔÊ¾',
-	private java.lang.Integer limitStorage; // 0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
+	private java.lang.Integer goodsId;// å•†å“ID(FK)
+	private java.lang.Integer suppliersId;// åˆ†åº—ID(FK)
+	private java.lang.Integer status;// 0:å½“å‰è®°å½•æœ‰æ•ˆ1ï¼šå½“å‰è®°å½•æ— æ•ˆ;é»˜è®¤å€¼ï¼š0
+	private java.lang.Integer totalNumber;// å½“å‰åˆ†åº—æ€»åº“å­˜999999ï¼šæ— é™åˆ¶
+	private java.lang.Integer leftNumber;// å½“å‰åˆ†åº—å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼:0
+	private java.lang.Integer addTotalNumber;// å½“å‰åˆ†åº—å¢åŠ åº“å­˜æ€»é‡é»˜è®¤å€¼:0
+	private java.lang.Integer reduceTotalNumber;// å½“å‰åˆ†åº—å‡å°‘åº“å­˜æ€»é‡é»˜è®¤å€¼:0
+	private java.lang.Integer limitNumber;// å½“å‰åˆ†åº—å•†å®¶é™è´­æ•°é‡;0ï¼šæ— é™åˆ¶
+	private java.lang.Integer settlement;// å½“å‰åˆ†åº—ç»“ç®—æ–¹å¼;0:ç»Ÿä¸€ç»“ç®—1ï¼šç‹¬ç«‹ç»“ç®—
+	private java.lang.Integer validMsgGet;// å½“å‰åˆ†åº—éªŒè¯ä¿¡æ¯è°ƒå–; 0:ä¸è°ƒå–1ï¼šè°ƒå–
+	private java.lang.Integer totalNumDisplayFont; // '0ï¼šä¸æ˜¾ç¤ºï¼›1ï¼šæ˜¾ç¤º',
+	private java.lang.Integer limitStorage; // 0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
 
 	public java.lang.Integer getId() {
 		return id;

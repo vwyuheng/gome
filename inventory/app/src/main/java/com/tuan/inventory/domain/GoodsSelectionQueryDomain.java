@@ -7,7 +7,7 @@ import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
-import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.utils.LogModel;
@@ -16,7 +16,7 @@ import com.wowotrace.trace.model.Message;
 public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
 	private static Logger logger = Logger.getLogger(GoodsSelectionQueryDomain.class);
-	private GoodsSelectionQueryInnerResp resp;		//请求验返回对象
+	private GoodsQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private GoodsSelectionQueryDomain(){}
 	
@@ -49,7 +49,7 @@ public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 		}
 		
 		try{
-			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
+			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
 			resp.setJsonResult(respStr);
 			this.resp = resp;
 			//this.resp = (GoodsSelectionQueryInnerResp)new Gson().fromJson(respStr, respType);
@@ -65,8 +65,8 @@ public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 	
 
 	@Override
-	public GoodsSelectionQueryInnerResp makeResult(ResultEnum resultStatusEnum) {
-		GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
+	public GoodsQueryInnerResp makeResult(ResultEnum resultStatusEnum) {
+		GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
 		resp.setResult(resultStatusEnum.getCode(), resultStatusEnum.getDescription());
 		if(this.resp != null){
 			resp.setJsonResult(this.resp.getJsonResult());

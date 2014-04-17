@@ -12,7 +12,7 @@ package com.tuan.inventory.domain.support.jedistools;
 public abstract class RedisBaseObject
 {		
 	/**
-	 * Static for Redis' minus infinity[ÎÞÇî].
+	 * Static for Redis' minus infinity[æ— ç©·].
 	 */
 	public static String MINUS_INF = "-inf";
 	/**

@@ -1,7 +1,7 @@
 package com.tuan.inventory.domain.support.exception;
 
 /**
- * Ö´ĞĞÒì³££ºÔËĞĞÊ±Òì³£
+ * æ‰§è¡Œå¼‚å¸¸ï¼šè¿è¡Œæ—¶å¼‚å¸¸
  * @author henry.yu
  * @date 2014/3/17
  */
@@ -9,14 +9,14 @@ public class CacheRunTimeException extends Exception {
 	private static final long serialVersionUID = 4353196323557490148L;
 
 	/**
-	 * ÔËĞĞÊ±Òì³£
+	 * è¿è¡Œæ—¶å¼‚å¸¸
 	 * @param msg
 	 */
 	public CacheRunTimeException(String msg){  
         super(msg);  
     }  
 	/**
-	 * ÔËĞĞÊ±Òì³£
+	 * è¿è¡Œæ—¶å¼‚å¸¸
 	 * @param msg
 	 * @param e
 	 */

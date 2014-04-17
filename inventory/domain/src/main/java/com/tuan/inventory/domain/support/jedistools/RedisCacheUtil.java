@@ -17,7 +17,7 @@ public class RedisCacheUtil {
 	@Resource
 	JedisFactory jedisFactory;
 	/**
-	 * ·µ»Ø¹şÏ£±í key ÖĞ£¬ËùÓĞµÄÓòºÍÖµ
+	 * è¿”å›å“ˆå¸Œè¡¨ key ä¸­ï¼Œæ‰€æœ‰çš„åŸŸå’Œå€¼
 	 * @param key
 	 * @return
 	 */
@@ -26,7 +26,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Map<String, String>>() {
 			@Override
 			public Map<String, String> work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -34,7 +34,7 @@ public class RedisCacheUtil {
 					return j.hgetAll(key);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.getData");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
@@ -46,8 +46,8 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * (Óò-Öµ)¶ÔÉèÖÃµ½¹şÏ£±í key ÖĞ
-	 * ´ËÃüÁî»á¸²¸Ç¹şÏ£±íÖĞÒÑ´æÔÚµÄÓò
+	 * (åŸŸ-å€¼)å¯¹è®¾ç½®åˆ°å“ˆå¸Œè¡¨ key ä¸­
+	 * æ­¤å‘½ä»¤ä¼šè¦†ç›–å“ˆå¸Œè¡¨ä¸­å·²å­˜åœ¨çš„åŸŸ
 	 * @param key
 	 * @param hash
 	 * @return
@@ -57,7 +57,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<String>() {
 			@Override
 			public String work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -65,7 +65,7 @@ public class RedisCacheUtil {
 					return j.hmset(key,hash);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.hmset");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("hash", hash)
@@ -78,8 +78,8 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * Îª¹şÏ£±í key ÖĞµÄÓò field µÄÖµ¼ÓÉÏÔöÁ¿ value ¡£
-	 * ÔöÁ¿Ò²¿ÉÒÔÎª¸ºÊı£¬Ïàµ±ÓÚ¶Ô¸ø¶¨Óò½øĞĞ¼õ·¨²Ù×÷¡£
+	 * ä¸ºå“ˆå¸Œè¡¨ key ä¸­çš„åŸŸ field çš„å€¼åŠ ä¸Šå¢é‡ value ã€‚
+	 * å¢é‡ä¹Ÿå¯ä»¥ä¸ºè´Ÿæ•°ï¼Œç›¸å½“äºå¯¹ç»™å®šåŸŸè¿›è¡Œå‡æ³•æ“ä½œã€‚
 	 * @param key
 	 * @param field
 	 * @param value
@@ -89,7 +89,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Long>() {
 			@Override
 			public Long work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -97,7 +97,7 @@ public class RedisCacheUtil {
 					return j.hincrBy(key,field,value);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.hincrBy");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("field", field)
@@ -111,8 +111,8 @@ public class RedisCacheUtil {
 
 	}
 	/***
-	 * ½«Ò»¸ö member ÔªËØ¼ÓÈëµ½¼¯ºÏ key µ±ÖĞ£¬
-	 * ÒÑ¾­´æÔÚÓÚ¼¯ºÏµÄ member ÔªËØ½«±»ºöÂÔ
+	 * å°†ä¸€ä¸ª member å…ƒç´ åŠ å…¥åˆ°é›†åˆ key å½“ä¸­ï¼Œ
+	 * å·²ç»å­˜åœ¨äºé›†åˆçš„ member å…ƒç´ å°†è¢«å¿½ç•¥
 	 * @param key
 	 * @param member
 	 * @return
@@ -121,7 +121,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Long>() {
 			@Override
 			public Long work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -129,7 +129,7 @@ public class RedisCacheUtil {
 					return j.sadd(key,member);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.sadd");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("member", member)
@@ -142,7 +142,7 @@ public class RedisCacheUtil {
 
 	}
 	/***
-	 * ·µ»ØÓĞĞò¼¯ key ÖĞ£¬ËùÓĞ score Öµ½éÓÚ min ºÍ max Ö®¼ä(°üÀ¨µÈÓÚ min »ò max )µÄ³ÉÔ±
+	 * è¿”å›æœ‰åºé›† key ä¸­ï¼Œæ‰€æœ‰ score å€¼ä»‹äº min å’Œ max ä¹‹é—´(åŒ…æ‹¬ç­‰äº min æˆ– max )çš„æˆå‘˜
 	 * @param key
 	 * @param min
 	 * @param max
@@ -153,7 +153,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Set<String>>() {
 			@Override
 			public Set<String> work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -161,7 +161,7 @@ public class RedisCacheUtil {
 					return j.zrangeByScore(key,min,max);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.zrangeByScore");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("min", min)
@@ -175,7 +175,7 @@ public class RedisCacheUtil {
 
 	}
 	/***
-	 * ·µ»ØÁĞ±í key ÖĞ£¬ÏÂ±êÎª index µÄÔªËØ
+	 * è¿”å›åˆ—è¡¨ key ä¸­ï¼Œä¸‹æ ‡ä¸º index çš„å…ƒç´ 
 	 * @param key
 	 * @param index
 	 * @return
@@ -184,7 +184,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<String>() {
 			@Override
 			public String work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -192,7 +192,7 @@ public class RedisCacheUtil {
 					return j.lindex(key,index);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.index");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("index", index)
@@ -205,8 +205,8 @@ public class RedisCacheUtil {
 
 	}
 	/***
-	 * ·µ»Øset¼¯ºÏ key ÖĞµÄËùÓĞ³ÉÔ±
-	 * ²»´æÔÚµÄ key ±»ÊÓÎª¿Õ¼¯ºÏ
+	 * è¿”å›seté›†åˆ key ä¸­çš„æ‰€æœ‰æˆå‘˜
+	 * ä¸å­˜åœ¨çš„ key è¢«è§†ä¸ºç©ºé›†åˆ
 	 * @param key
 	 * @return
 	 */
@@ -214,7 +214,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Set<String>>() {
 			@Override
 			public Set<String> work(Jedis j) throws Exception {
-				// TODO ²âÊÔÓÃ
+				// TODO æµ‹è¯•ç”¨
 				// j.del(key);
 				if (j == null)
 					return null;
@@ -222,7 +222,7 @@ public class RedisCacheUtil {
 					return j.smembers(key);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.smembers");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
@@ -234,7 +234,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ¼ì²é¸ø¶¨ key ÊÇ·ñ´æÔÚ
+	 * æ£€æŸ¥ç»™å®š key æ˜¯å¦å­˜åœ¨
 	 * @param key
 	 * @return
 	 */
@@ -248,7 +248,7 @@ public class RedisCacheUtil {
 					return j.exists(key);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.exists");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
@@ -260,7 +260,7 @@ public class RedisCacheUtil {
 
 	}
 	/***
-	 * ½«Ò»¸ö»ò¶à¸öÖµ value ²åÈëµ½ÁĞ±í key µÄ±íÍ·
+	 * å°†ä¸€ä¸ªæˆ–å¤šä¸ªå€¼ value æ’å…¥åˆ°åˆ—è¡¨ key çš„è¡¨å¤´
 	 * @param key
 	 * @param strings
 	 * @return
@@ -275,7 +275,7 @@ public class RedisCacheUtil {
 					return j.lpush(key,strings);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.lpush");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("strings", strings)
@@ -288,8 +288,8 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ½«Öµ value ¹ØÁªµ½ key £¬
-	 * ²¢½« key µÄÉú´æÊ±¼äÉèÎª seconds (ÒÔÃëÎªµ¥Î»)
+	 * å°†å€¼ value å…³è”åˆ° key ï¼Œ
+	 * å¹¶å°† key çš„ç”Ÿå­˜æ—¶é—´è®¾ä¸º seconds (ä»¥ç§’ä¸ºå•ä½)
 	 * @param key
 	 * @param seconds
 	 * @param value
@@ -305,7 +305,7 @@ public class RedisCacheUtil {
 					return j.setex(key,seconds,value);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.setex");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("seconds", seconds)
@@ -319,7 +319,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ½«Ò»¸ö member ÔªËØ¼°Æä score Öµ¼ÓÈëµ½ÓĞĞò¼¯ key µ±ÖĞ
+	 * å°†ä¸€ä¸ª member å…ƒç´ åŠå…¶ score å€¼åŠ å…¥åˆ°æœ‰åºé›† key å½“ä¸­
 	 * @param key
 	 * @param score
 	 * @param member
@@ -335,7 +335,7 @@ public class RedisCacheUtil {
 					return j.zadd(key,score,member);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.zadd");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("score", score)
@@ -349,8 +349,8 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ¸ù¾İ²ÎÊı count µÄÖµ£¬ÒÆ³ıÁĞ±íÖĞÓë²ÎÊı value ÏàµÈµÄÔªËØ
-	 * count Îª-1Ê±£¬±íÊ¾£ºÒÆ³ı´Ó±íÎ²µ½±íÍ·£¬µÚÒ»¸ö valueÔªËØ
+	 * æ ¹æ®å‚æ•° count çš„å€¼ï¼Œç§»é™¤åˆ—è¡¨ä¸­ä¸å‚æ•° value ç›¸ç­‰çš„å…ƒç´ 
+	 * count ä¸º-1æ—¶ï¼Œè¡¨ç¤ºï¼šç§»é™¤ä»è¡¨å°¾åˆ°è¡¨å¤´ï¼Œç¬¬ä¸€ä¸ª valueå…ƒç´ 
 	 * @param key
 	 * @param count
 	 * @param value
@@ -366,7 +366,7 @@ public class RedisCacheUtil {
 					return j.lrem(key,count,value);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.lrem");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("count", count)
@@ -380,7 +380,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ·µ»Ø key Ëù¹ØÁªµÄ×Ö·û´®Öµ¡£
+	 * è¿”å› key æ‰€å…³è”çš„å­—ç¬¦ä¸²å€¼ã€‚
 	 * @param key
 	 * @return
 	 */
@@ -394,7 +394,7 @@ public class RedisCacheUtil {
 					return j.get(key);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.get");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
@@ -406,7 +406,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ÎªÓĞĞò¼¯ key µÄ³ÉÔ± member µÄ score Öµ¼ÓÉÏÔöÁ¿ score
+	 * ä¸ºæœ‰åºé›† key çš„æˆå‘˜ member çš„ score å€¼åŠ ä¸Šå¢é‡ score
 	 * @param key
 	 * @param score
 	 * @param member
@@ -423,7 +423,7 @@ public class RedisCacheUtil {
 					return j.zincrby(key,score,member);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.zincrby");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("score", score)
@@ -437,7 +437,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ½« key ÖĞ´¢´æµÄÊı×ÖÖµÔöÒ»
+	 * å°† key ä¸­å‚¨å­˜çš„æ•°å­—å€¼å¢ä¸€
 	 * @param key
 	 * @return
 	 */
@@ -451,7 +451,7 @@ public class RedisCacheUtil {
 					return j.incr(key);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.incr");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
@@ -463,7 +463,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * ²é¿´¹şÏ£±í key ÖĞ£¬¸ø¶¨Óò field ÊÇ·ñ´æÔÚ
+	 * æŸ¥çœ‹å“ˆå¸Œè¡¨ key ä¸­ï¼Œç»™å®šåŸŸ field æ˜¯å¦å­˜åœ¨
 	 * @param key
 	 * @param field
 	 * @return
@@ -478,7 +478,7 @@ public class RedisCacheUtil {
 					return j.hexists(key,field);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.hexists");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("field", field)
@@ -491,7 +491,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * É¾³ı¸ø¶¨µÄÒ»¸ö»ò¶à¸ö key 
+	 * åˆ é™¤ç»™å®šçš„ä¸€ä¸ªæˆ–å¤šä¸ª key 
 	 * @param key
 	 * @return
 	 */
@@ -505,7 +505,7 @@ public class RedisCacheUtil {
 					return j.del(key);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.del");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
@@ -517,7 +517,7 @@ public class RedisCacheUtil {
 
 	}
 	/**
-	 * É¾³ı¹şÏ£±í key ÖĞµÄÒ»¸ö»ò¶à¸öÖ¸¶¨Óò£¬²»´æÔÚµÄÓò½«±»ºöÂÔ¡£
+	 * åˆ é™¤å“ˆå¸Œè¡¨ key ä¸­çš„ä¸€ä¸ªæˆ–å¤šä¸ªæŒ‡å®šåŸŸï¼Œä¸å­˜åœ¨çš„åŸŸå°†è¢«å¿½ç•¥ã€‚
 	 * @param key
 	 * @return
 	 */
@@ -531,7 +531,7 @@ public class RedisCacheUtil {
 					return j.hdel(key,fields);
 					
 				} catch (Exception e) {
-				//Òì³£·¢ÉúÊ±¼ÇÂ¼ÈÕÖ¾
+				//å¼‚å¸¸å‘ç”Ÿæ—¶è®°å½•æ—¥å¿—
 				LogModel lm = LogModel.newLogModel("RedisLockCache.hdel");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("fields", fields)

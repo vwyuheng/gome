@@ -2,7 +2,7 @@ package com.tuan.inventory.model.param;
 
 import com.tuan.core.common.lang.TuanBaseDO;
 /**
- * 商品库存参数
+ * 鍟嗗搧搴撳瓨鍙傛暟
  * @author henry.yu
  * @date 20140310
  */

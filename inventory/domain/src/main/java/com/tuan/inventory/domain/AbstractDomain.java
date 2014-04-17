@@ -9,8 +9,8 @@ public abstract class AbstractDomain {
 	
 	public final static String CLIENT_NAME 		= "INVENTORY";
 	
-	public String clientIp; // ¿Í»§¶ËipµØÖ·
-	public String clientName; // ¿Í»§¶ËÃû³Æ
+	public String clientIp; // å®¢æˆ·ç«¯ipåœ°å€
+	public String clientName; // å®¢æˆ·ç«¯åç§°
 	
 	private static Log logBus=LogFactory.getLog("BUSINESS.USER");
 	

@@ -32,11 +32,11 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 				.addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryScheduledService", "confirmQueueConsume");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryConfirmScheduledDomain inventoryConfirmScheduledDomain = new InventoryConfirmScheduledDomain(clientIp, clientName, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryConfirmScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		//业务处理
+		//涓氬姟澶勭悊
 		inventoryConfirmScheduledDomain.businessHandler();
 
 	}
@@ -54,11 +54,11 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 				.addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryScheduledService", "lockedQueueConsume");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryLockedScheduledDomain inventoryLockedScheduledDomain = new InventoryLockedScheduledDomain(clientIp, clientName,param, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryLockedScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		//业务处理
+		//涓氬姟澶勭悊
 		inventoryLockedScheduledDomain.businessHandler();
 
 	}
@@ -74,12 +74,12 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 				.addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryScheduledService", "logsQueueConsume");
-		//构建领域对象
+		//鏋勫缓棰嗗煙瀵硅薄
 		final InventoryLogsScheduledDomain inventoryLogsScheduledDomain = new InventoryLogsScheduledDomain(clientIp, clientName, lm);
-		//注入仓储对象
+		//娉ㄥ叆浠撳偍瀵硅薄
 		inventoryLogsScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryLogsScheduledDomain.setLogsEventHandle(logsEventHandle);
-		//业务处理
+		//涓氬姟澶勭悊
 		inventoryLogsScheduledDomain.businessHandler();
 
 	}

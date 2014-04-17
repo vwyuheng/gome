@@ -5,7 +5,7 @@ import java.util.Calendar;
 public class DateUtils {
 
 	/***
-	 * »ñÈ¡Ö¸¶¨Ê±¼äÇ°µÄÊ±¼ä£¬µ¥Î»:·Ö
+	 * è·å–æŒ‡å®šæ—¶é—´å‰çš„æ—¶é—´ï¼Œå•ä½:åˆ†
 	 * @param minute
 	 * @return
 	 */
@@ -14,7 +14,7 @@ public class DateUtils {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(curTime);
 		cal.add(10, -8);
-		cal.add(Calendar.MINUTE, (-minute));// x·ÖÖÓÖ®Ç°µÄÊ±¼ä
+		cal.add(Calendar.MINUTE, (-minute));// xåˆ†é’Ÿä¹‹å‰çš„æ—¶é—´
 		String str = String.valueOf(cal.getTime().getTime()).substring(0, 10);
 		new Long(0L);
 		return Long.parseLong(str);

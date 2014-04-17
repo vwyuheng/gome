@@ -17,15 +17,15 @@ public class Test1 {
 		       System.out.println("execute task!"+ this.scheduledExecutionTime());
 		   }
 		},3000,4 * 1000);*/
-		System.out.println("µ±Ç°Ê±¼ä="+TimeUtil.getNowTimestamp10Long());
-		System.out.println("5·ÖÖÓÇ°Ê±¼ä="+Test1.getBeforXTimestamp10Long(5));
-		System.out.println("µ±Ç°Ê±¼ä="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
-		System.out.println("5·ÖÖÓÇ°Ê±¼ä="+TimeUtil.dateFormat(Test1.getBeforXTimestamp10Long(5)));
-		System.out.println("Ïà²î="+TimeUtil.getDayDifferenceByTS(TimeUtil.getNowTimestamp10Long(), Test1.getBeforXTimestamp10Long(5)));
+		System.out.println("å½“å‰æ—¶é—´="+TimeUtil.getNowTimestamp10Long());
+		System.out.println("5åˆ†é’Ÿå‰æ—¶é—´="+Test1.getBeforXTimestamp10Long(5));
+		System.out.println("å½“å‰æ—¶é—´="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
+		System.out.println("5åˆ†é’Ÿå‰æ—¶é—´="+TimeUtil.dateFormat(Test1.getBeforXTimestamp10Long(5)));
+		System.out.println("ç›¸å·®="+TimeUtil.getDayDifferenceByTS(TimeUtil.getNowTimestamp10Long(), Test1.getBeforXTimestamp10Long(5)));
 	}
 	
 	/**
-	 * »ñÈ¡¼¸·ÖÖÓÇ°µÄÊ±¼ä
+	 * è·å–å‡ åˆ†é’Ÿå‰çš„æ—¶é—´
 	 * @return
 	 */
 	public static long getBeforXTimestamp10Long(int minute) {
@@ -33,7 +33,7 @@ public class Test1 {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(curTime);
 		cal.add(10, -8);
-		cal.add(Calendar.MINUTE, (-minute));// 5·ÖÖÓÖ®Ç°µÄÊ±¼ä
+		cal.add(Calendar.MINUTE, (-minute));// 5åˆ†é’Ÿä¹‹å‰çš„æ—¶é—´
 		String str = String.valueOf(cal.getTime().getTime()).substring(0, 10);
 		new Long(0L);
 		return Long.parseLong(str);

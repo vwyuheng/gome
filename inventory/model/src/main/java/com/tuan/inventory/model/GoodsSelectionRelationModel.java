@@ -5,19 +5,19 @@ import com.tuan.core.common.lang.TuanBaseDO;
 public class GoodsSelectionRelationModel extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	private java.lang.Integer id;
-	private java.lang.Integer suppliersId;	// ÉÌ¼ÒID£¨µ±ÉÌÆ·²»Ö¸¶¨·ÖµêÍ¬Ê±ÓĞÅäĞÍÊ±,´ËÖµÎªÉÌÆ·ËùÊôÉÌ¼ÒID£©,
-	private java.lang.Integer status; 		// ¼ÇÂ¼×´Ì¬¿ØÖÆ£¨Ä¬ÈÏÖµ£º0£©; 0:µ±Ç°¼ÇÂ¼ÓĞĞ§1£ºµ±Ç°¼ÇÂ¼ÎŞĞ§,
-	private java.lang.Integer goodTypeId; // Ñ¡ĞÍÀàĞÍ±íID(FK)¹ØÁªµ½Ñ¡ĞÍ±íID
-	private String ImageURL; 				// Ñ¡ĞÍÍ¼Æ¬Ïà¶ÔµØÖ·(ÓÉÓÃ»§ÉÏ´«)
-	private java.lang.Integer totalNumber; 	// µ±Ç°Ñ¡ĞÍ×Ü¿â´æ
-	private java.lang.Integer leftNumber; 	// µ±Ç°Ñ¡ĞÍÊ£ÓàÊı¿â´æÄ¬ÈÏÖµ£º0
-	private java.lang.Integer addTotalNumber; 	// µ±Ç°Ñ¡ĞÍÔö¼Ó¿â´æ×ÜÁ¿Ä¬ÈÏÖµ£º0
-	private java.lang.Integer reduceTotalNumber; 	// µ±Ç°Ñ¡ĞÍ¼õÉÙ¿â´æ×ÜÁ¿Ä¬ÈÏÖµ£º0
-	private java.lang.Integer limitNumber; 			// µ±Ç°Ñ¡ĞÍÏŞ¹ºÊıÁ¿0£ºÎŞÏŞÖÆ
-	private java.lang.Integer suppliersSubId; 	// ·ÖµêID£¨µ±ÉÌÆ·Ö¸¶¨·ÖµêÍ¬Ê±ÓĞÅäĞÍÊ±´ËÖµÎª·ÖµêID²¢ÇÒsuppliers_idÎªÉÌÆ·ËùÊôÉÌ¼ÒID£©
-	private java.lang.Integer leftTotalNumDisplayFont; //'Ê£Óà¿â´æÊÇ·ñÇ°Ì¨ÏÔÊ¾:0£º²»ÏÔÊ¾£»1£ºÏÔÊ¾',
+	private java.lang.Integer suppliersId;	// å•†å®¶IDï¼ˆå½“å•†å“ä¸æŒ‡å®šåˆ†åº—åŒæ—¶æœ‰é…å‹æ—¶,æ­¤å€¼ä¸ºå•†å“æ‰€å±å•†å®¶IDï¼‰,
+	private java.lang.Integer status; 		// è®°å½•çŠ¶æ€æ§åˆ¶ï¼ˆé»˜è®¤å€¼ï¼š0ï¼‰; 0:å½“å‰è®°å½•æœ‰æ•ˆ1ï¼šå½“å‰è®°å½•æ— æ•ˆ,
+	private java.lang.Integer goodTypeId; // é€‰å‹ç±»å‹è¡¨ID(FK)å…³è”åˆ°é€‰å‹è¡¨ID
+	private String ImageURL; 				// é€‰å‹å›¾ç‰‡ç›¸å¯¹åœ°å€(ç”±ç”¨æˆ·ä¸Šä¼ )
+	private java.lang.Integer totalNumber; 	// å½“å‰é€‰å‹æ€»åº“å­˜
+	private java.lang.Integer leftNumber; 	// å½“å‰é€‰å‹å‰©ä½™æ•°åº“å­˜é»˜è®¤å€¼ï¼š0
+	private java.lang.Integer addTotalNumber; 	// å½“å‰é€‰å‹å¢åŠ åº“å­˜æ€»é‡é»˜è®¤å€¼ï¼š0
+	private java.lang.Integer reduceTotalNumber; 	// å½“å‰é€‰å‹å‡å°‘åº“å­˜æ€»é‡é»˜è®¤å€¼ï¼š0
+	private java.lang.Integer limitNumber; 			// å½“å‰é€‰å‹é™è´­æ•°é‡0ï¼šæ— é™åˆ¶
+	private java.lang.Integer suppliersSubId; 	// åˆ†åº—IDï¼ˆå½“å•†å“æŒ‡å®šåˆ†åº—åŒæ—¶æœ‰é…å‹æ—¶æ­¤å€¼ä¸ºåˆ†åº—IDå¹¶ä¸”suppliers_idä¸ºå•†å“æ‰€å±å•†å®¶IDï¼‰
+	private java.lang.Integer leftTotalNumDisplayFont; //'å‰©ä½™åº“å­˜æ˜¯å¦å‰å°æ˜¾ç¤º:0ï¼šä¸æ˜¾ç¤ºï¼›1ï¼šæ˜¾ç¤º',
 	  
-	private java.lang.Integer limitStorage;	//0:¿â´æÎŞÏŞÖÆ£»1£ºÏŞÖÆ¿â´æ
+	private java.lang.Integer limitStorage;	//0:åº“å­˜æ— é™åˆ¶ï¼›1ï¼šé™åˆ¶åº“å­˜
 	private java.lang.Integer goodId;
 	private String name;  
 	public java.lang.Integer getId() {

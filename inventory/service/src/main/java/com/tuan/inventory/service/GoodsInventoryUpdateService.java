@@ -12,11 +12,11 @@ import com.wowotrace.trace.model.Message;
 
 public interface GoodsInventoryUpdateService {
 	/** 
-	 * ´´½¨¿â´æ½Ó¿Ú£¬¸ù¾İ´«ÈëµÄ²ÎÊı´´½¨¿â´æ
-	 * @param clientIp String ¿Í»§¶ËipµØÖ·
-	 * @param clientName String ¿Í»§¶ËÃû³Æ
-	 * @param param UpdateInventoryParam ´´½¨¿â´æËùĞè²ÎÊıÀà¶ÔÏó
-	 * @return InventoryCallResult ½Ó¿Úµ÷ÓÃ½á¹û¶ÔÏó
+	 * åˆ›å»ºåº“å­˜æ¥å£ï¼Œæ ¹æ®ä¼ å…¥çš„å‚æ•°åˆ›å»ºåº“å­˜
+	 * @param clientIp String å®¢æˆ·ç«¯ipåœ°å€
+	 * @param clientName String å®¢æˆ·ç«¯åç§°
+	 * @param param UpdateInventoryParam åˆ›å»ºåº“å­˜æ‰€éœ€å‚æ•°ç±»å¯¹è±¡
+	 * @return InventoryCallResult æ¥å£è°ƒç”¨ç»“æœå¯¹è±¡
 	 * 
 	 * @see	CreatorInventoryParam
 	 */
@@ -24,7 +24,7 @@ public interface GoodsInventoryUpdateService {
 	InventoryCallResult createInventory(final String clientIp, final String clientName
 			,final CreatorInventoryParam param,Message traceMessage);
 	/**
-	 * ¸üĞÂÉÌÆ·¿â´æ
+	 * æ›´æ–°å•†å“åº“å­˜
 	 * @param clientIp
 	 * @param clientName
 	 * @param param
@@ -35,7 +35,7 @@ public interface GoodsInventoryUpdateService {
 	InventoryCallResult updateInventory(
 			final String clientIp, final String clientName,final UpdateInventoryParam param,Message traceMessage);
 	/***
-	 * ¿â´æ¿Û¼õÍê³Éºó£¬»Øµ÷È·ÈÏ½Ó¿Ú
+	 * åº“å­˜æ‰£å‡å®Œæˆåï¼Œå›è°ƒç¡®è®¤æ¥å£
 	 * @param clientIp
 	 * @param clientName
 	 * @param param
@@ -46,7 +46,7 @@ public interface GoodsInventoryUpdateService {
 	InventoryCallResult callbackAckInventory(
 			final String clientIp, final String clientName,final CallbackParam param,Message traceMessage);
 	/**
-	 * ÊÖ¹¤µ÷Õû¿â´æ
+	 * æ‰‹å·¥è°ƒæ•´åº“å­˜
 	 * @param clientIp
 	 * @param clientName
 	 * @param param
@@ -57,7 +57,7 @@ public interface GoodsInventoryUpdateService {
 	InventoryCallResult adjustmentInventory(
 			final String clientIp, final String clientName,final AdjustInventoryParam param,Message traceMessage);
 	/**
-	 * ÊÖ¹¤µ÷Õû×¢Ë®Öµ
+	 * æ‰‹å·¥è°ƒæ•´æ³¨æ°´å€¼
 	 * @param clientIp
 	 * @param clientName
 	 * @param param

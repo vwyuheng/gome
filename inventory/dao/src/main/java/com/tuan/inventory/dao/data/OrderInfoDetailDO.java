@@ -4,7 +4,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
  * @ClassName: OrderInfoDetailDO 
- * @Description: ¶©µ¥Ñ¡ĞÍÅäÖÃĞÅÏ¢
+ * @Description: è®¢å•é€‰å‹é…ç½®ä¿¡æ¯
  * @author tianzq
  * @date 2012.11.30
  */
@@ -15,16 +15,16 @@ public class OrderInfoDetailDO extends TuanBaseDO{
 	 */ 
 	private static final long serialVersionUID = 1L;
 	private java.lang.Integer id;		//id
-	private java.lang.Integer orderId;	//¶©µ¥ID£»jeehe_order_goods.order_id
-	private java.lang.Integer count;	//Ñ¡ĞÍ¹ºÂòÊıÁ¿
-	private java.lang.Integer selectionRelationId;	//Ñ¡ĞÍÓëÉÌ¼Ò¹ØÏµ±íID
-	private java.lang.Integer status;	//Êı¾İÓĞĞ§×´Ì¬ 0£ºµ±Ç°Êı¾İÓĞĞ§£»1£ºµ±Ç°Êı¾İÎŞĞ§
-	private java.lang.Integer dateTime;	//´´½¨Ê±¼ä»òĞŞ¸ÄÊ±¼ä
-	private java.lang.Integer suppliersId; //ÉÌ¼Ò·Öµê±í¹ØÏµID
-	private String description;	//Ñ¡ĞÍÃèÊö£¬ÓÃÓÚĞŞ¸Ä¶©µ¥£¬¼ò»¯Êı¾İ»ñÈ¡
+	private java.lang.Integer orderId;	//è®¢å•IDï¼›jeehe_order_goods.order_id
+	private java.lang.Integer count;	//é€‰å‹è´­ä¹°æ•°é‡
+	private java.lang.Integer selectionRelationId;	//é€‰å‹ä¸å•†å®¶å…³ç³»è¡¨ID
+	private java.lang.Integer status;	//æ•°æ®æœ‰æ•ˆçŠ¶æ€ 0ï¼šå½“å‰æ•°æ®æœ‰æ•ˆï¼›1ï¼šå½“å‰æ•°æ®æ— æ•ˆ
+	private java.lang.Integer dateTime;	//åˆ›å»ºæ—¶é—´æˆ–ä¿®æ”¹æ—¶é—´
+	private java.lang.Integer suppliersId; //å•†å®¶åˆ†åº—è¡¨å…³ç³»ID
+	private String description;	//é€‰å‹æè¿°ï¼Œç”¨äºä¿®æ”¹è®¢å•ï¼Œç®€åŒ–æ•°æ®è·å–
 	
 	/**
-	 * £¡£¡±¸ÓÃ£¡£¡ ĞŞ¸Ä¿â´æÊ±ÊµÓÃ £¬È¡Êı¾İÎŞ¸Ã¼ÇÂ¼
+	 * ï¼ï¼å¤‡ç”¨ï¼ï¼ ä¿®æ”¹åº“å­˜æ—¶å®ç”¨ ï¼Œå–æ•°æ®æ— è¯¥è®°å½•
 	 */
 	private java.lang.Integer goodsId;
 	

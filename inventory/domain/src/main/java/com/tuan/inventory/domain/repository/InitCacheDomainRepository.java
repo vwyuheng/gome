@@ -17,7 +17,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 /**
- * 用于初始化redis缓存
+ * 鐢ㄤ簬鍒濆鍖杛edis缂撳瓨
  * @author henry.yu
  * @date 2014/3/11
  */
@@ -29,7 +29,7 @@ public class InitCacheDomainRepository {
 	
 	private static Log log = LogFactory.getLog(InitCacheDomainRepository.class);
 	/**
-	 * 加载分店配型关系数据
+	 * 鍔犺浇鍒嗗簵閰嶅瀷鍏崇郴鏁版嵁
 	 */
 	public GoodsSelectionDO getCacheSelectionRelationInfoById(
 			int id){
@@ -54,7 +54,7 @@ public class InitCacheDomainRepository {
 		
 	}
 	/**
-	 * 更加商品id查询商品所属的选型信息
+	 * 鏇村姞鍟嗗搧id鏌ヨ鍟嗗搧鎵�灞炵殑閫夊瀷淇℃伅
 	 * @param goodsId
 	 * @return
 	 */
@@ -100,7 +100,7 @@ public class InitCacheDomainRepository {
 	}
 	
 	/**
-	 * 加载分店选型信息
+	 * 鍔犺浇鍒嗗簵閫夊瀷淇℃伅
 	 */
 	public GoodsSelectionRelationDO getSelectionRelationDOById(int id){
 		GoodsSelectionRelationDO srDo = null;
@@ -119,7 +119,7 @@ public class InitCacheDomainRepository {
 		
 	}
 	/**
-	 * 加载商品商家库存信息并转换为redis存储对象 
+	 * 鍔犺浇鍟嗗搧鍟嗗搴撳瓨淇℃伅骞惰浆鎹负redis瀛樺偍瀵硅薄 
 	 */
 	public GoodsSuppliersDO getCacheSuppliersInventoryInfoById(int id) {
 		GoodsSuppliersDO rgsiDO = null;
@@ -139,7 +139,7 @@ public class InitCacheDomainRepository {
 		return rgsiDO;
 	}
 	/**
-	 * 加载商品商家库存信息
+	 * 鍔犺浇鍟嗗搧鍟嗗搴撳瓨淇℃伅
 	 */
 	public GoodsSuppliersInventoryDO getSuppliersInventoryDOById(int id) {
 		return goodTypeDomainRepository.selectGoodsSuppliersInventoryBySiId(id);

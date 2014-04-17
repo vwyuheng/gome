@@ -3,7 +3,7 @@ package com.tuan.inventory.model.result;
 import com.tuan.core.common.lang.TuanBaseDO;
 
 /**
- * ÒµÎñ·µ»Ø¶ÔÏó
+ * ä¸šåŠ¡è¿”å›å¯¹è±¡
  * @author henry.yu
  * @param <T>
  *
@@ -12,11 +12,11 @@ import com.tuan.core.common.lang.TuanBaseDO;
 public class InventoryCallResult extends TuanBaseDO{
 	private static final long serialVersionUID = 8136212258133597383L;
 	
-	/** ·µ»ØÂë **/
+	/** è¿”å›ç  **/
 	public int code;
-	/** ·µ»ØÃèÊö£¨Ó¢ÎÄ£© **/
+	/** è¿”å›æè¿°ï¼ˆè‹±æ–‡ï¼‰ **/
 	public String description;
-	/** ·µ»Ø¶ÔÏó **/
+	/** è¿”å›å¯¹è±¡ **/
 	public Object businessResult;
 	
 	public InventoryCallResult(){
