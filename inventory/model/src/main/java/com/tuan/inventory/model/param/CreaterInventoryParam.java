@@ -10,7 +10,7 @@ import com.tuan.inventory.model.GoodsSuppliersModel;
  * @author henry.yu
  * @date 20140310
  */
-public class CreatorInventoryParam extends TuanBaseDO {
+public class CreaterInventoryParam extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private String userId;

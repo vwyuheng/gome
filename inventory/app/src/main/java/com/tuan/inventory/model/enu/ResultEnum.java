@@ -1,14 +1,20 @@
 package com.tuan.inventory.model.enu;
 
+
 public enum ResultEnum {
-	SUCCESS		("0000",	"成功"),
-	
+	//SUCCESS		("0000",	"成功"),
+	SUCCESS	("success",	"成功"),
+	ERROR	("error",	"失败"),
 	INVALID_IP			("1001",	"客服端IP无效"),
 	INVALID_CLIENT		("1002",	"客户端名称无效"),
 	INVALID_TIME		("1003",	"时间戳无效"),
 	INVALID_GOODSID     ("1004",	"无效的商品id"),
 	INVALID_SELECTIONID     ("1005",	"无效的商品选型id"),
 	INVALID_SUPPLIERSID     ("1006",	"无效的商品选型id"),
+	INVALID_ISLIMIT_STORAGE     ("1007",	"是否限制库存无效"),      
+	INVALID_ACK     ("1008",	"无效的确认标识"),
+	INVALID_KEY     ("1011",	"无效的key"),
+	
 	NO_PARAMETER		("1009",	"请求参数不能为空"),
 	INVALID_RETURN      ("1010",	"返回值不正确"),
 	INVALID_SHOP_NO		("100011",	"无效的门店号"),
@@ -40,8 +46,11 @@ public enum ResultEnum {
 		if(code == null || code.isEmpty()){
 			return ResultEnum.ERROR_UNKONW;
 		}
-		if(code.equals("0000")){
+		if("success".equals(code)){
 			return ResultEnum.SUCCESS;
+		}
+		if("error".equals(code)){
+			return ResultEnum.ERROR;
 		}
 		if(code.equals("1001")){
 			return ResultEnum.INVALID_IP;
@@ -61,8 +70,20 @@ public enum ResultEnum {
 		if(code.equals("1006")){
 			return ResultEnum.INVALID_SUPPLIERSID;
 		}
+		if(code.equals("1007")){
+			return ResultEnum.INVALID_ISLIMIT_STORAGE;
+		}
+		if(code.equals("1008")){
+			return ResultEnum.INVALID_ACK;
+		}
+		if(code.equals("1009")){
+			return ResultEnum.NO_PARAMETER;
+		}
 		if(code.equals("1010")){
 			return ResultEnum.INVALID_RETURN;
+		}
+		if(code.equals("1011")){
+			return ResultEnum.INVALID_KEY;
 		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;

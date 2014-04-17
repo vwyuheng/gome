@@ -16,7 +16,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
-import com.tuan.inventory.model.param.CreatorInventoryParam;
+import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
@@ -38,7 +38,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	 */
 	@Override
 	public InventoryCallResult createInventory(String clientIp,
-			String clientName, CreatorInventoryParam param,Message traceMessage) {
+			String clientName, CreaterInventoryParam param,Message traceMessage) {
 		if(traceMessage == null){
 			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
 					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);

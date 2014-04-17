@@ -5,7 +5,7 @@ import java.util.TreeMap;
 
 import com.tuan.inventory.model.enu.ResultEnum;
 
-public abstract class AbstractDomain {
+public abstract class AbstractGoodsInventoryDomain {
 	public final static String clientName = "Inventory-app";
 	public final static String clientIp = 	"127.0.0.1";
 	public SortedMap<String, String> parameterMap = new TreeMap<String, String>();

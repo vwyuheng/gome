@@ -10,7 +10,7 @@ import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
-public abstract class GoodsSuppliersDomain extends AbstractDomain{
+public abstract class GoodsSuppliersDomain extends AbstractGoodsInventoryDomain{
 	public RequestPacket requestPacket;		//窝窝内部统一的请求报文头
 	public String goodsId;					//商品id
 	public String suppliersId;					//分店id

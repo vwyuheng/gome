@@ -5,7 +5,7 @@ import com.tuan.core.common.annotation.product.ProductLogLevelEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
-import com.tuan.inventory.model.param.CreatorInventoryParam;
+import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.wowotrace.trace.model.Message;
@@ -18,11 +18,11 @@ public interface GoodsInventoryUpdateService {
 	 * @param param UpdateInventoryParam 创建库存所需参数类对象
 	 * @return InventoryCallResult 接口调用结果对象
 	 * 
-	 * @see	CreatorInventoryParam
+	 * @see	CreaterInventoryParam
 	 */
 	@ProductCode(code = "00001", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult createInventory(final String clientIp, final String clientName
-			,final CreatorInventoryParam param,Message traceMessage);
+			,final CreaterInventoryParam param,Message traceMessage);
 	/**
 	 * 更新商品库存
 	 * @param clientIp

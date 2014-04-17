@@ -2,39 +2,39 @@ package com.tuan.inventory.domain;
 
 import org.apache.log4j.Logger;
 
-import com.tuan.inventory.domain.base.GoodsSelectionDomain;
-import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.domain.base.GoodsDomain;
+import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
-import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
-public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
+public class GoodsQueryDomain extends GoodsDomain{
 	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
-	private static Logger logger = Logger.getLogger(GoodsSelectionQueryDomain.class);
-	private GoodsSelectionQueryInnerResp resp;		//请求验返回对象
+	private static Logger logger = Logger.getLogger(GoodsQueryDomain.class);
+	private GoodsQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
-	private GoodsSelectionQueryDomain(){}
+	private GoodsQueryDomain(){}
 	
-	public static GoodsSelectionQueryDomain makeInstance(RequestPacket packet,String goodsId,String selectionId,LogModel lm
+	public static GoodsQueryDomain makeInstance(RequestPacket packet,String goodsId,LogModel lm
 			,Message traceMessage){
-		GoodsSelectionQueryDomain queryDomain = new GoodsSelectionQueryDomain();
-		queryDomain.init(packet,goodsId, selectionId,lm,traceMessage);
+		GoodsQueryDomain queryDomain = new GoodsQueryDomain();
+		queryDomain.init(packet,goodsId,lm,traceMessage);
 		return queryDomain;
 	}
 	
 	@Override
 	public ResultEnum doBusiness() {
-		String method = "GoodsSelectionQueryDomain.doBusiness";
+		String method = "GoodsQueryDomain.doBusiness";
 		
 		//String respStr = null;
-		CallResult<GoodsSelectionModel> queryCallResult = null;
+		CallResult<GoodsInventoryModel> queryCallResult = null;
 		try {
 			//请求银商，卡号转加密(卡签名)接口
-			queryCallResult = goodsInventoryQueryService.findGoodsSelectionBySelectionId(clientIp, clientName, Long.parseLong(goodsId), Long.parseLong(selectionId));
+			queryCallResult = goodsInventoryQueryService.findGoodsInventoryByGoodsId(clientIp, clientName, Long.parseLong(goodsId));
 			
 		} catch (Exception e) {
 			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
@@ -44,15 +44,13 @@ public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 		if (queryCallResult == null || !queryCallResult.isSuccess()) {
 			return ResultEnum.INVALID_RETURN;
 		}else {
-			GoodsSelectionModel goodsSelection = queryCallResult.getBusinessResult();
-			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
-			resp.setGoodsSelection(goodsSelection);
+			GoodsInventoryModel gsModel = queryCallResult.getBusinessResult();
+			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
+			resp.setGoodsInventory(gsModel);
 			this.resp = resp;
-			//this.resp = (GoodsSelectionQueryInnerResp)new Gson().fromJson(respStr, respType);
 			this.resp.addHeadParameMap4Resp(parameterRespMap);
 			//respStr = JsonUtils.convertObjectToString(gsModel);
 		}
-	
 		}catch(Exception e){
 			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(), e);
 			return ResultEnum.INVALID_RETURN;
@@ -63,11 +61,11 @@ public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 	
 
 	@Override
-	public GoodsSelectionQueryInnerResp makeResult(ResultEnum resultStatusEnum) {
-		GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
+	public GoodsQueryInnerResp makeResult(ResultEnum resultStatusEnum) {
+		GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
 		resp.setResult(resultStatusEnum.getCode(), resultStatusEnum.getDescription());
 		if(this.resp != null){
-			resp.setGoodsSelection(this.resp.getGoodsSelection());
+			resp.setGoodsInventory(this.resp.getGoodsInventory());
 		}
 		//return JsonUtils.convertObjectToString(resp);
 		return (resp);

@@ -5,11 +5,19 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tuan.inventory.domain.GoodsQueryDomain;
+import com.tuan.inventory.domain.GoodsSelectionListQueryDomain;
 import com.tuan.inventory.domain.GoodsSelectionQueryDomain;
 import com.tuan.inventory.domain.GoodsSupplierQueryDomain;
+import com.tuan.inventory.domain.GoodsSuppliersListQueryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.resp.inner.GoodsQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsSelectionListQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsSuppliersListQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsSuppliersQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.utils.LogModel;
 import com.tuan.inventory.utils.StringUtils;
@@ -27,12 +35,12 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 public class GoodsInventoryQueryController {
 
 	
-	@RequestMapping(value = "/gselection")
-	public @ModelAttribute("resp")GoodsQueryInnerResp goodsSelectionQuery(@ModelAttribute("inputPacket") RequestPacket packet
+	@RequestMapping(value = "/gselection", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsSelectionQueryInnerResp goodsSelectionQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String selectionId,HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);
 		if(traceMessage == null){
-			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
+			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
@@ -41,7 +49,7 @@ public class GoodsInventoryQueryController {
 		GoodsSelectionQueryDomain queryDomain = GoodsSelectionQueryDomain.makeGoodsSelectionQueryDomain(packet
 				,  goodsId, selectionId,lm,traceMessage);
 		if(queryDomain == null){
-			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
+			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
@@ -49,20 +57,20 @@ public class GoodsInventoryQueryController {
 		ResultEnum resEnum = queryDomain.checkParameter();
 		//参数检查未通过时
 		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
-			return (GoodsQueryInnerResp) queryDomain.makeResult(resEnum);
+			return (GoodsSelectionQueryInnerResp) queryDomain.makeResult(resEnum);
 		}
 		//调用合作方接口
 		resEnum = queryDomain.doBusiness();
 		//返回结果
-		return (GoodsQueryInnerResp) queryDomain.makeResult(resEnum);
+		return (GoodsSelectionQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	
-	@RequestMapping(value = "/gSuppliers")
-	public @ModelAttribute("resp")GoodsQueryInnerResp goodsSuppliersQuery(@ModelAttribute("inputPacket") RequestPacket packet
+	@RequestMapping(value = "/gsuppliers", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsSuppliersQueryInnerResp goodsSuppliersQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String suppliersId,HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);
 		if(traceMessage == null){
-			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
+			GoodsSuppliersQueryInnerResp resp = new GoodsSuppliersQueryInnerResp();
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
@@ -70,6 +78,35 @@ public class GoodsInventoryQueryController {
 		LogModel lm = (LogModel)request.getAttribute("lm");
 		GoodsSupplierQueryDomain queryDomain = GoodsSupplierQueryDomain.makeGoodsSupplierQueryDomain(packet
 				,  goodsId, suppliersId,lm,traceMessage);
+		if(queryDomain == null){
+			GoodsSuppliersQueryInnerResp resp = new GoodsSuppliersQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		//接口参数校验
+		ResultEnum resEnum = queryDomain.checkParameter();
+		//参数检查未通过时
+		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
+			return (GoodsSuppliersQueryInnerResp) queryDomain.makeResult(resEnum);
+		}
+		//调用合作方接口
+		resEnum = queryDomain.doBusiness();
+		//返回结果
+		return (GoodsSuppliersQueryInnerResp) queryDomain.makeResult(resEnum);
+	}
+	
+	@RequestMapping(value = "/goods", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsQueryInnerResp goodsInventoryQuery(@ModelAttribute("inputPacket") RequestPacket packet
+			,String goodsId,HttpServletRequest request) {
+		Message traceMessage = StringUtils.makeTraceMessage(packet);
+		if(traceMessage == null){
+			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsInventoryQuery");
+		LogModel lm = (LogModel)request.getAttribute("lm");
+		GoodsQueryDomain queryDomain = GoodsQueryDomain.makeGoodsQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
@@ -87,4 +124,61 @@ public class GoodsInventoryQueryController {
 		return (GoodsQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	
+	@RequestMapping(value = "/gselectionlist", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQuery(@ModelAttribute("inputPacket") RequestPacket packet
+			,String goodsId,HttpServletRequest request) {
+		Message traceMessage = StringUtils.makeTraceMessage(packet);
+		if(traceMessage == null){
+			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSelectionListQuery");
+		LogModel lm = (LogModel)request.getAttribute("lm");
+		GoodsSelectionListQueryDomain queryDomain = GoodsSelectionListQueryDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,lm,traceMessage);
+		if(queryDomain == null){
+			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		//接口参数校验
+		ResultEnum resEnum = queryDomain.checkParameter();
+		//参数检查未通过时
+		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
+			return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
+		}
+		//调用合作方接口
+		resEnum = queryDomain.doBusiness();
+		//返回结果
+		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
+	}
+	
+	@RequestMapping(value = "/gselectionlist", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsSuppliersListQueryInnerResp goodsSuppliersListQuery(@ModelAttribute("inputPacket") RequestPacket packet
+			,String goodsId,HttpServletRequest request) {
+		Message traceMessage = StringUtils.makeTraceMessage(packet);
+		if(traceMessage == null){
+			GoodsSuppliersListQueryInnerResp resp = new GoodsSuppliersListQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSuppliersListQuery");
+		LogModel lm = (LogModel)request.getAttribute("lm");
+		GoodsSuppliersListQueryDomain queryDomain = GoodsSuppliersListQueryDomain.makeGoodsSuppliersListQueryDomain(packet,goodsId,lm,traceMessage);
+		if(queryDomain == null){
+			GoodsSuppliersListQueryInnerResp resp = new GoodsSuppliersListQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		//接口参数校验
+		ResultEnum resEnum = queryDomain.checkParameter();
+		//参数检查未通过时
+		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
+			return (GoodsSuppliersListQueryInnerResp) queryDomain.makeResult(resEnum);
+		}
+		//调用合作方接口
+		resEnum = queryDomain.doBusiness();
+		//返回结果
+		return (GoodsSuppliersListQueryInnerResp) queryDomain.makeResult(resEnum);
+	}
 }

@@ -4,21 +4,21 @@ import java.util.SortedMap;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tuan.inventory.model.GoodsInventoryModel;
+import com.tuan.inventory.model.GoodsSuppliersModel;
 
 @XmlRootElement(name = "resp")
-public class GoodsQueryInnerResp extends InnerResp{
+public class GoodsSuppliersQueryInnerResp extends InnerResp{
 	private static final long serialVersionUID = 7564831529850221447L;
 	
 	/**商品选型详情**/
-	private GoodsInventoryModel goodsInventory;
+	private GoodsSuppliersModel goodsSuppliers;
 
-	public GoodsInventoryModel getGoodsInventory() {
-		return goodsInventory;
+	public GoodsSuppliersModel getGoodsSuppliers() {
+		return goodsSuppliers;
 	}
 
-	public void setGoodsInventory(GoodsInventoryModel goodsInventory) {
-		this.goodsInventory = goodsInventory;
+	public void setGoodsSuppliers(GoodsSuppliersModel goodsSuppliers) {
+		this.goodsSuppliers = goodsSuppliers;
 	}
 
 	/**

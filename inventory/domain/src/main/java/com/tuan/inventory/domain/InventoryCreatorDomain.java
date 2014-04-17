@@ -22,14 +22,14 @@ import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
-import com.tuan.inventory.model.param.CreatorInventoryParam;
+import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 
 public class InventoryCreatorDomain extends AbstractDomain {
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
-	private CreatorInventoryParam param;
+	private CreaterInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
@@ -50,7 +50,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	boolean addSuppliers = false;
 
 	public InventoryCreatorDomain(String clientIp, String clientName,
-			CreatorInventoryParam param, LogModel lm) {
+			CreaterInventoryParam param, LogModel lm) {
 		this.clientIp = clientIp;
 		this.clientName = clientName;
 		this.param = param;

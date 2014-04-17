@@ -41,7 +41,7 @@ public class QueueConstant {
 	
 	/** 系统异常常数 */
 	public static final int NO_DATA = 0;// 没有可用的数据源
-	public static final int SUCCESS = 1;// 日志操作成功
+	public static final int SUCCESS = 1;// 操作成功
 	
 	public static final int DATA_EXISTED = 2;// 数据已经存在
 	

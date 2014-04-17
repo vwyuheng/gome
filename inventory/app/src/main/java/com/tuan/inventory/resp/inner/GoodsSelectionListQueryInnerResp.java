@@ -1,26 +1,26 @@
 package com.tuan.inventory.resp.inner;
 
+import java.util.List;
 import java.util.SortedMap;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.tuan.inventory.model.GoodsInventoryModel;
+import com.tuan.inventory.model.GoodsSelectionModel;
 
 @XmlRootElement(name = "resp")
-public class GoodsQueryInnerResp extends InnerResp{
+public class GoodsSelectionListQueryInnerResp extends InnerResp{
 	private static final long serialVersionUID = 7564831529850221447L;
 	
-	/**商品选型详情**/
-	private GoodsInventoryModel goodsInventory;
+	/**商品选型列表**/
+	private List<GoodsSelectionModel> gSelectionList;
 
-	public GoodsInventoryModel getGoodsInventory() {
-		return goodsInventory;
+	public List<GoodsSelectionModel> getgSelectionList() {
+		return gSelectionList;
 	}
 
-	public void setGoodsInventory(GoodsInventoryModel goodsInventory) {
-		this.goodsInventory = goodsInventory;
+	public void setgSelectionList(List<GoodsSelectionModel> gSelectionList) {
+		this.gSelectionList = gSelectionList;
 	}
-
 	/**
 	 * 为相应签名填充参数
 	 * @param reqMap

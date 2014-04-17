@@ -1,40 +1,42 @@
 package com.tuan.inventory.domain;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
-import com.tuan.inventory.domain.base.GoodsSelectionDomain;
-import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.domain.base.GoodsSuppliersListDomain;
+import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
-import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
+import com.tuan.inventory.resp.inner.GoodsSuppliersListQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
-public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
+public class GoodsSuppliersListQueryDomain extends GoodsSuppliersListDomain{
 	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
-	private static Logger logger = Logger.getLogger(GoodsSelectionQueryDomain.class);
-	private GoodsSelectionQueryInnerResp resp;		//请求验返回对象
+	private static Logger logger = Logger.getLogger(GoodsSuppliersListQueryDomain.class);
+	private GoodsSuppliersListQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
-	private GoodsSelectionQueryDomain(){}
+	private GoodsSuppliersListQueryDomain(){}
 	
-	public static GoodsSelectionQueryDomain makeInstance(RequestPacket packet,String goodsId,String selectionId,LogModel lm
+	public static GoodsSuppliersListQueryDomain makeInstance(RequestPacket packet,String goodsId,LogModel lm
 			,Message traceMessage){
-		GoodsSelectionQueryDomain queryDomain = new GoodsSelectionQueryDomain();
-		queryDomain.init(packet,goodsId, selectionId,lm,traceMessage);
+		GoodsSuppliersListQueryDomain queryDomain = new GoodsSuppliersListQueryDomain();
+		queryDomain.init(packet,goodsId,lm,traceMessage);
 		return queryDomain;
 	}
 	
 	@Override
 	public ResultEnum doBusiness() {
-		String method = "GoodsSelectionQueryDomain.doBusiness";
+		String method = "GoodsQueryDomain.doBusiness";
 		
 		//String respStr = null;
-		CallResult<GoodsSelectionModel> queryCallResult = null;
+		CallResult<List<GoodsSuppliersModel>> queryCallResult = null;
 		try {
 			//请求银商，卡号转加密(卡签名)接口
-			queryCallResult = goodsInventoryQueryService.findGoodsSelectionBySelectionId(clientIp, clientName, Long.parseLong(goodsId), Long.parseLong(selectionId));
+			queryCallResult = goodsInventoryQueryService.findGoodsSuppliersListByGoodsId(clientIp, clientName, Long.parseLong(goodsId));
 			
 		} catch (Exception e) {
 			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
@@ -44,15 +46,13 @@ public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 		if (queryCallResult == null || !queryCallResult.isSuccess()) {
 			return ResultEnum.INVALID_RETURN;
 		}else {
-			GoodsSelectionModel goodsSelection = queryCallResult.getBusinessResult();
-			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
-			resp.setGoodsSelection(goodsSelection);
+			List<GoodsSuppliersModel> gSuppliersList = queryCallResult.getBusinessResult();
+			GoodsSuppliersListQueryInnerResp resp = new GoodsSuppliersListQueryInnerResp();
+			resp.setgSuppliersList(gSuppliersList);
 			this.resp = resp;
-			//this.resp = (GoodsSelectionQueryInnerResp)new Gson().fromJson(respStr, respType);
 			this.resp.addHeadParameMap4Resp(parameterRespMap);
-			//respStr = JsonUtils.convertObjectToString(gsModel);
 		}
-	
+			
 		}catch(Exception e){
 			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(), e);
 			return ResultEnum.INVALID_RETURN;
@@ -63,11 +63,11 @@ public class GoodsSelectionQueryDomain extends GoodsSelectionDomain{
 	
 
 	@Override
-	public GoodsSelectionQueryInnerResp makeResult(ResultEnum resultStatusEnum) {
-		GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
+	public GoodsSuppliersListQueryInnerResp makeResult(ResultEnum resultStatusEnum) {
+		GoodsSuppliersListQueryInnerResp resp = new GoodsSuppliersListQueryInnerResp();
 		resp.setResult(resultStatusEnum.getCode(), resultStatusEnum.getDescription());
 		if(this.resp != null){
-			resp.setGoodsSelection(this.resp.getGoodsSelection());
+			resp.setgSuppliersList(this.resp.getgSuppliersList());
 		}
 		//return JsonUtils.convertObjectToString(resp);
 		return (resp);

@@ -15,6 +15,5 @@ import javax.xml.bind.annotation.XmlRootElement;
 public abstract class AbstractPacket implements Serializable {
 
 	private static final long serialVersionUID = 1677345171490009442L;
-	
-	
+
 }
