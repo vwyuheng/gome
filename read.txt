@@ -1,32 +1,32 @@
-///////////////// ÑĞ·¢»·¾³ ////////////////////////////////////////
-Çå¿Õ»·¾³£º
+///////////////// ç ”å‘ç¯å¢ƒ ////////////////////////////////////////
+æ¸…ç©ºç¯å¢ƒï¼š
 mvn clean -DAPP_ENV=test
 
-½¨Á¢Eclipse»·¾³£º
+å»ºç«‹Eclipseç¯å¢ƒï¼š
 mvn eclipse:eclipse -DAPP_ENV=test
 
-Çå¿ÕEclipse»·¾³£º
+æ¸…ç©ºEclipseç¯å¢ƒï¼š
 mvn eclipse:clean -DAPP_ENV=test
 
-Ö»±àÒë£º
+åªç¼–è¯‘ï¼š
 mvn compile -DAPP_ENV=test
 
-Ö»´ò°ü£º
+åªæ‰“åŒ…ï¼š
 mvn package -DAPP_ENV=test  -Dmaven.test.skip=true
 
-Ö»×°Åä£º
+åªè£…é…ï¼š
 mvn process-resources -DAPP_ENV=test
 
-´ò°ü+×°Åä+°²×°¶ş½øÖÆ£º
+æ‰“åŒ…+è£…é…+å®‰è£…äºŒè¿›åˆ¶ï¼š
 mvn install -DAPP_ENV=test -Dmaven.test.skip=true
 
 
-///////////////// Éú²ú»·¾³ ////////////////////////////////////////
+///////////////// ç”Ÿäº§ç¯å¢ƒ ////////////////////////////////////////
 
-Çå¿Õ»·¾³£º
+æ¸…ç©ºç¯å¢ƒï¼š
 mvn clean -DAPP_ENV=prod
 
-´ò°ü+×°Åä+°²×°¶ş½øÖÆ£º
+æ‰“åŒ…+è£…é…+å®‰è£…äºŒè¿›åˆ¶ï¼š
 mvn install -DAPP_ENV=prod -Dmaven.test.skip=true
 mvn install -DAPP_ENV=test -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.dev_test
 
