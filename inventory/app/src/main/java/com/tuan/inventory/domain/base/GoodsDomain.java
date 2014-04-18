@@ -19,8 +19,6 @@ public abstract class GoodsDomain extends AbstractGoodsInventoryDomain{
 	/**
 	 * 初始化方法
 	 * @param packet
-	 * @param cardNo 银行卡号(未加密)
-	 * @param mobile 手机号
 	 * @return
 	 */
 	public void init(RequestPacket packet,String goodsId
@@ -35,8 +33,6 @@ public abstract class GoodsDomain extends AbstractGoodsInventoryDomain{
 	/**
 	 * 创建卡签名domain
 	 * @param packet	窝窝内部统一的请求报文头
-	 * @param cardNo	银行卡号(未加密)
-	 * @param mobile	手机号
 	 * @return
 	 */
 	public static GoodsQueryDomain makeGoodsQueryDomain(RequestPacket packet,String goodsId,LogModel lm,Message traceMessage){

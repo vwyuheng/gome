@@ -61,10 +61,10 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		this.lm = lm;
 		this.messageRoot = messageRoot;
 		makeParameterMap(this.parameterMap);
-		
+		this.param = this.fillUpdateParam();
 	}
 	
-	public UpdateInventoryParam fillCreateParam() {
+	public UpdateInventoryParam fillUpdateParam() {
 		UpdateInventoryParam param = new UpdateInventoryParam();
 		param.setGoodsId(this.goodsId);
 		param.setUserId(userId);

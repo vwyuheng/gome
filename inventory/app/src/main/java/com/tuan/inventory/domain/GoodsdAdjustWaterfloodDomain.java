@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
-import com.tuan.inventory.model.param.CallbackParam;
+import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
 import com.tuan.inventory.resp.outer.GoodsInventoryUpdateResp;
@@ -16,41 +16,49 @@ import com.tuan.inventory.service.GoodsInventoryUpdateService;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
-public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
-	private String ack;
-	private String key;
-		
+public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
+	//type 2:商品id，4:选型id，6:分店id
+	private String id;
+	private String userId;
+	//2:商品调整，4.选型库存调整 6.分店库存调整
+	private String type;
+	private int num;
+
 	private LogModel lm;
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
-	private CallbackParam param;
+	private AdjustWaterfloodParam param;
 	private UpdateRequestPacket packet;
-	private static Logger logger = Logger.getLogger(GoodsdAckInventoryDomain.class);
+	private static Logger logger = Logger.getLogger(GoodsdAdjustWaterfloodDomain.class);
 	
-	public GoodsdAckInventoryDomain(UpdateRequestPacket packet,String ack,String key,LogModel lm,Message messageRoot){
+	public GoodsdAdjustWaterfloodDomain(UpdateRequestPacket packet,String id,String userId,String type,String num,LogModel lm,Message messageRoot){
 		this.packet = packet;
-		this.ack = ack;
-		this.key = key;
+		this.id = id;
+		this.userId = userId;
+		this.type = type;
+		this.num = StringUtils.isEmpty(num)?0:Integer.valueOf(num);
 		this.lm = lm;
 		this.messageRoot = messageRoot;
 		makeParameterMap(this.parameterMap);
-		this.param = this.fillCallbackParam();
+		this.param = this.fillAdjustWParam();
 		
 	}
 	
-	public CallbackParam fillCallbackParam() {
-		CallbackParam param = new CallbackParam();
-		param.setAck(ack);
-		param.setKey(key);
+	public AdjustWaterfloodParam fillAdjustWParam() {
+		AdjustWaterfloodParam param = new AdjustWaterfloodParam();
+		param.setId(id);
+		param.setUserId(userId);
+		param.setType(type);
+		param.setNum(num);
 		return param;
 	}
 	@Override
 	public ResultEnum checkParameter() {
-		if(StringUtils.isEmpty(ack)){
-			return ResultEnum.INVALID_ACK;
+		if(StringUtils.isEmpty(id)){
+			return ResultEnum.INVALID_ADJUST_ID;
 		}
-		if(StringUtils.isEmpty(key)){
-			return ResultEnum.INVALID_KEY;
+		if(StringUtils.isEmpty(type)){
+			return ResultEnum.INVALID_INVENTORY_TYPE;
 		}
 		ResultEnum checkPackEnum = packet.checkParameter();
 		if(checkPackEnum.compareTo(ResultEnum.SUCCESS) != 0){
@@ -63,10 +71,9 @@ public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
 
 	@Override
 	public ResultEnum doBusiness() {
-		
 		try {
 			//调用
-			InventoryCallResult resp = goodsInventoryUpdateService.callbackAckInventory(
+			InventoryCallResult resp = goodsInventoryUpdateService.adjustmentWaterflood(
 					clientIp, clientName, param, messageRoot);
 			if(resp == null){
 				return ResultEnum.ERROR_2000;
@@ -75,7 +82,7 @@ public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.INVALID_RETURN;
 			}
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
+			logger.error(lm.setMethod("GoodsdAdjustInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
 			return ResultEnum.ERROR_2000;
 		}
 		return ResultEnum.SUCCESS;
@@ -97,9 +104,10 @@ public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
 	
 	@Override
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
-		parameterMap.put("ack", ack);
-		parameterMap.put("key", key);
-		
+		parameterMap.put("id", id);
+		parameterMap.put("userId", userId);
+		parameterMap.put("type", type);
+		parameterMap.put("num", String.valueOf(num));
 		packet.addParameterMap(parameterMap);
 	}
 

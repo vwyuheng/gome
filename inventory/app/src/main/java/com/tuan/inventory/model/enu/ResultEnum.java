@@ -17,22 +17,11 @@ public enum ResultEnum {
 	
 	NO_PARAMETER		("1009",	"请求参数不能为空"),
 	INVALID_RETURN      ("1010",	"返回值不正确"),
-	INVALID_SHOP_NO		("100011",	"无效的门店号"),
-	INVALID_TERM_NO		("100012",	"无效的终端号"),
-	INVALID_PART_CARD_NO("100013",	"无效的部分卡号"),
-	INVALID_AMOUNT		("100014",	"无效的消费金额"),
-	INVALID_COUPON_NO	("100015",	"无效的券号"),
-	INVALID_EVENT_NO	("100016",	"无效的活动号"),
-	INVALID_EVENT_TITLE	("100017",	"无效的活动主题"),
-	INVALID_EVENT_DESC	("100018",	"无效的活动介绍"),
-	INVALID_BEGIN_DATE	("100019",	"无效的开始时间"),
-	INVALID_END_DATE	("100020",	"无效的结束时间"),
-	INVALID_EVENT_RULE	("100021",	"无效的活动规则"),
-	INVALID_RULE_DESC	("100022",	"无效的规则描述"),
-	INVALID_SPEC_BANK_FLAG("100023",	"无效的限制银行"),
-	INVALID_EVENT_STATUS("100024",	"无效的活动状态"),
-	INVALID_EVENT_LINK	("100025",	"无效的活动链接"),
-	INVALID_START_PAGE	("100026",	"无效的起始页"),
+	
+	INVALID_ADJUST_ID		("1012",	"无效的库存调整id"),
+	INVALID_INVENTORY_TYPE		("1013",	"无效的库存类型"),
+	INVALID_PERIOD     ("1014",	"无效的时间间隔"),
+	
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
 	NET_ERROR			("10998",	"网络异常"),
@@ -84,6 +73,15 @@ public enum ResultEnum {
 		}
 		if(code.equals("1011")){
 			return ResultEnum.INVALID_KEY;
+		}
+		if(code.equals("1012")){
+			return ResultEnum.INVALID_ADJUST_ID;
+		}
+		if(code.equals("1013")){
+			return ResultEnum.INVALID_INVENTORY_TYPE;
+		}
+		if(code.equals("1014")){
+			return ResultEnum.INVALID_PERIOD;
 		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;

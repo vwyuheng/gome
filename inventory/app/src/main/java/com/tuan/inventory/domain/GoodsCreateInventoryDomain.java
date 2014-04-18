@@ -68,6 +68,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 		this.lm = lm;
 		this.messageRoot = messageRoot;
 		makeParameterMap(this.parameterMap);
+		this.param = this.fillCreateParam();
 		
 	}
 	

@@ -9,11 +9,6 @@
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 	<context:component-scan base-package="com.tuan.inventory.controller" />
-	
-	
-<!-- 	
-
-    <context:component-scan base-package="com.tuan.inventory.controller" />
 
 	<bean
 		class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
@@ -70,7 +65,6 @@
 	<bean id="beanNameViewResolver"
 		class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 		
-		 -->
-	<!-- <import resource="/WEB-INF/inventory-root-bean.xml" />  -->
-	<!-- <import resource="/WEB-INF/test.xml" />  -->
+		
+	
 </beans>

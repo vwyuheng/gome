@@ -33,7 +33,7 @@ public class GoodsQueryDomain extends GoodsDomain{
 		//String respStr = null;
 		CallResult<GoodsInventoryModel> queryCallResult = null;
 		try {
-			//请求银商，卡号转加密(卡签名)接口
+			//
 			queryCallResult = goodsInventoryQueryService.findGoodsInventoryByGoodsId(clientIp, clientName, Long.parseLong(goodsId));
 			
 		} catch (Exception e) {

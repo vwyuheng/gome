@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tuan.inventory.domain.GoodsCreateInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAckInventoryDomain;
+import com.tuan.inventory.domain.GoodsdAdjustInventoryDomain;
+import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
 import com.tuan.inventory.domain.GoodsdUpdateInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.param.rest.CreaterInventoryRestParam;
@@ -105,6 +107,54 @@ public class GoodsInventoryUpdateController {
 		resEnum = ackInventoryDomain.doBusiness();
 		// 返回结果
 		return ackInventoryDomain.makeResult(resEnum);
+	}
+
+	@RequestMapping(value = "/adjusti", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentInventory(@ModelAttribute UpdateRequestPacket packet,
+			String id, String userId,String type, String num, HttpServletRequest request) {
+		
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"adjustmentInventory");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		GoodsdAdjustInventoryDomain adjustInventoryDomain = new GoodsdAdjustInventoryDomain(
+				packet, id,userId,type,num, lm, messageRoot);
+		adjustInventoryDomain
+		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = adjustInventoryDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return adjustInventoryDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = adjustInventoryDomain.doBusiness();
+		// 返回结果
+		return adjustInventoryDomain.makeResult(resEnum);
+	}
+
+	@RequestMapping(value = "/adjustw", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentWaterflood(@ModelAttribute UpdateRequestPacket packet,
+			String id, String userId,String type, String num, HttpServletRequest request) {
+		
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"adjustmentWaterflood");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		GoodsdAdjustWaterfloodDomain adjustWaterfloodDomain = new GoodsdAdjustWaterfloodDomain(
+				packet, id,userId,type,num, lm, messageRoot);
+		adjustWaterfloodDomain
+		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = adjustWaterfloodDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return adjustWaterfloodDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = adjustWaterfloodDomain.doBusiness();
+		// 返回结果
+		return adjustWaterfloodDomain.makeResult(resEnum);
 	}
 
 }

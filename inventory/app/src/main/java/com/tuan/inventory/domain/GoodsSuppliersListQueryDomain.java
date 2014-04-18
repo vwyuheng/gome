@@ -35,7 +35,7 @@ public class GoodsSuppliersListQueryDomain extends GoodsSuppliersListDomain{
 		//String respStr = null;
 		CallResult<List<GoodsSuppliersModel>> queryCallResult = null;
 		try {
-			//请求银商，卡号转加密(卡签名)接口
+			//
 			queryCallResult = goodsInventoryQueryService.findGoodsSuppliersListByGoodsId(clientIp, clientName, Long.parseLong(goodsId));
 			
 		} catch (Exception e) {

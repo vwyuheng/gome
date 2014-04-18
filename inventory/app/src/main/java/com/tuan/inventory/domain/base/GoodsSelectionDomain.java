@@ -20,8 +20,6 @@ public abstract class GoodsSelectionDomain extends AbstractGoodsInventoryDomain{
 	/**
 	 * 初始化方法
 	 * @param packet
-	 * @param cardNo 银行卡号(未加密)
-	 * @param mobile 手机号
 	 * @return
 	 */
 	public void init(RequestPacket packet,String goodsId, String selectionId
@@ -37,8 +35,6 @@ public abstract class GoodsSelectionDomain extends AbstractGoodsInventoryDomain{
 	/**
 	 * 创建卡签名domain
 	 * @param packet	窝窝内部统一的请求报文头
-	 * @param cardNo	银行卡号(未加密)
-	 * @param mobile	手机号
 	 * @return
 	 */
 	public static GoodsSelectionQueryDomain makeGoodsSelectionQueryDomain(RequestPacket packet,String goodsId,String selectionId,LogModel lm,Message traceMessage){
