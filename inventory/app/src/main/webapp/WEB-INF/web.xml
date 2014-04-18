@@ -10,7 +10,7 @@
 	<!-- 配置日志初始文件 -->
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
-		<param-value>/WEB-INF/log4j.xml</param-value>
+		<param-value>classpath:/log4j.xml</param-value>
 	</context-param>
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>

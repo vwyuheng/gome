@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
@@ -8,6 +9,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.CollectionUtils;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.model.GoodsSelectionModel;
@@ -26,6 +29,10 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
+	//选型类型
+	private static Type typeSelection = new TypeToken<List<GoodsSelectionRestParam>>(){}.getType();
+	//分店类型
+	private static Type typeSuppliers = new TypeToken<List<GoodsSuppliersRestParam>>(){}.getType();
 	private String userId;
 	private String goodsId;// 商品ID(FK)
 	private String orderId; //订单id
@@ -35,9 +42,9 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	//分店
 	private List<GoodsSuppliersRestParam> reqGoodsSuppliers;
 	//选型
-		private List<GoodsSelectionModel> goodsSelection;
-		//分店
-		private List<GoodsSuppliersModel> goodsSuppliers;
+	private List<GoodsSelectionModel> goodsSelection;
+	//分店
+	private List<GoodsSuppliersModel> goodsSuppliers;
 	private UpdateRequestPacket packet;
 	private UpdateInventoryParam param;		
 	private LogModel lm;
@@ -46,6 +53,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	
 	private static Logger logger = Logger.getLogger(GoodsdUpdateInventoryDomain.class);
 	
+	@SuppressWarnings("unchecked")
 	public GoodsdUpdateInventoryDomain(UpdateRequestPacket packet,UpdateInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {
 			
@@ -53,8 +61,14 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 			this.goodsId = reqparam.getGoodsId();
 			this.orderId = reqparam.getOrderId();
 			this.num = reqparam.getNum();
-			this.reqGoodsSelection = reqparam.getGoodsSelection();
-			this.reqGoodsSuppliers = reqparam.getGoodsSuppliers();
+			String jsonSelectionResult =  reqparam.getGoodsSelection();
+			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
+			if(StringUtils.isNotEmpty(jsonSelectionResult)) {
+				this.reqGoodsSelection =  (List<GoodsSelectionRestParam>)new Gson().fromJson(jsonSelectionResult, typeSelection);
+			}
+			if(StringUtils.isNotEmpty(jsonSuppliersResult)) {
+				this.reqGoodsSuppliers =  (List<GoodsSuppliersRestParam>)new Gson().fromJson(jsonSuppliersResult, typeSuppliers);
+			}
 		}
 		this.packet = packet;
 		//this.reqparam = reqparam;

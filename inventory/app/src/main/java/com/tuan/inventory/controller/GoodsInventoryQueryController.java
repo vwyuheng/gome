@@ -34,7 +34,14 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 @RequestMapping("/query")
 public class GoodsInventoryQueryController {
 
-	
+	/***
+	 * 根据选型id查询选型库存信息
+	 * @param packet
+	 * @param goodsId
+	 * @param selectionId
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/gselection", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSelectionQueryInnerResp goodsSelectionQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String selectionId,HttpServletRequest request) {
@@ -64,7 +71,14 @@ public class GoodsInventoryQueryController {
 		//返回结果
 		return (GoodsSelectionQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
-	
+	/**
+	 * 根据分店id查询分店库存信息
+	 * @param packet
+	 * @param goodsId
+	 * @param suppliersId
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/gsuppliers", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSuppliersQueryInnerResp goodsSuppliersQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String suppliersId,HttpServletRequest request) {
@@ -94,7 +108,13 @@ public class GoodsInventoryQueryController {
 		//返回结果
 		return (GoodsSuppliersQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
-	
+	/**
+	 * 根据商品id查询商品库存
+	 * @param packet
+	 * @param goodsId
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/goods", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsQueryInnerResp goodsInventoryQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
@@ -123,7 +143,13 @@ public class GoodsInventoryQueryController {
 		//返回结果
 		return (GoodsQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
-	
+	/**
+	 * 根据商品id 查询商品选型库存列表
+	 * @param packet
+	 * @param goodsId
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/gselectionlist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
@@ -152,8 +178,14 @@ public class GoodsInventoryQueryController {
 		//返回结果
 		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
-	
-	@RequestMapping(value = "/gselectionlist", method = RequestMethod.POST)
+	/**
+	 * 根据商品id 查询商品分店库存信息列表
+	 * @param packet
+	 * @param goodsId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/gsupplierslist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSuppliersListQueryInnerResp goodsSuppliersListQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);

@@ -1,7 +1,5 @@
 package com.tuan.inventory.model.param.rest;
 
-import java.util.List;
-
 import com.tuan.core.common.lang.TuanBaseDO;
 /**
  * 商品库存参数
@@ -16,9 +14,13 @@ public class UpdateInventoryRestParam extends TuanBaseDO {
 	private String orderId; //订单id
 	private int num;// 扣减的库存
 	//选型
-	private List<GoodsSelectionRestParam> goodsSelection;
+	private String goodsSelection;
 	//分店
-	private List<GoodsSuppliersRestParam> goodsSuppliers;
+	private String goodsSuppliers;
+//	//选型
+//	private List<GoodsSelectionRestParam> goodsSelection;
+//	//分店
+//	private List<GoodsSuppliersRestParam> goodsSuppliers;
 	public String getUserId() {
 		return userId;
 	}
@@ -44,18 +46,19 @@ public class UpdateInventoryRestParam extends TuanBaseDO {
 	public void setNum(int num) {
 		this.num = num;
 	}
-	public List<GoodsSelectionRestParam> getGoodsSelection() {
+	public String getGoodsSelection() {
 		return goodsSelection;
 	}
-	public void setGoodsSelection(List<GoodsSelectionRestParam> goodsSelection) {
+	public void setGoodsSelection(String goodsSelection) {
 		this.goodsSelection = goodsSelection;
 	}
-	public List<GoodsSuppliersRestParam> getGoodsSuppliers() {
+	public String getGoodsSuppliers() {
 		return goodsSuppliers;
 	}
-	public void setGoodsSuppliers(List<GoodsSuppliersRestParam> goodsSuppliers) {
+	public void setGoodsSuppliers(String goodsSuppliers) {
 		this.goodsSuppliers = goodsSuppliers;
 	}
+	
 	
 	
 }

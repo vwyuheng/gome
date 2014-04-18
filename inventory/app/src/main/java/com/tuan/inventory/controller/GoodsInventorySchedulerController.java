@@ -32,7 +32,12 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 public class GoodsInventorySchedulerController {
 	@Resource
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
-
+	/**
+	 * 库存扣减回调确认过的队列调度接口
+	 * @param packet
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/confirm", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")
 	GoodsInventoryUpdateResp confirmQueueConsume(
@@ -57,6 +62,13 @@ public class GoodsInventorySchedulerController {
 		// 返回结果
 		return confirmQueueConsumeDomain.makeResult(resEnum);
 	}
+	/**
+	 * 库存扣减异常确认队列调度接口
+	 * @param packet
+	 * @param period
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/lock", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")
 	GoodsInventoryUpdateResp lockedQueueConsume(
@@ -81,6 +93,12 @@ public class GoodsInventorySchedulerController {
 		// 返回结果
 		return lockedQueueConsumeDomain.makeResult(resEnum);
 	}
+	/**
+	 * 库存状态更新时产生的日志队列调度接口
+	 * @param packet
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/log", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")
 	GoodsInventoryUpdateResp logsQueueConsume(

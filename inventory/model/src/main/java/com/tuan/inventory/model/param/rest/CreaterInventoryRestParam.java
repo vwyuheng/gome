@@ -1,10 +1,6 @@
 package com.tuan.inventory.model.param.rest;
 
-import java.util.List;
-
 import com.tuan.core.common.lang.TuanBaseDO;
-import com.tuan.inventory.model.param.CreaterGoodsSelectionParam;
-import com.tuan.inventory.model.param.CreaterGoodsSuppliersParam;
 /**
  * 商品库存参数
  * @author henry.yu
@@ -19,10 +15,11 @@ public class CreaterInventoryRestParam extends TuanBaseDO {
 	private Integer leftNumber;// 当前剩余数库存默认值:0
 	private int limitStorage; // 0:库存无限制；1：限制库存
 	private Integer waterfloodVal;  //注水值
-	//选型
-	private List<CreaterGoodsSelectionParam> goodsSelection;
-	//分店
-	private List<CreaterGoodsSuppliersParam> goodsSuppliers;
+	//选型:这是一个json串 如：[{"limit":0,"id":2},{"limit":0,"id":1}] [List<CreaterGoodsSelectionParam>]
+	private String goodsSelection;
+	//分店：这是一个json串 如：[{"limit":0,"id":2},{"limit":0,"id":1}]  [List<CreaterGoodsSuppliersParam>]
+	private String goodsSuppliers;
+
 	public String getUserId() {
 		return userId;
 	}
@@ -59,19 +56,18 @@ public class CreaterInventoryRestParam extends TuanBaseDO {
 	public void setWaterfloodVal(Integer waterfloodVal) {
 		this.waterfloodVal = waterfloodVal;
 	}
-	public List<CreaterGoodsSelectionParam> getGoodsSelection() {
+	public String getGoodsSelection() {
 		return goodsSelection;
 	}
-	public void setGoodsSelection(List<CreaterGoodsSelectionParam> goodsSelection) {
+	public void setGoodsSelection(String goodsSelection) {
 		this.goodsSelection = goodsSelection;
 	}
-	public List<CreaterGoodsSuppliersParam> getGoodsSuppliers() {
+	public String getGoodsSuppliers() {
 		return goodsSuppliers;
 	}
-	public void setGoodsSuppliers(List<CreaterGoodsSuppliersParam> goodsSuppliers) {
+	public void setGoodsSuppliers(String goodsSuppliers) {
 		this.goodsSuppliers = goodsSuppliers;
 	}
-	
 	
 	
 }

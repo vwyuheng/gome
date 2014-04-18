@@ -1,5 +1,8 @@
 package com.tuan.inventory.controller;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,6 +11,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.GoodsCreateInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAckInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustInventoryDomain;
@@ -15,6 +20,8 @@ import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
 import com.tuan.inventory.domain.GoodsdUpdateInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.param.rest.CreaterInventoryRestParam;
+import com.tuan.inventory.model.param.rest.RestTestParam;
+import com.tuan.inventory.model.param.rest.TestParam;
 import com.tuan.inventory.model.param.rest.UpdateInventoryRestParam;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
 import com.tuan.inventory.resp.outer.GoodsInventoryUpdateResp;
@@ -36,7 +43,13 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 public class GoodsInventoryUpdateController {
 	@Resource
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
-
+	/**
+	 * 创建商品库存信息,包括其下的选型及分店
+	 * @param packet
+	 * @param param
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/create", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp createInventory(@ModelAttribute UpdateRequestPacket packet,
 			@ModelAttribute CreaterInventoryRestParam param, HttpServletRequest request) {
@@ -60,7 +73,13 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return createInventoryDomain.makeResult(resEnum);
 	}
-	
+	/**
+	 * 库存扣减
+	 * @param packet
+	 * @param param
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/update", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp updateInventory(@ModelAttribute UpdateRequestPacket packet,
 			@ModelAttribute UpdateInventoryRestParam param, HttpServletRequest request) {
@@ -84,7 +103,14 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return updateInventoryDomain.makeResult(resEnum);
 	}
-	
+	/**
+	 * 库存确认回调接口
+	 * @param packet
+	 * @param ack
+	 * @param key
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/ack", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp callbackAckInventory(@ModelAttribute UpdateRequestPacket packet,
 			String ack, String key, HttpServletRequest request) {
@@ -108,7 +134,16 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return ackInventoryDomain.makeResult(resEnum);
 	}
-
+	/**
+	 * 库存调整
+	 * @param packet
+	 * @param id
+	 * @param userId
+	 * @param type
+	 * @param num
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/adjusti", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentInventory(@ModelAttribute UpdateRequestPacket packet,
 			String id, String userId,String type, String num, HttpServletRequest request) {
@@ -132,7 +167,16 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return adjustInventoryDomain.makeResult(resEnum);
 	}
-
+	/**
+	 * 注水值调整接口
+	 * @param packet
+	 * @param id
+	 * @param userId
+	 * @param type
+	 * @param num
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/adjustw", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentWaterflood(@ModelAttribute UpdateRequestPacket packet,
 			String id, String userId,String type, String num, HttpServletRequest request) {
@@ -157,4 +201,20 @@ public class GoodsInventoryUpdateController {
 		return adjustWaterfloodDomain.makeResult(resEnum);
 	}
 
+	
+	
+	
+	
+	@RequestMapping(value = "/test", method = RequestMethod.POST)
+	public void test(@ModelAttribute UpdateRequestPacket packet,
+			@ModelAttribute RestTestParam param, HttpServletRequest request) {
+		  Type type = new TypeToken<List<TestParam>>(){}.getType();
+		  String jsonResult = param.getGoodsSelection();
+		  @SuppressWarnings("unchecked")
+		List<TestParam> tet1= (List<TestParam>)new Gson().fromJson(jsonResult, type);
+		System.out.println("packet="+packet);
+		System.out.println("param="+param);
+		System.out.println("tet1="+tet1);
+		
+	}
 }

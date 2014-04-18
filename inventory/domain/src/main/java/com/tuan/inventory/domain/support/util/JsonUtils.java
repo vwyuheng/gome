@@ -1,14 +1,22 @@
 package com.tuan.inventory.domain.support.util;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.tuan.inventory.model.param.rest.TestParam;
 
 public class JsonUtils {
 
 	private static final Log logger = LogFactory.getLog(JsonUtils.class);
 	private static final ObjectMapper objectMapper = new ObjectMapper();
-
+	private static Type type = new TypeToken<List<TestParam>>(){}.getType();
 	/**
 	 * 将对象转换为json字符串
 	 * 
@@ -54,13 +62,18 @@ public class JsonUtils {
 		return res;
 	}
 	public static void main(String[] args) {
-		//QueueModel queue = new QueueModel();
-		//queue.setId(1l);;
-		//queue.setQueueStatusEnum(QueueStatusEnum.DELETED);
-	//	String jsonData = convertObjectToString(queue);
-		//System.out.println(jsonData);
-		//queue = convertStringToObject(jsonData, QueueModel.class);
-		//System.out.println(queue);
+		List<TestParam> goodsSelection = new ArrayList<TestParam>();
+		for(int i=2;i>0;i--) {
+			TestParam test = new TestParam();
+			test.setId((long) i);
+			test.setLimit(0);
+			goodsSelection.add(test);
+		}
+		String jsonResult = JsonUtils.convertObjectToString(goodsSelection);
+		System.out.println(jsonResult);
+		List<TestParam> tet1= (List<TestParam>)new Gson().fromJson(jsonResult, type);
 		
+		System.out.println("tet1="+tet1+",size="+tet1.size());
 	}
+	
 }
