@@ -162,9 +162,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		// 删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
 		String jsonMember = JSONObject.fromObject(queueDO)
 				.toString();
-		// 缓存队列的key、member信息 1小时失效
+		// 缓存队列的key、member信息 一年失效
 		this.redisCacheUtil.setex(QueueConstant.QUEUE_KEY_MEMBER + ":"
-				+ String.valueOf(queueDO.getId()), 3600, jsonMember);
+				+ String.valueOf(queueDO.getId()), 3600*24*365, jsonMember);
 		// zset key score value 其中score作为status用
 		this.redisCacheUtil.zadd(QueueConstant.QUEUE_SEND_MESSAGE,
 				Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
