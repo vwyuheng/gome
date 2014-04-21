@@ -3,8 +3,6 @@ package com.tuan.inventory.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -18,6 +16,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -332,29 +331,29 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						.getDescription());
 				updateActionDO.setItem(StringUtil
 						.getIdsStringSelection(selectionList));
-				updateActionDO.setOriginalInventory(JSONObject.fromObject(
-						selectionParam).toString());
-				updateActionDO.setInventoryChange(JSONObject.fromObject(
-						selectionParam).toString());
+				updateActionDO.setOriginalInventory(StringUtils.isEmpty(updateActionDO.getOriginalInventory())?JsonUtils.convertObjectToString(selectionParam):updateActionDO.getOriginalInventory()+",选型："+JsonUtils.convertObjectToString(selectionParam));
+				updateActionDO.setInventoryChange(StringUtils.isEmpty(updateActionDO.getInventoryChange())?JsonUtils.convertObjectToString(selectionParam):updateActionDO.getInventoryChange()+",选型："+JsonUtils.convertObjectToString(selectionParam));
 			}
 			if (!CollectionUtils.isEmpty(suppliersList)) {
 				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SUPPLIERS
 						.getDescription());
 				updateActionDO.setItem(StringUtil
 						.getIdsStringSuppliers(suppliersList));
-				updateActionDO.setOriginalInventory(JSONObject.fromObject(
-						suppliersParam).toString());
-				updateActionDO.setInventoryChange(JSONObject.fromObject(
-						suppliersParam).toString());
+				updateActionDO.setOriginalInventory(StringUtils.isEmpty(updateActionDO.getOriginalInventory())?JsonUtils.convertObjectToString(suppliersParam):updateActionDO.getOriginalInventory()+",分店："+JsonUtils.convertObjectToString(suppliersParam));
+				updateActionDO.setInventoryChange(StringUtils.isEmpty(updateActionDO.getInventoryChange())?JsonUtils.convertObjectToString(suppliersParam):updateActionDO.getInventoryChange()+",分店："+JsonUtils.convertObjectToString(suppliersParam));
 			}
 			updateActionDO.setActionType(ResultStatusEnum.DEDUCTION_INVENTORY
 					.getDescription());
-			this.userId = (Long.valueOf(param.getUserId()));
+			if(!StringUtils.isEmpty(param.getUserId())) {
+				this.userId = (Long.valueOf(param.getUserId()));
+			}
 			updateActionDO.setUserId(userId);
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
-			updateActionDO.setOrderId(Long.valueOf(param.getOrderId()));
-			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // 操作内容
+			if(!StringUtils.isEmpty(param.getOrderId())) {
+				updateActionDO.setOrderId(Long.valueOf(param.getOrderId()));
+			}
+			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("修改库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
@@ -377,8 +376,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		try {
 			queueDO.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
 			queueDO.setGoodsId(goodsId);
-			queueDO.setOrderId(Long.valueOf(param.getOrderId()));
-			queueDO.setUserId(Long.valueOf(param.getUserId()));
+			if(!StringUtils.isEmpty(param.getOrderId())) {
+				queueDO.setOrderId(Long.valueOf(param.getOrderId()));
+			}
+			if(!StringUtils.isEmpty(param.getUserId())) {
+				queueDO.setUserId(Long.valueOf(param.getUserId()));
+			}
 			queueDO.setCreateTime(TimeUtil.getNowTimestamp10Long());
 			// 封装库存变化信息到队列
 			queueDO.setOriginalGoodsInventory(originalGoodsInventory);
@@ -408,9 +411,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getGoodsId())) {
 			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}
-		if (StringUtils.isEmpty(param.getOrderId())) {
+		/*if (StringUtils.isEmpty(param.getOrderId())) {
 			return CreateInventoryResultEnum.INVALID_ORDER_ID;
-		}
+		}*/
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 

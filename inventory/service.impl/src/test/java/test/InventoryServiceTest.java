@@ -16,6 +16,7 @@ import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
+import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
@@ -97,8 +98,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		}
 	}
 	
-	
-	
+	//新增库测试	
 	@Test
 	public void testCreateInventory() {
 		CreaterInventoryParam param = new CreaterInventoryParam();
@@ -148,14 +148,46 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
 	}
+	/**
+	 * 扣减库存测试
+	 */
 	@Test
-	public void testSelectionRelation2() {
-		try {
-			//inventoryProviderReadService.getSelectionRelationBySrId(1);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void testupdateInventory() {
+		UpdateInventoryParam param = new UpdateInventoryParam();
+		//选型
+		 List<GoodsSelectionModel> goodsSelection = new ArrayList<GoodsSelectionModel>();
+		//分店
+		 List<GoodsSuppliersModel> goodsSuppliers = new ArrayList<GoodsSuppliersModel>();
+		 param.setGoodsId("1");
+		 param.setLimitStorage(1);
+		 param.setNum(1);
+		 for(int i=2;i>0;i--) {
+				GoodsSelectionModel smodel = new GoodsSelectionModel();
+				//smodel.setGoodsId(1L);
+				long id1 = 7+i;
+				smodel.setId(id1);
+				smodel.setNum(1);
+				goodsSelection.add(smodel);
+				
+				GoodsSuppliersModel supmodel = new GoodsSuppliersModel();
+				long id2 = 6+i;
+				supmodel.setId(id2);
+				//supmodel.setGoodsId(1l);
+				supmodel.setNum(1);
+				
+				goodsSuppliers.add(supmodel);
+				
+				System.out.println("id1="+id1+",id2="+id2);
+				
+			}
+			param.setGoodsSelection(goodsSelection);
+			param.setGoodsSuppliers(goodsSuppliers);
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryUpdateService.updateInventory(clientIP, clientName, param, traceMessage);
 	}
 	
 	
@@ -211,7 +243,4 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	}
 	
 	
-	public static void main(String[] args){
-		
-	}
 }

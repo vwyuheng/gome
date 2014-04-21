@@ -11,7 +11,7 @@ public class UpdateInventoryRestParam extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	private String userId;
 	private String goodsId;// 商品ID(FK)
-	private String orderId; //订单id
+	private String orderId; //订单id [记录日志用,便于查找属于哪个订单]
 	private int num;// 扣减的库存
 	//选型
 	private String goodsSelection;
