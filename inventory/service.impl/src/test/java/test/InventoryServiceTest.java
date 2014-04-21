@@ -15,6 +15,10 @@ import com.tuan.inventory.job.util.JobUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.enu.ResultStatusEnum;
+import com.tuan.inventory.model.param.AdjustInventoryParam;
+import com.tuan.inventory.model.param.AdjustWaterfloodParam;
+import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
@@ -193,28 +197,46 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	
 	@Test
-	public void  RedisMapTest() {
-		//eventManager.addEvent(null);
-		//System.out.println(test1("myhash11"));
-		try {
-			 Thread.sleep(6000);  
-			//inventoryProviderReadService.getSelection(1);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void  testCallbackAckInventory() {
+		CallbackParam param = new CallbackParam();
+		param.setAck(ResultStatusEnum.ROLLBACK.getCode());
+		param.setKey("4060");
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryUpdateService.callbackAckInventory(clientIP, clientName, param, traceMessage);
 	}
 	
 	
 	
 	@Test
-	public void testWrite() {
-		try {
-			//inventoryDeductReadWriteService.waterfloodValAdjustment(100, 1,11L,"库存管理系统","127.0.0.1");
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void testAdjustmentInventory() {
+		AdjustInventoryParam param = new AdjustInventoryParam();
+		param.setId("7");
+		param.setNum(-1);
+		param.setType(ResultStatusEnum.GOODS_SUPPLIERS.getCode());
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryUpdateService.adjustmentInventory(clientIP, clientName, param, traceMessage);
+	}
+	
+	@Test
+	public void testAdjustmentWaterflood() {
+		AdjustWaterfloodParam param = new AdjustWaterfloodParam();
+		param.setId("1");
+		param.setNum(-1);
+		param.setType(ResultStatusEnum.GOODS_SELF.getCode());
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryUpdateService.adjustmentWaterflood(clientIP, clientName, param, traceMessage);
 	}
 	
 	@Test

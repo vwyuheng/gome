@@ -116,7 +116,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.updateSelectionInventory(selectionId, (num));
 	}
 	public Long updateSuppliersInventoryById(Long suppliersId, int num) {
-		return this.baseDAOService.updateSelectionInventory(suppliersId, (num));
+		return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
 	}
 	public Long updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
 		long result = 0;

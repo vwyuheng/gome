@@ -171,10 +171,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(inventoryRollback)) {
 				for(long queueId:inventoryRollback) {
 					if(rollback(String.valueOf(queueId))) {
-						//将缓存的队列删除
-						this.goodsInventoryDomainRepository.deleteQueueMember(String.valueOf(queueId));
 						//标记删除
 						this.goodsInventoryDomainRepository.markQueueStatus(String.valueOf(queueId), (delStatus));
+						
+						//将缓存的队列删除
+						this.goodsInventoryDomainRepository.deleteQueueMember(String.valueOf(queueId));
 					}
 					
 				}

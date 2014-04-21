@@ -2,8 +2,6 @@ package com.tuan.inventory.domain;
 
 import java.util.List;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -13,6 +11,8 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
@@ -123,7 +123,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			//回滚
 			if (isRollback) {
 				// 回滚库存
-				if (goodsId > 0) {
+				if (goodsId!=null&&goodsId > 0) {
 					this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (deductNum));
 				}
@@ -135,10 +135,17 @@ public class InventoryCallbackDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository
 					.rollbackSuppliersInventory(suppliersParam);
 				}
-				// 将队列标记删除
-				this.goodsInventoryDomainRepository.markQueueStatus(key,
-						(upStatusNum));
+				if(queueDO!=null) {
+					// 将队列标记删除
+					this.goodsInventoryDomainRepository.markQueueStatus(key,
+							(upStatusNum));
+				}
+				
+				
 			}
+			
+			//将缓存的队列信息删除[删还是不删？为了防止重复回滚数据觉得删除]
+			this.goodsInventoryDomainRepository.deleteQueueMember(key);
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
@@ -154,19 +161,29 @@ public class InventoryCallbackDomain extends AbstractDomain {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
-			updateActionDO.setGoodsId(goodsId);
+			if(goodsId!=null&&goodsId!=0) {
+				updateActionDO.setGoodsId(goodsId);
+			}
 			updateActionDO.setBusinessType("");
 			updateActionDO.setOriginalInventory(String
 					.valueOf(originalGoodsInventory));
 			updateActionDO.setInventoryChange(String.valueOf(deductNum));
 			updateActionDO.setActionType(ResultStatusEnum.CALLBACK_CONFIRM
 					.getDescription());
-			updateActionDO.setUserId(queueDO.getUserId());
+			if(queueDO!=null) {
+				updateActionDO.setUserId(queueDO.getUserId());
+				updateActionDO.setOrderId(queueDO.getOrderId());
+				updateActionDO
+				.setContent(LogUtil.formatObjLog(queueDO)); // 操作内容
+			}else {
+				updateActionDO
+				.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
+			}
+			
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
-			updateActionDO.setOrderId(queueDO.getOrderId());
-			updateActionDO
-					.setContent(JSONObject.fromObject(queueDO).toString()); // 操作内容
+			
+			
 			updateActionDO.setRemark("回调确认");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {

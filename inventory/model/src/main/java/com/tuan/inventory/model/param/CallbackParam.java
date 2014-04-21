@@ -11,8 +11,7 @@ public class CallbackParam extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	private String ack;
 	private String key;
-	/*private String userId;
-	private String orderId;*/
+
 	public String getAck() {
 		return ack;
 	}

@@ -237,7 +237,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setInventoryChange(String.valueOf(adjustNum));
 			updateActionDO.setActionType(ResultStatusEnum.CALLBACK_CONFIRM
 					.getDescription());
-			updateActionDO.setUserId(Long.valueOf(param.getUserId()));
+			if(!StringUtils.isEmpty(param.getUserId())) {
+				updateActionDO.setUserId(Long.valueOf(param.getUserId()));
+			}
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);

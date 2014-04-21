@@ -18,7 +18,6 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.util.QueueConstant;
@@ -183,6 +182,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),
 				member);
 		
+		
 	}
 
 	@Override
@@ -192,7 +192,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 						+ ":" + key);
 				GoodsInventoryQueueDO queueDO = null;
 				if(StringUtils.isNotEmpty(member)) {
-					queueDO = (GoodsInventoryQueueDO) LogUtil.jsonToObject(member,GoodsInventoryQueueDO.class);
+					
+//					queueDO = (GoodsInventoryQueueDO) LogUtil.jsonToObject(member,GoodsInventoryQueueDO.class);
+					queueDO = JsonUtils.convertStringToObject(member,GoodsInventoryQueueDO.class);
 				}
 				return queueDO;
 	}

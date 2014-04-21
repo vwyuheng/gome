@@ -26,6 +26,7 @@ public class GoodsInventoryQueueDO extends TuanBaseDO {
 	
 	
 	private Long createTime;  //创建时间，精确到秒
+	
 	public Long getId() {
 		return id;
 	}
