@@ -1,31 +1,36 @@
 package test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
 import org.junit.Test;
 
-import redis.clients.jedis.Jedis;
-
-import com.tuan.inventory.domain.support.jedistools.JedisFactory;
-import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.job.result.RequestPacket;
+import com.tuan.inventory.job.util.JobUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
+import com.tuan.inventory.service.GoodsInventoryUpdateService;
+import com.wowotrace.trace.model.Message;
+import com.wowotrace.trace.util.TraceMessageUtil;
+import com.wowotrace.traceEnum.MessageTypeEnum;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
 	
 	@Resource
 	GoodsInventoryQueryService goodsInventoryQueryService;
+	@Resource
+	GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
-	@Resource 
-	JedisFactory jedisFactory;
 	@Resource
 	SequenceUtil sequenceUtil;
 	
@@ -95,9 +100,51 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	
 	@Test
-	public void testSelectionRelation() {
-		//Jedis jedis = WriteJedisFactory.getRes();
-		//inventoryDeductReadWriteService.getSelectionRelationLeftNumberBySrId(1);
+	public void testCreateInventory() {
+		CreaterInventoryParam param = new CreaterInventoryParam();
+		//选型
+		 List<GoodsSelectionModel> goodsSelection = new ArrayList<GoodsSelectionModel>();
+		//分店
+		 List<GoodsSuppliersModel> goodsSuppliers = new ArrayList<GoodsSuppliersModel>();
+		 
+		param.setGoodsId("1");
+		param.setUserId("2");
+		param.setLeftNumber(100);
+		param.setLimitStorage(1);
+		param.setTotalNumber(100);
+		param.setWaterfloodVal(50);
+		for(int i=2;i>0;i--) {
+			GoodsSelectionModel smodel = new GoodsSelectionModel();
+			smodel.setGoodsId(1L);
+			smodel.setUserId(2l);
+			smodel.setId(sequenceUtil.getSequence(SEQNAME.seq_selection));
+			smodel.setTotalNumber(50);
+			smodel.setLeftNumber(50);
+			smodel.setLimitStorage(1);
+			smodel.setWaterfloodVal(20);
+			goodsSelection.add(smodel);
+			GoodsSuppliersModel supmodel = new GoodsSuppliersModel();
+			supmodel.setId(sequenceUtil.getSequence(SEQNAME.seq_suppliers));
+			supmodel.setGoodsId(1l);
+			supmodel.setUserId(2l);
+			supmodel.setTotalNumber(50);
+			supmodel.setLeftNumber(50);
+			supmodel.setLimitStorage(1);
+			supmodel.setWaterfloodVal(20);
+			
+			goodsSuppliers.add(supmodel);
+			
+		}
+		param.setGoodsSelection(goodsSelection);
+		param.setGoodsSuppliers(goodsSuppliers);
+		
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		
+		goodsInventoryUpdateService.createInventory(clientIP, clientName, param, traceMessage);
 		System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
 	}
@@ -126,19 +173,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private int test1(final String key) {
-		return jedisFactory.withJedisDo(new JWork<Integer>() 
-				{
-					@Override
-					public Integer work(Jedis j)
-					{
-						return j.hlen(key).intValue();				
-					}
-		
-				});
-		
-	}
+	
 	
 	@Test
 	public void testWrite() {

@@ -249,8 +249,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 					if (model.getId() != null && model.getId() > 0) {
 						GoodsSelectionDO selection = new GoodsSelectionDO();
 						selection.setGoodsId(goodsId);
-						selection.setId(sequenceUtil
-								.getSequence(SEQNAME.seq_selection));
+						selection.setId(model.getId());
 						selection.setLeftNumber(model.getLeftNumber());
 						selection.setTotalNumber(model.getTotalNumber());
 						selection.setLimitStorage(model.getLimitStorage());
@@ -284,8 +283,9 @@ public class InventoryCreatorDomain extends AbstractDomain {
 					if (model.getId() > 0) {
 						GoodsSuppliersDO suppliers = new GoodsSuppliersDO();
 						suppliers.setGoodsId(goodsId);
-						suppliers.setId(sequenceUtil
-								.getSequence(SEQNAME.seq_suppliers));
+						//suppliers.setId(sequenceUtil
+							//	.getSequence(SEQNAME.seq_suppliers));
+						suppliers.setId(model.getId());
 						suppliers.setLeftNumber(model.getLeftNumber());
 						suppliers.setTotalNumber(model.getTotalNumber());
 						suppliers.setLimitStorage(model.getLimitStorage());
