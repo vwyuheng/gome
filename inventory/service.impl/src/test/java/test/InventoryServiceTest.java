@@ -1,5 +1,7 @@
 package test;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.junit.Test;
@@ -11,6 +13,8 @@ import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.GoodsInventoryModel;
+import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 
@@ -26,9 +30,61 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	SequenceUtil sequenceUtil;
 	
 	@Test
-	public void test() {
-		try {  
-			CallResult<GoodsInventoryModel> result =	goodsInventoryQueryService.findGoodsInventoryByGoodsId(clientIP, clientName, 100);
+	public void testInventory() {
+		try {
+			//查询商品库存
+			CallResult<GoodsInventoryModel> result =	goodsInventoryQueryService.findGoodsInventoryByGoodsId(clientIP, clientName, 1736);
+		
+			//System.out.println("11GoodsInventoryModel11size="+result.getBusinessResult());
+			System.out.println("11GoodsInventoryModel11="+result.getBusinessResult());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testSuppliers() {
+		try {
+	
+			//查询分店库存
+			CallResult<GoodsSuppliersModel> result =	goodsInventoryQueryService.findGoodsSuppliersBySuppliersId(clientIP, clientName, 1736,1685);
+			
+			System.out.println("11GoodsInventoryModel11="+result.getBusinessResult());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testSelection() {
+		try {
+			
+			//查询选型库存
+			CallResult<GoodsSelectionModel> result =	goodsInventoryQueryService.findGoodsSelectionBySelectionId(clientIP, clientName, 2499,28);
+			
+			System.out.println("11GoodsInventoryModel11="+result.getBusinessResult());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testSelectionList() {
+		try {
+			
+			CallResult<List<GoodsSelectionModel>> result =	goodsInventoryQueryService.findGoodsSelectionListByGoodsId(clientIP, clientName, 2499);
+			System.out.println("11GoodsInventoryModel11size="+result.getBusinessResult().size());
+			System.out.println("11GoodsInventoryModel11="+result.getBusinessResult());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testSuppliersList() {
+		try {
+			CallResult<List<GoodsSuppliersModel>> result =	goodsInventoryQueryService.findGoodsSuppliersListByGoodsId(clientIP, clientName, 1736);
+			System.out.println("11GoodsInventoryModel11size="+result.getBusinessResult().size());
 			System.out.println("11GoodsInventoryModel11="+result.getBusinessResult());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

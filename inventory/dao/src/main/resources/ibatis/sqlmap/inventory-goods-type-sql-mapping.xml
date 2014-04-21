@@ -148,7 +148,7 @@
 	</dynamic>			  
 	</select>
 	
-	<!-- 通过分店配型关系表IDs获得该分店选型信息   -->	
+	<!-- 通过分商品id获取选型信息   -->	
 	<select id="selectSelectionRelationBySrIds" resultMap="GoodsSelectionRelationAndGoodsResult" parameterClass="java.util.Map" >
 		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
 			sr.leftNumber,sr.limitNumber,sr.reduceTotalNumber,sr.`STATUS`,sr.suppliers_id,

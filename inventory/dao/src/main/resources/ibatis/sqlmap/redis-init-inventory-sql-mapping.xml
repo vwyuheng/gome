@@ -14,8 +14,8 @@
 	 	
   	 <!-- 商品主体库存信息-->	
 	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
-	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
-	     <result column="user_id" property="userId" jdbcType="INTEGER" />
+	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+	     <result column="user_id" property="userId" jdbcType="BIGINT" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />

@@ -69,6 +69,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
+					//将商品id set到选型中
+					srDO.setGoodsId(goodsId);
 					this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 				}
 				
@@ -81,6 +83,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
+				//分店中
+				sDO.setGoodsId(goodsId);
 				if (sDO.getId() > 0) { // if分店
 					this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
 				}
