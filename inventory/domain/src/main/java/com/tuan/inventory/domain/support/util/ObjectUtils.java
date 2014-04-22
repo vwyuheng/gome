@@ -89,7 +89,8 @@ public class ObjectUtils {
 		if (!CollectionUtils.isEmpty(members)) {
 			result = new ArrayList<GoodsInventoryQueueModel>();
 			for(String member:members) {
-				GoodsInventoryQueueModel memberDO = (GoodsInventoryQueueModel) LogUtil.jsonToObject(member, GoodsInventoryQueueModel.class);
+//				GoodsInventoryQueueModel memberDO = (GoodsInventoryQueueModel) LogUtil.jsonToObject(member, GoodsInventoryQueueModel.class);
+				GoodsInventoryQueueModel memberDO = JsonUtils.convertStringToObject(member, GoodsInventoryQueueModel.class);
 				result.add(memberDO);
 			}
 		}

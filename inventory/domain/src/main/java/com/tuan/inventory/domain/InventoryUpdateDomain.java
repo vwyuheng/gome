@@ -327,20 +327,24 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						.valueOf(deductNum));
 			}
 			if (!CollectionUtils.isEmpty(selectionList)) {
-				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SELECTION
+				updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SELECTION
+						.getDescription():updateActionDO.getBusinessType()+",选型："+ResultStatusEnum.GOODS_SELECTION
 						.getDescription());
-				updateActionDO.setItem(StringUtil
+				updateActionDO.setItem(StringUtils.isEmpty(updateActionDO.getItem())?StringUtil
+						.getIdsStringSelection(selectionList):updateActionDO.getItem()+",选型item："+StringUtil
 						.getIdsStringSelection(selectionList));
-				updateActionDO.setOriginalInventory(StringUtils.isEmpty(updateActionDO.getOriginalInventory())?JsonUtils.convertObjectToString(selectionParam):updateActionDO.getOriginalInventory()+",选型："+JsonUtils.convertObjectToString(selectionParam));
-				updateActionDO.setInventoryChange(StringUtils.isEmpty(updateActionDO.getInventoryChange())?JsonUtils.convertObjectToString(selectionParam):updateActionDO.getInventoryChange()+",选型："+JsonUtils.convertObjectToString(selectionParam));
+				updateActionDO.setOriginalInventory(StringUtils.isEmpty(updateActionDO.getOriginalInventory())?JsonUtils.convertObjectToString(selectionParam):updateActionDO.getOriginalInventory()+",选型初始库存："+JsonUtils.convertObjectToString(selectionParam));
+				updateActionDO.setInventoryChange(StringUtils.isEmpty(updateActionDO.getInventoryChange())?JsonUtils.convertObjectToString(selectionParam):updateActionDO.getInventoryChange()+",选型库存变化量："+JsonUtils.convertObjectToString(selectionParam));
 			}
 			if (!CollectionUtils.isEmpty(suppliersList)) {
-				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SUPPLIERS
+				updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SUPPLIERS
+						.getDescription():updateActionDO.getBusinessType()+",分店："+ResultStatusEnum.GOODS_SUPPLIERS
 						.getDescription());
-				updateActionDO.setItem(StringUtil
+				updateActionDO.setItem(StringUtils.isEmpty(updateActionDO.getItem())?StringUtil
+						.getIdsStringSuppliers(suppliersList):updateActionDO.getItem()+",分店item："+StringUtil
 						.getIdsStringSuppliers(suppliersList));
-				updateActionDO.setOriginalInventory(StringUtils.isEmpty(updateActionDO.getOriginalInventory())?JsonUtils.convertObjectToString(suppliersParam):updateActionDO.getOriginalInventory()+",分店："+JsonUtils.convertObjectToString(suppliersParam));
-				updateActionDO.setInventoryChange(StringUtils.isEmpty(updateActionDO.getInventoryChange())?JsonUtils.convertObjectToString(suppliersParam):updateActionDO.getInventoryChange()+",分店："+JsonUtils.convertObjectToString(suppliersParam));
+				updateActionDO.setOriginalInventory(StringUtils.isEmpty(updateActionDO.getOriginalInventory())?JsonUtils.convertObjectToString(suppliersParam):updateActionDO.getOriginalInventory()+",分店初始库存："+JsonUtils.convertObjectToString(suppliersParam));
+				updateActionDO.setInventoryChange(StringUtils.isEmpty(updateActionDO.getInventoryChange())?JsonUtils.convertObjectToString(suppliersParam):updateActionDO.getInventoryChange()+",分店库存变化量："+JsonUtils.convertObjectToString(suppliersParam));
 			}
 			updateActionDO.setActionType(ResultStatusEnum.DEDUCTION_INVENTORY
 					.getDescription());

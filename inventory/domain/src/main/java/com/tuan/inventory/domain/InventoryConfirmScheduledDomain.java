@@ -144,6 +144,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(listQueueIdMarkDelete)) {
 				for(long queueId:listQueueIdMarkDelete) {
 					this.goodsInventoryDomainRepository.markQueueStatus(String.valueOf(queueId), (delStatus));
+					
+					//将缓存的队列信息删除[删还是不删？为了防止重复回滚数据觉得删除]
+					this.goodsInventoryDomainRepository.deleteQueueMember(String.valueOf(queueId));
 				}
 			}
 			

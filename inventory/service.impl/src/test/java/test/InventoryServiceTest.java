@@ -20,9 +20,11 @@ import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
+import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
+import com.tuan.inventory.service.GoodsInventoryScheduledService;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
 import com.wowotrace.trace.model.Message;
 import com.wowotrace.trace.util.TraceMessageUtil;
@@ -35,6 +37,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	GoodsInventoryQueryService goodsInventoryQueryService;
 	@Resource
 	GoodsInventoryUpdateService goodsInventoryUpdateService;
+	@Resource
+	GoodsInventoryScheduledService goodsInventoryScheduledService;
 	
 	@Resource
 	SequenceUtil sequenceUtil;
@@ -240,29 +244,33 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	}
 	
 	@Test
-	public void testLogInsert() {
-		
-	/*	GoodsInventoryActionDO logDO = new GoodsInventoryActionDO();
-		logDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
-		logDO.setGoodsId(2L);
-		logDO.setOrderId(4L);
-		logDO.setUserId(3L);
-		logDO.setClientIp("127.0.0.1");
-		logDO.setSystem("inventory system");
-		logDO.setContent("content:11");
-		logDO.setCreateTime(1000111);
-		logDO.setItem("dfasds");
-		logDO.setOperateType("商品");
-		logDO.setRemark("备注");
-		logDO.setVariableQuantity("numL:10");
-		logDO.setType("库存扣减");*/
-		try {
-			//logOfWaterHandleService.createLogOfWater(logDO);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public void testConfirmQueueConsume() {
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryScheduledService.confirmQueueConsume(clientIP, clientName, traceMessage);
+	}
+	@Test
+	public void testLockedQueueConsume() {
+		InventoryScheduledParam param  = new InventoryScheduledParam();
+		param.setPeriod(5);
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryScheduledService.lockedQueueConsume(clientIP, clientName,param, traceMessage);
 	}
 	
-	
+	@Test
+	public void testLogsQueueConsume() {
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryScheduledService.logsQueueConsume(clientIP, clientName, traceMessage);
+	}
 }

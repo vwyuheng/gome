@@ -196,20 +196,26 @@ public class InventoryCreatorDomain extends AbstractDomain {
 								.valueOf(Integer.MAX_VALUE));
 			}
 			if (addSelection && !CollectionUtils.isEmpty(selectionList)) {
-				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SELECTION
+				updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SELECTION
+						.getDescription():updateActionDO.getBusinessType()+",选型："+ResultStatusEnum.GOODS_SELECTION
 						.getDescription());
-				updateActionDO.setItem(StringUtil
+				updateActionDO.setItem(StringUtils.isEmpty(updateActionDO.getItem())?StringUtil
+						.getIdsStringSelection(selectionList):updateActionDO.getItem()+",选型item："+StringUtil
 						.getIdsStringSelection(selectionList));
 			}
 			if (addSuppliers && !CollectionUtils.isEmpty(suppliersList)) {
-				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SUPPLIERS
+				updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SUPPLIERS
+						.getDescription():updateActionDO.getBusinessType()+",分店："+ResultStatusEnum.GOODS_SUPPLIERS
 						.getDescription());
-				updateActionDO.setItem(StringUtil
+				updateActionDO.setItem(StringUtils.isEmpty(updateActionDO.getItem())?StringUtil
+						.getIdsStringSuppliers(suppliersList):updateActionDO.getItem()+",分店item："+StringUtil
 						.getIdsStringSuppliers(suppliersList));
 			}
 			updateActionDO.setActionType(ResultStatusEnum.ADD_INVENTORY
 					.getDescription());
-			this.userId = (Long.valueOf(param.getUserId()));
+			if(!StringUtils.isEmpty(param.getUserId())) {
+				this.userId = (Long.valueOf(param.getUserId()));
+			}
 			updateActionDO.setUserId(userId);
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
