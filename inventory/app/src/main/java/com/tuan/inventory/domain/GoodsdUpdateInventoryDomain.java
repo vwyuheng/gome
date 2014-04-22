@@ -12,7 +12,7 @@ import org.springframework.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
-import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -161,12 +161,16 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	
 	@Override
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
-		parameterMap.put("userId", userId);
+		if(!StringUtils.isEmpty(userId))
+		    parameterMap.put("userId", userId);
+		if(!StringUtils.isEmpty(goodsId))
 		parameterMap.put("goodsId", goodsId);
+		if(!StringUtils.isEmpty(orderId))
 		parameterMap.put("orderId", orderId);
 		parameterMap.put("num",  String.valueOf(num));
-		parameterMap.put("goodsSuppliers", JsonUtils.convertObjectToString(goodsSuppliers));
-		parameterMap.put("goodsSelection", JsonUtils.convertObjectToString(goodsSelection));
+		
+		parameterMap.put("reqGoodsSuppliers", CollectionUtils.isEmpty(reqGoodsSuppliers)?"":LogUtil.formatListLog(reqGoodsSuppliers));
+		parameterMap.put("reqGoodsSelection", CollectionUtils.isEmpty(reqGoodsSelection)?"":LogUtil.formatListLog(reqGoodsSelection));
 		
 		packet.addParameterMap(parameterMap);
 	}

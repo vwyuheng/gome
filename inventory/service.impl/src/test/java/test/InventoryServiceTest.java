@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.job.result.RequestPacket;
@@ -143,6 +144,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			goodsSuppliers.add(supmodel);
 			
 		}
+		System.out.println("goodsSelectionparam="+LogUtil.formatListLog(goodsSelection));
+		System.out.println("goodsSuppliersparam="+LogUtil.formatListLog(goodsSuppliers));
 		param.setGoodsSelection(goodsSelection);
 		param.setGoodsSuppliers(goodsSuppliers);
 		
@@ -151,9 +154,9 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		packet.setTraceRootId(UUID.randomUUID().toString());
 		Message traceMessage = JobUtils.makeTraceMessage(packet);
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
-		
-		goodsInventoryUpdateService.createInventory(clientIP, clientName, param, traceMessage);
-		System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
+		System.out.println("11param="+LogUtil.formatObjLog(param));
+		//goodsInventoryUpdateService.createInventory(clientIP, clientName, param, traceMessage);
+		//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
 	}
 	/**

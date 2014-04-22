@@ -1,5 +1,6 @@
 package com.tuan.inventory.controller;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
@@ -19,6 +20,7 @@ import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSuppliersListQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSuppliersQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
+import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.utils.LogModel;
 import com.tuan.inventory.utils.StringUtils;
 import com.wowotrace.trace.model.Message;
@@ -34,44 +36,58 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 @RequestMapping("/query")
 public class GoodsInventoryQueryController {
 
+	@Resource
+	GoodsInventoryQueryService  goodsInventoryQueryService;
+
 	/***
+	 * http://localhost:882/rest/j/query/gselection?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionId=28&traceId=123&traceRootId=456
 	 * 根据选型id查询选型库存信息
+	 * 
 	 * @param packet
 	 * @param goodsId
-	 * @param selectionId
-	 * @param request
+	 * @param selectionId 
+	 * @param request 
 	 * @return
 	 */
 	@RequestMapping(value = "/gselection", method = RequestMethod.POST)
-	public @ModelAttribute("resp")GoodsSelectionQueryInnerResp goodsSelectionQuery(@ModelAttribute("inputPacket") RequestPacket packet
-			,String goodsId,String selectionId,HttpServletRequest request) {
+	public @ModelAttribute("resp")GoodsSelectionQueryInnerResp goodsSelectionQuery(
+			@ModelAttribute("inputPacket") RequestPacket packet,
+			String goodsId, String selectionId, HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if(traceMessage == null){
+		if (traceMessage == null) {
 			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(),
+					ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSelectionQuery");
-		LogModel lm = (LogModel)request.getAttribute("lm");
-		GoodsSelectionQueryDomain queryDomain = GoodsSelectionQueryDomain.makeGoodsSelectionQueryDomain(packet
-				,  goodsId, selectionId,lm,traceMessage);
-		if(queryDomain == null){
+		TraceMessageUtil.traceMessagePrintS(traceMessage,
+				MessageTypeEnum.CENTS, "Inventory-App",
+				"GoodsInventoryQueryController", "goodsSelectionQuery");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		GoodsSelectionQueryDomain queryDomain = GoodsSelectionQueryDomain
+				.makeGoodsSelectionQueryDomain(packet, goodsId, selectionId,
+						lm, traceMessage);
+		if (queryDomain == null) {
 			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(),
+					ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
-		//接口参数校验
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
+		// 接口参数校验
 		ResultEnum resEnum = queryDomain.checkParameter();
-		//参数检查未通过时
-		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
-			return (GoodsSelectionQueryInnerResp) queryDomain.makeResult(resEnum);
+		// 参数检查未通过时
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return (GoodsSelectionQueryInnerResp) queryDomain
+					.makeResult(resEnum);
 		}
-		//调用合作方接口
+		// 调用合作方接口
 		resEnum = queryDomain.doBusiness();
-		//返回结果
+		// 返回结果
 		return (GoodsSelectionQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/query/gsuppliers?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1736&suppliersId=1685&traceId=123&traceRootId=456
 	 * 根据分店id查询分店库存信息
 	 * @param packet
 	 * @param goodsId
@@ -97,6 +113,7 @@ public class GoodsInventoryQueryController {
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
 		//接口参数校验
 		ResultEnum resEnum = queryDomain.checkParameter();
 		//参数检查未通过时
@@ -109,6 +126,7 @@ public class GoodsInventoryQueryController {
 		return (GoodsSuppliersQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/query/goods?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1736&traceId=123&traceRootId=456
 	 * 根据商品id查询商品库存
 	 * @param packet
 	 * @param goodsId
@@ -132,6 +150,7 @@ public class GoodsInventoryQueryController {
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
 		//接口参数校验
 		ResultEnum resEnum = queryDomain.checkParameter();
 		//参数检查未通过时
@@ -144,6 +163,7 @@ public class GoodsInventoryQueryController {
 		return (GoodsQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/query/gselectionlist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&traceId=123&traceRootId=456
 	 * 根据商品id 查询商品选型库存列表
 	 * @param packet
 	 * @param goodsId
@@ -167,6 +187,7 @@ public class GoodsInventoryQueryController {
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
 		//接口参数校验
 		ResultEnum resEnum = queryDomain.checkParameter();
 		//参数检查未通过时
@@ -179,6 +200,7 @@ public class GoodsInventoryQueryController {
 		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/query/gsupplierslist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1736&traceId=123&traceRootId=456
 	 * 根据商品id 查询商品分店库存信息列表
 	 * @param packet
 	 * @param goodsId
@@ -202,6 +224,7 @@ public class GoodsInventoryQueryController {
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
 			return resp;
 		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
 		//接口参数校验
 		ResultEnum resEnum = queryDomain.checkParameter();
 		//参数检查未通过时

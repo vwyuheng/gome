@@ -44,6 +44,7 @@ public class GoodsInventoryUpdateController {
 	@Resource
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	/**
+	 * http://localhost:882/rest/j/update/create?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&userId=2&totalNumber=1000&leftNumber=1000&limitStorage=1&waterfloodVal=100&goodsSelection=[{"goodTypeId":0,"goodsId":2,"id":16,"leftNumber":50,"limitStorage":1,"num":0,"suppliersInventoryId":0,"totalNumber":50,"userId":2,"waterfloodVal":20},{"goodTypeId":0,"goodsId":2,"id":17,"leftNumber":50,"limitStorage":1,"num":0,"suppliersInventoryId":0,"totalNumber":50,"userId":2,"waterfloodVal":20}]&goodsSuppliers=[{"goodsId":2,"id":15,"leftNumber":50,"limitStorage":1,"num":0,"suppliersId":0,"totalNumber":50,"userId":2,"waterfloodVal":20},{"goodsId":2,"id":16,"leftNumber":50,"limitStorage":1,"num":0,"suppliersId":0,"totalNumber":50,"userId":2,"waterfloodVal":20}]
 	 * 创建商品库存信息,包括其下的选型及分店
 	 * @param packet
 	 * @param param
@@ -74,13 +75,14 @@ public class GoodsInventoryUpdateController {
 		return createInventoryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/update/up?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&userId=2&orderId=3&num=1&goodsSelection=[{"stNum":1,"selectionId":16},{"stNum":1,"selectionId":17}]&goodsSuppliers=[{"ssNum":1,"suppliersId":15},{"ssNum":1,"suppliersId":16}]
 	 * 库存扣减
 	 * @param packet
 	 * @param param
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/update", method = RequestMethod.POST)
+	@RequestMapping(value = "/up", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp updateInventory(@ModelAttribute UpdateRequestPacket packet,
 			@ModelAttribute UpdateInventoryRestParam param, HttpServletRequest request) {
 

@@ -12,7 +12,7 @@ import org.springframework.util.CollectionUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
-import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -190,8 +190,8 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("leftNumber",  String.valueOf(leftNumber));
 	    parameterMap.put("limitStorage",  String.valueOf(limitStorage));
 		parameterMap.put("waterfloodVal",  String.valueOf(waterfloodVal));
-		parameterMap.put("goodsSuppliers", JsonUtils.convertObjectToString(goodsSuppliers));
-		parameterMap.put("goodsSelection", JsonUtils.convertObjectToString(goodsSelection));
+		parameterMap.put("goodsSuppliers", CollectionUtils.isEmpty(goodsSuppliers)?"":LogUtil.formatListLog(goodsSuppliers));
+		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":LogUtil.formatListLog(goodsSelection));
 		
 		packet.addParameterMap(parameterMap);
 	}
