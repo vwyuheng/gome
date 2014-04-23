@@ -16,6 +16,7 @@ public enum ResultStatusEnum {
 	GOODS_SUPPLIERS      ("6", "分店商品库存"),
 	
 	//业务类型type
+	INIT_INVENTORY   ("10",   "初始化库存"),
 	DELETE_INVENTORY   ("11",   "删除库存"),
 	ADJUST_WATERFLOOD   ("12",   "调整注水"),
 	CALLBACK_CONFIRM   ("13",   "回调确认"),
