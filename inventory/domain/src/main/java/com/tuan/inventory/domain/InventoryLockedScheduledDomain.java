@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
@@ -171,11 +172,13 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(inventoryRollback)) {
 				for(long queueId:inventoryRollback) {
 					if(rollback(String.valueOf(queueId))) {
-						//标记删除
-						this.goodsInventoryDomainRepository.markQueueStatus(String.valueOf(queueId), (delStatus));
 						
-						//将缓存的队列删除
-						this.goodsInventoryDomainRepository.deleteQueueMember(String.valueOf(queueId));
+						String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
+						if(!StringUtils.isEmpty(member)) {
+							//标记删除【队列】,同时将缓存的队列删除
+							this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+						}
+						
 					}
 					
 				}

@@ -5,12 +5,16 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import net.sf.json.JSONObject;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
+import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.model.enu.ResultStatusEnum;
 
 public class RedisCacheUtil {
 	private final static LocalLogger log = LocalLogger.getLog("RedisCacheUtil.LOG");
@@ -542,5 +546,124 @@ public class RedisCacheUtil {
 			}
 		});
 
+	}
+	
+	/**
+	 * 由于涉及到两个命令,因此必须在一个事务中执行
+	 * @param key
+	 * @param upStatusNum
+	 * @return
+	 */
+	public boolean zincrbyAnddel(final String zincrbykey,final String zincrbymember,final int upStatusNum,final String delkey) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					ts.zincrby(zincrbykey,(upStatusNum),zincrbymember);
+					ts.del(delkey);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+				//异常发生时记录日志
+				LogModel lm = LogModel.newLogModel("RedisLockCache.zincrbyAnddel");
+				log.error(lm
+						    .addMetaData("zincrbykey", zincrbykey)
+						    .addMetaData("upStatusNum", upStatusNum)
+						    .addMetaData("zincrbymember", zincrbymember)
+						    .addMetaData("delkey", delkey)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+				 throw new CacheRunTimeException("jedis.zincrbyAnddel("+delkey+","+zincrbykey+","+upStatusNum+","+zincrbymember+") error!",e);
+				}
+				
+				return result;
+			}
+		});
+
+	}
+	public boolean setexAndzadd(final String setexkey,final String zaddkey,final GoodsInventoryQueueDO queueDO) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					
+					String jsonMember = JSONObject.fromObject(queueDO).toString();
+					ts.setex(setexkey,3600*24*365, jsonMember);
+					
+					ts.zadd(zaddkey,Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
+							//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
+							jsonMember);
+					
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.setexAndzadd");
+					log.error(lm.addMetaData("setexkey", setexkey)
+							.addMetaData("zaddkey", zaddkey)
+							.addMetaData("queueDO", queueDO)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.setexAndzadd("+setexkey+","+zaddkey+","+queueDO+") error!",e);
+				}
+				
+				return result;
+			}
+		});
+		
+	}
+	public boolean saddAndhmset(final String saddkey,final String hmsetkey,final String id,final Map<String,String> hash) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					
+					ts.sadd(saddkey,id);
+					ts.hmset(hmsetkey,hash);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.saddAndhmset");
+					log.error(lm.addMetaData("saddkey", saddkey)
+							.addMetaData("hmsetkey", hmsetkey)
+							.addMetaData("id", id)
+							.addMetaData("hash", hash)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.saddAndhmset("+saddkey+","+hmsetkey+","+id+","+hash+") error!",e);
+				}
+				
+				return result;
+			}
+		});
+		
 	}
 }

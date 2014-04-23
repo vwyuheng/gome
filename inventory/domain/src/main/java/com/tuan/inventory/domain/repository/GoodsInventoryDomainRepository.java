@@ -170,12 +170,15 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	/**
 	 * 标记队列状态
-	 * @param key
+	 * @param member
 	 * @param upStatusNum :该参数特别说明：当你想减值时传负值，当是增加值时传正整数值
 	 * @throws Exception
 	 */
-	public void markQueueStatus(String key,int upStatusNum) {
-		this.baseDAOService.markQueueStatus(key, upStatusNum);
+	public void markQueueStatus(String member,int upStatusNum) {
+		this.baseDAOService.markQueueStatus(member, upStatusNum);
+	}
+	public void markQueueStatusAndDeleteCacheMember(String member,int upStatusNum,String delkey) {
+		this.baseDAOService.markQueueStatusAndDeleteCacheMember(member, upStatusNum,delkey);
 	}
 	
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key) {
@@ -331,5 +334,13 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public Long deleteQueueMember(String key) {
 		return this.baseDAOService.deleteQueueMember(key);
+	}
+	/**
+	 * 根据key获取缓存的member[队列]
+	 * @param key
+	 * @return
+	 */
+	public String queryMember(String key) {
+		return this.baseDAOService.queryMember(key);
 	}
 }

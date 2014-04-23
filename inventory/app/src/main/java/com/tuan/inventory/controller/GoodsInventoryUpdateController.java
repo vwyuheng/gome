@@ -106,6 +106,7 @@ public class GoodsInventoryUpdateController {
 		return updateInventoryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/update/ack?&ip==127.0.0.1&client=ordercenter&t=123456789&ack=1&key=4062
 	 * 库存确认回调接口
 	 * @param packet
 	 * @param ack
@@ -137,6 +138,7 @@ public class GoodsInventoryUpdateController {
 		return ackInventoryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/update/adjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&id=2&num=-1&type=2
 	 * 库存调整
 	 * @param packet
 	 * @param id
@@ -170,6 +172,7 @@ public class GoodsInventoryUpdateController {
 		return adjustInventoryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/update/adjustw?&ip==127.0.0.1&client=ordercenter&t=123456789&id=2&num=-1&type=2
 	 * 注水值调整接口
 	 * @param packet
 	 * @param id

@@ -33,6 +33,7 @@ public class GoodsInventorySchedulerController {
 	@Resource
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	/**
+	 * http://localhost:882/rest/j/job/confirm?&ip==127.0.0.1&client=ordercenter&t=123456789
 	 * 库存扣减回调确认过的队列调度接口
 	 * @param packet
 	 * @param request
@@ -63,6 +64,7 @@ public class GoodsInventorySchedulerController {
 		return confirmQueueConsumeDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/job/lock?&ip==127.0.0.1&client=ordercenter&t=123456789&period=5
 	 * 库存扣减异常确认队列调度接口
 	 * @param packet
 	 * @param period
@@ -94,6 +96,7 @@ public class GoodsInventorySchedulerController {
 		return lockedQueueConsumeDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/job/log?&ip==127.0.0.1&client=ordercenter&t=123456789
 	 * 库存状态更新时产生的日志队列调度接口
 	 * @param packet
 	 * @param request

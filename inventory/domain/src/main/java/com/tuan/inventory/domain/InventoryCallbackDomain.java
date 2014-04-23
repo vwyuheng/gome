@@ -115,12 +115,14 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			//确认
+			//确认:只变状态，不删缓存
 			if (isConfirm) {
-				this.goodsInventoryDomainRepository.markQueueStatus(key,
-						(upStatusNum));
+				String member = this.goodsInventoryDomainRepository.queryMember(key);
+				if(!StringUtils.isEmpty(member)) {
+					this.goodsInventoryDomainRepository.markQueueStatus(member, (upStatusNum));
+				}
 			}
-			//回滚
+			//回滚:即变状态，同时将缓存删除
 			if (isRollback) {
 				// 回滚库存
 				if (goodsId!=null&&goodsId > 0) {
@@ -137,15 +139,17 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				}
 				if(queueDO!=null) {
 					// 将队列标记删除
-					this.goodsInventoryDomainRepository.markQueueStatus(key,
-							(upStatusNum));
+					//this.goodsInventoryDomainRepository.markQueueStatus(key,
+						//	(upStatusNum));
+					
+					String member = this.goodsInventoryDomainRepository.queryMember(key);
+					if(!StringUtils.isEmpty(member)) {
+						this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (upStatusNum),key);
+					}
 				}
 				
 				
 			}
-			
-			//将缓存的队列信息删除[删还是不删？为了防止重复回滚数据觉得删除]
-			this.goodsInventoryDomainRepository.deleteQueueMember(key);
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(

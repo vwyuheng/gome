@@ -19,7 +19,6 @@ import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
-import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class CacheDAOServiceImpl implements BaseDAOService {
@@ -52,23 +51,30 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
-		this.redisCacheUtil.sadd(
+		/*this.redisCacheUtil.sadd(
 				QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
 						+ String.valueOf(goodsId),
 				String.valueOf(selectionDO.getId()));
 		this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
 				+ ":" + String.valueOf(selectionDO.getId()), ObjectUtils.toHashMap(selectionDO));
-
+*/
+		this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId), QueueConstant.SELECTION_INVENTORY_PREFIX
+				+ ":" + String.valueOf(selectionDO.getId()), String.valueOf(selectionDO.getId()), ObjectUtils.toHashMap(selectionDO));
 	}
 
 	@Override
 	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
-		this.redisCacheUtil.sadd(
+		/*this.redisCacheUtil.sadd(
 				QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
 						+ String.valueOf(goodsId),
 				String.valueOf(suppliersDO.getId()));
 		this.redisCacheUtil.hmset(QueueConstant.SUPPLIERS_INVENTORY_PREFIX
-				+ ":" + String.valueOf(suppliersDO.getId()), ObjectUtils.toHashMap(suppliersDO));
+				+ ":" + String.valueOf(suppliersDO.getId()), ObjectUtils.toHashMap(suppliersDO));*/
+		
+		this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
+						+ String.valueOf(goodsId), QueueConstant.SUPPLIERS_INVENTORY_PREFIX
+				+ ":" + String.valueOf(suppliersDO.getId()), String.valueOf(suppliersDO.getId()), ObjectUtils.toHashMap(suppliersDO));
 
 	}
 
@@ -159,28 +165,43 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		// ZRANGEBYSCORE salary 2500 2500 WITHSCORES
 		// ，2取到相应member后，按照member及其删除 [ZREM key member]
 		// 删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
-		String jsonMember = JSONObject.fromObject(queueDO)
-				.toString();
+		//String jsonMember = JSONObject.fromObject(queueDO).toString();
 		// 缓存队列的key、member信息 一年失效
-		this.redisCacheUtil.setex(QueueConstant.QUEUE_KEY_MEMBER + ":"
-				+ String.valueOf(queueDO.getId()), 3600*24*365, jsonMember);
+		//this.redisCacheUtil.setex(QueueConstant.QUEUE_KEY_MEMBER + ":"
+			//	+ String.valueOf(queueDO.getId()), 3600*24*365, jsonMember);
 		// zset key score value 其中score作为status用
-		this.redisCacheUtil.zadd(QueueConstant.QUEUE_SEND_MESSAGE,
-				Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
+		//this.redisCacheUtil.zadd(QueueConstant.QUEUE_SEND_MESSAGE,
+				//Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
 				//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
-				jsonMember);
-		
+				//jsonMember);
+		this.redisCacheUtil.setexAndzadd(QueueConstant.QUEUE_KEY_MEMBER + ":"+ String.valueOf(queueDO.getId()), 
+				QueueConstant.QUEUE_SEND_MESSAGE, queueDO);
 	}
 
+	
 	@Override
-	public void markQueueStatus(String key, int upStatusNum) {
+	public void markQueueStatus(String member, int upStatusNum) {
 		// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
-		String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"
-				+ key);
+		//String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"
+			//	+ key);
 		// 将消息发送队列状态更新为:ResultStatusEnum 对应的队列状态值
 		// Double scoreAck =
 		this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),
 				member);
+		
+		
+	}
+	
+	@Override
+	public void markQueueStatusAndDeleteCacheMember(String member, int upStatusNum,String delkey) {
+	
+		// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
+		//String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"+ key);
+		// 将消息发送队列状态更新为:ResultStatusEnum 对应的队列状态值
+		// Double scoreAck =
+		
+		//this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),member);
+		this.redisCacheUtil.zincrbyAnddel(QueueConstant.QUEUE_SEND_MESSAGE, member,  (upStatusNum), QueueConstant.QUEUE_KEY_MEMBER + ":"+delkey);
 		
 		
 	}
@@ -283,5 +304,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		// 根据选型id删除选型库存信息
 		return this.redisCacheUtil.del(QueueConstant.QUEUE_KEY_MEMBER + ":"
 						+ key);
+	}
+
+	@Override
+	public String queryMember(String key) {
+		
+		return  this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"+ key);
 	}
 }

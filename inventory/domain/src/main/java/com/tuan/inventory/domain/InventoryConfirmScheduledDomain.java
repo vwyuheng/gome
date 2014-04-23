@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
@@ -32,7 +33,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	/***
 	 * 业务处理前的预处理
 	 */
-	public void preHandler() {
+	public boolean preHandler() {
+		boolean preresult = true;
 		try {
 			listGoodsIdSends = new ConcurrentHashSet<Long>();
 			listQueueIdMarkDelete = new ConcurrentHashSet<Long>();
@@ -52,12 +54,13 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 				}
 			}
 		} catch (Exception e) {
+			preresult = false;
 			this.writeBusErrorLog(
 					lm.setMethod("preHandler").addMetaData("errorMsg",
 							"DB error" + e.getMessage()), e);
 		}
 		
-		
+		return preresult;
 	}
 
 	// 业务处理
@@ -65,7 +68,10 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 
 		try {
 			// 业务检查前的预处理
-			this.preHandler();
+			if(!preHandler()){
+				return CreateInventoryResultEnum.DB_ERROR;
+			}
+			
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
 				for(long goodsId:listGoodsIdSends) {
 					if(loadMessageData(goodsId)) {
@@ -76,7 +82,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 			//消息发送完成后将取出的队列标记删除状态
 			this.markDelete();
-
+				
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.setMethod("busiCheck").addMetaData("errorMsg",
@@ -138,24 +144,29 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		return notifyParam;
 	}
 
-	// 将队列标记删除：逻辑删除
+	// 将队列标记删除：逻辑删除[队列]\物理删除缓存的member
 	public void markDelete() {
+		
 		try {
 			if (!CollectionUtils.isEmpty(listQueueIdMarkDelete)) {
 				for(long queueId:listQueueIdMarkDelete) {
-					this.goodsInventoryDomainRepository.markQueueStatus(String.valueOf(queueId), (delStatus));
-					
-					//将缓存的队列信息删除[删还是不删？为了防止重复回滚数据觉得删除]
-					this.goodsInventoryDomainRepository.deleteQueueMember(String.valueOf(queueId));
+					String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
+					if(!StringUtils.isEmpty(member)) {
+						this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+					}
 				}
 			}
 			
 		} catch (Exception e) {
+			
 			this.writeBusErrorLog(lm.setMethod("markDelete")
 					.addMetaData("errMsg", e.getMessage()), e);
 			
 		}
+		
 	}
+	
+	
 	/**
 	 * 校验id
 	 * @param id
