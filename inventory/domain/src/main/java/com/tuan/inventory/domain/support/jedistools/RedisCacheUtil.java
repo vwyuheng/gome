@@ -548,10 +548,12 @@ public class RedisCacheUtil {
 
 	}
 	
-	/**
-	 * 由于涉及到两个命令,因此必须在一个事务中执行
-	 * @param key
+	/***
+	 * 多个命令顺序调用时需开启事务
+	 * @param zincrbykey
+	 * @param zincrbymember
 	 * @param upStatusNum
+	 * @param delkey
 	 * @return
 	 */
 	public boolean zincrbyAnddel(final String zincrbykey,final String zincrbymember,final int upStatusNum,final String delkey) {
@@ -590,6 +592,13 @@ public class RedisCacheUtil {
 		});
 
 	}
+	/**
+	 * 多个命令顺序调用时需开启事务
+	 * @param setexkey
+	 * @param zaddkey
+	 * @param queueDO
+	 * @return
+	 */
 	public boolean setexAndzadd(final String setexkey,final String zaddkey,final GoodsInventoryQueueDO queueDO) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
@@ -630,6 +639,14 @@ public class RedisCacheUtil {
 		});
 		
 	}
+	/**
+	 * 多个命令顺序调用时需开启事务
+	 * @param saddkey
+	 * @param hmsetkey
+	 * @param id
+	 * @param hash
+	 * @return
+	 */
 	public boolean saddAndhmset(final String saddkey,final String hmsetkey,final String id,final Map<String,String> hash) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
