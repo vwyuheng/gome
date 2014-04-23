@@ -30,8 +30,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Map<String, String>>() {
 			@Override
 			public Map<String, String> work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
+		
 				if (j == null)
 					return null;
 				try {
@@ -61,8 +60,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<String>() {
 			@Override
 			public String work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
+	
 				if (j == null)
 					return null;
 				try {
@@ -93,8 +91,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Long>() {
 			@Override
 			public Long work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
+		
 				if (j == null)
 					return null;
 				try {
@@ -125,8 +122,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Long>() {
 			@Override
 			public Long work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
+		
 				if (j == null)
 					return null;
 				try {
@@ -157,8 +153,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Set<String>>() {
 			@Override
 			public Set<String> work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
+			
 				if (j == null)
 					return null;
 				try {
@@ -188,8 +183,6 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<String>() {
 			@Override
 			public String work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
 				if (j == null)
 					return null;
 				try {
@@ -218,8 +211,7 @@ public class RedisCacheUtil {
 		return jedisFactory.withJedisDo(new JWork<Set<String>>() {
 			@Override
 			public Set<String> work(Jedis j) throws Exception {
-				// TODO 测试用
-				// j.del(key);
+
 				if (j == null)
 					return null;
 				try {
