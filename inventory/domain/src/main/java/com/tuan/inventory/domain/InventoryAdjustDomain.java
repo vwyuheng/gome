@@ -19,12 +19,12 @@ import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
-import com.tuan.inventory.model.GoodsSelectionModel;
-import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
+import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
+import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 
 public class InventoryAdjustDomain extends AbstractDomain {
 	private LogModel lm;
@@ -40,9 +40,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private GoodsSelectionDO selectionInventory;
 	private GoodsSuppliersDO suppliersInventory;
 	//选型
-	private List<GoodsSelectionModel> selectionMsg;
+	private List<SelectionNotifyMessageParam> selectionMsg;
 	//分店
-	private List<GoodsSuppliersModel> suppliersMsg;
+	private List<SuppliersNotifyMessageParam> suppliersMsg;
 	
 	private String type;
 	private String id;
@@ -186,6 +186,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				notifyParam.setWaterfloodVal(inventoryDO.getWaterfloodVal());
 				notifyParam.setTotalNumber((inventoryDO.getTotalNumber()+adjustNum));
 				notifyParam.setLeftNumber(resultACK.intValue());
+				//库存总数 减 库存剩余
+				int sales = (inventoryDO.getTotalNumber()+adjustNum)-resultACK.intValue();
+				//销量
+				notifyParam.setSales(String.valueOf(sales));
 			}
 			if(!CollectionUtils.isEmpty(selectionMsg)){
 				this.fillSelectionMsg();
@@ -282,18 +286,20 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	}
 	
 	public void fillSelectionMsg() {
-		List<GoodsSelectionModel> selectionMsg = new ArrayList<GoodsSelectionModel>();
-		GoodsSelectionModel gsModel = new GoodsSelectionModel();
+		List<SelectionNotifyMessageParam> selectionMsg = new ArrayList<SelectionNotifyMessageParam>();
+		SelectionNotifyMessageParam selMsg = new SelectionNotifyMessageParam();
 		try {
-			gsModel.setGoodTypeId(selectionInventory.getGoodTypeId());
-			gsModel.setGoodsId(goodsId);
-			gsModel.setId(selectionId);
-			gsModel.setLeftNumber(resultACK.intValue());  //调整后的库存值
-			gsModel.setTotalNumber((selectionInventory.getTotalNumber()+adjustNum));
-			gsModel.setUserId(Long.valueOf(param.getUserId()));
-			gsModel.setLimitStorage(selectionInventory.getLimitStorage());
-			gsModel.setWaterfloodVal(selectionInventory.getWaterfloodVal());
-			selectionMsg.add(gsModel);
+			//selMsg.setGoodTypeId(selectionInventory.getGoodTypeId());
+			selMsg.setGoodsId(goodsId);
+			selMsg.setId(selectionId);
+			selMsg.setLeftNumber(resultACK.intValue());  //调整后的库存值
+			selMsg.setTotalNumber((selectionInventory.getTotalNumber()+adjustNum));
+			selMsg.setUserId(Long.valueOf(param.getUserId()));
+			selMsg.setLimitStorage(selectionInventory.getLimitStorage());
+			selMsg.setWaterfloodVal(selectionInventory.getWaterfloodVal());
+			int sales = selMsg.getTotalNumber()-selMsg.getLeftNumber();
+			selMsg.setSales(String.valueOf(sales));
+			selectionMsg.add(selMsg);
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillSelectionMsg")
 					.addMetaData("errMsg", e.getMessage()), e);
@@ -302,18 +308,20 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		this.selectionMsg = selectionMsg;
 	}
 	public void fillSuppliersMsg() {
-		List<GoodsSuppliersModel> suppliersMsg = new ArrayList<GoodsSuppliersModel>();
-		GoodsSuppliersModel gsModel = new GoodsSuppliersModel();
+		List<SuppliersNotifyMessageParam> suppliersMsg = new ArrayList<SuppliersNotifyMessageParam>();
+		SuppliersNotifyMessageParam supMsg = new SuppliersNotifyMessageParam();
 		try {
-			gsModel.setSuppliersId(suppliersInventory.getSuppliersId());
-			gsModel.setGoodsId(goodsId);
-			gsModel.setId(suppliersId);
-			gsModel.setLeftNumber(resultACK.intValue());  //调整后的库存值
-			gsModel.setTotalNumber((suppliersInventory.getTotalNumber()+adjustNum));
-			gsModel.setUserId(Long.valueOf(param.getUserId()));
-			gsModel.setLimitStorage(suppliersInventory.getLimitStorage());
-			gsModel.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
-			suppliersMsg.add(gsModel);
+			//supMsg.setSuppliersId(suppliersInventory.getSuppliersId());
+			supMsg.setGoodsId(goodsId);
+			supMsg.setId(suppliersId);
+			supMsg.setLeftNumber(resultACK.intValue());  //调整后的库存值
+			supMsg.setTotalNumber((suppliersInventory.getTotalNumber()+adjustNum));
+			supMsg.setUserId(Long.valueOf(param.getUserId()));
+			supMsg.setLimitStorage(suppliersInventory.getLimitStorage());
+			supMsg.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
+			int sales = supMsg.getTotalNumber()-supMsg.getLeftNumber();
+			supMsg.setSales(String.valueOf(sales));
+			suppliersMsg.add(supMsg);
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillSuppliersMsg")
 					.addMetaData("errMsg", e.getMessage()), e);

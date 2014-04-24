@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -9,17 +10,22 @@ import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
-import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
+import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 
 public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private LogModel lm;
@@ -28,14 +34,15 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private AdjustWaterfloodParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
 	private GoodsSelectionDO selectionInventory;
 	private GoodsSuppliersDO suppliersInventory;
 	//初始化用
-	private List<GoodsSuppliersDO> suppliersInventoryList;
-	private List<GoodsSelectionDO> selectionInventoryList;
+	//private List<GoodsSuppliersDO> suppliersInventoryList;
+	//private List<GoodsSelectionDO> selectionInventoryList;
 	private String type;
 	private String id;
 	//注水调整值
@@ -48,8 +55,11 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private Long suppliersId;
 	//调整后库存
 	private long resultACK;
-	//是否需要初始化
-	private boolean isInit;
+	
+	//选型
+	private List<GoodsSelectionModel> selectionMsg;
+	//分店
+	private List<GoodsSuppliersModel> suppliersMsg;
 	
 	public WaterfloodAdjustmentDomain(String clientIp, String clientName,
 			AdjustWaterfloodParam param, LogModel lm) {
@@ -64,9 +74,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		try {
 			// 初始化检查
 			this.initCheck();
-			if (isInit) {
+			/*if (isInit) {
 				this.init();
-			}
+			}*/
 			// 真正的业务检查处理
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.businessType = ResultStatusEnum.GOODS_SELF
@@ -165,8 +175,49 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		this.adjustNum = param.getNum();
 		
 	}
+	
+	
+
+	//发送库存新增消息
+		public void sendNotify(){
+			try {
+				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
+				goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject.fromObject(notifyParam));
+				/*Type orderParamType = new TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType();
+				String paramJson = new Gson().toJson(notifyParam, orderParamType);
+				extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
+			} catch (Exception e) {
+				writeBusErrorLog(lm.addMetaData("errMsg", e.getMessage()), e);
+			}
+		}
+		
+		//填充notifyserver发送参数
+		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(){
+					InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
+					notifyParam.setUserId(Long.valueOf(param.getUserId()));
+					notifyParam.setGoodsId(goodsId);
+					if(inventoryDO!=null) {
+						notifyParam.setLimitStorage(inventoryDO.getLimitStorage());
+						notifyParam.setWaterfloodVal((int)resultACK);
+						notifyParam.setTotalNumber(inventoryDO.getTotalNumber());
+						notifyParam.setLeftNumber(inventoryDO.getLeftNumber());
+						//库存总数 减 库存剩余
+						int sales = (inventoryDO.getTotalNumber())-inventoryDO.getLeftNumber();
+						//销量
+						notifyParam.setSales(String.valueOf(sales));
+					}
+					if(!CollectionUtils.isEmpty(selectionMsg)){
+						this.fillSelectionMsg();
+						notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionMsg));
+					}
+					if(!CollectionUtils.isEmpty(suppliersMsg)){
+						this.fillSuppliersMsg();
+						notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(suppliersMsg));
+					}
+					return notifyParam;
+				}
 	//初始化检查
-	public void initCheck() {
+	/*public void initCheck() {
 		this.fillParam();
 		this.goodsId = Long.valueOf(id);
 		//查询商品库存
@@ -193,6 +244,22 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		if(!CollectionUtils.isEmpty(suppliersInventoryList))
 		      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
 	}
+	*/
+	//初始化库存
+	public void initCheck() {
+				this.fillParam();
+				this.goodsId = Long.valueOf(id);
+				InventoryInitDomain create = new InventoryInitDomain();
+				//注入相关Repository
+				create.setGoodsId(this.goodsId);
+				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+				create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+				create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+				create.busiCheck();
+			}
+			
+	
+	
 	// 填充日志信息
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
@@ -250,6 +317,47 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
+	public void fillSelectionMsg() {
+		List<GoodsSelectionModel> selectionMsg = new ArrayList<GoodsSelectionModel>();
+		GoodsSelectionModel gsModel = new GoodsSelectionModel();
+		try {
+			gsModel.setGoodTypeId(selectionInventory.getGoodTypeId());
+			gsModel.setGoodsId(goodsId);
+			gsModel.setId(selectionId);
+			gsModel.setLeftNumber(selectionInventory.getLeftNumber());  //调整后的库存值
+			gsModel.setTotalNumber((selectionInventory.getTotalNumber()));
+			gsModel.setUserId(Long.valueOf(param.getUserId()));
+			gsModel.setLimitStorage(selectionInventory.getLimitStorage());
+			gsModel.setWaterfloodVal((int)resultACK);
+			selectionMsg.add(gsModel);
+		} catch (Exception e) {
+			this.writeBusErrorLog(lm.setMethod("fillSelectionMsg")
+					.addMetaData("errMsg", e.getMessage()), e);
+			this.selectionMsg = null;
+		}
+		this.selectionMsg = selectionMsg;
+	}
+	public void fillSuppliersMsg() {
+		List<GoodsSuppliersModel> suppliersMsg = new ArrayList<GoodsSuppliersModel>();
+		GoodsSuppliersModel gsModel = new GoodsSuppliersModel();
+		try {
+			gsModel.setSuppliersId(suppliersInventory.getSuppliersId());
+			gsModel.setGoodsId(goodsId);
+			gsModel.setId(suppliersId);
+			gsModel.setLeftNumber(suppliersInventory.getLeftNumber());  //调整后的库存值
+			gsModel.setTotalNumber((suppliersInventory.getTotalNumber()));
+			gsModel.setUserId(Long.valueOf(param.getUserId()));
+			gsModel.setLimitStorage(suppliersInventory.getLimitStorage());
+			gsModel.setWaterfloodVal((int)resultACK);
+			suppliersMsg.add(gsModel);
+		} catch (Exception e) {
+			this.writeBusErrorLog(lm.setMethod("fillSuppliersMsg")
+					.addMetaData("errMsg", e.getMessage()), e);
+			this.suppliersMsg = null;
+		}
+		this.suppliersMsg = suppliersMsg;
+	}
+	
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
@@ -262,6 +370,11 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
+	}
+	
+	public void setSynInitAndAsynUpdateDomainRepository(
+			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
+		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
 	}
 
 	public Long getGoodsId() {

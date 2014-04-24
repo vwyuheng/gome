@@ -17,6 +17,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -183,11 +184,16 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		notifyParam.setWaterfloodVal(param.getWaterfloodVal());
 		notifyParam.setTotalNumber(param.getTotalNumber());
 		notifyParam.setLeftNumber(param.getLeftNumber());
+		//库存总数 减 库存剩余
+		int sales = param.getTotalNumber()-param.getLeftNumber();
+		//销量
+		notifyParam.setSales(String.valueOf(sales));
+		
 		if (!CollectionUtils.isEmpty(selectionList)) {
-			notifyParam.setSelectionRelation(selectionList);
+			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
 		}
 		if (!CollectionUtils.isEmpty(suppliersList)) {
-			notifyParam.setSuppliersRelation(suppliersList);
+			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(suppliersList));
 		}
 		return notifyParam;
 	}

@@ -3,8 +3,6 @@ package com.tuan.inventory.model.param;
 import java.util.List;
 
 import com.tuan.core.common.lang.TuanBaseDO;
-import com.tuan.inventory.model.GoodsSelectionModel;
-import com.tuan.inventory.model.GoodsSuppliersModel;
 
 public class InventoryNotifyMessageParam extends TuanBaseDO{
 	private static final long serialVersionUID = -2215765968154981320L;
@@ -16,10 +14,12 @@ public class InventoryNotifyMessageParam extends TuanBaseDO{
 	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
 	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
 	private java.lang.Integer waterfloodVal;  //注水值
+	private String sales; //销量
+	
 	//选型
-	private List<GoodsSelectionModel> selectionRelation;
+	private List<SelectionNotifyMessageParam> selectionRelation;
 	//分店
-	private List<GoodsSuppliersModel> suppliersRelation;
+	private List<SuppliersNotifyMessageParam> suppliersRelation;
 	public static String getNotifyType() {
 		return notifyType;
 	}
@@ -63,20 +63,27 @@ public class InventoryNotifyMessageParam extends TuanBaseDO{
 	public void setWaterfloodVal(java.lang.Integer waterfloodVal) {
 		this.waterfloodVal = waterfloodVal;
 	}
-	public List<GoodsSelectionModel> getSelectionRelation() {
+	
+	public List<SelectionNotifyMessageParam> getSelectionRelation() {
 		return selectionRelation;
 	}
-	public void setSelectionRelation(List<GoodsSelectionModel> selectionRelation) {
+	public void setSelectionRelation(
+			List<SelectionNotifyMessageParam> selectionRelation) {
 		this.selectionRelation = selectionRelation;
 	}
-	public List<GoodsSuppliersModel> getSuppliersRelation() {
+	public List<SuppliersNotifyMessageParam> getSuppliersRelation() {
 		return suppliersRelation;
 	}
-	public void setSuppliersRelation(List<GoodsSuppliersModel> suppliersRelation) {
+	public void setSuppliersRelation(
+			List<SuppliersNotifyMessageParam> suppliersRelation) {
 		this.suppliersRelation = suppliersRelation;
 	}
-	
-	
+	public String getSales() {
+		return sales;
+	}
+	public void setSales(String sales) {
+		this.sales = sales;
+	}
 	
 	
 }

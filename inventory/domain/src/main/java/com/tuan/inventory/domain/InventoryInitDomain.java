@@ -102,6 +102,7 @@ public class InventoryInitDomain {
 	public void createInventory(boolean isExists, GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		// 保存商品库存
 		if (isExists && inventoryInfoDO != null) {
+			
 			this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 					inventoryInfoDO);
 			//保存库存信息到mysql

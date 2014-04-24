@@ -36,6 +36,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	//保存商品库存
 	public void saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
+		inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
+		inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 		this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
 	//将日志压入队列
@@ -71,6 +73,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 				if (srDO.getId() > 0) { // if选型
 					//将商品id set到选型中
 					srDO.setGoodsId(goodsId);
+					srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+					srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 					this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 				}
 				
@@ -83,9 +87,10 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
-				//分店中
-				sDO.setGoodsId(goodsId);
 				if (sDO.getId() > 0) { // if分店
+					sDO.setGoodsId(goodsId);
+					sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
+					sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
 					this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
 				}
 				

@@ -286,7 +286,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				
+				inventoryAdjustDomain.sendNotify();
 			}
 		});
 
@@ -351,7 +351,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				
+				waterfloodAdjustmentDomain.sendNotify();
 			}
 		});
 

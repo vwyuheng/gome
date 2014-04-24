@@ -27,6 +27,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param goodsDO
 	 */
 	public void saveGoodsInventory(GoodsInventoryDO goodsDO) {
+		goodsDO.setTotalNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getTotalNumber());
+		goodsDO.setLeftNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getLeftNumber());
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryDO(goodsDO);
 	}
 	/**
@@ -49,6 +51,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 				if (srDO.getId() > 0) { // if选型
 					//将商品id set到选型中
 					srDO.setGoodsId(goodsId);
+					srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+					srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 					this.saveGoodsSelection(srDO);
 				}
 				
@@ -100,9 +104,11 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public void saveBatchGoodsSuppliers(Long goodsId, List<GoodsSuppliersDO> suppliersDOList) {
 		if (!CollectionUtils.isEmpty(suppliersDOList)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
-				//分店中
-				sDO.setGoodsId(goodsId);
+				
 				if (sDO.getId() > 0) { // if分店
+					sDO.setGoodsId(goodsId);
+					sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
+					sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
 					this.saveGoodsSuppliers(sDO);
 				}
 				
@@ -126,9 +132,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public void updateBatchGoodsSuppliers(Long goodsId, List<GoodsSuppliersDO> suppliersDOList) {
 		if (!CollectionUtils.isEmpty(suppliersDOList)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
-				//分店中
-				sDO.setGoodsId(goodsId);
 				if (sDO.getId() > 0) { // if分店
+					//分店中
+					sDO.setGoodsId(goodsId);
 					this.updateGoodsSuppliers(sDO);
 				}
 				

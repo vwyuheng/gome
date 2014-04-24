@@ -197,11 +197,15 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		notifyParam.setWaterfloodVal(goodsInventoryModel.getWaterfloodVal());
 		notifyParam.setTotalNumber(goodsInventoryModel.getTotalNumber());
 		notifyParam.setLeftNumber(goodsInventoryModel.getLeftNumber());
+		//库存总数 减 库存剩余
+		int sales = goodsInventoryModel.getTotalNumber()-goodsInventoryModel.getLeftNumber();
+		//销量
+		notifyParam.setSales(String.valueOf(sales));
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSelectionList())) {
-			notifyParam.setSelectionRelation(goodsInventoryModel.getGoodsSelectionList());
+			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(goodsInventoryModel.getGoodsSelectionList()));
 		}
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
-			notifyParam.setSuppliersRelation(goodsInventoryModel.getGoodsSuppliersList());
+			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(goodsInventoryModel.getGoodsSuppliersList()));
 		}
 		return notifyParam;
 	}

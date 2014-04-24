@@ -11,6 +11,7 @@ import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -140,10 +141,10 @@ public class InventoryDeleteDomain extends AbstractDomain {
 		notifyParam.setTotalNumber(param.getTotalNumber());
 		notifyParam.setLeftNumber(param.getLeftNumber());
 		if (!CollectionUtils.isEmpty(selectionList)) {
-			notifyParam.setSelectionRelation(selectionList);
+			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
 		}
 		if (!CollectionUtils.isEmpty(suppliersList)) {
-			notifyParam.setSuppliersRelation(suppliersList);
+			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(suppliersList));
 		}
 		return notifyParam;
 	}

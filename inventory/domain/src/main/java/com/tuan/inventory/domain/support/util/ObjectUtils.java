@@ -24,8 +24,73 @@ import com.tuan.inventory.model.GoodsInventoryQueueModel;
 import com.tuan.inventory.model.GoodsSelectionAndSuppliersModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
+import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 
 public class ObjectUtils {
+	
+	
+	public static List<SelectionNotifyMessageParam> toSelectionMsgList(List<GoodsSelectionModel> list) {
+		List<SelectionNotifyMessageParam> result = null;
+			if(!CollectionUtils.isEmpty(list)){
+				result =  new ArrayList<SelectionNotifyMessageParam>();
+				for(GoodsSelectionModel element:list) {
+					     result.add(toSelectionNotifyMessage(element));
+				}
+				
+			}
+		return result;
+	}
+	
+	public static List<SuppliersNotifyMessageParam> toSuppliersMsgList(List<GoodsSuppliersModel> list) {
+		List<SuppliersNotifyMessageParam> result = null;
+			if(!CollectionUtils.isEmpty(list)){
+				result =  new ArrayList<SuppliersNotifyMessageParam>();
+				for(GoodsSuppliersModel element:list) {
+					     result.add(toSuppliersNotifyMessage(element));
+				}
+				
+			}
+		return result;
+	}
+	
+	
+	public static SelectionNotifyMessageParam toSelectionNotifyMessage(GoodsSelectionModel selModel) {
+		SelectionNotifyMessageParam result = null;
+		if(selModel!=null) {
+			result = new SelectionNotifyMessageParam();
+			result.setId(selModel.getId());
+			result.setGoodsId(selModel.getGoodsId());
+			//result.setGoodTypeId(selModel.getGoodTypeId());
+			result.setLeftNumber(selModel.getLeftNumber());
+			result.setTotalNumber(selModel.getTotalNumber());
+			//result.setSuppliersInventoryId(selModel.getSuppliersInventoryId());
+			result.setLimitStorage(selModel.getLimitStorage());
+			result.setUserId(selModel.getUserId());
+			int sales = selModel.getTotalNumber() - selModel.getLeftNumber();
+			result.setSales(String.valueOf(sales));
+			result.setWaterfloodVal(selModel.getWaterfloodVal());
+		}
+		return result;
+	}
+	public static SuppliersNotifyMessageParam toSuppliersNotifyMessage(GoodsSuppliersModel supModel) {
+		SuppliersNotifyMessageParam result = null;
+		if(supModel!=null) {
+			result = new SuppliersNotifyMessageParam();
+			result.setId(supModel.getId());
+			result.setGoodsId(supModel.getGoodsId());
+			//result.setSuppliersId(supModel.getSuppliersId());
+			result.setLeftNumber(supModel.getLeftNumber());
+			result.setTotalNumber(supModel.getTotalNumber());
+			result.setLimitStorage(supModel.getLimitStorage());
+			result.setUserId(supModel.getUserId());
+			result.setWaterfloodVal(supModel.getWaterfloodVal());
+			int sales = supModel.getTotalNumber() - supModel.getLeftNumber();
+			result.setSales(String.valueOf(sales));
+		}
+		return result;
+	}
+	
 	
 	public static GoodsSelectionDO toSelectionDO(GoodsSelectionModel selModel) {
 		GoodsSelectionDO result = null;
