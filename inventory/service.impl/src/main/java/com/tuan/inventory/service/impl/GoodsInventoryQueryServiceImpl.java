@@ -373,14 +373,145 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			
 		}*/
 	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsSelectionModel>> findGoodsSelectionListBySelectionIdList(
+			final String clientIp, final String clientName, final long goodsId,
+			final List<Long> selectionIdList) {
+		final LogModel lm = LogModel
+				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListBySelectionIdList");
+		lm.addMetaData("clientName", clientName)
+				.addMetaData("goodsId", goodsId)
+		        .addMetaData("selectionIdList", selectionIdList);
+		TuanCallbackResult result = this.inventoryServiceTemplate
+				.execute(new InventoryQueryServiceCallback() {
+					@Override
+					public TuanCallbackResult preHandler() {
+						//初始化检查
+						initCheck(goodsId);
+						InventoryQueryEnum enumRes = null;
+						if (goodsId <= 0) {
+							enumRes = InventoryQueryEnum.INVALID_GOODSID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
+						return TuanCallbackResult.success();
+					}
+
+					@Override
+					public TuanCallbackResult doWork() {
+						InventoryQueryResult res = null;
+						List<GoodsSelectionModel> result = goodsInventoryDomainRepository
+								.queryGoodsSelectionListBySelectionIdList(selectionIdList);
+						if (!CollectionUtils.isEmpty(result)) {
+							res = new InventoryQueryResult(
+									InventoryQueryEnum.SUCCESS, result);
+							return TuanCallbackResult.success(res.getResult()
+									.getCode(), res);
+						} else {
+							res = new InventoryQueryResult(
+									InventoryQueryEnum.SYS_ERROR, null);
+							return TuanCallbackResult.failure(res.getResult()
+									.getCode(), null, res);
+						}
+
+					}
+
+				}
+
+				);
+		final int resultCode = result.getResultCode();
+		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
+		writeBusLog(lm.addMetaData("result", result.isSuccess())
+				.addMetaData("resultCode", result.getResultCode())
+				.addMetaData("qresult", qresult.getResultObject())
+				.toJson(false));
+		writeSysLog(lm.toJson());
+		return new CallResult<List<GoodsSelectionModel>>(result.isSuccess(),
+				PublicCodeEnum.valuesOf(resultCode),
+				(List<GoodsSelectionModel>) qresult.getResultObject(),
+				result.getThrowable());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsSuppliersModel>> findGoodsSuppliersListBySuppliersIdList(
+			final String clientIp, final String clientName, final long goodsId,
+			final List<Long> suppliersIdList) {
+		final LogModel lm = LogModel
+				.newLogModel("GoodsInventoryQueryService.findGoodsSuppliersListBySuppliersIdList");
+		lm.addMetaData("clientName", clientName)
+				.addMetaData("goodsId", goodsId)
+		        .addMetaData("suppliersIdList", suppliersIdList);
+		TuanCallbackResult result = this.inventoryServiceTemplate
+				.execute(new InventoryQueryServiceCallback() {
+					@Override
+					public TuanCallbackResult preHandler() {
+						//初始化检查
+						initCheck(goodsId);
+						InventoryQueryEnum enumRes = null;
+						if (goodsId <= 0) {
+							enumRes = InventoryQueryEnum.INVALID_GOODSID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
+						return TuanCallbackResult.success();
+					}
+
+					@Override
+					public TuanCallbackResult doWork() {
+						InventoryQueryResult res = null;
+						List<GoodsSuppliersModel> result = goodsInventoryDomainRepository
+								.queryGoodsSuppliersListBySuppliersIdList(suppliersIdList);
+						if (!CollectionUtils.isEmpty(result)) {
+							res = new InventoryQueryResult(
+									InventoryQueryEnum.SUCCESS, result);
+							return TuanCallbackResult.success(res.getResult()
+									.getCode(), res);
+						} else {
+							res = new InventoryQueryResult(
+									InventoryQueryEnum.SYS_ERROR, null);
+							return TuanCallbackResult.failure(res.getResult()
+									.getCode(), null, res);
+						}
+
+					}
+
+				}
+
+				);
+		final int resultCode = result.getResultCode();
+		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
+		writeBusLog(lm.addMetaData("result", result.isSuccess())
+				.addMetaData("resultCode", result.getResultCode())
+				.addMetaData("qresult", qresult.getResultObject())
+				.toJson(false));
+		writeSysLog(lm.toJson());
+		return new CallResult<List<GoodsSuppliersModel>>(result.isSuccess(),
+				PublicCodeEnum.valuesOf(resultCode),
+				(List<GoodsSuppliersModel>) qresult.getResultObject(),
+				result.getThrowable());
+	}
+	
+	
 	//初始化检查
 	public void initCheck(long goodsId) {
-		InventoryInitDomain create = new InventoryInitDomain();
-		//注入相关Repository
-		create.setGoodsId(goodsId);
-		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-		create.setInitCacheDomainRepository(this.initCacheDomainRepository);
-		create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
-		create.busiCheck();
-	}
+			InventoryInitDomain create = new InventoryInitDomain();
+			//注入相关Repository
+			create.setGoodsId(goodsId);
+			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+			create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+			create.busiCheck();
+		}
+
 }

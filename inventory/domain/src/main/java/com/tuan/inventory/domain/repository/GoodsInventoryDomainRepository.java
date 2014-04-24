@@ -263,6 +263,26 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 	}
 	/**
+	 * 根据选型id的list获取选型信息列表
+	 * @param selectionIdList
+	 * @return
+	 */
+	public List<GoodsSelectionModel> queryGoodsSelectionListBySelectionIdList(List<Long> selectionIdList) {
+		List<GoodsSelectionModel> result = null;
+		//Set<String> selectionIdsSet = this.baseDAOService.queryGoodsSelectionRelation(goodsId);
+		if(!CollectionUtils.isEmpty(selectionIdList)) {
+			result = new ArrayList<GoodsSelectionModel>();
+			for(long selectionId: selectionIdList) {
+				GoodsSelectionModel gsModel = this.queryGoodsSelectionBySelectionId(selectionId);
+				if(gsModel!=null) {
+					result.add(gsModel);
+				}
+				
+			}
+		}
+		return result;
+	}
+	/**
 	 * 根据商品分店id获取分店库存
 	 * @param suppliersId
 	 * @return
@@ -270,6 +290,26 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public GoodsSuppliersModel queryGoodsSuppliersBySuppliersId(long suppliersId) {
 		
 		return ObjectUtils.toModel(this.querySuppliersInventoryById(suppliersId));
+	}
+	/**
+	 * 根据分店id list获取分店列表
+	 * @param suppliersIdList
+	 * @return
+	 */
+	public List<GoodsSuppliersModel> queryGoodsSuppliersListBySuppliersIdList(List<Long> suppliersIdList) {
+		List<GoodsSuppliersModel> result = null;
+		//Set<String> suppliersIdsSet = this.baseDAOService.queryGoodsSuppliersRelation(goodsId);
+		if(!CollectionUtils.isEmpty(suppliersIdList)) {
+			result = new ArrayList<GoodsSuppliersModel>();
+			for(long suppliersId: suppliersIdList) {
+				GoodsSuppliersModel gsModel = this.queryGoodsSuppliersBySuppliersId(suppliersId);
+				if(gsModel!=null) {
+					result.add(gsModel);
+				}
+				
+			}
+		}
+		return result;
 	}
 	/**
 	 * 根据商品id获取商品所属分店库存信息列表

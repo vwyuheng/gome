@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.tuan.inventory.domain.GoodsQueryDomain;
+import com.tuan.inventory.domain.GoodsSelectionListQueryBySelIdListDomain;
 import com.tuan.inventory.domain.GoodsSelectionListQueryDomain;
 import com.tuan.inventory.domain.GoodsSelectionQueryDomain;
 import com.tuan.inventory.domain.GoodsSupplierQueryDomain;
@@ -182,6 +183,44 @@ public class GoodsInventoryQueryController {
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSelectionListQuery");
 		LogModel lm = (LogModel)request.getAttribute("lm");
 		GoodsSelectionListQueryDomain queryDomain = GoodsSelectionListQueryDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,lm,traceMessage);
+		if(queryDomain == null){
+			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
+		//接口参数校验
+		ResultEnum resEnum = queryDomain.checkParameter();
+		//参数检查未通过时
+		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
+			return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
+		}
+		//调用合作方接口
+		resEnum = queryDomain.doBusiness();
+		//返回结果
+		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
+	}
+	/**
+	 * http://localhost:882/rest/j/query/gsellist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionIdList=&traceId=123&traceRootId=456
+	 * 根据选型id list 批量获取指定选型列表
+	 * @param packet
+	 * @param goodsId
+	 * @param selectionIdList
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/gsellist", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQueryByselidList(@ModelAttribute("inputPacket") RequestPacket packet
+			,String goodsId,String selectionIdList,HttpServletRequest request) {
+		Message traceMessage = StringUtils.makeTraceMessage(packet);
+		if(traceMessage == null){
+			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSelectionListQuery");
+		LogModel lm = (LogModel)request.getAttribute("lm");
+		GoodsSelectionListQueryBySelIdListDomain queryDomain = GoodsSelectionListQueryBySelIdListDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,selectionIdList,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());

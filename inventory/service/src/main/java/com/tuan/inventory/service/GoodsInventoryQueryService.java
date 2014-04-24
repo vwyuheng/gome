@@ -56,6 +56,17 @@ public interface GoodsInventoryQueryService {
 	CallResult<List<GoodsSelectionModel>> findGoodsSelectionListByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
 	/**
+	 * 根据选型id 列表获取选型列表
+	 * @param clientIp
+	 * @param clientName
+	 * @param goodsId
+	 * @param selectionIdList
+	 * @return
+	 */
+	@ProductCode(code = "00005", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
+	CallResult<List<GoodsSelectionModel>> findGoodsSelectionListBySelectionIdList(final String clientIp, final String clientName, 
+			final long goodsId,final List<Long> selectionIdList);
+	/**
 	 * 根据商品id获取商品分店库存列表
 	 * @param clientIp
 	 * @param clientName
@@ -63,7 +74,18 @@ public interface GoodsInventoryQueryService {
 	 * @param goodsId
 	 * @return
 	 */
-	@ProductCode(code = "00005", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
+	@ProductCode(code = "00006", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	CallResult<List<GoodsSuppliersModel>> findGoodsSuppliersListByGoodsId(final String clientIp, final String clientName, 
 			final long goodsId);
+	/**
+	 * 根据分店id list获取分店列表
+	 * @param clientIp
+	 * @param clientName
+	 * @param goodsId
+	 * @param suppliersIdList
+	 * @return
+	 */
+	@ProductCode(code = "00007", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
+	CallResult<List<GoodsSuppliersModel>> findGoodsSuppliersListBySuppliersIdList(final String clientIp, final String clientName, 
+			final long goodsId,final List<Long> suppliersIdList);
 }
