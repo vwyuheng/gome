@@ -394,6 +394,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
+						if (CollectionUtils.isEmpty(selectionIdList)) {
+							enumRes = InventoryQueryEnum.INVALID_PARAM;
+						}
 						// 检查出现错误
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
