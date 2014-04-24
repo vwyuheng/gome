@@ -164,14 +164,14 @@ public class GoodsInventoryQueryController {
 		return (GoodsQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/query/gselectionlist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&traceId=123&traceRootId=456
+	 * http://localhost:882/rest/j/query/gsellist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&traceId=123&traceRootId=456
 	 * 根据商品id 查询商品选型库存列表
 	 * @param packet
 	 * @param goodsId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/gselectionlist", method = RequestMethod.POST)
+	@RequestMapping(value = "/gsellist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);
@@ -201,7 +201,7 @@ public class GoodsInventoryQueryController {
 		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/query/gsellist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionIdList=&traceId=123&traceRootId=456
+	 * http://localhost:882/rest/j/query/sellist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionIdList=&traceId=123&traceRootId=456
 	 * 根据选型id list 批量获取指定选型列表
 	 * @param packet
 	 * @param goodsId
@@ -209,7 +209,7 @@ public class GoodsInventoryQueryController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/gsellist", method = RequestMethod.POST)
+	@RequestMapping(value = "/sellist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQueryByselidList(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String selectionIdList,HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);
@@ -239,14 +239,14 @@ public class GoodsInventoryQueryController {
 		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/query/gsupplierslist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1736&traceId=123&traceRootId=456
+	 * http://localhost:882/rest/j/query/gsupplist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1736&traceId=123&traceRootId=456
 	 * 根据商品id 查询商品分店库存信息列表
 	 * @param packet
 	 * @param goodsId
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "/gsupplierslist", method = RequestMethod.POST)
+	@RequestMapping(value = "/gsupplist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSuppliersListQueryInnerResp goodsSuppliersListQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
 		Message traceMessage = StringUtils.makeTraceMessage(packet);
