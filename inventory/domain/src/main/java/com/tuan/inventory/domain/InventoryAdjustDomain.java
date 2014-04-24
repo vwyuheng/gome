@@ -15,6 +15,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -32,6 +33,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private AdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
@@ -54,10 +56,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	//调整后库存
 	private Long resultACK;
 	//是否需要初始化
-	private boolean isInit;
+	//private boolean isInit;
 	//初始化用
-	private List<GoodsSuppliersDO> suppliersInventoryList;
-	private List<GoodsSelectionDO> selectionInventoryList;
+	//private List<GoodsSuppliersDO> suppliersInventoryList;
+	//private List<GoodsSelectionDO> selectionInventoryList;
 	
 	public InventoryAdjustDomain(String clientIp, String clientName,
 			AdjustInventoryParam param, LogModel lm) {
@@ -71,9 +73,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		try {
 			//初始化检查
 			this.initCheck();
+			/*this.initCheck();
 			if (isInit) {
 				this.init();
-			}
+			}*/
 			//真正的库存调整业务处理
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.businessType = ResultStatusEnum.GOODS_SELF.getDescription();
@@ -196,7 +199,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		}
 		
 		//初始化检查
-		public void initCheck() {
+		/*public void initCheck() {
 			this.fillParam();
 			this.goodsId = Long.valueOf(id);
 			//查询商品库存
@@ -211,8 +214,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				selectionInventoryList = this.initCacheDomainRepository.querySelectionByGoodsId(goodsId);
 				suppliersInventoryList =  this.initCacheDomainRepository.selectGoodsSuppliersInventoryByGoodsId(goodsId);
 			}
-		}
-		public void init() {
+		}*/
+		/*public void init() {
 			//保存商品库存
 			if(inventoryDO!=null)
 			      this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
@@ -222,7 +225,21 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//保存分店库存
 			if(!CollectionUtils.isEmpty(suppliersInventoryList))
 			      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
+		}*/
+		//初始化库存
+		public void initCheck() {
+			this.fillParam();
+			this.goodsId = Long.valueOf(id);
+			InventoryInitDomain create = new InventoryInitDomain();
+			//注入相关Repository
+			create.setGoodsId(this.goodsId);
+			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+			create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+			create.busiCheck();
 		}
+		
+		
 		
 	// 填充日志信息
 	public boolean fillInventoryUpdateActionDO() {
@@ -332,6 +349,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		this.initCacheDomainRepository = initCacheDomainRepository;
 	}
 
+	public void setSynInitAndAsynUpdateDomainRepository(
+			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
+		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
+	}
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}

@@ -10,6 +10,7 @@ import com.tuan.inventory.domain.InventoryUpdateDomain;
 import com.tuan.inventory.domain.WaterfloodAdjustmentDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -32,6 +33,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	@Resource
 	private SequenceUtil sequenceUtil;
 	/**
 	 * 新增库存
@@ -53,6 +56,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		final InventoryCreatorDomain inventoryCreatorDomain = new InventoryCreatorDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryCreatorDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		inventoryCreatorDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override

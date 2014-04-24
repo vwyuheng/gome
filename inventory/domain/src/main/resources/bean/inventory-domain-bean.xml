@@ -19,7 +19,5 @@
 	<bean id="logOfWaterHandleService" class="com.tuan.inventory.domain.repository.LogOfWaterHandleServiceImpl"/>
 	<!-- 日志消费处理类 -->
     <bean id="logsEventHandle" class="com.tuan.inventory.domain.support.job.handle.LogsEventHandle"/>	
-	<!-- <bean id="extensionService" class="com.tuan.ordercenter.extrnal.impl.ExtensionServiceImpl">
-    <property name="url4Sequence" value="${sequence.url}" /></bean> -->
-	<!-- <bean id="redisServiceTemplate" class="com.tuan.inventory.domain.common.service.RedisServiceTemplateImpl" /> -->
+	<bean id="synInitAndAsynUpdateDomainRepository" class="com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository"/>
 </beans>

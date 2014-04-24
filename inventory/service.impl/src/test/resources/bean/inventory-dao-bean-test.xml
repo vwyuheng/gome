@@ -9,10 +9,11 @@
 			http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 			http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"
 			default-autowire="byName">
-			
-    <!--  DAO定义。 -->
+    
+     <!--  DAO定义。 -->
     <bean id="goodTypeDAO" class="com.tuan.inventory.dao.impl.GoodTypeDAOImpl" parent="baseSqlMapClientDAO"/>
-    <bean id="nullDbInitSelectionRelationDAO" class="com.tuan.inventory.dao.impl.NullDbInitSelectionRelationDAOImpl" parent="baseSqlMapClientDAO"/>
+    
+    <bean id="synInitAndAsynUpdateDAO" class="com.tuan.inventory.dao.impl.SynInitAndAsynUpdateDAOImpl" parent="baseSqlMapClientDAO"/>
     <bean id="nullCacheInitDAO" class="com.tuan.inventory.dao.impl.NullCacheInitDAOImpl" parent="baseSqlMapClientDAO"/>
     <bean id="logOfWaterDAO" class="com.tuan.inventory.dao.impl.LogOfWaterDAOImpl" parent="baseSqlMapClientDAO"/>
 </beans>

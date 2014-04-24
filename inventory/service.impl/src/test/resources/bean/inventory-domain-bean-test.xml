@@ -14,4 +14,6 @@
 	<bean id="initCacheDomainRepository" class="com.tuan.inventory.domain.repository.InitCacheDomainRepository"/>
 	<bean id="logQueueDomainRepository" class="com.tuan.inventory.domain.repository.LogQueueDomainRepository"/>
 	<bean id="sequenceUtil" class="com.tuan.inventory.domain.support.util.SequenceUtil"/>
+	
+	<bean id="synInitAndAsynUpdateDomainRepository" class="com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository"/>
 </beans>

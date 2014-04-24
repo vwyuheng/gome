@@ -11,50 +11,46 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implements SynInitAndAsynUpdateDAO {
 
 	@Override
-	public int insertGoodsInventoryDO(GoodsInventoryDO goodsDO) {
-		return (Integer) super.getSqlMapClientTemplate().insert("insertSelectionRelation", goodsDO);
+	public void insertGoodsInventoryDO(GoodsInventoryDO goodsDO) {
+		 super.getSqlMapClientTemplate().insert("insertGoodsInventory", goodsDO);
 	}
 
 	@Override
-	public int updateGoodsInventoryDO(GoodsInventoryDO goodsDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void updateGoodsInventoryDO(GoodsInventoryDO goodsDO) {
+		super.getSqlMapClientTemplate().update("updateGoodsInventory", goodsDO);
 	}
 
 	@Override
-	public int insertGoodsSelectionDO(GoodsSelectionDO selectionDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void insertGoodsSelectionDO(GoodsSelectionDO selectionDO) {
+		 super.getSqlMapClientTemplate().insert("insertGoodsSelection", selectionDO);
 	}
 
 	@Override
-	public int updateGoodsSelectionDO(GoodsSelectionDO selectionDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void updateGoodsSelectionDO(GoodsSelectionDO selectionDO) {
+		super.getSqlMapClientTemplate().update("updateGoodsSelection", selectionDO);
 	}
 
 	@Override
-	public int insertGoodsSuppliersDO(GoodsSuppliersDO suppliersDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void insertGoodsSuppliersDO(GoodsSuppliersDO suppliersDO) {
+		 super.getSqlMapClientTemplate().insert("insertGoodsSuppliers", suppliersDO);
 	}
 
 	@Override
-	public int updateGoodsSuppliersDO(GoodsSuppliersDO suppliersDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void updateGoodsSuppliersDO(GoodsSuppliersDO suppliersDO) {
+		super.getSqlMapClientTemplate().update("updateGoodsSuppliers", suppliersDO);
+		
 	}
 
 	@Override
-	public int insertGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void insertGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO) {
+	
+		 super.getSqlMapClientTemplate().insert("insertGoodsInventoryWMS", wmsDO);
 	}
 
 	@Override
-	public int updateGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void updateGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO) {
+		super.getSqlMapClientTemplate().update("updateGoodsInventoryWMS", wmsDO);
+		
 	}
 
 

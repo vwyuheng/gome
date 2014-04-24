@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sf.json.JSONObject;
@@ -8,13 +9,21 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
+import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
+import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ClientNameEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -31,9 +40,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private GoodsInventoryModel goodsInventoryModel;
 	//库存需发更新消息的
 	private ConcurrentHashSet<Long> inventorySendMsg;
-	//库存需回滚的
+	//缓存订单支付成功的队列id，以便处理完后将队列标记删除
+	private ConcurrentHashSet<Long> markDelAftersendMsg;
+	//缓存回滚库存的队列id，供redis库存回滚用
 	private ConcurrentHashSet<Long> inventoryRollback;
+	//缓存需回滚的商品id，供mysql回滚库存用
+	private ConcurrentHashSet<Long> inventoryRollback4Mysql;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private InventoryScheduledParam param;
 	private final int delStatus = 4;
 	public InventoryLockedScheduledDomain(String clientIp,
@@ -49,7 +64,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	public void preHandler() {
 		try {
 			inventorySendMsg = new ConcurrentHashSet<Long>();
+			markDelAftersendMsg = new ConcurrentHashSet<Long>();
 			inventoryRollback = new ConcurrentHashSet<Long>();
+			inventoryRollback4Mysql = new ConcurrentHashSet<Long>();
 			// 商品库存是否存在
 			//取初始状态队列信息
 			List<GoodsInventoryQueueModel> queueList = goodsInventoryDomainRepository
@@ -68,11 +85,18 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							//1.当订单状态为已付款时
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
-								if (verifyId(model.getGoodsId()))
-								   this.inventorySendMsg.add(model.getGoodsId());
+								if (verifyId(model.getGoodsId())) {
+									this.inventorySendMsg.add(model.getGoodsId());
+									//缓存订单支付成功的队列id，以便处理完后将队列标记删除
+									this.markDelAftersendMsg.add(model.getId());
+								}
+								   
 							}else {
-								if (verifyId(model.getId()))
-								   this.inventoryRollback.add(model.getId());
+								if (verifyId(model.getId())) {
+									this.inventoryRollback.add(model.getId());
+									this.inventoryRollback4Mysql.add(model.getGoodsId());
+								}
+								   
 							}
 						}
 					}
@@ -90,7 +114,6 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 
 	// 业务处理
 	public CreateInventoryResultEnum businessHandler() {
-
 		try {
 			// 业务检查前的预处理
 			this.preHandler();
@@ -98,13 +121,18 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				for(long goodsId:inventorySendMsg) {
 					if(loadMessageData(goodsId)) {
 						this.sendNotify();
+						//将数据更新到mysql
+						this.fillParamAndUpdate();
 					}
 				}
 				
 			}
-			//消息发送完成后将取出的队列标记删除状态
+			//回滚异常库存并将相应异常队列标记删除
 			this.rollbackAndMarkDelete();
-
+			//已支付成功订单，消息发送后，将队列标记删除
+			this.markDeleteAfterSendMsgSuccess();
+			//回滚mysql库存
+			this.rollback4Mysql();
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.setMethod("busiCheck").addMetaData("errorMsg",
@@ -147,7 +175,75 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			writeBusErrorLog(lm.setMethod("sendNotify").addMetaData("errMsg", e.getMessage()), e);
 		}
 	}
-
+	//回滚mysql数据
+	public void rollback4Mysql() {
+		try {
+			if (!CollectionUtils.isEmpty(inventoryRollback4Mysql)) {
+				for(long goodsId:inventoryRollback4Mysql) {
+					if(verifyId(goodsId)) {
+						if(loadMessageData(goodsId)) {
+							//将数据更新到mysql
+							this.fillParamAndUpdate();
+						}
+					}
+					
+				}
+			}
+			
+		} catch (Exception e) {
+			this.writeBusErrorLog(lm.setMethod("rollback4Mysql")
+					.addMetaData("errMsg", e.getMessage()), e);
+			
+		}
+	}
+	
+	//异步更新mysql商品库存
+		public void asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+			InventoryInitDomain create = new InventoryInitDomain();
+			create.setGoodsId(goodsId);
+			//注入相关Repository
+			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+			create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+			create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+		}
+		/**
+		 * 组装数据并更新
+		 */
+		private void fillParamAndUpdate() {
+			List<GoodsSelectionDO> selectionInventoryList = null;
+			List<GoodsSuppliersDO> suppliersInventoryList = null;
+			GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
+			long goodsId = goodsInventoryModel.getGoodsId();
+			inventoryInfoDO.setGoodsId(goodsId);
+			inventoryInfoDO.setLimitStorage(goodsInventoryModel.getLimitStorage());
+			inventoryInfoDO.setWaterfloodVal(goodsInventoryModel.getWaterfloodVal());
+			inventoryInfoDO.setTotalNumber(goodsInventoryModel.getTotalNumber());
+			inventoryInfoDO.setLeftNumber(goodsInventoryModel.getLeftNumber());
+			if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSelectionList())) {
+				selectionInventoryList = new ArrayList<GoodsSelectionDO>();
+				List<GoodsSelectionModel> selectionModelList = goodsInventoryModel.getGoodsSelectionList();
+				if(!CollectionUtils.isEmpty(selectionModelList)) {
+					for(GoodsSelectionModel selModel:selectionModelList) {
+						selectionInventoryList.add(ObjectUtils.toSelectionDO(selModel));
+					}
+				}
+			}
+			if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
+				 suppliersInventoryList = new ArrayList<GoodsSuppliersDO>();
+				List<GoodsSuppliersModel> suppliersModelList = goodsInventoryModel.getGoodsSuppliersList();
+				if(!CollectionUtils.isEmpty(suppliersModelList)) {
+					for(GoodsSuppliersModel supModel:suppliersModelList) {
+						suppliersInventoryList.add(ObjectUtils.toSuppliersDO(supModel));
+					}
+				}
+			}
+		   //调用数据同步
+			this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+		}
+	
+	
+	
 	// 填充notifyserver发送参数
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
@@ -165,7 +261,30 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 		return notifyParam;
 	}
-
+	//发送消息成功后将队列标记删除:逻辑删除
+	public void markDeleteAfterSendMsgSuccess() {
+		try {
+			if (!CollectionUtils.isEmpty(markDelAftersendMsg)) {
+				for(long queueId:markDelAftersendMsg) {
+					if(verifyId(queueId)) {
+						String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
+						if(!StringUtils.isEmpty(member)) {
+							//标记删除【队列】,同时将缓存的队列删除
+							this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+						}
+						
+					}
+					
+				}
+			}
+			
+		} catch (Exception e) {
+			this.writeBusErrorLog(lm.setMethod("markDeleteAfterSendMsgSuccess")
+					.addMetaData("errMsg", e.getMessage()), e);
+			
+		}
+	}
+	
 	// 回滚库存并将相关队列标记删除：逻辑删除
 	public void rollbackAndMarkDelete() {
 		try {
@@ -185,7 +304,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("markDelete")
+			this.writeBusErrorLog(lm.setMethod("rollbackAndMarkDelete")
 					.addMetaData("errMsg", e.getMessage()), e);
 			
 		}
@@ -235,6 +354,16 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	   }
    }
 
+	
+	public void setInitCacheDomainRepository(
+			InitCacheDomainRepository initCacheDomainRepository) {
+		this.initCacheDomainRepository = initCacheDomainRepository;
+	}
+	
+	public void setSynInitAndAsynUpdateDomainRepository(
+			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
+		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
+	}
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;

@@ -26,7 +26,23 @@ import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 
 public class ObjectUtils {
-
+	
+	public static GoodsSelectionDO toSelectionDO(GoodsSelectionModel selModel) {
+		GoodsSelectionDO result = null;
+		if(selModel!=null) {
+			result = new GoodsSelectionDO();
+			result.setId(selModel.getId());
+			result.setGoodsId(selModel.getGoodsId());
+			result.setGoodTypeId(selModel.getGoodTypeId());
+			result.setLeftNumber(selModel.getLeftNumber());
+			result.setTotalNumber(selModel.getTotalNumber());
+			result.setSuppliersInventoryId(selModel.getSuppliersInventoryId());
+			result.setLimitStorage(selModel.getLimitStorage());
+			result.setUserId(selModel.getUserId());
+			result.setWaterfloodVal(selModel.getWaterfloodVal());
+		}
+		return result;
+	}
 	public static GoodsSelectionModel toModel(GoodsSelectionDO gsDO) {
 		GoodsSelectionModel result = null;
 		if(gsDO!=null) {
@@ -44,6 +60,21 @@ public class ObjectUtils {
 		return result;
 	}
 	
+	public static GoodsSuppliersDO toSuppliersDO(GoodsSuppliersModel supModel) {
+		GoodsSuppliersDO result = null;
+		if(supModel!=null) {
+			result = new GoodsSuppliersDO();
+			result.setId(supModel.getId());
+			result.setGoodsId(supModel.getGoodsId());
+			result.setSuppliersId(supModel.getSuppliersId());
+			result.setLeftNumber(supModel.getLeftNumber());
+			result.setTotalNumber(supModel.getTotalNumber());
+			result.setLimitStorage(supModel.getLimitStorage());
+			result.setUserId(supModel.getUserId());
+			result.setWaterfloodVal(supModel.getWaterfloodVal());
+		}
+		return result;
+	}
 	public static GoodsSuppliersModel toModel(GoodsSuppliersDO gsDO) {
 		GoodsSuppliersModel result = null;
 		if(gsDO!=null) {

@@ -62,12 +62,167 @@
 	    <result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
 	    <result column="remark" property="remark" jdbcType="VARCHAR" />
 	 </resultMap>
-  	 <!-- 插入分店配型表信息 -->
-  	<insert id="insertSelectionRelation" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
-    insert into jeehe_inventory_selection_relation (id, goods_id, good_type_id, totalNumber, leftNumber, suppliers_inventory_id,limit_storage)
-    values (#id:INTEGER#, #goodsId:INTEGER#,#goodTypeId:INTEGER#,#totalNumber:INTEGER#,#leftNumber:INTEGER#,#suppliersInventoryId:INTEGER#,
-    		#limitStorage:INTEGER#)
+	 
+	 
+	   <!-- 更新物流商品可更新字段   -->	
+    <update id="updateGoodsInventoryWMS" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO" >
+      update jeehe_inventory_wms
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="totalNumber">
+			total_num = #totalNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			left_num = #leftNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="isBeDelivery">
+			is_be_delivery = #isBeDelivery:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where id = #id:INTEGER# and goods_id = #goodsId:INTEGER#
+    </update>
+	 
+	  <!-- 插入物流商品库存信息 -->
+  	<insert id="insertGoodsInventoryWMS" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO" >
+    insert into jeehe_inventory_wms 
+    (id,
+    goods_id,
+    total_num, 
+    left_num, 
+    is_be_delivery
+   
+   )
+    values (
+            #id:BIGINT#,
+            #goodsId:BIGINT#,
+            #totalNumber:INTEGER#,
+            #leftNumber:INTEGER#,
+            #isBeDelivery:INTEGER#
+           
+    		)
+    		
      </insert>
+     
+       <!-- 更新商品分店库存可更新字段   -->	
+    <update id="updateGoodsSuppliers" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSuppliersDO" >
+      update jeehe_inventory_suppliers
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="totalNumber">
+			total_num = #totalNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			left_num = #leftNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			waterflood_val = #waterfloodVal:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where id = #id:INTEGER#
+    </update>
+     
+	  <!-- 插入商品分店库存信息 -->
+  	<insert id="insertGoodsSuppliers" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSuppliersDO" >
+    insert into jeehe_inventory_suppliers 
+    (id,
+    goods_id,
+    suppliers_id,
+    total_num, 
+    left_num, 
+    limit_storage, 
+    waterflood_val
+   
+   )
+    values (
+            #id:BIGINT#,
+            #goodsId:BIGINT#,
+            #suppliersId:INTEGER#,
+            #totalNumber:INTEGER#,
+            #leftNumber:INTEGER#,
+            #limitStorage:INTEGER#,
+            #waterfloodVal:INTEGER#
+           
+    		)
+     </insert>
+     
+      <!-- 更新商品选型库存可更新字段   -->	
+    <update id="updateGoodsSelection" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
+      update jeehe_inventory_selection
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="totalNumber">
+			total_num = #totalNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			left_num = #leftNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			waterflood_val = #waterfloodVal:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where id = #id:INTEGER#
+    </update>
+     
+	  <!-- 插入商品选型库存信息 -->
+  	<insert id="insertGoodsSelection" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
+    insert into jeehe_inventory_selection 
+    (id,
+    goods_id,
+    good_type_id,
+    total_num, 
+    left_num, 
+    limit_storage, 
+    waterflood_val,
+    suppliers_inventory_id
+    
+   )
+    values (
+            #id:BIGINT#,
+            #goodsId:BIGINT#,
+            #goodTypeId:INTEGER#,
+            #totalNumber:INTEGER#,
+            #leftNumber:INTEGER#,
+            #limitStorage:INTEGER#,
+            #waterfloodVal:INTEGER#,
+            #suppliersInventoryId:INTEGER#
+           
+    		)
+     </insert>
+	 
+	 
+    <!-- 更新商品库存可更新字段   -->	
+    <update id="updateGoodsInventory" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryDO" >
+      update jeehe_inventory_attribute
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="totalNumber">
+			total_num = #totalNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			left_num = #leftNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			waterflood_val = #waterfloodVal:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where goods_id = #goodsId:INTEGER#
+    </update>
+	 
+	   <!-- 插入商品 库存信息 -->
+  	<insert id="insertGoodsInventory" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryDO" >
+    insert into jeehe_inventory_attribute 
+    (
+    goods_id, 
+    total_num, 
+    left_num, 
+    limit_storage, 
+    waterflood_val
+   )
+    values (
+            #goodsId:BIGINT#,
+            #totalNumber:INTEGER#,
+            #leftNumber:INTEGER#,
+            #limitStorage:INTEGER#,
+            #waterfloodVal:INTEGER#
+    		)
+     </insert>
+  	
   <!-- 插入库存日志流水表信息 -->
   	<insert id="insertInventoryQueue" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO" >
     insert into jeehe_inventory_log 
@@ -99,10 +254,6 @@
     		#clientName:VARCHAR#,
     		#clientIp:VARCHAR#,
     		#remark:VARCHAR#)
-    		
-    <!-- <selectKey resultClass="java.lang.Long" keyProperty="id" >
-      SELECT LAST_INSERT_ID()
-    </selectKey> -->
      </insert>
    
 </sqlMap>

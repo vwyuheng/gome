@@ -115,8 +115,9 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		 List<GoodsSelectionModel> goodsSelection = new ArrayList<GoodsSelectionModel>();
 		//分店
 		 List<GoodsSuppliersModel> goodsSuppliers = new ArrayList<GoodsSuppliersModel>();
-		 
-		param.setGoodsId("1");
+		 String goodsId = String.valueOf(sequenceUtil.getSequence(SEQNAME.seq_inventory));
+		 System.out.println("goodsId="+goodsId);
+		param.setGoodsId(goodsId);
 		param.setUserId("2");
 		param.setLeftNumber(100);
 		param.setLimitStorage(1);
@@ -155,7 +156,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		Message traceMessage = JobUtils.makeTraceMessage(packet);
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
 		System.out.println("11param="+LogUtil.formatObjLog(param));
-		//goodsInventoryUpdateService.createInventory(clientIP, clientName, param, traceMessage);
+		goodsInventoryUpdateService.createInventory(clientIP, clientName, param, traceMessage);
 		//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
 	}

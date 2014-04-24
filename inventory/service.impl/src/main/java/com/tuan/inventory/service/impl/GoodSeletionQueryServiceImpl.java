@@ -47,7 +47,7 @@ public class GoodSeletionQueryServiceImpl extends AbstractService implements Goo
 	@Override
 	public CallResult<InventoryQueryResult> querySelectionRelation(final String clientIp,
 			final String clientName,final long goodsId,final long SelectionRelationId) {
-		// ��ȡ�ӿ����
+		// 
 		//final String interfaceMehtodName = ClientNameEnum.getCurrentMethodName(
 				//Thread.currentThread().getStackTrace(),
 			//	getClass().getInterfaces()[0].getName());
@@ -64,7 +64,7 @@ public class GoodSeletionQueryServiceImpl extends AbstractService implements Goo
 						if (goodsId <= 0 ) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
-						// �����ִ���
+						//
 						if (enumRes != null) {
 							return TuanCallbackResult.failure(
 									enumRes.getCode(), null,

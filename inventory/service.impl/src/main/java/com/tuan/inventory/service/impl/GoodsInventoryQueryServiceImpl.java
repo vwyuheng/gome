@@ -7,11 +7,10 @@ import javax.annotation.Resource;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.service.TuanCallbackResult;
-import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
-import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
-import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
@@ -30,6 +29,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	InitCacheDomainRepository initCacheDomainRepository;
+	@Resource
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	@Override
 	public CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(
 			final String clientIp, final String clientName, final long goodsId,
@@ -341,7 +342,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 
 	
 	//初始化检查
-	public void initCheck(long goodsId) {
+	/*public void initCheck(long goodsId) {
 		boolean isInit = false;
 		List<GoodsSelectionDO> selectionInventoryList = null;
 		List<GoodsSuppliersDO> suppliersInventoryList = null;
@@ -370,5 +371,16 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
 			}
 			
-		}
+		}*/
+	
+	//初始化检查
+	public void initCheck(long goodsId) {
+		InventoryInitDomain create = new InventoryInitDomain();
+		//注入相关Repository
+		create.setGoodsId(goodsId);
+		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+		create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+		create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+		create.busiCheck();
+	}
 }

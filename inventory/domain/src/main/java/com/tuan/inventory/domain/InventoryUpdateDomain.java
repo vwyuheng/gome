@@ -15,6 +15,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -33,6 +34,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private UpdateInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -40,15 +42,15 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSelectionModel> selectionList;
 	private List<GoodsSuppliersModel> suppliersList;
 	// 初始化用
-	private List<GoodsSuppliersDO> suppliersInventoryList;
-	private List<GoodsSelectionDO> selectionInventoryList;
+	//private List<GoodsSuppliersDO> suppliersInventoryList;
+	//private List<GoodsSelectionDO> selectionInventoryList;
 	private Long goodsId;
 	private Long userId;
 	private boolean isEnough;
 	private boolean isSelectionEnough = true;
 	private boolean isSuppliersEnough = true;
 	// 是否需要初始化
-	private boolean isInit;
+	//private boolean isInit;
 	// 需扣减的商品库存
 	private int deductNum = 0;
 	// 原库存
@@ -186,9 +188,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		// 初始化检查
 		this.initCheck();
-		if (isInit) {
+		/*if (isInit) {
 			this.init();
-		}
+		}*/
 		// 真正的库存更新业务处理
 		try {// 计算部分
 			this.calculateInventory();
@@ -276,12 +278,15 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	// 初始化检查
-	public void initCheck() {
+	/*public void initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
-		if (goodsId > 0 && param.getLimitStorage() == 1) { // limitStorage>0:库存无限制；1：限制库存
-			boolean isExists = this.goodsInventoryDomainRepository
-					.isGoodsExists(goodsId);
-			if (isExists) { // 不存在
+		if (goodsId > 0 ) {
+		//if (goodsId > 0 && param.getLimitStorage() == 1) { // limitStorage>0:库存无限制；1：限制库存
+			//boolean isExists = this.goodsInventoryDomainRepository
+					//.isGoodsExists(goodsId);
+			this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+			//if (isExists) { // 不存在
+			if(inventoryInfoDO==null) {  // 不存在
 				// 初始化库存
 				this.isInit = true;
 				// 初始化商品库存信息
@@ -295,9 +300,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 		}
 
-	}
+	}*/
 
-	public void init() {
+	/*public void init() {
 		// 保存商品库存
 		if (inventoryInfoDO != null)
 			this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
@@ -311,7 +316,20 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 					goodsId, suppliersInventoryList);
 	}
-
+*/
+	//初始化库存
+	public void initCheck() {
+		this.goodsId = Long.valueOf(param.getGoodsId());
+				InventoryInitDomain create = new InventoryInitDomain();
+				//注入相关Repository
+				create.setGoodsId(this.goodsId);
+				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+				create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+				create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+				create.busiCheck();
+			}
+	
+	
 	// 填充日志信息
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
@@ -429,6 +447,11 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public void setInitCacheDomainRepository(
 			InitCacheDomainRepository initCacheDomainRepository) {
 		this.initCacheDomainRepository = initCacheDomainRepository;
+	}
+
+	public void setSynInitAndAsynUpdateDomainRepository(
+			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
+		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
 	}
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {

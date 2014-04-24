@@ -14,6 +14,8 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -31,6 +33,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	private String clientName;
 	private CreaterInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -121,17 +125,19 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			// 保存商品库存
-			if (isExists && inventoryInfoDO != null)
-				this.goodsInventoryDomainRepository.saveGoodsInventory(
-						goodsId, inventoryInfoDO);
+			//if (isExists && inventoryInfoDO != null)
+				//this.goodsInventoryDomainRepository.saveGoodsInventory(
+					//	goodsId, inventoryInfoDO);
 			// 保选型库存
-			if (!CollectionUtils.isEmpty(selectionRelation))
-				this.goodsInventoryDomainRepository
-						.saveGoodsSelectionInventory(goodsId, selectionRelation);
+			//if (!CollectionUtils.isEmpty(selectionRelation))
+				//this.goodsInventoryDomainRepository
+				//		.saveGoodsSelectionInventory(goodsId, selectionRelation);
 			// 保存分店库存
-			if (!CollectionUtils.isEmpty(suppliersRelation))
-				this.goodsInventoryDomainRepository
-						.saveGoodsSuppliersInventory(goodsId, suppliersRelation);
+			//if (!CollectionUtils.isEmpty(suppliersRelation))
+				//this.goodsInventoryDomainRepository
+					//	.saveGoodsSuppliersInventory(goodsId, suppliersRelation);
+			//保存库存
+			this.saveInventory();
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
@@ -142,6 +148,15 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
+	public void saveInventory() {
+		InventoryInitDomain create = new InventoryInitDomain();
+		//注入相关Repository
+		create.setGoodsId(this.goodsId);
+		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+		create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+		create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+		create.createInventory(isExists,inventoryInfoDO, selectionRelation, suppliersRelation);
+	}
 	// 发送库存新增消息
 	public void sendNotify() {
 		try {
@@ -334,6 +349,16 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
+	}
+	
+	public void setInitCacheDomainRepository(
+			InitCacheDomainRepository initCacheDomainRepository) {
+		this.initCacheDomainRepository = initCacheDomainRepository;
+	}
+	
+	public void setSynInitAndAsynUpdateDomainRepository(
+			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
+		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
 	}
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
