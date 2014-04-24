@@ -141,6 +141,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
+				//更新mysql
+				this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (adjustNum));
 				if(!verifyWaterflood()) {
@@ -148,6 +150,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(selectionId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
+				//更新选型的mysql
+				this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (adjustNum));
 				if(!verifyWaterflood()) {
@@ -155,6 +159,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(suppliersId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
+				//更新分店的mysql
+				this.synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersInventory);
 			}
 
 		} catch (Exception e) {

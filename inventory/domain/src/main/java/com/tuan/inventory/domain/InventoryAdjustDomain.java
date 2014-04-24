@@ -130,6 +130,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 				}
+				//更新mysql
+				this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (adjustNum));
 				if(!verifyInventory()) {
@@ -137,6 +139,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 				}
+				//更新选型的mysql
+				this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
 				this.resultACK = this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (adjustNum));
 				if(!verifyInventory()) {
@@ -144,6 +148,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (-adjustNum));
 					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 				}
+				//更新分店的mysql
+				this.synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersInventory);
 			}
 
 		} catch (Exception e) {
