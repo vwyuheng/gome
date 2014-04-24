@@ -19,5 +19,7 @@
 	
 	<import resource="classpath:/bean/inventory-notifyserver-bean.xml" />
 	<import resource="classpath:/bean/inventory-redis.xml" />
+	
+	<!-- 测试用的调度 -->
 	<!-- <import resource="classpath:/bean/inventory-tasks-bean.xml" /> -->
 </beans>
