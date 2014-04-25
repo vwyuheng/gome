@@ -1,6 +1,7 @@
 package com.tuan.inventory.domain;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.GoodsSuppliersDomain;
 import com.tuan.inventory.model.GoodsSuppliersModel;
@@ -14,7 +15,8 @@ import com.wowotrace.trace.model.Message;
 
 public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
-	private static Logger logger = Logger.getLogger(GoodsSupplierQueryDomain.class);
+	//private static Logger logger = Logger.getLogger(GoodsSupplierQueryDomain.class);
+	private static Log logger = LogFactory.getLog(GoodsSupplierQueryDomain.class);
 	private GoodsSuppliersQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private GoodsSupplierQueryDomain(){}

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<configuration> 
+	<appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/default/common-default.log</file>     
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/default/ommon-default.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<maxHistory>30</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender> 
+
+	<appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/error/common-error.log</file> 
+    	<filter class="ch.qos.logback.classic.filter.ThresholdFilter"> 
+    		<level>ERROR</level>
+    	</filter>    
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/error/common-error.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<maxHistory>30</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender> 
+	<appender name="PERF-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/perf/common-perf.log</file>     
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/perf/common-perf.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<maxHistory>30</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender> 
+	
+	<appender name="DAO-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/dao/common-dao.log</file> 
+    	<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">    
+	      <fileNamePattern>${loggingRoot}/dao/common-dao.log.%i</fileNamePattern>    
+	      <minIndex>1</minIndex>    
+	      <maxIndex>5</maxIndex>    
+	    </rollingPolicy>    
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+          <maxFileSize>10MB</maxFileSize>
+        </triggeringPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender> 
+	<appender name="TRACE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/trace/tracing.log</file>     
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/trace/tracing.log.%d{yyyy-MM-dd-HH}.gz</fileNamePattern> 
+      		<maxHistory>72</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender>  
+	<appender name="COMMON-BUSINESS-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/business/common-business.log</file>     
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/business/common-business.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<maxHistory>30</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender> 
+    
+    <appender name="COMMON-ALARM-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/alarm/common-alarm.log</file>     
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/alarm/common-alarm.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<maxHistory>30</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender>                                                                                                                                                                                                                                                                                                                                
+                  
+    <appender name="COMMON-SERVICE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    	<file>${loggingRoot}/service/common-service.log</file>     
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
+      		<fileNamePattern>${loggingRoot}/service/common-service.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<maxHistory>30</maxHistory>  
+    	</rollingPolicy> 	                                                                                         
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+		</encoder>                                                                                                                                                                                                                                                                                    
+    </appender>                                                                                                                                                                                                                                                                                                                       
+	<!-- ===================================================================== -->
+	<!-- Loggers                                                               -->
+	<!-- ===================================================================== -->
+
+
+	<logger name="com.tuan.core.common.aop.pref.PerformanceMonitorInterceptor" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="PERF-APPENDER"/>
+	</logger>
+
+	<logger name="com.ibatis" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="DAO-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</logger>
+	<logger name="java.sql" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="DAO-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</logger>		
+	<logger name="com.wowotrace.trace.model" additivity="false">
+			<level value="INFO"/>
+			<appender-ref ref="TRACE-APPENDER"/>
+	</logger>
+
+	<logger name="COMMON.BUSINESS" additivity="false">
+			<level value="INFO"/>
+			<appender-ref ref="COMMON-BUSINESS-APPENDER"/>
+	</logger>
+	<logger name="COMMON.ALARM" additivity="false">
+			<level value="INFO"/>
+			<appender-ref ref="COMMON-ALARM-APPENDER"/>
+	</logger>
+	<logger name="COMMON.SERVICE" additivity="false">
+			<level value="INFO"/>
+			<appender-ref ref="COMMON-SERVICE-APPENDER"/>
+	</logger>
+	<root level="INFO">           
+	    <appender-ref ref="DEFAULT-APPENDER"/>
+		  <appender-ref ref="ERROR-APPENDER"/>
+	</root>   
+ </configuration>

@@ -3,7 +3,8 @@ package com.tuan.inventory.domain.support.jedistools;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
@@ -18,7 +19,8 @@ import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
  */
 public class JedisFactory extends RedisBaseObject
 {
-	protected static Logger m_logger = Logger.getLogger(JedisFactory.class.getName());
+	//protected static Logger m_logger = Logger.getLogger(JedisFactory.class.getName());
+	protected static Log m_logger = LogFactory.getLog(JedisFactory.class.getName());
 	/**
 	 * spring 注入的 The connection pool.
 	 */

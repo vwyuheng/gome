@@ -2,7 +2,8 @@ package com.tuan.inventory.domain;
 
 import java.util.SortedMap;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -18,7 +19,8 @@ public class ConfirmQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	private UpdateRequestPacket packet;
-	private static Logger logger = Logger.getLogger(ConfirmQueueConsumeDomain.class);
+	//private static Logger logger = Logger.getLogger(ConfirmQueueConsumeDomain.class);
+	private static Log logger = LogFactory.getLog(ConfirmQueueConsumeDomain.class);
 	
 	public ConfirmQueueConsumeDomain(UpdateRequestPacket packet,LogModel lm,Message messageRoot){
 		this.packet = packet;

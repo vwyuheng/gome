@@ -9,7 +9,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,7 +26,8 @@ import com.wowotrace.traceEnum.MessageResultEnum;
  * @date 2013.11.25
  */
 public class Interceptor extends HandlerInterceptorAdapter {
-	private static Logger logger = Logger.getLogger("INTERFACE.LOG");
+	//private static Logger logger = Logger.getLogger("INTERFACE.LOG");
+	private static Log logger = LogFactory.getLog("INTERFACE.LOG");
 	private Set<String> resultPrefixFilter;
 	private boolean isFilter = false;
 

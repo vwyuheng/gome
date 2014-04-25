@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.google.gson.Gson;
@@ -51,8 +52,8 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
-	private static Logger logger = Logger.getLogger(GoodsdUpdateInventoryDomain.class);
-	
+	//private static Logger logger = Logger.getLogger(GoodsdUpdateInventoryDomain.class);
+	private static Log logger = LogFactory.getLog(GoodsdUpdateInventoryDomain.class);
 	@SuppressWarnings("unchecked")
 	public GoodsdUpdateInventoryDomain(UpdateRequestPacket packet,UpdateInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {

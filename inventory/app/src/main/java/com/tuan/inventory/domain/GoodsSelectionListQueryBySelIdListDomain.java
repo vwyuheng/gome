@@ -4,7 +4,8 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -20,7 +21,8 @@ import com.wowotrace.trace.model.Message;
 
 public class GoodsSelectionListQueryBySelIdListDomain extends GoodsSelectionListBySelIdListDomain{
 	
-	private static Logger logger = Logger.getLogger(GoodsSelectionListQueryBySelIdListDomain.class);
+	//private static Logger logger = Logger.getLogger(GoodsSelectionListQueryBySelIdListDomain.class);
+	private static Log logger = LogFactory.getLog(GoodsSelectionListQueryBySelIdListDomain.class);
 	private static Type type = new TypeToken<List<Long>>(){}.getType();
 	private GoodsSelectionListQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;

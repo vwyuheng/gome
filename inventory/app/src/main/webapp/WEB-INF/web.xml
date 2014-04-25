@@ -8,18 +8,28 @@
 		<param-value>/WEB-INF/inventory-root-bean.xml</param-value>
 	</context-param>
 	<!-- 配置日志初始文件 -->
-	<context-param>
+	<!-- <context-param>
 		<param-name>log4jConfigLocation</param-name>
 		<param-value>classpath:/log4j.xml</param-value>
+	</context-param> -->
+	
+	<!-- 配置Logback -->
+	<context-param>  
+		<param-name>logbackConfigLocation</param-name>  
+		<param-value>classpath:/logback.xml</param-value>  
 	</context-param>
+	<listener>
+		<listener-class>ch.qos.logback.ext.spring.web.LogbackConfigListener</listener-class>
+	</listener>
+	
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	<listener>
+	<!-- <listener>
 		<listener-class>
 			org.springframework.web.util.Log4jConfigListener
 		</listener-class>
-	</listener>
+	</listener> -->
 	 <servlet>
 		<servlet-name>inventory</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

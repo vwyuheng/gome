@@ -3,7 +3,8 @@ package com.tuan.inventory.domain;
 import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -29,7 +30,8 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private AdjustWaterfloodParam param;
 	private UpdateRequestPacket packet;
-	private static Logger logger = Logger.getLogger(GoodsdAdjustWaterfloodDomain.class);
+	//private static Logger logger = Logger.getLogger(GoodsdAdjustWaterfloodDomain.class);
+	private static Log logger = LogFactory.getLog(GoodsdAdjustWaterfloodDomain.class);
 	
 	public GoodsdAdjustWaterfloodDomain(UpdateRequestPacket packet,String id,String userId,String type,String num,LogModel lm,Message messageRoot){
 		this.packet = packet;

@@ -2,7 +2,8 @@ package com.tuan.inventory.domain;
 
 import java.util.SortedMap;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -21,8 +22,8 @@ public class LockedQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	private InventoryScheduledParam param;
 	private UpdateRequestPacket packet;
-	private static Logger logger = Logger.getLogger(LockedQueueConsumeDomain.class);
-	
+	//private static Logger logger = Logger.getLogger(LockedQueueConsumeDomain.class);
+	private static Log logger = LogFactory.getLog(LockedQueueConsumeDomain.class);
 	public LockedQueueConsumeDomain(UpdateRequestPacket packet,String period,LogModel lm,Message messageRoot){
 		this.packet = packet;
 		this.period = Integer.valueOf(period);

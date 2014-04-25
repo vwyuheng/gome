@@ -2,7 +2,8 @@ package com.tuan.inventory.domain.support.util;
 
 import javax.annotation.Resource;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 
@@ -13,7 +14,8 @@ import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
  * @date 2014/3/11
  */
 public class SequenceUtil {
-	private static Logger logger = Logger.getLogger(SequenceUtil.class);
+	//private static Logger logger = Logger.getLogger(SequenceUtil.class);
+	private static Log logger = LogFactory.getLog(SequenceUtil.class);
 	@Resource
 	RedisCacheUtil redisCacheUtil;
 

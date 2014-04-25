@@ -13,11 +13,12 @@ import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.params.HttpMethodParams;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class HttpClientUtil {
-	private static Logger logger = Logger.getLogger(HttpClientUtil.class);
-	
+	//private static Logger logger = Logger.getLogger(HttpClientUtil.class);
+	private static Log logger = LogFactory.getLog(HttpClientUtil.class);
 	public static String sendPost( Map<String, String> params,String url,String encode,LogModel lm) throws Exception {
 		String method = "HttpClientUtil.sendPost";
 		String response = null;

@@ -3,7 +3,8 @@ package com.tuan.inventory.domain;
 import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -29,8 +30,8 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private AdjustInventoryParam param;
 	private UpdateRequestPacket packet;
-	private static Logger logger = Logger.getLogger(GoodsdAdjustInventoryDomain.class);
-	
+	//private static Logger logger = Logger.getLogger(GoodsdAdjustInventoryDomain.class);
+	private static Log logger = LogFactory.getLog(GoodsdAdjustInventoryDomain.class);
 	public GoodsdAdjustInventoryDomain(UpdateRequestPacket packet,String id,String userId,String type,String num,LogModel lm,Message messageRoot){
 		this.packet = packet;
 		this.id = id;

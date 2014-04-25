@@ -9,8 +9,8 @@ import java.util.Map;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.ThrowableInformation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 /**
  * 
  * @author wanghua
@@ -18,8 +18,8 @@ import org.apache.log4j.spi.ThrowableInformation;
  * 2012-7-3 下午03:31:44
  */
 public class LogUtil {
-	private static Logger logger=Logger.getLogger(LogUtil.class);
-	
+	//private static Logger logger=Logger.getLogger(LogUtil.class);
+	private static Log logger = LogFactory.getLog(LogUtil.class);
 	/**
 	 *  
 	 * @param jsonObj  对象非集合,且要是能转换成json对象
@@ -33,7 +33,8 @@ public class LogUtil {
 			
 		} catch (Exception e) {
 			Map<String, String> map=new HashMap<String, String>();
-			map.put("errorMsg", Arrays.toString(new ThrowableInformation(e).getThrowableStrRep()));
+			//map.put("errorMsg", Arrays.toString(new ThrowableInformation(e).getThrowableStrRep()));
+			map.put("errorMsg", Arrays.toString(e.getStackTrace()));
 			logger.error(JSONObject.fromObject(map).toString());
 		}
 		return json;
@@ -55,7 +56,8 @@ public class LogUtil {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			Map<String, String> map=new HashMap<String, String>();
-			map.put("errorMsg", Arrays.toString(new ThrowableInformation(e).getThrowableStrRep()));
+			//map.put("errorMsg", Arrays.toString(new ThrowableInformation(e).getThrowableStrRep()));
+			map.put("errorMsg", Arrays.toString(e.getStackTrace()));
 			logger.error(JSONObject.fromObject(map).toString());
 		}
 		
@@ -64,7 +66,7 @@ public class LogUtil {
 
 	
     
-	public static String errorLog(String msg,Exception e){
+	/*public static String errorLog(String msg,Exception e){
 		Map<String, String> map=new HashMap<String, String>();
 		map.put("errorName", msg);
 		map.put("errorMsg", Arrays.toString(new ThrowableInformation(e).getThrowableStrRep()));
@@ -75,7 +77,7 @@ public class LogUtil {
 			e1.printStackTrace();
 		}
 		return null;
-	}
+	}*/
 	
 	public static long getRunTime(long startTime){
 		return System.currentTimeMillis() - startTime;
