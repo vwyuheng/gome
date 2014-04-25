@@ -159,20 +159,7 @@
 			<artifactId>cozy-common-lang</artifactId>
 
 		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson </groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>xalan</groupId>
 			<artifactId>xalan</artifactId>
