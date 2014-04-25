@@ -116,6 +116,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		//分店
 		 List<GoodsSuppliersModel> goodsSuppliers = new ArrayList<GoodsSuppliersModel>();
 		 String goodsId = String.valueOf(sequenceUtil.getSequence(SEQNAME.seq_inventory));
+		// String goodsId = "2001";
 		 System.out.println("goodsId="+goodsId);
 		param.setGoodsId(goodsId);
 		param.setUserId("2");
@@ -128,6 +129,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			smodel.setGoodsId(1L);
 			smodel.setUserId(2l);
 			smodel.setId(sequenceUtil.getSequence(SEQNAME.seq_selection));
+			//smodel.setId(2000l);
 			smodel.setTotalNumber(50);
 			smodel.setLeftNumber(50);
 			smodel.setLimitStorage(1);
@@ -135,6 +137,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			goodsSelection.add(smodel);
 			GoodsSuppliersModel supmodel = new GoodsSuppliersModel();
 			supmodel.setId(sequenceUtil.getSequence(SEQNAME.seq_suppliers));
+			//supmodel.setId(2000l);
 			supmodel.setGoodsId(1l);
 			supmodel.setUserId(2l);
 			supmodel.setTotalNumber(50);

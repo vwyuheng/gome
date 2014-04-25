@@ -10,7 +10,7 @@ import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
@@ -30,7 +30,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	@Resource
 	InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
-	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Override
 	public CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(
 			final String clientIp, final String clientName, final long goodsId,
@@ -513,7 +513,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			create.setGoodsId(goodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
-			create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 			create.busiCheck();
 		}
 

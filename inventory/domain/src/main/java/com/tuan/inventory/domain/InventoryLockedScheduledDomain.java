@@ -15,8 +15,8 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
+import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -48,7 +48,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private ConcurrentHashSet<Long> inventoryRollback4Mysql;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
-	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private InventoryScheduledParam param;
 	private final int delStatus = 4;
 	public InventoryLockedScheduledDomain(String clientIp,
@@ -120,9 +120,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
 				for(long goodsId:inventorySendMsg) {
 					if(loadMessageData(goodsId)) {
-						this.sendNotify();
+						
 						//将数据更新到mysql
-						this.fillParamAndUpdate();
+						if(this.fillParamAndUpdate()) {
+							this.sendNotify();
+						}
 					}
 				}
 				
@@ -198,19 +200,19 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	//异步更新mysql商品库存
-		public void asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+		public boolean asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 			InventoryInitDomain create = new InventoryInitDomain();
 			create.setGoodsId(goodsId);
 			//注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
-			create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
-			create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+			return create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
 		}
 		/**
 		 * 组装数据并更新
 		 */
-		private void fillParamAndUpdate() {
+		private boolean fillParamAndUpdate() {
 			List<GoodsSelectionDO> selectionInventoryList = null;
 			List<GoodsSuppliersDO> suppliersInventoryList = null;
 			GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
@@ -239,7 +241,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 			}
 		   //调用数据同步
-			this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+			return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
 		}
 	
 	
@@ -364,9 +366,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		this.initCacheDomainRepository = initCacheDomainRepository;
 	}
 	
-	public void setSynInitAndAsynUpdateDomainRepository(
-			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
-		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
+	public void setInventoryInitAndUpdateHandle(
+			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
+		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
 	}
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {

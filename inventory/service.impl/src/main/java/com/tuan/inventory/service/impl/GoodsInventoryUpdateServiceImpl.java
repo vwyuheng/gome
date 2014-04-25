@@ -10,7 +10,7 @@ import com.tuan.inventory.domain.InventoryUpdateDomain;
 import com.tuan.inventory.domain.WaterfloodAdjustmentDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -33,7 +33,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
-	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Resource
 	private SequenceUtil sequenceUtil;
 	/**
@@ -57,7 +57,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCreatorDomain.setInitCacheDomainRepository(initCacheDomainRepository);
-		inventoryCreatorDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
+		inventoryCreatorDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
@@ -125,6 +125,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		inventoryUpdateDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
@@ -252,6 +253,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		inventoryAdjustDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
@@ -317,6 +319,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		waterfloodAdjustmentDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		waterfloodAdjustmentDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		waterfloodAdjustmentDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		waterfloodAdjustmentDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override

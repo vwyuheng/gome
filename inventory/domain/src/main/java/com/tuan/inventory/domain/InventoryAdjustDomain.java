@@ -15,7 +15,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -33,7 +33,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private AdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
-	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	//private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
@@ -124,32 +125,49 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
-				this.resultACK = this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (adjustNum));
-				if(!verifyInventory()) {
-					//将库存还原到调整前
-					this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (-adjustNum));
-					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
-				}
 				//更新mysql
-				this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
+				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryDO);
+				if(handlerResult) {
+					this.resultACK = this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (adjustNum));
+					if(!verifyInventory()) {
+						//将库存还原到调整前
+						this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (-adjustNum));
+						return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+					}
+				}
+				//this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
-				this.resultACK = this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (adjustNum));
-				if(!verifyInventory()) {
-					//将库存还原到调整前
-					this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (-adjustNum));
-					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+				
+				//更新mysql
+				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(selectionInventory);
+				if(handlerResult) {
+					this.resultACK = this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (adjustNum));
+					if(!verifyInventory()) {
+						//将库存还原到调整前
+						this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (-adjustNum));
+						return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+					}
 				}
+				
+				
 				//更新选型的mysql
-				this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
+				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
-				this.resultACK = this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (adjustNum));
-				if(!verifyInventory()) {
-					//将库存还原到调整前
-					this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (-adjustNum));
-					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+				
+				//更新mysql
+				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(suppliersInventory);
+				if(handlerResult) {
+					this.resultACK = this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (adjustNum));
+					if(!verifyInventory()) {
+						//将库存还原到调整前
+						this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (-adjustNum));
+						return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+					}
 				}
+				
+				
 				//更新分店的mysql
-				this.synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersInventory);
+				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersInventory);
 			}
 
 		} catch (Exception e) {
@@ -245,7 +263,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			create.setGoodsId(this.goodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
-			create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+			//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
 			create.busiCheck();
 		}
 		
@@ -363,14 +382,18 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		this.initCacheDomainRepository = initCacheDomainRepository;
 	}
 
-	public void setSynInitAndAsynUpdateDomainRepository(
+	/*public void setSynInitAndAsynUpdateDomainRepository(
 			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
 		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
-	}
+	}*/
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}
 
+	public void setInventoryInitAndUpdateHandle(
+			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
+		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
+	}
 	public Long getGoodsId() {
 		return goodsId;
 	}

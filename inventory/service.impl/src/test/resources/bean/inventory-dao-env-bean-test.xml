@@ -12,8 +12,9 @@
 	<bean id="writeDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowotuan?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
-		<property name="user" value="deployment" />
+		<!-- <property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowotuan?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" /> -->
+		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:8066/dbordercenter?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+		<property name="user" value="Minventory" />
 		<property name="password" value="123456" />
 		<!-- 测试用 start-->
 		<!-- <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/demo"></property>
@@ -34,8 +35,9 @@
 	<bean id="readDataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
 		destroy-method="close">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowotuan?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
-		<property name="user" value="deployment" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:8066/dbordercenter?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" />
+<!-- 		<property name="jdbcUrl" value="jdbc:mysql://10.8.210.189:3306/wowotuan?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true" /> -->
+		<property name="user" value="Minventory" />
 		<property name="password" value="123456" />
 		<!-- 测试用 start-->
 		<!-- <property name="jdbcUrl" value="jdbc:mysql://127.0.0.1:3306/demo1"></property>

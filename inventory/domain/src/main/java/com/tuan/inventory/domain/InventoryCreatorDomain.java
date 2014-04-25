@@ -15,7 +15,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -35,7 +35,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	private CreaterInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
-	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -155,7 +155,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		create.setGoodsId(this.goodsId);
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setInitCacheDomainRepository(this.initCacheDomainRepository);
-		create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+		create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		create.createInventory(isExists,inventoryInfoDO, selectionRelation, suppliersRelation);
 	}
 	// 发送库存新增消息
@@ -362,9 +362,9 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		this.initCacheDomainRepository = initCacheDomainRepository;
 	}
 	
-	public void setSynInitAndAsynUpdateDomainRepository(
-			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
-		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
+	public void setInventoryInitAndUpdateHandle(
+			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
+		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
 	}
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;

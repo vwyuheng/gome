@@ -14,7 +14,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -33,7 +33,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private ConcurrentHashSet<Long> listQueueIdMarkDelete;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
-	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	
 	private final int delStatus = 6;
 	public InventoryConfirmScheduledDomain(String clientIp,
@@ -87,9 +87,11 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
 				for(long goodsId:listGoodsIdSends) {
 					if(loadMessageData(goodsId)) {
-						this.sendNotify();
+						
 						//将已更新的数据更新到mysql
-						this.fillParamAndUpdate();
+						if(this.fillParamAndUpdate()) {  //数据同步成功后再发消息
+							this.sendNotify(); 
+						}
 					}
 				}
 				
@@ -124,19 +126,19 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	}
 
 	//异步更新mysql商品库存
-	public void asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+	public boolean asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		InventoryInitDomain create = new InventoryInitDomain();
 		create.setGoodsId(goodsId);
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setInitCacheDomainRepository(this.initCacheDomainRepository);
-		create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
-		create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+		create.setInventoryInitAndUpdateHandle(this.inventoryInitAndUpdateHandle);
+		return create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
 	}
 	/**
 	 * 组装数据并更新
 	 */
-	private void fillParamAndUpdate() {
+	private boolean fillParamAndUpdate() {
 		List<GoodsSelectionDO> selectionInventoryList = null;
 		List<GoodsSuppliersDO> suppliersInventoryList = null;
 		GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
@@ -165,7 +167,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 		}
 	   //调用数据同步
-		this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+		return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
 	}
 	// 发送库存新增消息
 	public void sendNotify() {
@@ -255,10 +257,11 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			InitCacheDomainRepository initCacheDomainRepository) {
 		this.initCacheDomainRepository = initCacheDomainRepository;
 	}
-	
-	public void setSynInitAndAsynUpdateDomainRepository(
-			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
-		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
-	}
 
+	public void setInventoryInitAndUpdateHandle(
+			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
+		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
+	}
+	
+	
 }
