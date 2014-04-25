@@ -21,6 +21,7 @@ public class InventoryInitDomain {
 	private InitCacheDomainRepository initCacheDomainRepository;
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private GoodsInventoryDO inventoryInfoDO;
+	
 	// 初始化用
 	private List<GoodsSuppliersDO> suppliersInventoryList;
 	private List<GoodsSelectionDO> selectionInventoryList;

@@ -71,11 +71,16 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
-					//将商品id set到选型中
-					srDO.setGoodsId(goodsId);
-					srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-					srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
-					this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
+					//首先根据选型id判断该选型是否已存在
+					GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
+					if(tmpSelDO==null) {  //不存在才创建
+						//将商品id set到选型中
+						srDO.setGoodsId(goodsId);
+						srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+						srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
+						this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
+					}
+					
 				}
 				
 			}//for
@@ -88,10 +93,14 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
 				if (sDO.getId() > 0) { // if分店
-					sDO.setGoodsId(goodsId);
-					sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
-					sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
-					this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
+					GoodsSuppliersDO tmpSuppDO = this.baseDAOService.querySuppliersInventoryById(sDO.getId());
+					if(tmpSuppDO==null) { //不存在才创建
+						sDO.setGoodsId(goodsId);
+						sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
+						sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
+						this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
+					}
+					
 				}
 				
 			}//for
