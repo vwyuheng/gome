@@ -71,6 +71,7 @@ public class JsonUtils {
 		}
 		String jsonResult = JsonUtils.convertObjectToString(goodsSelection);
 		System.out.println(jsonResult);
+		@SuppressWarnings("unchecked")
 		List<TestParam> tet1= (List<TestParam>)new Gson().fromJson(jsonResult, type);
 		
 		System.out.println("tet1="+tet1+",size="+tet1.size());

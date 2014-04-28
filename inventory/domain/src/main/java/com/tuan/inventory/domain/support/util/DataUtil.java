@@ -633,6 +633,7 @@ public class DataUtil {
 		return result;
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Map<String, Object> toMap(Collection collection) {
 		Map result = new HashMap();
 		if (collection != null && collection.size() > 0) {
