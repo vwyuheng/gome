@@ -30,7 +30,7 @@ public class InventoryInitAndUpdateHandle  {
 	SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	
 	
-	public boolean handleGoodsInventory(final GoodsInventoryDO goodsDO) {
+	public boolean saveGoodsInventory(final GoodsInventoryDO goodsDO) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(goodsDO == null){
@@ -54,10 +54,10 @@ public class InventoryInitAndUpdateHandle  {
 						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "saveGoodsInventory_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsDO.getGoodsId();
 				} else {
-					message = "GoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
+					message = "saveGoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
 				}
 			} 
 			
@@ -100,10 +100,10 @@ public class InventoryInitAndUpdateHandle  {
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "updateGoodsInventory_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsDO.getGoodsId();
 				} else {
-					message = "GoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
+					message = "updateGoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
 				}
 			} 
 			
@@ -146,10 +146,10 @@ public class InventoryInitAndUpdateHandle  {
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "updateGoodsSelection_error[" + publicCodeEnum.getMessage()
 							+ "]selectionId:" + selectionDO.getId();
 				} else {
-					message = "GoodsInventory_success[save success]selectionId:" + selectionDO.getId();
+					message = "updateGoodsSelection_success[save success]selectionId:" + selectionDO.getId();
 				}
 			} 
 			
@@ -193,10 +193,10 @@ public class InventoryInitAndUpdateHandle  {
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "updateGoodsSuppliers_error[" + publicCodeEnum.getMessage()
 							+ "]suppliersId:" + suppliersDO.getId();
 				} else {
-					message = "GoodsInventory_success[save success]suppliersId:" + suppliersDO.getId();
+					message = "updateGoodsSuppliers_success[save success]suppliersId:" + suppliersDO.getId();
 				}
 			} 
 			
@@ -243,10 +243,10 @@ public class InventoryInitAndUpdateHandle  {
 						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "BatchGoodsSelection_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsId;
 				} else {
-					message = "GoodsInventory_success[save success]goodsId:" + goodsId;
+					message = "BatchGoodsSelection_success[save success]goodsId:" + goodsId;
 				}
 			} 
 			
@@ -258,7 +258,7 @@ public class InventoryInitAndUpdateHandle  {
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
-			//throw new CacheRunTimeException("InventoryInitAndUpdateHandle.handleGoodsInventory run exception!",e);
+			
 		}
 		log.info(lm.addMetaData("goodsId",goodsId)
 				.addMetaData("selectionInventoryList",selectionInventoryList)
@@ -292,10 +292,10 @@ public class InventoryInitAndUpdateHandle  {
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "GoodsSelection_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsId;
 				} else {
-					message = "GoodsInventory_success[save success]goodsId:" + goodsId;
+					message = "GoodsSelection_success[save success]goodsId:" + goodsId;
 				}
 			} 
 			
@@ -307,7 +307,7 @@ public class InventoryInitAndUpdateHandle  {
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
-			//throw new CacheRunTimeException("InventoryInitAndUpdateHandle.handleGoodsInventory run exception!",e);
+			
 		}
 		log.info(lm.addMetaData("goodsId",goodsId)
 				.addMetaData("selectionInventoryList",selectionInventoryList)
@@ -343,10 +343,10 @@ public class InventoryInitAndUpdateHandle  {
 						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "GoodsSuppliers_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsId;
 				} else {
-					message = "GoodsInventory_success[save success]goodsId:" + goodsId;
+					message = "GoodsSuppliers_success[save success]goodsId:" + goodsId;
 				}
 			} 
 			
@@ -358,7 +358,7 @@ public class InventoryInitAndUpdateHandle  {
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
-			//throw new CacheRunTimeException("InventoryInitAndUpdateHandle.handleBatchGoodsSuppliers run exception!",e);
+			
 		}
 		log.info(lm.addMetaData("goodsId",goodsId)
 				.addMetaData("suppliersInventoryList",suppliersInventoryList)
@@ -392,10 +392,10 @@ public class InventoryInitAndUpdateHandle  {
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "GoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "GoodsSuppliers_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsId;
 				} else {
-					message = "GoodsInventory_success[save success]goodsId:" + goodsId;
+					message = "GoodsSuppliers_success[save success]goodsId:" + goodsId;
 				}
 			} 
 			
@@ -407,7 +407,7 @@ public class InventoryInitAndUpdateHandle  {
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
-			//throw new CacheRunTimeException("InventoryInitAndUpdateHandle.handleBatchGoodsSuppliers run exception!",e);
+			
 		}
 		log.info(lm.addMetaData("goodsId",goodsId)
 				.addMetaData("suppliersInventoryList",suppliersInventoryList)

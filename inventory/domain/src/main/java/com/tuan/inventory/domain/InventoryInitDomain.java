@@ -72,7 +72,7 @@ public class InventoryInitDomain {
 		if (inventoryInfoDO != null) {
 			
 			//mysql数据库处理成功后才处理redis
-			boolean result = this.inventoryInitAndUpdateHandle.handleGoodsInventory(inventoryInfoDO);
+			boolean result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 						inventoryInfoDO);
@@ -119,7 +119,7 @@ public class InventoryInitDomain {
 		// 保存商品库存
 		if (isExists && inventoryInfoDO != null) {
 			
-			boolean result = this.inventoryInitAndUpdateHandle.handleGoodsInventory(inventoryInfoDO);
+			boolean result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 						inventoryInfoDO);
