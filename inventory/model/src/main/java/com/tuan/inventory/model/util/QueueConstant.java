@@ -42,7 +42,7 @@ public class QueueConstant {
 	/** 系统异常常数 */
 	public static final int NO_DATA = 0;// 没有可用的数据源
 	public static final int SUCCESS = 1;// 操作成功
-	
+	public static final int INCORRECT_UPDATE = -5;// 更改超过预期的记录数
 	public static final int DATA_EXISTED = 2;// 数据已经存在
 	
 	public static final int INVALID_PARAM = -1;// 传入参数错误
