@@ -15,7 +15,11 @@ import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
-
+/***
+ * redis dao层工具类
+ * @author henry.yu
+ * @date 2014.3
+ */
 public class RedisCacheUtil {
 	private final static LocalLogger log = LocalLogger.getLog("RedisCacheUtil.LOG");
 	@Resource
