@@ -19,7 +19,6 @@ public class InventoryInitDomain {
 
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InitCacheDomainRepository initCacheDomainRepository;
-	//private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private GoodsInventoryDO inventoryInfoDO;
 	
@@ -84,7 +83,7 @@ public class InventoryInitDomain {
 			
 		// 保选型库存
 		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.handleBatchGoodsSelection(goodsId, selectionInventoryList);
+			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 						goodsId, selectionInventoryList);
@@ -96,7 +95,7 @@ public class InventoryInitDomain {
 			
 		// 保存分店库存
 		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.handleBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 						goodsId, suppliersInventoryList);
@@ -132,7 +131,7 @@ public class InventoryInitDomain {
 			
 		// 保选型库存
 		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.handleBatchGoodsSelection(goodsId, selectionInventoryList);
+			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 						goodsId, selectionInventoryList);
@@ -144,7 +143,7 @@ public class InventoryInitDomain {
 			
 		// 保存分店库存
 		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.handleBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 						goodsId, suppliersInventoryList);
