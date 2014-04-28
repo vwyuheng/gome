@@ -18,7 +18,7 @@ import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 
 /**
- * 日志异步处理事件
+ * 库存初始化和更新处理工具类
  * @author henry.yu
  * @Date  2014/3/21
  */
