@@ -20,7 +20,6 @@ import com.tuan.inventory.model.result.CallResult;
 public class InventoryInitDomain extends AbstractDomain{
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	//private InitCacheDomainRepository initCacheDomainRepository;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -52,8 +51,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	}
 	// 初始化检查
 	public CreateInventoryResultEnum initCheck() {
-		//CreateInventoryResultEnum resultEnum = null;
-		//this.goodsId = Long.valueOf(param.getGoodsId());
+		
 		if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
 			//boolean isExists = this.goodsInventoryDomainRepository
 				//	.isGoodsExists(goodsId);
@@ -103,35 +101,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		return CreateInventoryResultEnum.SUCCESS;
 
 	}
-	
-	
-	// 初始化检查
-		/*public void queryInitCheck() {
-			//this.goodsId = Long.valueOf(param.getGoodsId());
-			if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
-				//boolean isExists = this.goodsInventoryDomainRepository
-					//	.isGoodsExists(goodsId);
-				
-				this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				//if (isExists) { // 不存在
-				if(inventoryInfoDO==null) {
-					// 初始化库存
-					this.isInit = true;
-					// 初始化商品库存信息
-					this.inventoryInfoDO = this.initCacheDomainRepository
-							.getInventoryInfoByGoodsId(goodsId);
-					// 查询该商品分店库存信息
-					selectionInventoryList = this.initCacheDomainRepository
-							.querySelectionByGoodsId(goodsId);
-					suppliersInventoryList = this.initCacheDomainRepository
-							.selectGoodsSuppliersInventoryByGoodsId(goodsId);
-				}
-			}
-
-		}*/
-	
-	
-	
 	
 	/**
 	 * 库存初始化
@@ -276,11 +245,6 @@ public class InventoryInitDomain extends AbstractDomain{
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
-
-	/*public void setInitCacheDomainRepository(
-			InitCacheDomainRepository initCacheDomainRepository) {
-		this.initCacheDomainRepository = initCacheDomainRepository;
-	}*/
 
 	public void setGoodsId(Long goodsId) {
 		this.goodsId = goodsId;

@@ -15,7 +15,7 @@ public enum CreateInventoryResultEnum {
 	
 	DB_ERROR					(-99, 	"数据库错误"),
 	SYS_ERROR					(-100, 	"系统错误"),
-	INIT_INVENTORY_ERROR					(-10, 	"初始化库存发送错误"),
+	INIT_INVENTORY_ERROR					(-10, 	"库存初始化过程中发生错误"),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),
