@@ -86,7 +86,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
 							.querySelectionRelationById(selectionId);
 					if (selectionDO != null
-							&& selectionDO.getLimitStorage() == 1) {
+							/*&& selectionDO.getLimitStorage() == 1*/) { //为了计算销量 不管是否限制库存的都要扣减
 						// 扣减库存并返回扣减标识,计算库存并
 						if ((selectionDO.getLeftNumber() - model.getNum()) <= 0) {
 							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
