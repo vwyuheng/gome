@@ -8,14 +8,15 @@ import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryInitDomain;
+import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
+import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.enu.res.InventoryQueryEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.result.InventoryQueryResult;
@@ -27,10 +28,15 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	//@Resource
+	//InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
-	InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	@Resource
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//@Resource
+	//GoodsInventoryInitService goodsInventoryInitService;
+	
 	@Override
 	public CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(
 			final String clientIp, final String clientName, final long goodsId,
@@ -43,9 +49,23 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
+		
+						//参数校验
 						if (selectionId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_SELECTIONID;
 						}
@@ -105,8 +125,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					@Override
 					public TuanCallbackResult preHandler() {
 						//初始化检查
-						initCheck(goodsId);
+						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
 						if (suppliersId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_SUPPLIERSID;
 						}
@@ -166,8 +200,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					@Override
 					public TuanCallbackResult preHandler() {
 						//初始化检查
-						initCheck(goodsId);
+						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
@@ -229,8 +277,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					@Override
 					public TuanCallbackResult preHandler() {
 						//初始化检查
-						initCheck(goodsId);
+						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
@@ -291,8 +353,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					@Override
 					public TuanCallbackResult preHandler() {
 						//初始化检查
-						initCheck(goodsId);
+						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
@@ -389,8 +465,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					@Override
 					public TuanCallbackResult preHandler() {
 						//初始化检查
-						initCheck(goodsId);
+						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
@@ -456,8 +546,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					@Override
 					public TuanCallbackResult preHandler() {
 						//初始化检查
-						initCheck(goodsId);
+						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
+						//初始化检查
+						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
+						if(callResult == null){
+							enumRes = InventoryQueryEnum.SYS_ERROR;
+						}
+						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
+							enumRes = InventoryQueryEnum.DB_ERROR;
+						}*/
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
 						}
@@ -507,14 +611,14 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	
 	
 	//初始化检查
-	public void initCheck(long goodsId) {
-			InventoryInitDomain create = new InventoryInitDomain();
+	public CreateInventoryResultEnum initCheck(long goodsId,LogModel lm) {
+			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
 			//注入相关Repository
-			create.setGoodsId(goodsId);
+			//create.setGoodsId(goodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-			create.busiCheck();
+			return create.businessExecute();
 		}
 
 }

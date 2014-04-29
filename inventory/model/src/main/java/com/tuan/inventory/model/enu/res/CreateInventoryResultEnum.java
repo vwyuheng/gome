@@ -15,7 +15,7 @@ public enum CreateInventoryResultEnum {
 	
 	DB_ERROR					(-99, 	"数据库错误"),
 	SYS_ERROR					(-100, 	"系统错误"),
-	
+	INIT_INVENTORY_ERROR					(-10, 	"初始化库存发送错误"),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),
@@ -54,6 +54,8 @@ public enum CreateInventoryResultEnum {
 				return INVALID_GOODSID;
 			case -9:
 				return IS_EXISTED;
+			case -10:
+				return INIT_INVENTORY_ERROR;
 			case 1:
 				return INVALID_LOG_PARAM;
 				/*

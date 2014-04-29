@@ -13,4 +13,5 @@
 	<bean id="goodsInventoryQueryService" class="com.tuan.inventory.service.impl.GoodsInventoryQueryServiceImpl"/>
 	<bean id="goodsInventoryScheduledService" class="com.tuan.inventory.service.impl.GoodsInventoryScheduledServiceImpl"/>
 	<bean id="goodsInventoryUpdateService" class="com.tuan.inventory.service.impl.GoodsInventoryUpdateServiceImpl"/>
+	
 </beans>

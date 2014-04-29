@@ -8,39 +8,51 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
+import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
+import com.tuan.inventory.model.result.CallResult;
 /**
  * 初始化库存domain
  * @author henry.yu
  * @date 2014/4/23
  */
-public class InventoryInitDomain {
-
+public class InventoryInitDomain extends AbstractDomain{
+	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	private InitCacheDomainRepository initCacheDomainRepository;
+	//private InitCacheDomainRepository initCacheDomainRepository;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private GoodsInventoryDO inventoryInfoDO;
 	
 	// 初始化用
 	private List<GoodsSuppliersDO> suppliersInventoryList;
 	private List<GoodsSelectionDO> selectionInventoryList;
-	private Long goodsId;
+	private long goodsId;
 	
 	// 是否需要初始化
 	private boolean isInit;
 
+	public InventoryInitDomain() {}
+	
+	public InventoryInitDomain(long goodsId, LogModel lm) {
+		this.goodsId = goodsId;
+		this.lm = lm;
+	}
+	
 	// 业务检查
-	public void busiCheck() {
+	public CreateInventoryResultEnum businessExecute() {
+		CreateInventoryResultEnum resultEnum = null;
 		// 初始化检查
-		this.initCheck();
+		resultEnum = this.initCheck();
 		if (isInit) {
-			this.init();
+			resultEnum = this.init();
 		}
-		//return CreateInventoryResultEnum.SUCCESS;
+		return resultEnum;
 	}
 	// 初始化检查
-	public void initCheck() {
+	public CreateInventoryResultEnum initCheck() {
+		//CreateInventoryResultEnum resultEnum = null;
 		//this.goodsId = Long.valueOf(param.getGoodsId());
 		if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
 			//boolean isExists = this.goodsInventoryDomainRepository
@@ -52,21 +64,80 @@ public class InventoryInitDomain {
 				// 初始化库存
 				this.isInit = true;
 				// 初始化商品库存信息
-				this.inventoryInfoDO = this.initCacheDomainRepository
-						.getInventoryInfoByGoodsId(goodsId);
+				CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsInventoryByGoodsId(goodsId);
+				if (callGoodsInventoryDOResult == null || !callGoodsInventoryDOResult.isSuccess()) {
+					this.isInit = false;
+					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+				}else {
+				     this.inventoryInfoDO = 	callGoodsInventoryDOResult.getBusinessResult();
+				}
+				
+				//this.inventoryInfoDO = this.synInitAndAysnMysqlService
+						//.selectGoodsInventoryByGoodsId(goodsId);
+				// 查询该商品选型库存信息
+				CallResult<List<GoodsSelectionDO>> callGoodsSelectionListDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsSelectionListByGoodsId(goodsId);
+				if (callGoodsSelectionListDOResult == null || !callGoodsSelectionListDOResult.isSuccess()) {
+					this.isInit = false;
+					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+				}else {
+				     this.selectionInventoryList = 	callGoodsSelectionListDOResult.getBusinessResult();
+				}
+				//selectionInventoryList = this.synInitAndAysnMysqlService
+				//	.selectGoodsSelectionListByGoodsId(goodsId);
 				// 查询该商品分店库存信息
-				selectionInventoryList = this.initCacheDomainRepository
-						.querySelectionByGoodsId(goodsId);
-				suppliersInventoryList = this.initCacheDomainRepository
-						.selectGoodsSuppliersInventoryByGoodsId(goodsId);
+				CallResult<List<GoodsSuppliersDO>> callGoodsSuppliersListDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsSuppliersListByGoodsId(goodsId);
+				if (callGoodsSuppliersListDOResult == null || !callGoodsSuppliersListDOResult.isSuccess()) {
+					this.isInit = false;
+					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+				}else {
+				     this.suppliersInventoryList = 	callGoodsSuppliersListDOResult.getBusinessResult();
+				}
+				//suppliersInventoryList = this.synInitAndAysnMysqlService
+					//	.selectGoodsSuppliersListByGoodsId(goodsId);
 			}
 		}
+		
+		return CreateInventoryResultEnum.SUCCESS;
 
 	}
+	
+	
+	// 初始化检查
+		/*public void queryInitCheck() {
+			//this.goodsId = Long.valueOf(param.getGoodsId());
+			if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
+				//boolean isExists = this.goodsInventoryDomainRepository
+					//	.isGoodsExists(goodsId);
+				
+				this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+				//if (isExists) { // 不存在
+				if(inventoryInfoDO==null) {
+					// 初始化库存
+					this.isInit = true;
+					// 初始化商品库存信息
+					this.inventoryInfoDO = this.initCacheDomainRepository
+							.getInventoryInfoByGoodsId(goodsId);
+					// 查询该商品分店库存信息
+					selectionInventoryList = this.initCacheDomainRepository
+							.querySelectionByGoodsId(goodsId);
+					suppliersInventoryList = this.initCacheDomainRepository
+							.selectGoodsSuppliersInventoryByGoodsId(goodsId);
+				}
+			}
+
+		}*/
+	
+	
+	
+	
 	/**
 	 * 库存初始化
 	 */
-	public void init() {
+	public CreateInventoryResultEnum init() {
+		try {
 		// 保存商品库存
 		if (inventoryInfoDO != null) {
 			
@@ -104,6 +175,13 @@ public class InventoryInitDomain {
 			//批量保存商品分店库存到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 		}
+		} catch (Exception e) {
+			this.writeBusErrorLog(
+					lm.setMethod("init").addMetaData("errorMsg",
+							"DB error" + e.getMessage()), e);
+			return CreateInventoryResultEnum.DB_ERROR;
+		}
+		return CreateInventoryResultEnum.SUCCESS;
 			
 	}
 
@@ -199,20 +277,20 @@ public class InventoryInitDomain {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 
-	public void setInitCacheDomainRepository(
+	/*public void setInitCacheDomainRepository(
 			InitCacheDomainRepository initCacheDomainRepository) {
 		this.initCacheDomainRepository = initCacheDomainRepository;
-	}
+	}*/
 
 	public void setGoodsId(Long goodsId) {
 		this.goodsId = goodsId;
 	}
 	
-	/*public void setSynInitAndAsynUpdateDomainRepository(
-			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
-		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
-	}*/
-	
+	public void setSynInitAndAysnMysqlService(
+			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
+		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
+	}
+
 	public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;

@@ -85,6 +85,9 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 		return result;
 	}
 	/**
+	 * 
+     * 处理redis连接的,暂未注入数据源
+     *
 	 * 查询用模板
 	 * @param action
 	 * @return
@@ -168,6 +171,11 @@ public class CacheBusiServiceTemplateImpl implements InventoryServiceTemplate {
 				logger.error("Extension Execute error !", e);
 			}
 		}
+	}
+	@Override
+	public TuanCallbackResult initQuery(InventoryQueryServiceCallback action) {
+		// TODO 无用只是为了保证不出错,真正的处理在InventoryServiceTemplateImpl
+		return null;
 	}
 
 }

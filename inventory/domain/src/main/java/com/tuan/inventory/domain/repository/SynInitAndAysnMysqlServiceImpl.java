@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.util.CollectionUtils;
 
@@ -26,7 +27,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	private static final Log logger = LogFactory.getLog(SynInitAndAysnMysqlServiceImpl.class);
 	@Resource
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
-	
+	@Resource
+	private InitCacheDomainRepository initCacheDomainRepository;
 	@Override
 	public CallResult<GoodsInventoryDO> saveGoodsInventory(final GoodsInventoryDO inventoryInfoDO)
 			throws Exception {
@@ -410,6 +412,152 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	final int resultCode = callBackResult.getResultCode();
 	return new CallResult<GoodsSuppliersDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
 			(GoodsSuppliersDO)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@Override
+	public CallResult<GoodsInventoryDO> selectGoodsInventoryByGoodsId(
+			final long goodsId) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					GoodsInventoryDO inventoryInfoDO = null;
+					try {
+						inventoryInfoDO = initCacheDomainRepository.getInventoryInfoByGoodsId(goodsId);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryByGoodsId error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + goodsId
+											+ "' for key 'goodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryByGoodsId error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							inventoryInfoDO);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (goodsId <= 0) {
+						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<GoodsInventoryDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(GoodsInventoryDO)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(
+			final long goodsId) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					List<GoodsSelectionDO> selectionInventoryList = null;
+					try {
+						selectionInventoryList = initCacheDomainRepository.querySelectionByGoodsId(goodsId);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionListByGoodsId error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + goodsId
+											+ "' for key 'goodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionListByGoodsId error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							selectionInventoryList);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (goodsId <= 0) {
+						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<List<GoodsSelectionDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(List<GoodsSelectionDO>)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(
+			final long goodsId) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					List<GoodsSuppliersDO> suppliersInventoryList = null;
+					try {
+						suppliersInventoryList = initCacheDomainRepository.selectGoodsSuppliersInventoryByGoodsId(goodsId);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsSuppliersListByGoodsId error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + goodsId
+											+ "' for key 'goodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsSuppliersListByGoodsId error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							suppliersInventoryList);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (goodsId <= 0) {
+						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<List<GoodsSuppliersDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(List<GoodsSuppliersDO>)callBackResult.getBusinessObject(),
 			callBackResult.getThrowable());
 
 }

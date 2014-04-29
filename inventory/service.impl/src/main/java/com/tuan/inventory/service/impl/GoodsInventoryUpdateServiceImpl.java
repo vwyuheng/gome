@@ -7,9 +7,9 @@ import com.tuan.inventory.domain.InventoryAdjustDomain;
 import com.tuan.inventory.domain.InventoryCallbackDomain;
 import com.tuan.inventory.domain.InventoryCreatorDomain;
 import com.tuan.inventory.domain.InventoryUpdateDomain;
+import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.WaterfloodAdjustmentDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -30,12 +30,15 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService implements GoodsInventoryUpdateService {
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	//@Resource
+	//private InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
-	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	@Resource
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Resource
 	private SequenceUtil sequenceUtil;
+	
 	/**
 	 * 新增库存
 	 */
@@ -56,7 +59,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		final InventoryCreatorDomain inventoryCreatorDomain = new InventoryCreatorDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		inventoryCreatorDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		inventoryCreatorDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryCreatorDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -124,7 +127,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		final InventoryUpdateDomain inventoryUpdateDomain = new InventoryUpdateDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		inventoryUpdateDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryUpdateDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -252,7 +255,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		final InventoryAdjustDomain inventoryAdjustDomain = new InventoryAdjustDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		inventoryAdjustDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -268,6 +271,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public TuanCallbackResult executeBusiCheck() {
+				
 				CreateInventoryResultEnum resEnum = inventoryAdjustDomain.busiCheck();
 				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
 					return TuanCallbackResult.success();
@@ -318,7 +322,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		final WaterfloodAdjustmentDomain waterfloodAdjustmentDomain = new WaterfloodAdjustmentDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		waterfloodAdjustmentDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		waterfloodAdjustmentDomain.setInitCacheDomainRepository(initCacheDomainRepository);
+		waterfloodAdjustmentDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		waterfloodAdjustmentDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		waterfloodAdjustmentDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){

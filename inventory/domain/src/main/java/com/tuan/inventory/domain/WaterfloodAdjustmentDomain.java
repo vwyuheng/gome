@@ -14,7 +14,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -33,7 +32,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private String clientName;
 	private AdjustWaterfloodParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	//private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
@@ -275,10 +274,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsId(this.goodsId);
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-				create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
 				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-				create.busiCheck();
+				create.businessExecute();
 			}
 			
 	
@@ -386,9 +385,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 
-	public void setInitCacheDomainRepository(
-			InitCacheDomainRepository initCacheDomainRepository) {
-		this.initCacheDomainRepository = initCacheDomainRepository;
+	public void setSynInitAndAysnMysqlService(
+			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
+		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {

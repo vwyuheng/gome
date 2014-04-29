@@ -13,7 +13,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -32,7 +31,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private ConcurrentHashSet<Long> listGoodsIdSends;
 	private ConcurrentHashSet<Long> listQueueIdMarkDelete;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	private InitCacheDomainRepository initCacheDomainRepository;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	
 	private final int delStatus = 6;
@@ -131,7 +130,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		create.setGoodsId(goodsId);
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-		create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		create.setInventoryInitAndUpdateHandle(this.inventoryInitAndUpdateHandle);
 		return create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
 	}
@@ -253,11 +252,10 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
 	
-	public void setInitCacheDomainRepository(
-			InitCacheDomainRepository initCacheDomainRepository) {
-		this.initCacheDomainRepository = initCacheDomainRepository;
+	public void setSynInitAndAysnMysqlService(
+			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
+		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-
 	public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;

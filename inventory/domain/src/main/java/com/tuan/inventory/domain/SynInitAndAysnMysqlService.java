@@ -21,4 +21,10 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<List<GoodsSelectionDO>> updateBatchGoodsSelection(Long goodsId, List<GoodsSelectionDO> selectionDOList) throws Exception;
 	public CallResult<List<GoodsSuppliersDO>> updateBatchGoodsSuppliers(Long goodsId, List<GoodsSuppliersDO> suppliersDOList) throws Exception;
 	
+	
+	//查询：
+	public CallResult<GoodsInventoryDO> selectGoodsInventoryByGoodsId(long goodsId);
+	public  CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(long goodsId);
+	public  CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(long goodsId);
+	
 }

@@ -15,8 +15,8 @@ import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.core.common.service.TuanServiceConstants;
 import com.tuan.core.common.service.TuanServiceException;
 import com.tuan.inventory.service.InventoryQueryServiceCallback;
-import com.tuan.inventory.service.InventoryUpdateServiceCallback;
 import com.tuan.inventory.service.InventoryServiceTemplate;
+import com.tuan.inventory.service.InventoryUpdateServiceCallback;
 
 /**
  * 订单中心业务处理模板实现类
@@ -37,7 +37,8 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     		DataSourceContextHolder.setDataSourceType(MSDataSourceType.SALVE_1);
     	}
     }
-    public TuanCallbackResult execute(final InventoryUpdateServiceCallback action) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public TuanCallbackResult execute(final InventoryUpdateServiceCallback action) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("进入模板方法开始处理");
@@ -208,10 +209,76 @@ public class InventoryServiceTemplateImpl implements InventoryServiceTemplate{
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
     }
+   
 	@Override
 	public TuanCallbackResult execute(InventoryQueryServiceCallback action) {
-		// TODO Auto-generated method stub
+		// TODO 无用，只是为了保证不出错,真正的处理在CacheBusiServiceTemplateImpl
 		return null;
 	}
+	@Override
+	public TuanCallbackResult initQuery(InventoryQueryServiceCallback action) {
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("进入初始化模板方法开始处理");
+        }
+        TuanCallbackResult result = TuanCallbackResult.success();
+        // 设置数据源，读写分离
+        
+        MSDataSourceModel mSDataSourceModel = MSDataSourcesLoadBalancerManager.getAliveMSDataSource();
+        
+        if(mSDataSourceModel==null){
+        	
+        	return TuanCallbackResult.failure(TuanServiceConstants.NO_ALIVE_DATASOURCE);
+        }
+        try {
+        	DataSourceContextHolder.setDataSourceType(mSDataSourceModel.getDataSourceType());
+        	
+        	// 预处理
+			result = action.preHandler();
+        
+            if (result.isSuccess()) {
+              
+                result = action.doWork();
+                if (null == result) {
+                    throw new TuanServiceException(TuanServiceConstants.SERVICE_NO_RESULT);
+                }
+
+                // 4. 扩展点
+               /// templateExtensionAfterExecute(result,action);
+                if (result.isFailure()) {
+                    return result;
+                }
+                // 5. 发送业务事件
+                
+            }
+        } catch (TuanServiceException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("异常退出模板方法D点", e);
+            }
+            result = TuanCallbackResult.failure(e.getErrorCode(), e);
+
+        } catch (TuanRuntimeException e) {
+            if (logger.isDebugEnabled()) {
+                logger.debug("异常退出模板方法E点", e);
+            }
+            result = TuanCallbackResult.failure(e.getErrorCode(), e);
+
+        } catch (Throwable e) {
+            // FIXME: 后续可以考虑把分析具体的异常类型
+            // 把系统异常转换为服务异常
+            if (logger.isErrorEnabled()) {
+                logger.error("异常退出模板方法F点", e);
+            }
+            result = TuanCallbackResult.failure(TuanServiceConstants.SERVICE_SYSTEM_FALIURE, e);
+        }finally{
+        	
+        	 DataSourceContextHolder.clearDataSourceType();
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("模板执行结束");
+        }
+       
+        return result;
+    }
 
 }

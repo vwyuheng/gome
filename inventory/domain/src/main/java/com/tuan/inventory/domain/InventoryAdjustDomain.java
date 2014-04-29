@@ -14,7 +14,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.repository.InitCacheDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -32,8 +31,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private String clientName;
 	private AdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	private InitCacheDomainRepository initCacheDomainRepository;
-	//private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
@@ -262,10 +260,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//注入相关Repository
 			create.setGoodsId(this.goodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-			create.setInitCacheDomainRepository(this.initCacheDomainRepository);
+			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 			//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
-			create.busiCheck();
+			create.businessExecute();
 		}
 		
 		
@@ -377,15 +375,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
-	public void setInitCacheDomainRepository(
-			InitCacheDomainRepository initCacheDomainRepository) {
-		this.initCacheDomainRepository = initCacheDomainRepository;
-	}
 
-	/*public void setSynInitAndAsynUpdateDomainRepository(
-			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
-		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
-	}*/
+	public void setSynInitAndAysnMysqlService(
+			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
+		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
+	}
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}
