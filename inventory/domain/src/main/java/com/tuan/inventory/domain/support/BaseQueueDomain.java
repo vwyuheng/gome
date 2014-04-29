@@ -12,8 +12,8 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
 /**
  * 对列数据参数
  * 
- * @author shaolong zhang
- * @Date  2013-4-18 上午11:31:06
+ * @author henry.yu
+ * @Date  2014/4/24
  */
 public class BaseQueueDomain extends AbstractDomain{
 	
