@@ -43,8 +43,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final long selectionId) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionBySelectionId");
-		lm.addMetaData("clientName", clientName).addMetaData("goodsId", goodsId)
-				.addMetaData("selectionId", selectionId);
+		lm.addMetaData("clientIp", clientIp)
+		.addMetaData("clientName", clientName)
+		.addMetaData("goodsId", goodsId)
+		.addMetaData("selectionId", selectionId);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -118,8 +120,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final String clientIp,final String clientName, final long goodsId, final long suppliersId) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsSuppliersBySuppliersId");
-		lm.addMetaData("clientName", clientName).addMetaData("goodsId", goodsId)
-				.addMetaData("suppliersId", suppliersId);
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
+		  . addMetaData("goodsId", goodsId)
+		  .addMetaData("suppliersId", suppliersId);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -193,8 +197,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final String clientName,  final long goodsId) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsInventoryByGoodsId");
-		lm.addMetaData("clientName", clientName)
-				.addMetaData("goodsId", goodsId);
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
+		  .addMetaData("goodsId", goodsId);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -270,8 +275,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final String clientIp, final String clientName, final long goodsId) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListByGoodsId");
-		lm.addMetaData("clientName", clientName)
-				.addMetaData("goodsId", goodsId);
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
+		  .addMetaData("goodsId", goodsId);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -346,8 +352,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final String clientIp, final String clientName, final long goodsId) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListByGoodsId");
-		lm.addMetaData("clientName", clientName)
-				.addMetaData("goodsId", goodsId);
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
+		  .addMetaData("goodsId", goodsId);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -415,39 +422,6 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				(List<GoodsSuppliersModel>) qresult.getResultObject(),
 				result.getThrowable());
 	}
-
-	
-	//初始化检查
-	/*public void initCheck(long goodsId) {
-		boolean isInit = false;
-		List<GoodsSelectionDO> selectionInventoryList = null;
-		List<GoodsSuppliersDO> suppliersInventoryList = null;
-			//查询商品库存
-		GoodsInventoryDO inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-			if(inventoryDO==null) {
-				//初始化库存
-				isInit = true;
-				//初始化商品库存信息
-				inventoryDO = this.initCacheDomainRepository
-						.getInventoryInfoByGoodsId(goodsId);
-				//查询该商品分店库存信息
-				selectionInventoryList = this.initCacheDomainRepository.querySelectionByGoodsId(goodsId);
-				suppliersInventoryList =  this.initCacheDomainRepository.selectGoodsSuppliersInventoryByGoodsId(goodsId);
-			}
-			
-			if(isInit) {
-				//保存商品库存
-				if(inventoryDO!=null)
-				      this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
-				//保选型库存
-				if(!CollectionUtils.isEmpty(selectionInventoryList))
-				      this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventoryList);
-				//保存分店库存
-				if(!CollectionUtils.isEmpty(suppliersInventoryList))
-				      this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventoryList);
-			}
-			
-		}*/
 	
 	
 	@SuppressWarnings("unchecked")
@@ -457,9 +431,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final List<Long> selectionIdList) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListBySelectionIdList");
-		lm.addMetaData("clientName", clientName)
-				.addMetaData("goodsId", goodsId)
-		        .addMetaData("selectionIdList", selectionIdList);
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
+		  .addMetaData("goodsId", goodsId)
+		  .addMetaData("selectionIdList", selectionIdList);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -538,7 +513,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			final List<Long> suppliersIdList) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findGoodsSuppliersListBySuppliersIdList");
-		lm.addMetaData("clientName", clientName)
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
 				.addMetaData("goodsId", goodsId)
 		        .addMetaData("suppliersIdList", suppliersIdList);
 		TuanCallbackResult result = this.inventoryServiceTemplate
