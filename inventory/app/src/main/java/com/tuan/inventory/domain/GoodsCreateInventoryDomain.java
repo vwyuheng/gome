@@ -194,8 +194,8 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("waterfloodVal",  String.valueOf(waterfloodVal));
 		parameterMap.put("goodsSuppliers", CollectionUtils.isEmpty(goodsSuppliers)?"":LogUtil.formatListLog(goodsSuppliers));
 		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":LogUtil.formatListLog(goodsSelection));
-		
 		packet.addParameterMap(parameterMap);
+		super.init(packet.getClient(), packet.getIp());
 	}
 
 

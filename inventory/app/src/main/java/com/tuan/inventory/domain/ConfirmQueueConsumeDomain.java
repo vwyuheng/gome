@@ -68,6 +68,7 @@ public class ConfirmQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	@Override
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		packet.addParameterMap(parameterMap);
+		super.init(packet.getClient(), packet.getIp());
 	}
 
 	public void setGoodsInventoryScheduledService(

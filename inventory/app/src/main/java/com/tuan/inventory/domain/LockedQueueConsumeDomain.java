@@ -86,7 +86,7 @@ public class LockedQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	@Override
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("period", String.valueOf(period));
-		
+		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}
 

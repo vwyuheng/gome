@@ -172,7 +172,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		
 		parameterMap.put("reqGoodsSuppliers", CollectionUtils.isEmpty(reqGoodsSuppliers)?"":LogUtil.formatListLog(reqGoodsSuppliers));
 		parameterMap.put("reqGoodsSelection", CollectionUtils.isEmpty(reqGoodsSelection)?"":LogUtil.formatListLog(reqGoodsSelection));
-		
+		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}
 

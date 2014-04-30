@@ -44,8 +44,8 @@ public abstract class GoodsSelectionDomain extends AbstractGoodsInventoryDomain{
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("goodsId", goodsId);
 		parameterMap.put("selectionId", selectionId);
-		
 		requestPacket.addParameterMap(parameterMap);
+		super.init(requestPacket.getClient(), requestPacket.getIp());
 	}
 	
 	@Override

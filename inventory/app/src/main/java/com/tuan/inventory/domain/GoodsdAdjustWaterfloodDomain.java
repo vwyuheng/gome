@@ -110,6 +110,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("userId", userId);
 		parameterMap.put("type", type);
 		parameterMap.put("num", String.valueOf(num));
+		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}
 

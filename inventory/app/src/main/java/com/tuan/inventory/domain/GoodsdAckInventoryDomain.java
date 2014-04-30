@@ -100,7 +100,7 @@ public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("ack", ack);
 		parameterMap.put("key", key);
-		
+		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}
 
