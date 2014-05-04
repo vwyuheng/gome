@@ -49,7 +49,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	}
 	// 初始化检查
 	public CreateInventoryResultEnum initCheck() {
-		
+		try {
 		if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
 			//boolean isExists = this.goodsInventoryDomainRepository
 				//	.isGoodsExists(goodsId);
@@ -95,7 +95,12 @@ public class InventoryInitDomain extends AbstractDomain{
 					//	.selectGoodsSuppliersListByGoodsId(goodsId);
 			}
 		}
-		
+		} catch (Exception e) {
+			this.writeBusErrorLog(
+					lm.setMethod("initCheck").addMetaData("errorMsg",
+							"DB error" + e.getMessage()), e);
+			return CreateInventoryResultEnum.DB_ERROR;
+		}
 		return CreateInventoryResultEnum.SUCCESS;
 
 	}
@@ -247,7 +252,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		} catch (Exception e) {
 			handler = false;
 			this.writeBusErrorLog(
-					lm.setMethod("createInventory").addMetaData("errorMsg",
+					lm.setMethod("updateMysqlInventory").addMetaData("errorMsg",
 							"DB error" + e.getMessage()), e);
 			//return CreateInventoryResultEnum.DB_ERROR;
 		}
