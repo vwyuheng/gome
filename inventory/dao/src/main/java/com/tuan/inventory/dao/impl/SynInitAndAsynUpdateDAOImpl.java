@@ -53,5 +53,23 @@ public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implem
 		
 	}
 
+	@Override
+	public int deleteGoodsInventoryDO(long goodsId) {
+		 return super.getSqlMapClientTemplate().delete("deleteGoodsInventory", goodsId);
+		
+	}
+
+	@Override
+	public int deleteGoodsSelectionDO(long selectionId) {
+		return super.getSqlMapClientTemplate().delete("deleteGoodsSelection", selectionId);
+		
+	}
+
+	@Override
+	public int deleteGoodsSuppliersDO(long suppliersId) {
+		return super.getSqlMapClientTemplate().delete("deleteGoodsSuppliers", suppliersId);
+		
+	}
+
 
 }

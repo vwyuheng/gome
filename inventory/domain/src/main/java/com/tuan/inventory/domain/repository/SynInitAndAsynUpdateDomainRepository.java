@@ -39,6 +39,10 @@ public class SynInitAndAsynUpdateDomainRepository {
 		this.synInitAndAsynUpdateDAO.updateGoodsInventoryDO(goodsDO);
 	}
 	
+	public int deleteGoodsInventory(long goodsId) {
+		return this.synInitAndAsynUpdateDAO.deleteGoodsInventoryDO(goodsId);
+	}
+	
 	/**
 	 * 批量保存商品选型库存
 	 * @param goodsId
@@ -86,6 +90,12 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 		}*/
 	}
+	
+	public int deleteGoodsSelection(long selectionId) throws Exception{
+		
+		return this.synInitAndAsynUpdateDAO.deleteGoodsSelectionDO(selectionId);
+		
+	}
 	/**
 	 * 批量更新选型库存
 	 * @param goodsId
@@ -106,6 +116,22 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 	
 	}
+	
+	public void batchDelGoodsSelection(List<GoodsSelectionDO> selectionDOList) throws Exception{
+
+		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
+			for (GoodsSelectionDO srDO : selectionDOList) { // for
+				if (srDO.getId() > 0) { // if选型
+					//将商品id set到选型中
+					this.deleteGoodsSelection(srDO.getId());
+				}
+				
+			}//for
+		}//if1
+			
+	
+	}
+	
 	/**
 	 * 更新商品选型库存
 	 * @param selectionDO
@@ -138,7 +164,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 		if (!CollectionUtils.isEmpty(suppliersDOList)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
 				
-				if (sDO.getId() > 0) { // if分店
+				if (sDO.getSuppliersId() > 0) { // if分店
 					sDO.setGoodsId(goodsId);
 					sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
 					sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
@@ -174,6 +200,13 @@ public class SynInitAndAsynUpdateDomainRepository {
 		}*/
 		
 	}
+	
+	public int deleteGoodsSuppliers(long suppliersId) throws Exception{
+		
+		return this.synInitAndAsynUpdateDAO.deleteGoodsSuppliersDO(suppliersId);
+		
+		
+	}
 	/**
 	 * 批量更新分店库存
 	 * @param goodsId
@@ -182,7 +215,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public void updateBatchGoodsSuppliers(Long goodsId, List<GoodsSuppliersDO> suppliersDOList) throws Exception{
 		if (!CollectionUtils.isEmpty(suppliersDOList)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
-				if (sDO.getId() > 0) { // if分店
+				if (sDO.getSuppliersId() > 0) { // if分店
 					//分店中
 					sDO.setGoodsId(goodsId);
 					this.updateGoodsSuppliers(sDO);
@@ -192,6 +225,20 @@ public class SynInitAndAsynUpdateDomainRepository {
 		}//if1
 			
 	}
+	
+	public void batchDeleteGoodsSuppliers(List<GoodsSuppliersDO> suppliersDOList) throws Exception{
+		if (!CollectionUtils.isEmpty(suppliersDOList)) { // if1
+			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
+				if (sDO.getSuppliersId() > 0) { // if分店
+					//分店中
+					this.deleteGoodsSuppliers(sDO.getSuppliersId());
+				}
+				
+			}//for
+		}//if1
+			
+	}
+	
 	/**
 	 * 更新商品分店库存
 	 * @param suppliersDO

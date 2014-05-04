@@ -30,15 +30,20 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;
 	@Override
-	public CallResult<GoodsInventoryDO> saveGoodsInventory(final GoodsInventoryDO inventoryInfoDO)
+	public CallResult<Boolean> saveGoodsInventory(final long goodsId,final GoodsInventoryDO inventoryInfoDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList)
 			throws Exception {
 		
 		    TuanCallbackResult callBackResult = super.execute(
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
-						synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+						if(inventoryInfoDO!=null) {
+							synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+						}
+						synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+						synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 						} catch (Exception e) {
+							
 							logger.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory error occured!"
 											+ e.getMessage(), e);
@@ -55,11 +60,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						return TuanCallbackResult.success(
 								PublicCodeEnum.SUCCESS.getCode(),
-								inventoryInfoDO);
+								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (inventoryInfoDO == null) {
-							 logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
+						if (inventoryInfoDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList)) {
+							 logger.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -70,8 +75,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 				}, null);
 		final int resultCode = callBackResult.getResultCode();
-		return new CallResult<GoodsInventoryDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-				(GoodsInventoryDO)callBackResult.getBusinessObject(),
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
 				callBackResult.getThrowable());
 
 	}
@@ -546,6 +551,137 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeCheck() {
 					if (goodsId <= 0) {
 						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<List<GoodsSuppliersDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(List<GoodsSuppliersDO>)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@Override
+	public CallResult<Integer> deleteGoodsInventory(final long goodsId) throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					Integer result = 0;
+					try {
+						result = synInitAndAsynUpdateDomainRepository.deleteGoodsInventory(goodsId);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.deleteGoodsInventory error occured!"
+										+ e.getMessage(), e);
+						
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.deleteGoodsInventory error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							result);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (goodsId <= 0) {
+						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<Integer>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(Integer)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsSelectionDO>> deleteBatchGoodsSelection(final
+			List<GoodsSelectionDO> selectionDOList) throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+					synInitAndAsynUpdateDomainRepository.batchDelGoodsSelection(selectionDOList);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSelection error occured!"
+										+ e.getMessage(), e);
+						
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSelection error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							selectionDOList);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (CollectionUtils.isEmpty(selectionDOList)) {
+						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSelectionDO> is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<List<GoodsSelectionDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(List<GoodsSelectionDO>)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsSuppliersDO>> deleteBatchGoodsSuppliers(final
+			List<GoodsSuppliersDO> suppliersDOList) throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+					synInitAndAsynUpdateDomainRepository.batchDeleteGoodsSuppliers(suppliersDOList);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSuppliers error occured!"
+										+ e.getMessage(), e);
+						
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSuppliers error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							suppliersDOList);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (CollectionUtils.isEmpty(suppliersDOList)) {
+						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSuppliersDO>  is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());

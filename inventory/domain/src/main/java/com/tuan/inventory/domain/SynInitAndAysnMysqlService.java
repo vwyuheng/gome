@@ -9,7 +9,7 @@ import com.tuan.inventory.model.result.CallResult;
 
 public interface SynInitAndAysnMysqlService {
 
-	public CallResult<GoodsInventoryDO> saveGoodsInventory(GoodsInventoryDO inventoryInfoDO) throws Exception ;
+	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	public CallResult<List<GoodsSelectionDO>> saveBatchGoodsSelection(long goodsId,List<GoodsSelectionDO> selectionInventoryList) throws Exception ;
 	public CallResult<List<GoodsSuppliersDO>> saveBatchGoodsSuppliers(long goodsId,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	
@@ -26,5 +26,11 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<GoodsInventoryDO> selectGoodsInventoryByGoodsId(long goodsId);
 	public  CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(long goodsId);
 	public  CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(long goodsId);
+	
+	//删除
+	public CallResult<Integer> deleteGoodsInventory(long goodsId) throws Exception;
+	public CallResult<List<GoodsSelectionDO>> deleteBatchGoodsSelection(List<GoodsSelectionDO> selectionDOList) throws Exception;
+	public CallResult<List<GoodsSuppliersDO>> deleteBatchGoodsSuppliers(List<GoodsSuppliersDO> suppliersDOList) throws Exception;
+	
 	
 }

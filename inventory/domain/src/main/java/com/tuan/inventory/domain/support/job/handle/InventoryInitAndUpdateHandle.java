@@ -11,6 +11,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
+import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.LogUtil;
@@ -28,12 +29,13 @@ public class InventoryInitAndUpdateHandle  {
 	
 	@Resource
 	SynInitAndAysnMysqlService synInitAndAysnMysqlService;
+	@Resource
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	
-	
-	public boolean saveGoodsInventory(final GoodsInventoryDO goodsDO) {
+	public boolean saveGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
-		if(goodsDO == null){
+		if(goodsId <= 0){
 			isSuccess = false;
 		}
 		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.handleGoodsInventory");
@@ -41,12 +43,10 @@ public class InventoryInitAndUpdateHandle  {
 		log.info(lm.addMetaData("goodsDO",goodsDO)
 				.addMetaData("startTime", startTime).toJson());
 	
-		CallResult<GoodsInventoryDO> callResult  = null;
+		CallResult<Boolean> callResult  = null;
 		try {
-			
-			if (goodsDO != null) {
 				// 消费对列的信息
-				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsDO);
+				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
@@ -55,22 +55,46 @@ public class InventoryInitAndUpdateHandle  {
 					// 消息数据不存并且不成功
 					isSuccess = false;
 					message = "saveGoodsInventory_error[" + publicCodeEnum.getMessage()
-							+ "]goodsId:" + goodsDO.getGoodsId();
+							+ "]goodsId:" + goodsId;
 				} else {
-					message = "saveGoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
+					message = "saveGoodsInventory_success[save success]goodsId:" + goodsId;
+					if (goodsDO != null) {
+						this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
+								goodsDO);
+					}
+					// 保选型库存
+					if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+							this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
+									goodsId, selectionInventoryList);
+						
+					
+					}
+					// 保存分店库存
+					if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+							this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
+									goodsId, suppliersInventoryList);
+						
+					}
+					
 				}
-			} 
+			
 			
 		} catch (Exception e) {
 			isSuccess = false;
-			log.error(lm.addMetaData("goodsDO",goodsDO)
+			log.error(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("goodsDO",goodsDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
 					.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
 			
 		}
-		log.info(lm.addMetaData("goodsDO",goodsDO)
+		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("goodsDO",goodsDO)
+				.addMetaData("selectionInventoryList",selectionInventoryList)
+				.addMetaData("suppliersInventoryList",suppliersInventoryList)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
 				.addMetaData("endTime", System.currentTimeMillis())
@@ -117,6 +141,52 @@ public class InventoryInitAndUpdateHandle  {
 			
 		}
 		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	public boolean deleteGoodsInventory(final long goodsId) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(goodsId<=0){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.deleteGoodsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Integer> callResult  = null;
+		try {
+			
+			//if (goodsId != null) {
+				// 消费对列的信息
+				callResult = synInitAndAysnMysqlService.deleteGoodsInventory(goodsId);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					isSuccess = false;
+					message = "updateGoodsInventory_error[" + publicCodeEnum.getMessage()
+							+ "]goodsId:" + goodsId;
+				} else {
+					message = "updateGoodsInventory_success[save success]goodsId:" + goodsId;
+				}
+			//} 
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("goodsId",goodsId)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
 				.addMetaData("endTime", System.currentTimeMillis())
@@ -317,6 +387,54 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
+	public boolean deleteBatchGoodsSelection( final List<GoodsSelectionDO> selectionInventoryList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(CollectionUtils.isEmpty(selectionInventoryList)){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.deleteBatchGoodsSelection");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("selectionInventoryList",selectionInventoryList)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<List<GoodsSelectionDO>> callResult  = null;
+		try {
+			
+			if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+				// 消费对列的信息
+				callResult = synInitAndAysnMysqlService.deleteBatchGoodsSelection(selectionInventoryList);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					isSuccess = false;
+					message = "updateBatchGoodsSelection_error[" + publicCodeEnum.getMessage()
+							+ "]";
+				} else {
+					message = "updateBatchGoodsSelection_success[save success]";
+				}
+			} 
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm
+				.addMetaData("selectionInventoryList",selectionInventoryList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
 
 	public boolean saveBatchGoodsSuppliers(final long goodsId, final List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean isSuccess = true;
@@ -368,6 +486,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
+	//成功返回true，失败返回false
 	public boolean updateBatchGoodsSuppliers(final long goodsId, final List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
@@ -410,6 +529,55 @@ public class InventoryInitAndUpdateHandle  {
 			
 		}
 		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("suppliersInventoryList",suppliersInventoryList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	public boolean deleteBatchGoodsSuppliers( final List<GoodsSuppliersDO> suppliersInventoryList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(CollectionUtils.isEmpty(suppliersInventoryList)){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.deleteBatchGoodsSuppliers");
+		long startTime = System.currentTimeMillis();
+		log.info(lm
+				.addMetaData("selectionInventoryList",suppliersInventoryList)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<List<GoodsSuppliersDO>> callResult  = null;
+		try {
+			
+			if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+				// 消费对列的信息
+				callResult = synInitAndAysnMysqlService.deleteBatchGoodsSuppliers(suppliersInventoryList);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					isSuccess = false;
+					message = "GoodsSuppliers_error[" + publicCodeEnum.getMessage()
+							+ "]";
+				} else {
+					message = "GoodsSuppliers_success[save success]";
+				}
+			} 
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm
 				.addMetaData("suppliersInventoryList",suppliersInventoryList)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)

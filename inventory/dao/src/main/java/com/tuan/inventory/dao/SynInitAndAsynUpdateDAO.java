@@ -13,12 +13,15 @@ public interface  SynInitAndAsynUpdateDAO {
 
 	void insertGoodsInventoryDO(GoodsInventoryDO goodsDO);
 	void updateGoodsInventoryDO(GoodsInventoryDO goodsDO);
-	 
+	int deleteGoodsInventoryDO(long goodsId);
+	
 	void insertGoodsSelectionDO(GoodsSelectionDO selectionDO);
 	void updateGoodsSelectionDO(GoodsSelectionDO selectionDO);
+	int deleteGoodsSelectionDO(long selectionId);
 	 
 	void insertGoodsSuppliersDO(GoodsSuppliersDO suppliersDO);
 	void updateGoodsSuppliersDO(GoodsSuppliersDO suppliersDO);
+	int deleteGoodsSuppliersDO(long suppliersId);
 	 
 	void insertGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO);
 	void updateGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO);

@@ -112,42 +112,42 @@ public class InventoryInitDomain extends AbstractDomain{
 		boolean result = false;
 		try {
 		// 保存商品库存
-		if (inventoryInfoDO != null) {
+	//	if (inventoryInfoDO != null) {
 			
 			//mysql数据库处理成功后才处理redis
-			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
-			if(result){
-				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
-						inventoryInfoDO);
-			}
+			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+			//if(result){
+				//this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
+					//	inventoryInfoDO);
+			//}
 			
 			//保存库存信息到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-		}
+	//	}
 			
 		// 保选型库存
-		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-			if(result){
-				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
-						goodsId, selectionInventoryList);
-			}
+		//if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+		//	if(result){
+				//this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
+				//		goodsId, selectionInventoryList);
+			//}
 			
 			//批量保存商品选型库存到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-		}
+		//}
 			
 		// 保存分店库存
-		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-			if(result){
-				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
-						goodsId, suppliersInventoryList);
-			}
+		//if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+		//	if(result){
+			//	this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
+			//			goodsId, suppliersInventoryList);
+		//	}
 			
 			//批量保存商品分店库存到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-		}
+	//	}
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.setMethod("init").addMetaData("errorMsg",
@@ -172,13 +172,16 @@ public class InventoryInitDomain extends AbstractDomain{
 		boolean result = false;
 		try {
 		// 保存商品库存
-		if (isExists && inventoryInfoDO != null) {
+		if (isExists /*&& inventoryInfoDO != null*/) {
 			
-			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
-			if(result){
+			//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
+			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+			/*if(result){
 				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 						inventoryInfoDO);
-			}
+			}else {
+				return CreateInventoryResultEnum.DB_ERROR;
+			}*/
 			
 			
 			//保存库存信息到mysql
@@ -186,28 +189,41 @@ public class InventoryInitDomain extends AbstractDomain{
 		}
 			
 		// 保选型库存
-		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-			if(result){
+//		if (result&&!CollectionUtils.isEmpty(selectionInventoryList)) {
+			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+		/*	if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 						goodsId, selectionInventoryList);
-			}
+			}else {
+				//TODO 回滚商品库存的mysql信息
+				this.inventoryInitAndUpdateHandle.deleteGoodsInventory(goodsId);
+				this.inventoryInitAndUpdateHandle.deleteBatchGoodsSelection(selectionInventoryList);
+				return CreateInventoryResultEnum.DB_ERROR;
+			}*/
 			
 			//批量保存商品选型库存到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-		}
+		//}
 			
 		// 保存分店库存
-		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-			if(result){
+		//if (result&&!CollectionUtils.isEmpty(suppliersInventoryList)) {
+			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+			/*if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 						goodsId, suppliersInventoryList);
-			}
+			}else {
+               //TODO 回滚商品库存和商品选型库存的mysql信息
+				this.inventoryInitAndUpdateHandle.deleteGoodsInventory(goodsId);
+				if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+					this.inventoryInitAndUpdateHandle.deleteBatchGoodsSelection(selectionInventoryList);
+				}
+				this.inventoryInitAndUpdateHandle.deleteBatchGoodsSuppliers(suppliersInventoryList);
+				return CreateInventoryResultEnum.DB_ERROR;
+			}*/
 			
 			//批量保存商品分店库存到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-		}
+		//}
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.setMethod("createInventory").addMetaData("errorMsg",
@@ -239,20 +255,24 @@ public class InventoryInitDomain extends AbstractDomain{
 		}
 		
 		// 保选型库存
-		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+		if (handler&&!CollectionUtils.isEmpty(selectionInventoryList)) {
 			//批量更新商品选型库存到mysql
 			boolean result = this.inventoryInitAndUpdateHandle.updateBatchGoodsSelection(goodsId, selectionInventoryList);
 			if(!result){
+				//TODO 回滚被更新的商品库存
+				
 				handler = false;
 			}
 			//this.synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);
 		}
 		
 		// 保存分店库存
-		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+		if (handler&&!CollectionUtils.isEmpty(suppliersInventoryList)) {
 			//批量更新商品分店库存到mysql
 			boolean result = this.inventoryInitAndUpdateHandle.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-			if(result){
+			if(!result){
+				//TODO 回滚被更新的商品库存和商品选型库存
+				
 				handler = false;
 			}
 			//this.synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);

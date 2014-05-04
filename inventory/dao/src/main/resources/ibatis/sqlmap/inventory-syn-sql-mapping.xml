@@ -116,7 +116,7 @@
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>
-      where id = #id:INTEGER#
+      where suppliers_id = #suppliersId:INTEGER#
     </update>
      
 	  <!-- 插入商品分店库存信息 -->
@@ -141,6 +141,12 @@
             #waterfloodVal:INTEGER#
            
     		)
+     </insert>
+     
+      <!-- 删除商品 分店库存信息 -->
+  	<insert id="deleteGoodsSuppliers" parameterClass="java.lang.Long" >
+     delete from jeehe_inventory_suppliers 
+      where suppliers_id = #suppliersId:BIGINT#
      </insert>
      
       <!-- 更新商品选型库存可更新字段   -->	
@@ -187,6 +193,12 @@
      </insert>
 	 
 	 
+	  <!-- 删除商品 选型库存信息 -->
+  	<insert id="deleteGoodsSelection" parameterClass="java.lang.Long" >
+     delete from jeehe_inventory_selection 
+      where id = #id:BIGINT#
+     </insert>
+	 
     <!-- 更新商品库存可更新字段   -->	
     <update id="updateGoodsInventory" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryDO" >
       update jeehe_inventory_attribute
@@ -221,6 +233,13 @@
             #limitStorage:INTEGER#,
             #waterfloodVal:INTEGER#
     		)
+     </insert>
+  	
+  	
+  	 <!-- 删除商品 库存信息 -->
+  	<insert id="deleteGoodsInventory" parameterClass="java.lang.Long" >
+     delete from jeehe_inventory_attribute 
+      where goods_id = #goodsId:BIGINT# 
      </insert>
   	
   <!-- 插入库存日志流水表信息 -->
