@@ -201,7 +201,7 @@ public class GoodsInventoryQueryController {
 		return (GoodsSelectionListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/query/sellist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionIdList=&traceId=123&traceRootId=456
+	 * http://localhost:882/rest/j/query/sellist?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionIdList=[28,29,30]&traceId=123&traceRootId=456
 	 * 根据选型id list 批量获取指定选型列表
 	 * @param packet
 	 * @param goodsId
