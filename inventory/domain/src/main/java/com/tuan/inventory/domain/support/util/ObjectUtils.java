@@ -173,6 +173,24 @@ public class ObjectUtils {
 		}
 		return result;
 	}
+	//只返回商品库存信息
+	public static GoodsInventoryModel toModel(GoodsInventoryDO giDO) {
+		GoodsInventoryModel result = null;
+		if(giDO!=null) {
+			result = new GoodsInventoryModel();
+			result.setGoodsId(giDO.getGoodsId());
+			result.setLeftNumber(giDO.getLeftNumber());
+			result.setTotalNumber(giDO.getTotalNumber());
+			result.setLimitStorage(giDO.getLimitStorage());
+			result.setUserId(giDO.getUserId());
+			result.setWaterfloodVal(giDO.getWaterfloodVal());
+			//if(!CollectionUtils.isEmpty(goodsSelectionList))
+				//result.setGoodsSelectionList(goodsSelectionList);
+			//if(!CollectionUtils.isEmpty(goodsSuppliersList))
+			//	result.setGoodsSuppliersList(goodsSuppliersList);
+		}
+		return result;
+	}
 	
 	
 	/**

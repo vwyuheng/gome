@@ -348,8 +348,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public GoodsInventoryModel queryGoodsInventoryByGoodsId(long goodsId) {
 		return ObjectUtils.toModel(this.queryGoodsInventory(goodsId)
-				,this.queryGoodsSelectionListByGoodsId(goodsId)
-				,this.queryGoodsSuppliersListByGoodsId(goodsId));
+				//,this.queryGoodsSelectionListByGoodsId(goodsId)
+				//,this.queryGoodsSuppliersListByGoodsId(goodsId)
+				);
 	}
 	/**
 	 * 根据队列状态取队列列表
