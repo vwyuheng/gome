@@ -263,10 +263,6 @@ public class InventoryInitDomain extends AbstractDomain{
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
 	}
-
-	public void setGoodsId(Long goodsId) {
-		this.goodsId = goodsId;
-	}
 	
 	public void setSynInitAndAysnMysqlService(
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
