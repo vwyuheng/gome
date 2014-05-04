@@ -93,7 +93,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
 				if (sDO.getId() > 0) { // if分店
-					GoodsSuppliersDO tmpSuppDO = this.baseDAOService.querySuppliersInventoryById(sDO.getId());
+					GoodsSuppliersDO tmpSuppDO = this.baseDAOService.querySuppliersInventoryById(sDO.getSuppliersId());
 					if(tmpSuppDO==null) { //不存在才创建
 						sDO.setGoodsId(goodsId);
 						sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());

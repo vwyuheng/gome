@@ -51,7 +51,7 @@ public class InventoryInitAndUpdateHandle  {
 						.getPublicCodeEnum();
 				
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS
-						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+						/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
 					message = "saveGoodsInventory_error[" + publicCodeEnum.getMessage()
@@ -240,7 +240,7 @@ public class InventoryInitAndUpdateHandle  {
 						.getPublicCodeEnum();
 				
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS
-						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+						/*&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
 					message = "saveBatchGoodsSelection_error[" + publicCodeEnum.getMessage()
@@ -340,7 +340,7 @@ public class InventoryInitAndUpdateHandle  {
 						.getPublicCodeEnum();
 				
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS
-						&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+						/*&& publicCodeEnum != PublicCodeEnum.DATA_EXISTED*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
 					message = "saveBatchGoodsSuppliers_error[" + publicCodeEnum.getMessage()

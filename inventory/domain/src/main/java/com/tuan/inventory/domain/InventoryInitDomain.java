@@ -109,12 +109,13 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * 库存初始化
 	 */
 	public CreateInventoryResultEnum init() {
+		boolean result = false;
 		try {
 		// 保存商品库存
 		if (inventoryInfoDO != null) {
 			
 			//mysql数据库处理成功后才处理redis
-			boolean result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
+			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 						inventoryInfoDO);
@@ -126,7 +127,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		// 保选型库存
 		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 						goodsId, selectionInventoryList);
@@ -138,7 +139,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		// 保存分店库存
 		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 						goodsId, suppliersInventoryList);
@@ -153,6 +154,9 @@ public class InventoryInitDomain extends AbstractDomain{
 							"DB error" + e.getMessage()), e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
+		if(!result) {
+			return CreateInventoryResultEnum.DB_ERROR;
+		}
 		return CreateInventoryResultEnum.SUCCESS;
 			
 	}
@@ -165,11 +169,12 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param suppliersInventoryList
 	 */
 	public CreateInventoryResultEnum createInventory(boolean isExists, GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+		boolean result = false;
 		try {
 		// 保存商品库存
 		if (isExists && inventoryInfoDO != null) {
 			
-			boolean result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
+			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 						inventoryInfoDO);
@@ -182,7 +187,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		// 保选型库存
 		if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 						goodsId, selectionInventoryList);
@@ -194,7 +199,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		// 保存分店库存
 		if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			boolean result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+			result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 			if(result){
 				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 						goodsId, suppliersInventoryList);
@@ -207,6 +212,9 @@ public class InventoryInitDomain extends AbstractDomain{
 			this.writeBusErrorLog(
 					lm.setMethod("createInventory").addMetaData("errorMsg",
 							"DB error" + e.getMessage()), e);
+			return CreateInventoryResultEnum.DB_ERROR;
+		}
+		if(!result) {
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
