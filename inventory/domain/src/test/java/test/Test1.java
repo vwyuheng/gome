@@ -1,8 +1,10 @@
 package test;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
-import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.inventory.domain.support.util.LogUtil;
 public class Test1 {
 	
 	public static void main(String[] args) throws ParseException {
@@ -17,11 +19,19 @@ public class Test1 {
 		       System.out.println("execute task!"+ this.scheduledExecutionTime());
 		   }
 		},3000,4 * 1000);*/
-		System.out.println("当前时间="+TimeUtil.getNowTimestamp10Long());
-		System.out.println("5分钟前时间="+Test1.getBeforXTimestamp10Long(5));
-		System.out.println("当前时间="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
-		System.out.println("5分钟前时间="+TimeUtil.dateFormat(Test1.getBeforXTimestamp10Long(5)));
-		System.out.println("相差="+TimeUtil.getDayDifferenceByTS(TimeUtil.getNowTimestamp10Long(), Test1.getBeforXTimestamp10Long(5)));
+		//System.out.println("当前时间="+TimeUtil.getNowTimestamp10Long());
+		//System.out.println("5分钟前时间="+Test1.getBeforXTimestamp10Long(5));
+		//System.out.println("当前时间="+TimeUtil.dateFormat(TimeUtil.getNowTimestamp10Long()));
+		//System.out.println("5分钟前时间="+TimeUtil.dateFormat(Test1.getBeforXTimestamp10Long(5)));
+		//System.out.println("相差="+TimeUtil.getDayDifferenceByTS(TimeUtil.getNowTimestamp10Long(), Test1.getBeforXTimestamp10Long(5)));
+		
+		
+		List<Long> selectionIdList = new ArrayList<Long>();
+		selectionIdList.add(28l);
+		selectionIdList.add(29l);
+		selectionIdList.add(30l);
+		
+		System.out.println(LogUtil.formatListLog(selectionIdList));
 	}
 	
 	/**

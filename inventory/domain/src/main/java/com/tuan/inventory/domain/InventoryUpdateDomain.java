@@ -186,10 +186,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		// 初始化检查
-		this.initCheck();
-		/*if (isInit) {
-			this.init();
-		}*/
+		CreateInventoryResultEnum resultEnum =	this.initCheck();
+		
 		// 真正的库存更新业务处理
 		try {// 计算部分
 			this.calculateInventory();
@@ -203,7 +201,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 							"DB error" + e.getMessage()), e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
-
+		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+			return resultEnum;
+		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -276,56 +276,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 	}
 
-	// 初始化检查
-	/*public void initCheck() {
-		this.goodsId = Long.valueOf(param.getGoodsId());
-		if (goodsId > 0 ) {
-		//if (goodsId > 0 && param.getLimitStorage() == 1) { // limitStorage>0:库存无限制；1：限制库存
-			//boolean isExists = this.goodsInventoryDomainRepository
-					//.isGoodsExists(goodsId);
-			this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-			//if (isExists) { // 不存在
-			if(inventoryInfoDO==null) {  // 不存在
-				// 初始化库存
-				this.isInit = true;
-				// 初始化商品库存信息
-				this.inventoryInfoDO = this.initCacheDomainRepository
-						.getInventoryInfoByGoodsId(goodsId);
-				// 查询该商品分店库存信息
-				selectionInventoryList = this.initCacheDomainRepository
-						.querySelectionByGoodsId(goodsId);
-				suppliersInventoryList = this.initCacheDomainRepository
-						.selectGoodsSuppliersInventoryByGoodsId(goodsId);
-			}
-		}
-
-	}*/
-
-	/*public void init() {
-		// 保存商品库存
-		if (inventoryInfoDO != null)
-			this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
-					inventoryInfoDO);
-		// 保选型库存
-		if (!CollectionUtils.isEmpty(selectionInventoryList))
-			this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
-					goodsId, selectionInventoryList);
-		// 保存分店库存
-		if (!CollectionUtils.isEmpty(suppliersInventoryList))
-			this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
-					goodsId, suppliersInventoryList);
-	}
-*/
+	
 	//初始化库存
-	public void initCheck() {
+	public CreateInventoryResultEnum initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
-				InventoryInitDomain create = new InventoryInitDomain();
+				InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
 				//注入相关Repository
-				create.setGoodsId(this.goodsId);
+				//create.setGoodsId(this.goodsId);
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-				create.businessExecute();
+				return create.businessExecute();
 			}
 	
 	

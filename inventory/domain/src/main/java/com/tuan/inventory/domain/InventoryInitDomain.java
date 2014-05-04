@@ -31,8 +31,6 @@ public class InventoryInitDomain extends AbstractDomain{
 	
 	// 是否需要初始化
 	private boolean isInit;
-
-	public InventoryInitDomain() {}
 	
 	public InventoryInitDomain(long goodsId, LogModel lm) {
 		this.goodsId = goodsId;
@@ -161,7 +159,8 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public void createInventory(boolean isExists, GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+	public CreateInventoryResultEnum createInventory(boolean isExists, GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+		try {
 		// 保存商品库存
 		if (isExists && inventoryInfoDO != null) {
 			
@@ -199,7 +198,13 @@ public class InventoryInitDomain extends AbstractDomain{
 			//批量保存商品分店库存到mysql
 			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 		}
-			
+		} catch (Exception e) {
+			this.writeBusErrorLog(
+					lm.setMethod("createInventory").addMetaData("errorMsg",
+							"DB error" + e.getMessage()), e);
+			return CreateInventoryResultEnum.DB_ERROR;
+		}
+		return CreateInventoryResultEnum.SUCCESS;	
 	}
 	/**
 	 * 更新mysql库库存信息
@@ -209,6 +214,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	 */
 	public boolean updateMysqlInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean handler = true;
+		try {
 		// 更新商品库存
 		if (inventoryInfoDO != null) {
 			//更新库存信息到mysql
@@ -237,6 +243,13 @@ public class InventoryInitDomain extends AbstractDomain{
 				handler = false;
 			}
 			//this.synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+		}
+		} catch (Exception e) {
+			handler = false;
+			this.writeBusErrorLog(
+					lm.setMethod("createInventory").addMetaData("errorMsg",
+							"DB error" + e.getMessage()), e);
+			//return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return handler;
 	}

@@ -200,8 +200,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	
 	//异步更新mysql商品库存
 		public boolean asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
-			InventoryInitDomain create = new InventoryInitDomain();
-			create.setGoodsId(goodsId);
+			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
+			//create.setGoodsId(goodsId);
 			//注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
