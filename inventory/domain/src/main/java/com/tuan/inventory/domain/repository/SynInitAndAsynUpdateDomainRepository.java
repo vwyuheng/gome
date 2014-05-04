@@ -4,19 +4,13 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.util.CollectionUtils;
 
-import com.tuan.core.common.lang.TuanRuntimeException;
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
-import com.tuan.inventory.model.util.QueueConstant;
 /**
  * 用于同步初始化数据到mysql，
  * 异步更新数据到mysql
@@ -27,7 +21,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 	@Resource
 	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
 	
-	private static Log log = LogFactory.getLog(SynInitAndAsynUpdateDomainRepository.class);
+	//private static Log log = LogFactory.getLog(SynInitAndAsynUpdateDomainRepository.class);
 	/**
 	 * 保存插入商品库存
 	 * @param goodsDO
@@ -74,9 +68,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param selectionDO
 	 */
 	public void saveGoodsSelection(GoodsSelectionDO selectionDO) throws Exception{
-		try {
+		//try {
 		this.synInitAndAsynUpdateDAO.insertGoodsSelectionDO(selectionDO);
-		}  catch (Exception e) {
+		/*}  catch (Exception e) {
 			log.error(
 					"SynInitAndAsynUpdateDomainRepository.saveGoodsSelection error occured!"
 							+ e.getMessage(), e);
@@ -90,7 +84,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					"SynInitAndAsynUpdateDomainRepository.saveGoodsSelection error occured!",
 					e);
 			
-		}
+		}*/
 	}
 	/**
 	 * 批量更新选型库存
@@ -117,9 +111,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param selectionDO
 	 */
 	public void updateGoodsSelection(GoodsSelectionDO selectionDO) throws Exception{
-		try {
+		//try {
 		this.synInitAndAsynUpdateDAO.updateGoodsSelectionDO(selectionDO);
-		} catch (Exception e) {
+		/*} catch (Exception e) {
 			log.error(
 					"SynInitAndAsynUpdateDomainRepository.updateGoodsInventory error occured!"
 							+ e.getMessage(), e);
@@ -133,7 +127,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					"SynInitAndAsynUpdateDomainRepository.updateGoodsInventory error occured!",
 					e);
 			
-		}
+		}*/
 	}
 	/**
 	 * 批量保存分店库存信息
@@ -161,9 +155,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param suppliersDO
 	 */
 	public void saveGoodsSuppliers(GoodsSuppliersDO suppliersDO) throws Exception{
-		try {
+		//try {
 		this.synInitAndAsynUpdateDAO.insertGoodsSuppliersDO(suppliersDO);
-		}  catch (Exception e) {
+		/*}  catch (Exception e) {
 			log.error(
 					"SynInitAndAsynUpdateDomainRepository.saveGoodsSuppliers error occured!"
 							+ e.getMessage(), e);
@@ -177,7 +171,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					"SynInitAndAsynUpdateDomainRepository.saveGoodsSuppliers error occured!",
 					e);
 			
-		}
+		}*/
 		
 	}
 	/**
@@ -203,9 +197,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param suppliersDO
 	 */
 	public void updateGoodsSuppliers(GoodsSuppliersDO suppliersDO) throws Exception{
-		try {
+		//try {
 		this.synInitAndAsynUpdateDAO.updateGoodsSuppliersDO(suppliersDO);
-		} catch (Exception e) {
+		/*} catch (Exception e) {
 			log.error(
 					"SynInitAndAsynUpdateDomainRepository.updateGoodsSuppliers error occured!"
 							+ e.getMessage(), e);
@@ -219,7 +213,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					"SynInitAndAsynUpdateDomainRepository.updateGoodsSuppliers error occured!",
 					e);
 			
-		}
+		}*/
 	}
 	/**
 	 * 保存物流商品库存
