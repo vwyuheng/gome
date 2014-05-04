@@ -74,7 +74,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		
 		this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
 						+ String.valueOf(goodsId), QueueConstant.SUPPLIERS_INVENTORY_PREFIX
-				+ ":" + String.valueOf(suppliersDO.getId()), String.valueOf(suppliersDO.getId()), ObjectUtils.toHashMap(suppliersDO));
+				+ ":" + String.valueOf(suppliersDO.getSuppliersId()), String.valueOf(suppliersDO.getSuppliersId()), ObjectUtils.toHashMap(suppliersDO));
 
 	}
 

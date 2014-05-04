@@ -639,11 +639,11 @@ public class RedisCacheUtil {
 	 * 多个命令顺序调用时需开启事务
 	 * @param saddkey
 	 * @param hmsetkey
-	 * @param id
+	 * @param suppliersId  分店id
 	 * @param hash
 	 * @return
 	 */
-	public boolean saddAndhmset(final String saddkey,final String hmsetkey,final String id,final Map<String,String> hash) {
+	public boolean saddAndhmset(final String saddkey,final String hmsetkey,final String suppliersId,final Map<String,String> hash) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
 			public Boolean work(Jedis j) throws Exception {
@@ -655,7 +655,7 @@ public class RedisCacheUtil {
 					//开启事务
 					ts = j.multi(); 
 					
-					ts.sadd(saddkey,id);
+					ts.sadd(saddkey,suppliersId);
 					ts.hmset(hmsetkey,hash);
 					// 执行事务
 					ts.exec();
@@ -668,10 +668,10 @@ public class RedisCacheUtil {
 					LogModel lm = LogModel.newLogModel("RedisLockCache.saddAndhmset");
 					log.error(lm.addMetaData("saddkey", saddkey)
 							.addMetaData("hmsetkey", hmsetkey)
-							.addMetaData("id", id)
+							.addMetaData("suppliersId", suppliersId)
 							.addMetaData("hash", hash)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.saddAndhmset("+saddkey+","+hmsetkey+","+id+","+hash+") error!",e);
+					throw new CacheRunTimeException("jedis.saddAndhmset("+saddkey+","+hmsetkey+","+suppliersId+","+hash+") error!",e);
 				}
 				
 				return result;
