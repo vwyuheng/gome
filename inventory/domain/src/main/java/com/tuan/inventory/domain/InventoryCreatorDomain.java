@@ -124,21 +124,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			// 保存商品库存
-			//if (isExists && inventoryInfoDO != null)
-				//this.goodsInventoryDomainRepository.saveGoodsInventory(
-					//	goodsId, inventoryInfoDO);
-			// 保选型库存
-			//if (!CollectionUtils.isEmpty(selectionRelation))
-				//this.goodsInventoryDomainRepository
-				//		.saveGoodsSelectionInventory(goodsId, selectionRelation);
-			// 保存分店库存
-			//if (!CollectionUtils.isEmpty(suppliersRelation))
-				//this.goodsInventoryDomainRepository
-					//	.saveGoodsSuppliersInventory(goodsId, suppliersRelation);
-			
-			//this.saveInventory();
-			
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
@@ -146,7 +131,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 							"DB error" + e.getMessage()), e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
-		//return CreateInventoryResultEnum.SUCCESS;
 		//保存库存
 		return this.saveInventory();
 	}
@@ -154,11 +138,10 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	public CreateInventoryResultEnum saveInventory() {
 		InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
 		//注入相关Repository
-		//create.setGoodsId(this.goodsId);
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-		return create.createInventory(isExists,inventoryInfoDO, selectionRelation, suppliersRelation);
+		return create.createInventory(inventoryInfoDO, selectionRelation, suppliersRelation);
 	}
 	// 发送库存新增消息
 	public void sendNotify() {

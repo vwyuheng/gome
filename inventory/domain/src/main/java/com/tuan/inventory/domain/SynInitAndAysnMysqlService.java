@@ -13,7 +13,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<List<GoodsSelectionDO>> saveBatchGoodsSelection(long goodsId,List<GoodsSelectionDO> selectionInventoryList) throws Exception ;
 	public CallResult<List<GoodsSuppliersDO>> saveBatchGoodsSuppliers(long goodsId,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	
-	
+	public CallResult<Boolean> updateGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsSelectionDO selectionDO) throws Exception;
 	public CallResult<GoodsSuppliersDO> updateGoodsSuppliers(GoodsSuppliersDO suppliersDO) throws Exception;

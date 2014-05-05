@@ -2,8 +2,6 @@ package com.tuan.inventory.domain;
 
 import java.util.List;
 
-import org.springframework.util.CollectionUtils;
-
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
@@ -51,11 +49,8 @@ public class InventoryInitDomain extends AbstractDomain{
 	public CreateInventoryResultEnum initCheck() {
 		try {
 		if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
-			//boolean isExists = this.goodsInventoryDomainRepository
-				//	.isGoodsExists(goodsId);
 			
 			this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-			//if (isExists) { // 不存在
 			if(inventoryInfoDO==null) {
 				// 初始化库存
 				this.isInit = true;
@@ -69,8 +64,6 @@ public class InventoryInitDomain extends AbstractDomain{
 				     this.inventoryInfoDO = 	callGoodsInventoryDOResult.getBusinessResult();
 				}
 				
-				//this.inventoryInfoDO = this.synInitAndAysnMysqlService
-						//.selectGoodsInventoryByGoodsId(goodsId);
 				// 查询该商品选型库存信息
 				CallResult<List<GoodsSelectionDO>> callGoodsSelectionListDOResult = this.synInitAndAysnMysqlService
 						.selectGoodsSelectionListByGoodsId(goodsId);
@@ -80,8 +73,6 @@ public class InventoryInitDomain extends AbstractDomain{
 				}else {
 				     this.selectionInventoryList = 	callGoodsSelectionListDOResult.getBusinessResult();
 				}
-				//selectionInventoryList = this.synInitAndAysnMysqlService
-				//	.selectGoodsSelectionListByGoodsId(goodsId);
 				// 查询该商品分店库存信息
 				CallResult<List<GoodsSuppliersDO>> callGoodsSuppliersListDOResult = this.synInitAndAysnMysqlService
 						.selectGoodsSuppliersListByGoodsId(goodsId);
@@ -91,8 +82,7 @@ public class InventoryInitDomain extends AbstractDomain{
 				}else {
 				     this.suppliersInventoryList = 	callGoodsSuppliersListDOResult.getBusinessResult();
 				}
-				//suppliersInventoryList = this.synInitAndAysnMysqlService
-					//	.selectGoodsSuppliersListByGoodsId(goodsId);
+			
 			}
 		}
 		} catch (Exception e) {
@@ -112,42 +102,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		boolean result = false;
 		try {
 		// 保存商品库存
-	//	if (inventoryInfoDO != null) {
-			
-			//mysql数据库处理成功后才处理redis
-			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
-			//if(result){
-				//this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
-					//	inventoryInfoDO);
-			//}
-			
-			//保存库存信息到mysql
-			//this.synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-	//	}
-			
-		// 保选型库存
-		//if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-		//	if(result){
-				//this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
-				//		goodsId, selectionInventoryList);
-			//}
-			
-			//批量保存商品选型库存到mysql
-			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-		//}
-			
-		// 保存分店库存
-		//if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-		//	if(result){
-			//	this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
-			//			goodsId, suppliersInventoryList);
-		//	}
-			
-			//批量保存商品分店库存到mysql
-			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-	//	}
+		result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.setMethod("init").addMetaData("errorMsg",
@@ -168,62 +123,12 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public CreateInventoryResultEnum createInventory(boolean isExists, GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+	public CreateInventoryResultEnum createInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean result = false;
 		try {
-		// 保存商品库存
-		if (isExists /*&& inventoryInfoDO != null*/) {
-			
-			//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(inventoryInfoDO);
+		// 保存商品库存		
 			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
-			/*if(result){
-				this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
-						inventoryInfoDO);
-			}else {
-				return CreateInventoryResultEnum.DB_ERROR;
-			}*/
 			
-			
-			//保存库存信息到mysql
-			//this.synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-		}
-			
-		// 保选型库存
-//		if (result&&!CollectionUtils.isEmpty(selectionInventoryList)) {
-			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-		/*	if(result){
-				this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
-						goodsId, selectionInventoryList);
-			}else {
-				//TODO 回滚商品库存的mysql信息
-				this.inventoryInitAndUpdateHandle.deleteGoodsInventory(goodsId);
-				this.inventoryInitAndUpdateHandle.deleteBatchGoodsSelection(selectionInventoryList);
-				return CreateInventoryResultEnum.DB_ERROR;
-			}*/
-			
-			//批量保存商品选型库存到mysql
-			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-		//}
-			
-		// 保存分店库存
-		//if (result&&!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			//result = this.inventoryInitAndUpdateHandle.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-			/*if(result){
-				this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
-						goodsId, suppliersInventoryList);
-			}else {
-               //TODO 回滚商品库存和商品选型库存的mysql信息
-				this.inventoryInitAndUpdateHandle.deleteGoodsInventory(goodsId);
-				if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-					this.inventoryInitAndUpdateHandle.deleteBatchGoodsSelection(selectionInventoryList);
-				}
-				this.inventoryInitAndUpdateHandle.deleteBatchGoodsSuppliers(suppliersInventoryList);
-				return CreateInventoryResultEnum.DB_ERROR;
-			}*/
-			
-			//批量保存商品分店库存到mysql
-			//this.synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-		//}
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.setMethod("createInventory").addMetaData("errorMsg",
@@ -245,44 +150,12 @@ public class InventoryInitDomain extends AbstractDomain{
 		boolean handler = true;
 		try {
 		// 更新商品库存
-		if (inventoryInfoDO != null) {
-			//更新库存信息到mysql
-			boolean result = this.inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryInfoDO);
-			if(!result) {
-				handler = false;
-			}
-			//this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
-		}
-		
-		// 保选型库存
-		if (handler&&!CollectionUtils.isEmpty(selectionInventoryList)) {
-			//批量更新商品选型库存到mysql
-			boolean result = this.inventoryInitAndUpdateHandle.updateBatchGoodsSelection(goodsId, selectionInventoryList);
-			if(!result){
-				//TODO 回滚被更新的商品库存
-				
-				handler = false;
-			}
-			//this.synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);
-		}
-		
-		// 保存分店库存
-		if (handler&&!CollectionUtils.isEmpty(suppliersInventoryList)) {
-			//批量更新商品分店库存到mysql
-			boolean result = this.inventoryInitAndUpdateHandle.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-			if(!result){
-				//TODO 回滚被更新的商品库存和商品选型库存
-				
-				handler = false;
-			}
-			//this.synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-		}
+			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
 		} catch (Exception e) {
 			handler = false;
 			this.writeBusErrorLog(
 					lm.setMethod("updateMysqlInventory").addMetaData("errorMsg",
 							"DB error" + e.getMessage()), e);
-			//return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return handler;
 	}

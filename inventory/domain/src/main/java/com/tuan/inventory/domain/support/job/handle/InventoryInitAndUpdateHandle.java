@@ -54,10 +54,10 @@ public class InventoryInitAndUpdateHandle  {
 						/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					isSuccess = false;
-					message = "saveGoodsInventory_error[" + publicCodeEnum.getMessage()
+					message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsId;
 				} else {
-					message = "saveGoodsInventory_success[save success]goodsId:" + goodsId;
+					message = "saveGoodsInventory2Mysql_success[save2mysql success]goodsId:" + goodsId;
 					if (goodsDO != null) {
 						this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 								goodsDO);
@@ -141,6 +141,54 @@ public class InventoryInitAndUpdateHandle  {
 			
 		}
 		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	public boolean updateGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(goodsDO == null){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.updateGoodsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<GoodsInventoryDO> callResult  = null;
+		try {
+			
+			if (goodsDO != null) {
+				// 消费对列的信息
+				callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsDO);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					isSuccess = false;
+					message = "updateGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+							+ "]goodsId:" + goodsId;
+				} else {
+					message = "updateGoodsInventory2mysql_success[save2mysql success]goodsId:" + goodsId;
+				}
+			} 
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("goodsDO",goodsDO)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("goodsDO",goodsDO)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
 				.addMetaData("endTime", System.currentTimeMillis())

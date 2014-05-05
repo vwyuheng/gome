@@ -63,7 +63,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (inventoryInfoDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList)) {
+						if (goodsId<=0||(inventoryInfoDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
 							 logger.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
@@ -80,6 +80,60 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 
 	}
+
+	@Override
+	public CallResult<Boolean> updateGoodsInventory(final long goodsId,
+			final GoodsInventoryDO goodsDO,
+			final List<GoodsSelectionDO> selectionInventoryList,
+			final List<GoodsSuppliersDO> suppliersInventoryList) throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+						if(goodsDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+						}
+						synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);
+						synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+						
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
+							throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
+									"update invalid '" + goodsDO.getGoodsId()
+											+ "' for key 'goodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							true);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (goodsId<=0||(goodsDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
+						 logger.error(this.getClass()+"_create param invalid ,param is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(Boolean)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -697,7 +751,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			callBackResult.getThrowable());
 
 }
-
 	
 	
 	
