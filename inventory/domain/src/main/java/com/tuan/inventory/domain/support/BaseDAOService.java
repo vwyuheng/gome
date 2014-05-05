@@ -80,8 +80,11 @@ public interface BaseDAOService {
 	public GoodsSuppliersDO querySuppliersInventoryById(Long suppliersId);
 	
 	public Long updateGoodsInventory(Long goodsId,int num);
+	public boolean adjustGoodsInventory(Long goodsId,int num);
 	public Long updateSelectionInventory(Long selectionId,int num);
+	public boolean adjustSelectionInventory(Long selectionId,int num);
 	public Long updateSuppliersInventory(Long suppliersId,int num);
+	public boolean adjustSuppliersInventory(Long suppliersId,int num);
 	
 	public void markQueueStatus(String member, int upStatusNum);
 	public void markQueueStatusAndDeleteCacheMember(String member,  int upStatusNum,String delkey);

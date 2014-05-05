@@ -115,7 +115,7 @@ public class InventoryInitAndUpdateHandle  {
 		CallResult<GoodsInventoryDO> callResult  = null;
 		try {
 			
-			if (goodsDO != null) {
+			//if (goodsDO != null) {
 				// 消费对列的信息
 				callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsDO);
 				PublicCodeEnum publicCodeEnum = callResult
@@ -129,7 +129,7 @@ public class InventoryInitAndUpdateHandle  {
 				} else {
 					message = "updateGoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
 				}
-			} 
+			//} 
 			
 		} catch (Exception e) {
 			isSuccess = false;
@@ -255,7 +255,8 @@ public class InventoryInitAndUpdateHandle  {
 		CallResult<GoodsSelectionDO> callResult  = null;
 		try {
 			
-			if (selectionDO != null) {
+			//if (selectionDO != null) {
+				
 				// 消费对列的信息
 				callResult = synInitAndAysnMysqlService.updateGoodsSelection(selectionDO);
 				PublicCodeEnum publicCodeEnum = callResult
@@ -269,7 +270,7 @@ public class InventoryInitAndUpdateHandle  {
 				} else {
 					message = "updateGoodsSelection_success[save success]selectionId:" + selectionDO.getId();
 				}
-			} 
+			//} 
 			
 		} catch (Exception e) {
 			isSuccess = false;
@@ -302,7 +303,8 @@ public class InventoryInitAndUpdateHandle  {
 		CallResult<GoodsSuppliersDO> callResult  = null;
 		try {
 			
-			if (suppliersDO != null) {
+			//if (suppliersDO != null) {
+				
 				// 消费对列的信息
 				callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(suppliersDO);
 				PublicCodeEnum publicCodeEnum = callResult
@@ -316,7 +318,7 @@ public class InventoryInitAndUpdateHandle  {
 				} else {
 					message = "updateGoodsSuppliers_success[save success]suppliersId:" + suppliersDO.getId();
 				}
-			} 
+			//} 
 			
 		} catch (Exception e) {
 			isSuccess = false;

@@ -112,7 +112,7 @@
 		<isNotNull prepend="," property="leftNumber">
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
-		<isNotNull prepend="," property="leftNumber">
+		<isNotNull prepend="," property="waterfloodVal">
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>
@@ -159,7 +159,7 @@
 		<isNotNull prepend="," property="leftNumber">
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
-		<isNotNull prepend="," property="leftNumber">
+		<isNotNull prepend="," property="waterfloodVal">
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>
@@ -209,7 +209,7 @@
 		<isNotNull prepend="," property="leftNumber">
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
-		<isNotNull prepend="," property="leftNumber">
+		<isNotNull prepend="," property="waterfloodVal">
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>

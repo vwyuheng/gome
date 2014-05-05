@@ -48,8 +48,12 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	//注水调整值
 	private int adjustNum;
 	private String businessType;
+	
 	// 原注水
 	private int originalWaterfloodVal = 0;
+	// 调整后注水
+	//private int adjustaftwfnum = 0;
+		
 	private Long goodsId;
 	private Long selectionId;
 	private Long suppliersId;
@@ -80,6 +84,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.businessType = ResultStatusEnum.GOODS_SELF
 						.getDescription();
+				//查询商品库存
+				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if (inventoryDO != null) {
 					this.originalWaterfloodVal = inventoryDO.getWaterfloodVal();
 				} else {
@@ -126,7 +132,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	// 调整注水
+	// 调整注水 正数：+ 负数：-
 	public CreateInventoryResultEnum adjustWaterfloodVal() {
 		try {
 			// 首先填充日志信息
@@ -137,6 +143,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
+				if(inventoryDO!=null) {
+					//调整注水数量
+					inventoryDO.setWaterfloodVal(inventoryDO.getWaterfloodVal()+(adjustNum));
+				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryDO);
 				if(handlerResult) {
@@ -151,6 +161,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				//更新mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
 				//this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
+				if(selectionInventory!=null) {
+					//调整注水数量
+					selectionInventory.setWaterfloodVal(selectionInventory.getWaterfloodVal()+(adjustNum));
+				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(selectionInventory);
 				if(handlerResult) {
@@ -165,6 +179,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				//更新选型的mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
 				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
+				if(suppliersInventory!=null) {
+					//调整注水数量
+					suppliersInventory.setWaterfloodVal(suppliersInventory.getWaterfloodVal()+(adjustNum));
+				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(suppliersInventory);
 				if(handlerResult) {

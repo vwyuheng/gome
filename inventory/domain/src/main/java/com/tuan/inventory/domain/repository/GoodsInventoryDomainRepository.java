@@ -126,11 +126,21 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.updateGoodsInventory(goodsId, num);
 	}
 	
+	public boolean adjustGoodsInventory(Long goodsId, int num) {
+		return this.baseDAOService.adjustGoodsInventory(goodsId, num);
+	}
+	
 	public Long updateSelectionInventoryById(Long selectionId, int num) {
 		return this.baseDAOService.updateSelectionInventory(selectionId, (num));
 	}
+	public boolean adjustSelectionInventoryById(Long selectionId, int num) {
+		return this.baseDAOService.adjustSelectionInventory(selectionId, (num));
+	}
 	public Long updateSuppliersInventoryById(Long suppliersId, int num) {
 		return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
+	}
+	public boolean adjustSuppliersInventoryById(Long suppliersId, int num) {
+		return this.baseDAOService.adjustSuppliersInventory(suppliersId, (num));
 	}
 	public Long updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
 		long result = 0;

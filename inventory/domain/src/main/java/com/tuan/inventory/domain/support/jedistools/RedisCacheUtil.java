@@ -115,6 +115,7 @@ public class RedisCacheUtil {
 		});
 
 	}
+	
 	/***
 	 * 将一个 member 元素加入到集合 key 当中，
 	 * 已经存在于集合的 member 元素将被忽略
@@ -678,5 +679,51 @@ public class RedisCacheUtil {
 			}
 		});
 		
+	}
+	
+	/**
+	 * 两个hincrBy顺序执行
+	 * @param key
+	 * @param field1 总库存field
+	 * @param field2 剩余库存field
+	 * @param value
+	 * @return
+	 */
+	public boolean hincrByAndhincrBy(final String key, final String field1,final String field2, final long value) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+				    return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					//总库存
+					ts.hincrBy(key, field1, value);
+					//剩余库存
+					ts.hincrBy(key, field2, value);
+					//return j.hincrBy(key,field,value);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+				//异常发生时记录日志
+				LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy");
+				log.error(lm.addMetaData("key", key)
+						    .addMetaData("field1", field1)
+						    .addMetaData("field2", field2)
+						    .addMetaData("value", value)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.hincrBy("+key+","+field1+","+field2+","+value+") error!",e);
+				}
+				return result;
+			}
+		});
+
 	}
 }

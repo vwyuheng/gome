@@ -311,4 +311,32 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		
 		return  this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"+ key);
 	}
+	/**
+	 * 商品库存调整
+	 */
+	@Override
+	public boolean adjustGoodsInventory(Long goodsId, int num) {
+
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	
+	}
+
+	@Override
+	public boolean adjustSelectionInventory(Long selectionId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public boolean adjustSuppliersInventory(Long suppliersId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(suppliersId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
 }
