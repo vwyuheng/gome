@@ -40,26 +40,26 @@ public class QueueConstant {
 	
 	
 	/** 系统异常常数 */
-	public static final int NO_DATA = 0;// 没有可用的数据源
+	public static final int NO_DATA = 0;// 没有可用的数据
 	public static final int SUCCESS = 1;// 操作成功
-	public static final int INCORRECT_UPDATE = -5;// 更改超过预期的记录数
+	public static final int INCORRECT_UPDATE = -13;// 更改超过预期的记录数
 	public static final int DATA_EXISTED = 2;// 数据已经存在
 	
-	public static final int INVALID_PARAM = -1;// 传入参数错误
-	public static final int INVALID_GOODSID = -2;// 商品id无效
+	public static final int INVALID_PARAM = -5;// 传入参数错误
+	public static final int INVALID_GOODSID = -8;// 商品id无效
 	
-	public static final int INVALID_SELECTIONID = -3;// 选型id无效
-	public static final int INVALID_SUPPLIERSID = -4;// 分店id无效
+	public static final int INVALID_SELECTIONID = -12;// 选型id无效
+	public static final int INVALID_SUPPLIERSID = -11;// 分店id无效
 	
 	
 	public static final int UNKNOW_ERROR = -9;// 未知错误
 	public static final int SERVICE_DATABASE_FALIURE = -99;// 数据库异常
 	public static final int SERVICE_SYSTEM_FALIURE = -100;// 系统级别异常
 	
-	public static final int INVALID_IP = 5000;// 客服端IP无效
-	public static final int INVALID_CLIENT = 5001;// 客户端名称无效
-	public static final int INVALID_TIME = 5002;// 时间戳无效
-	public static final int INVALID_RETURN = 5003;// 返回值不正确
+	public static final int INVALID_IP = 1001;// 客服端IP无效
+	public static final int INVALID_CLIENT = 1002;// 客户端名称无效
+	public static final int INVALID_TIME = 1003;// 时间戳无效
+	public static final int INVALID_RETURN = 1010;// 返回值不正确
 	
 		
 	

@@ -103,7 +103,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 			goodsSuppliers = new ArrayList<GoodsSuppliersModel> ();
 			for(GoodsSuppliersRestParam sparam:reqGoodsSuppliers) {
 				GoodsSuppliersModel gsModel = new GoodsSuppliersModel();
-				gsModel.setId(sparam.getSuppliersId());
+				gsModel.setSuppliersId(sparam.getSuppliersId());
 				gsModel.setNum(sparam.getSsNum());
 				goodsSuppliers.add(gsModel);
 			}
@@ -120,7 +120,9 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		if(StringUtils.isEmpty(goodsId)){
 			return ResultEnum.INVALID_GOODSID;
 		}
-		
+		if(num<0){
+			return ResultEnum.INVALID_NUM;
+		}
 		ResultEnum checkPackEnum = packet.checkParameter();
 		if(checkPackEnum.compareTo(ResultEnum.SUCCESS) != 0){
 			return checkPackEnum;
@@ -141,7 +143,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.ERROR_2000;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-				return ResultEnum.INVALID_RETURN;
+				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
 			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);

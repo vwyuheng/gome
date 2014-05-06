@@ -12,7 +12,12 @@ public enum CreateInventoryResultEnum {
 	/**商品id无效*/
 	INVALID_GOODSID         (-8, "商品id无效"),
 	IS_EXISTED				(-9, 	"商品库存已存在"),
+	/**分店id无效*/
+	INVALID_SUPPLIERSID         (-11, "商品分店id无效"),
+	INVALID_SELECTIONID         (-12, "商品选型id无效"),
 	
+	INVALID_SELECTIONNUM         (1016, "扣减商品选型库存数量不能为负数"),
+	INVALID_SUPPLIERSNUM         (1017, "扣减商品分店库存数量不能为负数"),
 	DB_ERROR					(-99, 	"数据库错误"),
 	SYS_ERROR					(-100, 	"系统错误"),
 	INIT_INVENTORY_ERROR					(-10, 	"库存初始化过程中发生错误"),
@@ -56,6 +61,10 @@ public enum CreateInventoryResultEnum {
 				return IS_EXISTED;
 			case -10:
 				return INIT_INVENTORY_ERROR;
+			case -11:
+				return INVALID_SUPPLIERSID;
+			case -12:
+				return INVALID_SELECTIONID;
 			case 1:
 				return INVALID_LOG_PARAM;
 				/*

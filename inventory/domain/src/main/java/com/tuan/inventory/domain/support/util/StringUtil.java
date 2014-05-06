@@ -2,6 +2,8 @@ package com.tuan.inventory.domain.support.util;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.model.GoodsSelectionModel;
@@ -23,6 +25,23 @@ public class StringUtil {
 		return sb.toString();
 	}
 	
+	
+	public static String strHandler(int goodsDeductNum,int selectionDeductNum,int suppliersDeductNum){
+		String inventoryChangeNum = null;
+		if(goodsDeductNum!=0) {
+			inventoryChangeNum = "商品总:"+String
+					.valueOf(goodsDeductNum);
+		}else if(selectionDeductNum!=0) {
+			inventoryChangeNum = StringUtils.isEmpty(inventoryChangeNum)?"选型总:"+String
+					.valueOf(selectionDeductNum):inventoryChangeNum+",选型总:"+String
+					.valueOf(selectionDeductNum);
+		}else if(suppliersDeductNum!=0) {
+			inventoryChangeNum = StringUtils.isEmpty(inventoryChangeNum)?"分店总:"+String
+					.valueOf(suppliersDeductNum):inventoryChangeNum+",分店总:"+String
+					.valueOf(suppliersDeductNum);
+		}
+		return inventoryChangeNum;
+	}
 	
 	/**
      * 多个分店id关系 返回 以空格分隔

@@ -163,7 +163,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.ERROR_2000;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-				return ResultEnum.INVALID_RETURN;
+				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
 			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);

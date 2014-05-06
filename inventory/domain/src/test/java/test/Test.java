@@ -71,16 +71,16 @@ public class Test {
 
 	*/
 		//{id=1, leftNumber=0, totalNumber=0, goodTypeId=333766, limitStorage=0}
-	Map<String,String> map = new HashMap<String,String>();
+	/*Map<String,String> map = new HashMap<String,String>();
 	map.put("id", "1");
 	map.put("leftNumber", "0");
 	map.put("totalNumber", "0");
 	map.put("goodTypeId", "333766");
-	map.put("limitStorage", "0");
+	map.put("limitStorage", "0");*/
 	
-	System.out.println("jsonutils="+JsonUtils.convertObjectToString(map));
+	//System.out.println("jsonutils="+JsonUtils.convertObjectToString(map));
 	
-	System.out.println("object="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(map), GoodsSelectionRelationDO.class));
+	//System.out.println("object="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(map), GoodsSelectionRelationDO.class));
 	
 	/*try {
 		System.out.println(ObjectUtil.convertMap(GoodsSelectionRelationDO.class, map));
@@ -98,13 +98,13 @@ public class Test {
 		e.printStackTrace();
 	}*/
 	
-		JSONObject jsonData = new JSONObject();
+		//JSONObject jsonData = new JSONObject();
 		/*Map<String,String> map = new HashMap<String,String>();
 		map.put("k", "1");
 		map.put("k", "2");*/
-		jsonData.put("k", "1");
-		jsonData.put("k", "2");
-		System.out.println(isGoodsOf);
+		//jsonData.put("k", "1");
+		//jsonData.put("k", "2");
+		System.out.println(String.valueOf(-1));
 	}
 	
 	

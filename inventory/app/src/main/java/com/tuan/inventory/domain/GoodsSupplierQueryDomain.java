@@ -42,8 +42,12 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
 			return ResultEnum.ERROR_2000;
 		}
-		if (queryCallResult == null || !queryCallResult.isSuccess()) {
-			return ResultEnum.INVALID_RETURN;
+		/*if (queryCallResult == null || !queryCallResult.isSuccess()) {
+			return ResultEnum.INVALID_RETURN;*/
+		if (queryCallResult == null ) {
+			return ResultEnum.SYS_ERROR;
+		}else if (!queryCallResult.isSuccess()) {
+			return ResultEnum.getResultStatusEnum(String.valueOf(queryCallResult.getPublicCodeEnum().getCode()));
 		}else {
 			GoodsSuppliersModel goodsSuppliers = queryCallResult.getBusinessResult();
 			GoodsSuppliersQueryInnerResp resp = new GoodsSuppliersQueryInnerResp();

@@ -126,6 +126,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory");
 		//构建领域对象
 		final InventoryUpdateDomain inventoryUpdateDomain = new InventoryUpdateDomain(clientIp, clientName, param, lm);
+		//构建库存生成的队列id对象
 		final QueueKeyIdParam queueIdParam = new QueueKeyIdParam();
 		//注入仓储对象
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);

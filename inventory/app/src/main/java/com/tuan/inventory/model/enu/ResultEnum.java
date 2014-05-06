@@ -1,6 +1,7 @@
 package com.tuan.inventory.model.enu;
 
 
+
 public enum ResultEnum {
 	//SUCCESS		("0000",	"成功"),
 	SUCCESS	("success",	"成功"),
@@ -8,24 +9,42 @@ public enum ResultEnum {
 	INVALID_IP			("1001",	"客服端IP无效"),
 	INVALID_CLIENT		("1002",	"客户端名称无效"),
 	INVALID_TIME		("1003",	"时间戳无效"),
-	INVALID_GOODSID     ("1004",	"无效的商品id"),
-	INVALID_SELECTIONID     ("1005",	"无效的商品选型id"),
-	INVALID_SUPPLIERSID     ("1006",	"无效的商品选型id"),
+	INVALID_RETURN      ("1010",	"返回值不正确"),
+	
+	INVALID_LOG_PARAM				("1", 	"无效的日志"),
+	FAIL_ADJUST_INVENTORY			("-2", 	"库存调整失败"),
+	FAIL_ADJUST_WATERFLOOD			("-3", 	"注水调整失败"),
+	SHORTAGE_STOCK_INVENTORY				("-4", 	"库存不足"),
+	INVALID_PARAM				("-5", 	"参数无效"),
+	INVALID_GOODSID     ("-8",	"无效的商品id"),
+	IS_EXISTED				("-9", 	"商品库存已存在"),
+	INIT_INVENTORY_ERROR					("-10", 	"库存初始化过程中发生错误"),
+	INVALID_SUPPLIERSID     ("-11",	"无效的商品分店id"),
+	INVALID_SELECTIONID     ("-12",	"无效的商品选型id"),
+	INCORRECT_UPDATE     ("-13",	"更改超过预期的记录数"),
+	DB_ERROR					("-99", 	"数据库错误"),
+	SYS_ERROR					("-100", 	"系统错误"),
+	
+	
 	INVALID_ISLIMIT_STORAGE     ("1007",	"是否限制库存无效"),      
 	INVALID_ACK     ("1008",	"无效的确认标识"),
 	INVALID_KEY     ("1011",	"无效的key"),
 	
 	NO_PARAMETER		("1009",	"请求参数不能为空"),
-	INVALID_RETURN      ("1010",	"返回值不正确"),
+	
 	
 	INVALID_ADJUST_ID		("1012",	"无效的库存调整id"),
 	INVALID_INVENTORY_TYPE		("1013",	"无效的库存类型"),
 	INVALID_PERIOD     ("1014",	"无效的时间间隔"),
+	INVALID_NUM     ("1015",	"扣减商品库存数量不能为负数"),
+	INVALID_SELECTIONNUM     ("1016",	"扣减商品选型库存数量不能为负数"),
+	INVALID_SUPPLIERSNUM     ("1017",	"扣减商品分店库存数量不能为负数"),
 	
+	NO_DATA("0","没有可用的数据"),
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
 	NET_ERROR			("10998",	"网络异常"),
-	SYSTEM_ERROR		("10999",	"系统错误"),
+	//SYSTEM_ERROR		("10999",	"系统错误"),
 	ERROR_UNKONW       ("9999",	"其它");
 
 	private String code;
@@ -50,8 +69,53 @@ public enum ResultEnum {
 		if(code.equals("1003")){
 			return ResultEnum.INVALID_TIME;
 		}
-		if(code.equals("1004")){
+		if(code.equals("1")){
+			return ResultEnum.INVALID_LOG_PARAM;
+		}
+		
+		if(code.equals("-2")){
+			return ResultEnum.FAIL_ADJUST_INVENTORY;
+		}
+		if(code.equals("-3")){
+			return ResultEnum.FAIL_ADJUST_WATERFLOOD;
+		}
+		if(code.equals("-4")){
+			return ResultEnum.SHORTAGE_STOCK_INVENTORY;
+		}
+		if(code.equals("-5")){
+			return ResultEnum.INVALID_PARAM;
+		}
+		if(code.equals("-8")){
 			return ResultEnum.INVALID_GOODSID;
+		}
+		if(code.equals("-9")){
+			return ResultEnum.IS_EXISTED;
+		}
+		if(code.equals("-5")){
+			return ResultEnum.INVALID_PARAM;
+		}
+		
+		if(code.equals("-10")){
+			return ResultEnum.INIT_INVENTORY_ERROR;
+		}
+		
+		if(code.equals("-11")){
+			return ResultEnum.INVALID_SUPPLIERSID;
+		}
+		if(code.equals("-12")){
+			return ResultEnum.INVALID_SELECTIONID;
+		}
+		if(code.equals("-13")){
+			return ResultEnum.INCORRECT_UPDATE;
+		}
+		if(code.equals("0")){
+			return ResultEnum.NO_DATA;
+		}
+		if(code.equals("-99")){
+			return ResultEnum.DB_ERROR;
+		}
+		if(code.equals("-100")){
+			return ResultEnum.SYS_ERROR;
 		}
 		if(code.equals("1005")){
 			return ResultEnum.INVALID_SELECTIONID;
@@ -83,12 +147,19 @@ public enum ResultEnum {
 		if(code.equals("1014")){
 			return ResultEnum.INVALID_PERIOD;
 		}
+		if(code.equals("1015")){
+			return ResultEnum.INVALID_NUM;
+		}
+		if(code.equals("1016")){
+			return ResultEnum.INVALID_SELECTIONNUM;
+		}
+		if(code.equals("1017")){
+			return ResultEnum.INVALID_SUPPLIERSNUM;
+		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;
 		}
-		if(code.equals("10999")){
-			return ResultEnum.SYSTEM_ERROR;
-		}
+		
 		if(code.equals("9999")){
 			return ResultEnum.ERROR_UNKONW;
 		}
