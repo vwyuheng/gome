@@ -21,6 +21,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.rest.GoodsSelectionRestParam;
 import com.tuan.inventory.model.param.rest.GoodsSuppliersRestParam;
+import com.tuan.inventory.model.param.rest.QueueKeyIdParam;
 import com.tuan.inventory.model.param.rest.UpdateInventoryRestParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
@@ -38,6 +39,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private String userId;
 	private String goodsId;// 商品ID(FK)
 	private String orderId; //订单id
+	private String queueKeyId; //回传给调用方，库存系统生成的队列id
 	private int num;// 扣减的库存
 	//选型
 	private List<GoodsSelectionRestParam> reqGoodsSelection;
@@ -130,10 +132,10 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 
 	@Override
 	public ResultEnum doBusiness() {
-		
+		InventoryCallResult resp = null;
 		try {
 			//调用
-			InventoryCallResult resp = goodsInventoryUpdateService.updateInventory(
+			resp = goodsInventoryUpdateService.updateInventory(
 					clientIp, clientName, param, messageRoot);
 			if(resp == null){
 				return ResultEnum.ERROR_2000;
@@ -145,6 +147,12 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
 			return ResultEnum.ERROR_2000;
 		}
+		QueueKeyIdParam queueKeyParam = (QueueKeyIdParam) resp.getBusinessResult();
+		if(queueKeyParam!=null) {
+			if(!StringUtils.isEmpty(queueKeyParam.getQueueKeyId())) {
+				this.queueKeyId = queueKeyParam.getQueueKeyId();
+			}
+		}
 		return ResultEnum.SUCCESS;
 	}
 
@@ -153,6 +161,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		GoodsInventoryUpdateResp resp = new GoodsInventoryUpdateResp();
 		if (resultStatusEnum.compareTo(ResultEnum.SUCCESS) == 0) {
 			resp.setResult(ResultEnum.SUCCESS.getCode());
+			resp.setQueueKeyId(queueKeyId);
 		}else{
 			resp.setResult(ResultEnum.ERROR.getCode());
 			resp.setErrorCode(resultStatusEnum.getCode());

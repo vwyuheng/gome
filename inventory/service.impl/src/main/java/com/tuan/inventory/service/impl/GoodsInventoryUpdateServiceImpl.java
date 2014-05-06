@@ -19,6 +19,7 @@ import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.rest.QueueKeyIdParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
 import com.tuan.inventory.service.InventoryUpdateServiceCallback;
@@ -125,6 +126,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory");
 		//构建领域对象
 		final InventoryUpdateDomain inventoryUpdateDomain = new InventoryUpdateDomain(clientIp, clientName, param, lm);
+		final QueueKeyIdParam queueIdParam = new QueueKeyIdParam();
 		//注入仓储对象
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
@@ -163,7 +165,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				inventoryUpdateDomain.pushSendMsgQueue();
+				String queueKeyId = inventoryUpdateDomain.pushSendMsgQueue();
+				queueIdParam.setQueueKeyId(queueKeyId);
 			}
 		});
 
@@ -173,7 +176,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
-				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),queueIdParam);
 	}
 	@Override
 	public InventoryCallResult callbackAckInventory(String clientIp,

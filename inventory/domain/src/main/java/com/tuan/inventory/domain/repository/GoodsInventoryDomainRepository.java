@@ -44,8 +44,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void pushLogQueues(final GoodsInventoryActionDO logActionDO){
 		this.baseDAOService.pushLogQueues(logActionDO);
 	}
-	public void pushQueueSendMsg(final GoodsInventoryQueueDO queueDO) {
-		this.baseDAOService.pushQueueSendMsg(queueDO);
+	public String pushQueueSendMsg(final GoodsInventoryQueueDO queueDO) {
+		return this.baseDAOService.pushQueueSendMsg(queueDO);
 	}
 	//判断库存是否已存在
 	public boolean isExists(Long goodsId) {

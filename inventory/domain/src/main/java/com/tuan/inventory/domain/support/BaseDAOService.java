@@ -42,7 +42,7 @@ public interface BaseDAOService {
 	 * @param logActionDO
 	 */
 	public void pushLogQueues(final GoodsInventoryActionDO logActionDO);
-	public void pushQueueSendMsg(final GoodsInventoryQueueDO queueDO);
+	public String pushQueueSendMsg(final GoodsInventoryQueueDO queueDO);
 	/**
 	 * 保存商品库存
 	 * @param inventoryInfoDO

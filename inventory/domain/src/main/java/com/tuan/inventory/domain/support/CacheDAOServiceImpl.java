@@ -157,7 +157,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void pushQueueSendMsg(GoodsInventoryQueueDO queueDO) {
+	public String pushQueueSendMsg(GoodsInventoryQueueDO queueDO) {
 		// 将库存更新队列信息压入到redis zset集合 便于统计
 		// job程序中会每次将score为1的元素取出，做库存消息更新的处理，处理完根据key score
 		// member(因id都是唯一的，因此每个member都是不一样的)立即清空源集合中的相关元素，并重复操作
@@ -174,8 +174,14 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 				//Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
 				//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
 				//jsonMember);
-		this.redisCacheUtil.setexAndzadd(QueueConstant.QUEUE_KEY_MEMBER + ":"+ String.valueOf(queueDO.getId()), 
+		String queueKeyId = String.valueOf(queueDO.getId());
+		boolean success = this.redisCacheUtil.setexAndzadd(QueueConstant.QUEUE_KEY_MEMBER + ":"+ queueKeyId, 
 				QueueConstant.QUEUE_SEND_MESSAGE, queueDO);
+		if(success) {
+			return queueKeyId;
+		}else {
+			return null;
+		}
 	}
 
 	

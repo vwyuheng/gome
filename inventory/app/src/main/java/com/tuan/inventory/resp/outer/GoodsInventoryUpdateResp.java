@@ -31,7 +31,7 @@ public class GoodsInventoryUpdateResp implements Serializable  {
 	 */
 	private String result = "";
 	
-	
+	private String queueKeyId = "";
 
 	public String getErrorMsg() {
 		return errorMsg;
@@ -65,6 +65,14 @@ public class GoodsInventoryUpdateResp implements Serializable  {
 
 	}
 
+	public String getQueueKeyId() {
+		return queueKeyId;
+	}
+
+	public void setQueueKeyId(String queueKeyId) {
+		this.queueKeyId = queueKeyId;
+	}
+
 	/**
 	 * 为应答报文组织数据
 	 */
@@ -76,6 +84,9 @@ public class GoodsInventoryUpdateResp implements Serializable  {
 		}
 		if(!StringUtils.isEmpty(errorMsg)){
 			reqMap.put("errorMsg", errorMsg);
+		}
+		if(!StringUtils.isEmpty(queueKeyId)){
+			reqMap.put("queueKeyId", queueKeyId);
 		}
 		return reqMap;
 	}

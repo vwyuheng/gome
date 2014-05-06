@@ -269,10 +269,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void pushSendMsgQueue() {
+	public String pushSendMsgQueue() {
 		// 填充队列
 		if (fillInventoryQueueDO()) {
-			this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
+			return this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
+		}else {
+			return null;
 		}
 	}
 
