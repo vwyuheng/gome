@@ -26,6 +26,7 @@ import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
 import com.tuan.inventory.resp.outer.GoodsInventoryUpdateResp;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
+import com.tuan.inventory.utils.JsonStrVerificationUtils;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
@@ -72,10 +73,11 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 			this.waterfloodVal = reqparam.getWaterfloodVal();
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
 			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
-			if(StringUtils.isNotEmpty(jsonSelectionResult)) {
+			
+			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonSelectionResult))) {
 				this.reqGoodsSelection =  (List<CreaterGoodsSelectionParam>)new Gson().fromJson(jsonSelectionResult, typeSelection);
 			}
-			if(StringUtils.isNotEmpty(jsonSuppliersResult)) {
+			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonSuppliersResult))) {
 				this.reqGoodsSuppliers =  (List<CreaterGoodsSuppliersParam>)new Gson().fromJson(jsonSuppliersResult, typeSuppliers);
 			}
 		}

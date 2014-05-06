@@ -16,6 +16,7 @@ import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.resp.inner.GoodsSelectionListQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
+import com.tuan.inventory.utils.JsonStrVerificationUtils;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
@@ -32,7 +33,8 @@ public class GoodsSelectionListQueryBySelIdListDomain extends GoodsSelectionList
 	public static GoodsSelectionListQueryBySelIdListDomain makeInstance(RequestPacket packet,String goodsId,String selectionIdList,LogModel lm
 			,Message traceMessage){
 		List<Long> selectionIdTmpList = null;
-		if(StringUtils.isNotEmpty(selectionIdList)) {
+		
+		if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(selectionIdList))) {
 			selectionIdTmpList =  new Gson().fromJson(selectionIdList, type);
 		}
 		GoodsSelectionListQueryBySelIdListDomain queryDomain = new GoodsSelectionListQueryBySelIdListDomain();

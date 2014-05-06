@@ -41,10 +41,16 @@
 		</dependency>		
 	    <!-- notifyserver start -->
 	    <dependency>
-			<groupId>com.tuan.notifyserver.client</groupId>
-			<artifactId>notifyserver-client</artifactId>
+			<!-- <groupId>com.tuan.notifyserver.client</groupId>
+			<artifactId>notifyserver-client</artifactId> -->
+			<groupId>com.tuan.notifyserver.client.producer</groupId>
+	        <artifactId>notifyserver-client-producer</artifactId>
 		</dependency>
 		<!-- notifyserver end -->
+		<dependency>
+				<groupId>org.eclipse.jetty</groupId>
+				<artifactId>jetty-util</artifactId>
+		</dependency>
 	   <dependency>
 		  <groupId>com.tuan.cozy</groupId>
 		  <artifactId>cozy-common-sequence-client</artifactId>
