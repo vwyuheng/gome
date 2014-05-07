@@ -9,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 import com.tuan.inventory.domain.GoodsSelectionListQueryBySelIdListDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.resp.inner.RequestPacket;
+import com.tuan.inventory.utils.JsonStrVerificationUtils;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
@@ -51,7 +52,7 @@ public abstract class GoodsSelectionListBySelIdListDomain extends AbstractGoodsI
 	
 	@Override
 	public ResultEnum checkParameter() {
-		if(!StringUtils.isEmpty(goodsId)){
+		if(!StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))){
 			try{
 				if(Long.parseLong(goodsId) <= 0){
 					return ResultEnum.INVALID_GOODSID;
@@ -60,9 +61,17 @@ public abstract class GoodsSelectionListBySelIdListDomain extends AbstractGoodsI
 			}catch(Exception e){
 				return ResultEnum.INVALID_GOODSID;
 			}
+		}else {
+			return ResultEnum.INVALID_GOODSID;
 		}
 		if(CollectionUtils.isEmpty(selectionIdList)){
 			return ResultEnum.NO_PARAMETER;
+			}else {
+				for(long id:selectionIdList) {
+					if(id<=0) {
+						return ResultEnum.INVALID_SELECTIONID;
+					}
+				}
 			}
 		if(requestPacket == null){
 			return ResultEnum.NO_PARAMETER;

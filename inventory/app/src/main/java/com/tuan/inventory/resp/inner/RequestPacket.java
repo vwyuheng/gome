@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.resp.AbstractPacket;
+import com.tuan.inventory.utils.JsonStrVerificationUtils;
 
 
 /**
@@ -83,14 +84,11 @@ public class RequestPacket extends AbstractPacket implements Serializable {
 	}
 	
 	public ResultEnum checkParameter(){
-		//ResultEnum checkResEnum = super.checkParameter();
-		/*if(checkResEnum.compareTo(ResultEnum.SUCCESS) != 0){
-			return checkResEnum;
-		}*/
-		if(StringUtils.isEmpty(ip)){
+		
+		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(ip))){
 			return ResultEnum.INVALID_IP;
 		}
-		if(StringUtils.isEmpty(client)){
+		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(client))){
 			return ResultEnum.INVALID_CLIENT;
 		}
 		if(t == null || t.isEmpty() || Long.valueOf(t).longValue() <= 0){

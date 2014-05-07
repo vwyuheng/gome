@@ -58,6 +58,11 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
+	//是否选型商品
+	private boolean isSelection;
+	// 是否分店商品
+	private boolean isSupplier;
+	
 	//private static Logger logger = Logger.getLogger(GoodsCreateInventoryDomain.class);
 	private static Log logger = LogFactory.getLog(GoodsCreateInventoryDomain.class);
 	
@@ -139,10 +144,154 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	}
 	@Override
 	public ResultEnum checkParameter() {
-		if(StringUtils.isEmpty(goodsId)){
+		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))){
 			return ResultEnum.INVALID_GOODSID;
 		}
 		
+		//根据传过来的参数判断是否选型商品
+		if(!CollectionUtils.isEmpty(reqGoodsSelection)) {  //若商品存在选型，则为选型商品，
+			isSelection = true;
+		}
+		//根据传过来的参数判断是否分店商品
+		if(!CollectionUtils.isEmpty(reqGoodsSuppliers)) {  //若商品存在分店，则为分店商品，
+			isSupplier = true;
+		}
+		//选型剩余库存
+		int selLeftNum = 0;
+		//选型总库存
+		int selTotalNum = 0;
+		//分店剩余库存
+		int suppLeftNum = 0;
+		//分店总库存
+		int suppTotalNum = 0;
+		if (isSelection && !isSupplier) { // 只包含选型的
+			// 校验商品选型id
+			if (!CollectionUtils.isEmpty(reqGoodsSelection)) {
+				for (CreaterGoodsSelectionParam gsparam : reqGoodsSelection) {
+					if (gsparam.getId() <= 0) {
+						return ResultEnum.INVALID_SELECTIONID;
+					}
+					if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+						//校验是否限制库存是否一致
+						if(gsparam.getLimitStorage()==0) {
+							return ResultEnum.INVALID_SEL_LIMT;
+						}
+						selLeftNum = selLeftNum + gsparam.getLeftNumber();
+						selTotalNum = selTotalNum + gsparam.getTotalNumber();
+					}else {
+						//校验是否限制库存是否一致
+						if(gsparam.getLimitStorage()==1) {
+							return ResultEnum.INVALID_SEL_LIMT;
+						}
+					}
+
+				}
+			} else {
+				return ResultEnum.SELECTION_GOODS;
+			}
+			if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+				
+				// 如果是限制库存商品 则需校验其下选型的剩余库存之和=商品总的剩余库存
+				if (!(leftNumber == selLeftNum)) {
+					return ResultEnum.INVALID_LEFTNUM_SELECTION;
+				}
+				// 其下选型总库存之和= 商品总的库存量
+				if (!(totalNumber == selTotalNum)) {
+					return ResultEnum.INVALID_TOTALNUM_SELECTION;
+				}
+			}
+			
+		}
+		if(isSupplier&&!isSelection) {  //只包含分店的
+			//校验商品分店id
+			if(!CollectionUtils.isEmpty(reqGoodsSuppliers)) {
+				for(CreaterGoodsSuppliersParam gsparam : reqGoodsSuppliers) {
+					if(gsparam.getSuppliersId()<=0) {
+						return ResultEnum.INVALID_SUPPLIERSID;
+					}
+					if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+						//校验是否限制库存是否一致
+						if(gsparam.getLimitStorage()==0) {
+							return ResultEnum.INVALID_SUPP_LIMT;
+						}
+						suppLeftNum = suppLeftNum + gsparam.getLeftNumber();
+						suppTotalNum = suppTotalNum + gsparam.getTotalNumber();
+					}else {
+						//校验是否限制库存是否一致
+						if(gsparam.getLimitStorage()==1) {
+							return ResultEnum.INVALID_SUPP_LIMT;
+						}
+					}
+				}
+			}else {
+				return ResultEnum.SUPPLIERS_GOODS;
+			}
+			if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+				// 如果是限制库存商品 则需校验其下选型的剩余库存之和=商品总的剩余库存
+				if (!(leftNumber == suppLeftNum)) {
+					return ResultEnum.INVALID_LEFTNUM_SUPPLIER;
+					}
+				// 其下分店总库存之和= 商品总的库存量
+			    if (!(totalNumber == suppTotalNum)) {
+					return ResultEnum.INVALID_TOTALNUM_SUPPLIER;
+					}
+			}
+			
+		}
+		
+		if(isSupplier&&isSelection) {  //分店选型都有的
+			if (!CollectionUtils.isEmpty(reqGoodsSuppliers)&&!CollectionUtils.isEmpty(reqGoodsSelection)) {
+				for(CreaterGoodsSelectionParam gsparam : reqGoodsSelection) {
+					if(gsparam.getId()<=0) {
+						return ResultEnum.INVALID_SELECTIONID;
+					}
+					if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+						//校验是否限制库存是否一致
+						if(gsparam.getLimitStorage()==0) {
+							return ResultEnum.INVALID_SEL_LIMT;
+						}
+						selLeftNum = selLeftNum + gsparam.getLeftNumber();
+						selTotalNum = selTotalNum + gsparam.getTotalNumber();
+					}else {
+						if(gsparam.getLimitStorage()==1) {
+							return ResultEnum.INVALID_SEL_LIMT;
+						}
+					}
+				}
+				for(CreaterGoodsSuppliersParam gsparam : reqGoodsSuppliers) {
+					if(gsparam.getSuppliersId()<=0) {
+						return ResultEnum.INVALID_SUPPLIERSID;
+					}
+					if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+						//校验是否限制库存是否一致
+						if(gsparam.getLimitStorage()==0) {
+							return ResultEnum.INVALID_SUPP_LIMT;
+						}
+						suppLeftNum = suppLeftNum + gsparam.getLeftNumber();
+						suppTotalNum = suppTotalNum + gsparam.getTotalNumber();
+					}else {
+						if(gsparam.getLimitStorage()==1) {
+							return ResultEnum.INVALID_SUPP_LIMT;
+						}
+					}
+				}
+				
+			}else {
+				return ResultEnum.NOTNULL_SEL_SUPP_GOODS;
+			}
+			
+			if (limitStorage == 1) { // 若是限制库存商品，则进行校验
+				// 如果是限制库存商品 则需校验其下选型的剩余库存之和=商品总的剩余库存
+				if (!(leftNumber == (selLeftNum+suppLeftNum))) {
+					return ResultEnum.INVALID_LEFTNUM_SELANDSUPP;
+					}
+				// 其下分店总库存之和= 商品总的库存量
+			    if (!(totalNumber == (selTotalNum+suppTotalNum))) {
+					return ResultEnum.INVALID_TOTALNUM_SELANDSUPP;
+					}
+			}
+		}
+
 		ResultEnum checkPackEnum = packet.checkParameter();
 		if(checkPackEnum.compareTo(ResultEnum.SUCCESS) != 0){
 			return checkPackEnum;

@@ -43,6 +43,16 @@ public enum ResultEnum {
 	SELECTION_GOODS         ("1018", "选型商品，选型不能为空！"),
 	SUPPLIERS_GOODS         ("1019", "分店商品，分店不能为空！"),
 	SEL_SUPP_GOODS         ("1020", "包含选型和分店的商品，选型和分店不能同时为空！"),
+	AFT_ADJUST_WATERFLOOD			("1021", 	"调整后的注水值为负数"),
+	INVALID_LEFTNUM_SELECTION     ("1022",	"商品库存剩余数量与其下选型商品剩余库存数量之和不一致!"),
+	INVALID_TOTALNUM_SELECTION    ("1023",	"商品库存总数量与其下选型商品库存总数量之和不一致!"),
+	INVALID_LEFTNUM_SUPPLIER     ("1024",	"商品库存剩余数量与其下分店商品剩余库存数量之和不一致!"),
+	INVALID_TOTALNUM_SUPPLIER    ("1025",	"商品库存总数量与其下分店商品库存总数量之和不一致!"),
+	INVALID_LEFTNUM_SELANDSUPP     ("1026",	"商品库存剩余数量与其下选型、分店商品剩余库存数量之和不一致!"),
+	INVALID_TOTALNUM_SELANDSUPP    ("1027",	"商品库存总数量与其下选型、分店商品库存总数量之和不一致!"),
+	NOTNULL_SEL_SUPP_GOODS         ("1028", "包含选型和分店的商品，选型和分店都不能为空！"),
+	INVALID_SEL_LIMT         ("1029", "选型库存限制与商品库存限制不一致！"),
+	INVALID_SUPP_LIMT         ("1030", "分店库存限制与商品库存限制不一致！"),
 	NO_DATA("0","没有可用的数据"),
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
@@ -170,6 +180,36 @@ public enum ResultEnum {
 		}
 		if(code.equals("1020")){
 			return ResultEnum.SEL_SUPP_GOODS;
+		}
+		if(code.equals("1021")){
+			return ResultEnum.AFT_ADJUST_WATERFLOOD;
+		}
+		if(code.equals("1022")){
+			return ResultEnum.INVALID_LEFTNUM_SELECTION;
+		}
+		if(code.equals("1023")){
+			return ResultEnum.INVALID_TOTALNUM_SELECTION;
+		}
+		if(code.equals("1024")){
+			return ResultEnum.INVALID_LEFTNUM_SUPPLIER;
+		}
+		if(code.equals("1025")){
+			return ResultEnum.INVALID_TOTALNUM_SUPPLIER;
+		}
+		if(code.equals("1026")){
+			return ResultEnum.INVALID_LEFTNUM_SELANDSUPP;
+		}
+		if(code.equals("1027")){
+			return ResultEnum.INVALID_TOTALNUM_SELANDSUPP;
+		}
+		if(code.equals("1028")){
+			return ResultEnum.NOTNULL_SEL_SUPP_GOODS;
+		}
+		if(code.equals("1029")){
+			return ResultEnum.INVALID_SEL_LIMT;
+		}
+		if(code.equals("1030")){
+			return ResultEnum.INVALID_SUPP_LIMT;
 		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;

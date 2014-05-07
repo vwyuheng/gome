@@ -18,7 +18,7 @@ public enum CreateInventoryResultEnum {
 	INVALID_TYPE         (-14, "无效的类型"),
 	INVALID_SELECTIONNUM         (1016, "扣减商品选型库存数量不能为负数"),
 	INVALID_SUPPLIERSNUM         (1017, "扣减商品分店库存数量不能为负数"),
-	
+	AFT_ADJUST_WATERFLOOD			(1021, 	"调整后的注水值为负数"),
 	SELECTION_GOODS         (1018, "选型商品，选型不能为空！"),
 	SUPPLIERS_GOODS         (1019, "分店商品，分店不能为空！"),
 	SEL_SUPP_GOODS         (1020, "包含选型和分店的商品，选型和分店不能同时为空！"),

@@ -292,12 +292,13 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(suppliersList)) {
 				suppliersRelation = new ArrayList<GoodsSuppliersDO>();
 				for (GoodsSuppliersModel model : suppliersList) {
-					if (model.getId() > 0) {
+					if (model.getSuppliersId() > 0) {
 						GoodsSuppliersDO suppliers = new GoodsSuppliersDO();
 						suppliers.setGoodsId(goodsId);
-						//suppliers.setId(sequenceUtil
-							//	.getSequence(SEQNAME.seq_suppliers));
-						suppliers.setId(model.getId());
+						//主键自己生成
+						suppliers.setId(sequenceUtil
+								.getSequence(SEQNAME.seq_suppliers));
+						//suppliers.setId(model.getId());
 						suppliers.setLeftNumber(model.getLeftNumber());
 						suppliers.setTotalNumber(model.getTotalNumber());
 						suppliers.setLimitStorage(model.getLimitStorage());

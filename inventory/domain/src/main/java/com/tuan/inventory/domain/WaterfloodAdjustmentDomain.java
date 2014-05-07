@@ -160,6 +160,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					//调整注水数量
 					inventoryDO.setWaterfloodVal(inventoryDO.getWaterfloodVal()+(adjustNum));
 				}
+				if(inventoryDO.getWaterfloodVal()<0) {
+					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
+				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryDO);
 				if(handlerResult) {
@@ -184,6 +187,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					//调整注水数量
 					inventoryDO.setWaterfloodVal(inventoryDO.getWaterfloodVal()+(adjustNum));
 				}
+				if(inventoryDO.getWaterfloodVal()<0) {  //注水暂只调总的，故目前只检查总的
+					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
+				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(inventoryDO,selectionInventory);
 				if(handlerResult) {
@@ -207,6 +213,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					//分店的注水调整后也要调整商品总的注水量
 					//调整注水数量
 					inventoryDO.setWaterfloodVal(inventoryDO.getWaterfloodVal()+(adjustNum));
+				}
+				if(inventoryDO.getWaterfloodVal()<0) {  //注水暂只调总的，故目前只检查总的
+					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(suppliersInventory);

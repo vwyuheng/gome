@@ -461,12 +461,41 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getGoodsId())) {
 			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}
+		//选型或分店商品校验
+		//GoodsVerificationDomain vfDomian = new GoodsVerificationDomain(Long.valueOf(param.getGoodsId()),param.getGoodsSelection(),param.getGoodsSuppliers());
+		//vfDomian.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		//return vfDomian.checkParam();
+		
 		//查询商品所属的选型
 		List<GoodsSelectionModel> selResult = goodsInventoryDomainRepository
 				.queryGoodsSelectionListByGoodsId(Long.valueOf(param.getGoodsId()));
 		//检查商品所属选型商品
 		if(!CollectionUtils.isEmpty(selResult)) {  //若商品存在选型，则为选型商品，
 			isSelection = true;
+		}
+		//查询商品所属的分店
+		List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
+						.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
+		//这个逻辑比较清晰，首先若存在选型或分店的商品，则该商品所传参数中，选型或分店参数不能为空，否则校验不通过
+		//检查商品所属分店商品
+		if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
+					isSupplier = true;
+				}
+		if(isSelection&&!isSupplier) {  //只包含选型的
+			if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
+				return CreateInventoryResultEnum.SELECTION_GOODS;
+			}
+		}
+		if(isSupplier&&!isSelection) {  //只包含分店的
+			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
+				return CreateInventoryResultEnum.SUPPLIERS_GOODS;
+			}
+		}
+		
+		if(isSupplier&&isSelection) {  //分店选型都有的
+			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())&&CollectionUtils.isEmpty(param.getGoodsSelection())) {
+				return CreateInventoryResultEnum.SEL_SUPP_GOODS;
+			}
 		}
 		//校验商品选型id
 		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
@@ -491,13 +520,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			
 		}
-		//查询商品所属的分店
-		List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
-				.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
-		//检查商品所属分店商品
-		if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
-			isSupplier = true;
-		}
+		
 		//校验商品分店id，若存在的话
 		if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
 			List<Long> suppliersIdlist = null;
@@ -520,25 +543,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			
 		}
-		if(isSelection&&!isSupplier) {  //只包含选型的
-			if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
-				return CreateInventoryResultEnum.SELECTION_GOODS;
-			}
-		}
-		if(isSupplier&&!isSelection) {  //只包含分店的
-			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
-				return CreateInventoryResultEnum.SUPPLIERS_GOODS;
-			}
-		}
 		
-		if(isSupplier&&isSelection) {  //分店选型都有的
-			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())&&CollectionUtils.isEmpty(param.getGoodsSelection())) {
-				return CreateInventoryResultEnum.SEL_SUPP_GOODS;
-			}
-		}
-		/*if (StringUtils.isEmpty(param.getOrderId())) {
-			return CreateInventoryResultEnum.INVALID_ORDER_ID;
-		}*/
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 

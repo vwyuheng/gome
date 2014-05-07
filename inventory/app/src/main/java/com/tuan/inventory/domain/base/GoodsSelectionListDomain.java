@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import com.tuan.inventory.domain.GoodsSelectionListQueryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.resp.inner.RequestPacket;
+import com.tuan.inventory.utils.JsonStrVerificationUtils;
 import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
@@ -47,7 +48,7 @@ public abstract class GoodsSelectionListDomain extends AbstractGoodsInventoryDom
 	
 	@Override
 	public ResultEnum checkParameter() {
-		if(!StringUtils.isEmpty(goodsId)){
+		if(!StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))){
 			try{
 				if(Long.parseLong(goodsId) <= 0){
 					return ResultEnum.INVALID_GOODSID;
@@ -56,6 +57,8 @@ public abstract class GoodsSelectionListDomain extends AbstractGoodsInventoryDom
 			}catch(Exception e){
 				return ResultEnum.INVALID_GOODSID;
 			}
+		}else {
+			return ResultEnum.INVALID_GOODSID;
 		}
 		
 		if(requestPacket == null){

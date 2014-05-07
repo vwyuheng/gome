@@ -63,7 +63,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 	@Override
 	public ResultEnum checkParameter() {
 		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))){
-			return ResultEnum.INVALID_ADJUST_ID;
+			return ResultEnum.INVALID_GOODSID;
 		}
 		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(type))){
 			return ResultEnum.INVALID_INVENTORY_TYPE;

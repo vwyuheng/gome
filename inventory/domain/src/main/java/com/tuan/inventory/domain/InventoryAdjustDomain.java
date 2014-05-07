@@ -408,16 +408,19 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getType())) {
 			return CreateInventoryResultEnum.INVALID_TYPE;
 		}
-		
+		//简单的校验检查
 		if (param.getType().equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())&&StringUtils.isEmpty(param.getId())) {
 				return CreateInventoryResultEnum.INVALID_SELECTIONID;
 			}
 		if (param.getType().equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())&&StringUtils.isEmpty(param.getId())) {
 				return CreateInventoryResultEnum.INVALID_SUPPLIERSID;
 			}
-		
-		
-		return CreateInventoryResultEnum.SUCCESS;
+		//构建校验领域
+		GoodsVerificationDomain vfDomain = new GoodsVerificationDomain(Long.valueOf(param.getGoodsId()),param.getType(),param.getId());
+		//注入仓储对象
+		vfDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		return vfDomain.checkSelOrSupp();
+		//return CreateInventoryResultEnum.SUCCESS;
 	}
 
 	public void setGoodsInventoryDomainRepository(
