@@ -719,11 +719,132 @@ public class RedisCacheUtil {
 						    .addMetaData("field2", field2)
 						    .addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrBy("+key+","+field1+","+field2+","+value+") error!",e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy("+key+","+field1+","+field2+","+value+") error!",e);
 				}
 				return result;
 			}
 		});
 
+	}
+	public boolean hincrByAndhincrBy4wf(final String key1, final String key2,final String field, final long value) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					//总库存
+					ts.hincrBy(key1, field, value);
+					//剩余库存
+					ts.hincrBy(key2, field, value);
+					//return j.hincrBy(key,field,value);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4wf");
+					log.error(lm.addMetaData("key1", key1)
+							.addMetaData("key2", key2)
+							.addMetaData("field", field)
+							.addMetaData("value", value)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4wf("+key1+","+key2+","+field+","+value+") error!",e);
+				}
+				return result;
+			}
+		});
+		
+	}
+	public boolean hincrByAndhincrBy4supp(final String goodskey,final String suppkey, final String field1,final String field2, final long value) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					//商品总库存
+					ts.hincrBy(goodskey, field1, value);
+					//商品剩余库存
+					ts.hincrBy(goodskey, field2, value);
+					//分店总库存
+					ts.hincrBy(suppkey, field1, value);
+					//分店剩余库存
+					ts.hincrBy(suppkey, field2, value);
+					//return j.hincrBy(key,field,value);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4supp");
+					log.error(lm.addMetaData("goodskey", goodskey)
+							.addMetaData("suppkey", suppkey)
+							.addMetaData("field1", field1)
+							.addMetaData("field2", field2)
+							.addMetaData("value", value)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4supp("+goodskey+","+suppkey+","+field1+","+field2+","+value+") error!",e);
+				}
+				return result;
+			}
+		});
+		
+	}
+	public boolean hincrByAndhincrBy4sel(final String goodskey,final String selkey, final String field1,final String field2, final long value) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					//商品总库存
+					ts.hincrBy(goodskey, field1, value);
+					//商品剩余库存
+					ts.hincrBy(goodskey, field2, value);
+					//选型总库存
+					ts.hincrBy(selkey, field1, value);
+					//选型剩余库存
+					ts.hincrBy(selkey, field2, value);
+					//return j.hincrBy(key,field,value);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4sel");
+					log.error(lm.addMetaData("goodskey", goodskey)
+							.addMetaData("selkey", selkey)
+							.addMetaData("field1", field1)
+							.addMetaData("field2", field2)
+							.addMetaData("value", value)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4sel("+goodskey+","+selkey+","+field1+","+field2+","+value+") error!",e);
+				}
+				return result;
+			}
+		});
+		
 	}
 }

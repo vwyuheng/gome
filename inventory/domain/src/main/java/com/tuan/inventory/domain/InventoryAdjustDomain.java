@@ -18,6 +18,7 @@ import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
@@ -42,29 +43,33 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private List<SelectionNotifyMessageParam> selectionMsg;
 	//分店
 	private List<SuppliersNotifyMessageParam> suppliersMsg;
-	
+	private String goodsId2str;
 	private String type;
 	private String id;
 	private int adjustNum;
 	private String businessType;
 	// 原剩余库存
-	private int originalleftnum = 0;
+	private int origoodsleftnum = 0;
 	// 原总库存
-	private int originaltotalnum = 0;
+	private int origoodstotalnum = 0;
+	// 原选型剩余库存
+	private int oriselOrSuppleftnum = 0;
+	// 原选型总库存
+	private int oriselOrSupptotalnum = 0;
+	
 	// 调整后剩余库存
-	private int leftnum = 0;
+	private int goodsleftnum = 0;
 	// 调整后总库存
-	private int totalnum = 0;
+	private int goodstotalnum = 0;
+	// 调整后剩余库存
+	private int selOrSuppleftnum = 0;
+	// 调整后总库存
+	private int selOrSupptotalnum = 0;
 	private Long goodsId;
 	private long selectionId;
 	private long suppliersId;
 	//调整后库存
 	private boolean resultACK;
-	//是否需要初始化
-	//private boolean isInit;
-	//初始化用
-	//private List<GoodsSuppliersDO> suppliersInventoryList;
-	//private List<GoodsSelectionDO> selectionInventoryList;
 	
 	public InventoryAdjustDomain(String clientIp, String clientName,
 			AdjustInventoryParam param, LogModel lm) {
@@ -79,24 +84,26 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		try {
 			//初始化检查
 			resultEnum = this.initCheck();
-			
-			//真正的库存调整业务处理
-			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
-				this.businessType = ResultStatusEnum.GOODS_SELF.getDescription();
+			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if(inventoryDO!=null) {
-					this.originalleftnum = inventoryDO.getLeftNumber();
-					this.originaltotalnum = inventoryDO.getTotalNumber();
+					this.origoodsleftnum = inventoryDO.getLeftNumber();
+					this.origoodstotalnum = inventoryDO.getTotalNumber();
 				}
+			}
+			//真正的库存调整业务处理
+			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
+				this.businessType = ResultStatusEnum.GOODS_SELF.getDescription();
+				
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				this.selectionId = Long.valueOf(id);
 				this.businessType = ResultStatusEnum.GOODS_SELECTION.getDescription();
 				//查询商品选型库存
 				this.selectionInventory = this.goodsInventoryDomainRepository.querySelectionRelationById(selectionId);
 				if(selectionInventory!=null) {
-					this.originalleftnum = selectionInventory.getLeftNumber();
-					this.originaltotalnum = selectionInventory.getTotalNumber();
+					this.oriselOrSuppleftnum = selectionInventory.getLeftNumber();
+					this.oriselOrSupptotalnum = selectionInventory.getTotalNumber();
 				}
 				
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
@@ -105,8 +112,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				//查询商品分店库存
 				this.suppliersInventory = this.goodsInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
 				if(suppliersInventory!=null) {
-					this.originalleftnum = suppliersInventory.getLeftNumber();
-					this.originaltotalnum = suppliersInventory.getTotalNumber();
+					this.oriselOrSuppleftnum = suppliersInventory.getLeftNumber();
+					this.oriselOrSupptotalnum = suppliersInventory.getTotalNumber();
 				}
 			}
 		} catch (Exception e) {
@@ -138,6 +145,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					//调整商品总库存数量
 					inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()+(adjustNum));
 				}
+				if(inventoryDO.getLeftNumber()<0||inventoryDO.getTotalNumber()<0) {
+					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryDO);
 				if(handlerResult) {
@@ -147,29 +157,42 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						this.goodsInventoryDomainRepository.updateGoodsInventory(goodsId, (-adjustNum));
 						return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 					}else {
-						this.leftnum = inventoryDO.getLeftNumber();
-						this.totalnum = inventoryDO.getTotalNumber();
+						this.goodsleftnum = inventoryDO.getLeftNumber();
+						this.goodstotalnum = inventoryDO.getTotalNumber();
 					}
 				}
 				//this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				if(selectionInventory!=null) {
+					//调整前校验
+					
 					//调整剩余库存数量
 					selectionInventory.setLeftNumber(selectionInventory.getLeftNumber()+(adjustNum));
 					//调整商品选型总库存数量
 					selectionInventory.setTotalNumber(selectionInventory.getTotalNumber()+(adjustNum));
+					
+					//同时调整商品总的库存的剩余和总库存量
+					//调整剩余库存数量
+					inventoryDO.setLeftNumber(inventoryDO.getLeftNumber()+(adjustNum));
+					//调整商品总库存数量
+					inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()+(adjustNum));
+				}
+				if(inventoryDO.getLeftNumber()<0||inventoryDO.getTotalNumber()<0||selectionInventory.getLeftNumber()<0||selectionInventory.getTotalNumber()<0) {
+					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 				//更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(selectionInventory);
-				if(handlerResult) {
-					this.resultACK = this.goodsInventoryDomainRepository.adjustSelectionInventoryById(selectionId, (adjustNum));
-					if(!verifyInventory()) {
+				boolean selhandlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(inventoryDO,selectionInventory);
+				if(selhandlerResult) {
+					this.resultACK = this.goodsInventoryDomainRepository.adjustSelectionInventoryById(goodsId,selectionId, (adjustNum));
+					if(!verifyInventory()) {  //TODO 这地有问题，暂时影响可能不大
 						//将库存还原到调整前
-						this.goodsInventoryDomainRepository.updateSelectionInventoryById(selectionId, (-adjustNum));
+						this.goodsInventoryDomainRepository.adjustSelectionInventoryById(goodsId,selectionId, (-adjustNum));
 						return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 					}else {
-						this.leftnum = selectionInventory.getLeftNumber();
-						this.totalnum = selectionInventory.getTotalNumber();
+						this.goodsleftnum = inventoryDO.getLeftNumber();
+						this.goodstotalnum = inventoryDO.getTotalNumber();
+						this.selOrSuppleftnum = selectionInventory.getLeftNumber();
+						this.selOrSupptotalnum = selectionInventory.getTotalNumber();
 					}
 				}
 				
@@ -182,24 +205,32 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					suppliersInventory.setLeftNumber(suppliersInventory.getLeftNumber()+(adjustNum));
 					//调整商品分店总库存数量
 					suppliersInventory.setTotalNumber(suppliersInventory.getTotalNumber()+(adjustNum));
+					
+					//同时调整商品总的库存的剩余和总库存量
+					//调整剩余库存数量
+					inventoryDO.setLeftNumber(inventoryDO.getLeftNumber()+(adjustNum));
+					//调整商品总库存数量
+					inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()+(adjustNum));
+				}
+				if(inventoryDO.getLeftNumber()<0||inventoryDO.getTotalNumber()<0||selectionInventory.getLeftNumber()<0||selectionInventory.getTotalNumber()<0) {
+					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(suppliersInventory);
 				if(handlerResult) {
-					this.resultACK = this.goodsInventoryDomainRepository.adjustSuppliersInventoryById(suppliersId, (adjustNum));
-					if(!verifyInventory()) {
+					this.resultACK = this.goodsInventoryDomainRepository.adjustSuppliersInventoryById(goodsId,suppliersId, (adjustNum));
+					if(!verifyInventory()) {   //TODO 这地有问题，暂时影响可能不大
 						//将库存还原到调整前
-						this.goodsInventoryDomainRepository.updateSuppliersInventoryById(suppliersId, (-adjustNum));
+						this.goodsInventoryDomainRepository.adjustSuppliersInventoryById(goodsId,suppliersId, (-adjustNum));
 						return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
 					}else {
-						this.leftnum = suppliersInventory.getLeftNumber();
-						this.totalnum = suppliersInventory.getTotalNumber();
+						this.goodsleftnum = inventoryDO.getLeftNumber();
+						this.goodstotalnum = inventoryDO.getTotalNumber();
+						this.selOrSuppleftnum = suppliersInventory.getLeftNumber();
+						this.selOrSupptotalnum = suppliersInventory.getTotalNumber();
 					}
 				}
 				
-				
-				//更新分店的mysql
-				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersInventory);
 			}
 
 		} catch (Exception e) {
@@ -225,9 +256,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		}
 		// 初始化参数
 		private void fillParam() {
+			//商品id，必传参数，该参数无论是选型还是分店都要传过来
+			this.goodsId2str = param.getGoodsId();
 			// 2:商品 4：选型 6：分店
 			this.type = param.getType();
-			// 2：商品id 4：选型id 6 分店id
+			// 2：可不传 4：选型id 6 分店id
 			this.id = param.getId();
 			this.adjustNum = param.getNum();
 			
@@ -240,10 +273,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			if(inventoryDO!=null) {
 				notifyParam.setLimitStorage(inventoryDO.getLimitStorage());
 				notifyParam.setWaterfloodVal(inventoryDO.getWaterfloodVal());
-				notifyParam.setTotalNumber(this.totalnum);
-				notifyParam.setLeftNumber(this.leftnum);
+				notifyParam.setTotalNumber(this.goodstotalnum);
+				notifyParam.setLeftNumber(this.goodsleftnum);
 				//库存总数 减 库存剩余
-				int sales = (this.totalnum-this.leftnum);
+				int sales = (this.goodstotalnum-this.goodsleftnum);
 				//销量
 				notifyParam.setSales(String.valueOf(sales));
 			}
@@ -262,7 +295,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		//初始化库存
 		public CreateInventoryResultEnum initCheck() {
 			this.fillParam();
-			this.goodsId = Long.valueOf(id);
+			//this.goodsId = StringUtils.isEmpty(id)?0:Long.valueOf(id);
+			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
 			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
 			//注入相关Repository
 			//create.setGoodsId(this.goodsId);
@@ -283,9 +317,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setGoodsId(goodsId);
 			updateActionDO.setBusinessType(businessType);
 			updateActionDO.setItem(id);
-			updateActionDO.setOriginalInventory("leftnum:"+String
-					.valueOf(originalleftnum)+",totalnum:"+String
-					.valueOf(originaltotalnum));
+			updateActionDO.setOriginalInventory(StringUtil.handlerOriInventory(type, origoodsleftnum, origoodstotalnum, oriselOrSuppleftnum, oriselOrSupptotalnum));
 			updateActionDO.setInventoryChange(String.valueOf(adjustNum));
 			updateActionDO.setActionType(ResultStatusEnum.CALLBACK_CONFIRM
 					.getDescription());
@@ -297,7 +329,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
-			updateActionDO.setRemark("回调确认");
+			updateActionDO.setRemark("库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
@@ -323,8 +355,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//selMsg.setGoodTypeId(selectionInventory.getGoodTypeId());
 			selMsg.setGoodsId(goodsId);
 			selMsg.setId(selectionId);
-			selMsg.setLeftNumber(this.leftnum);  //调整后的库存值
-			selMsg.setTotalNumber(this.totalnum);
+			selMsg.setLeftNumber(this.selOrSuppleftnum);  //调整后的库存值
+			selMsg.setTotalNumber(this.selOrSupptotalnum);
 			selMsg.setUserId(Long.valueOf(param.getUserId()));
 			selMsg.setLimitStorage(selectionInventory.getLimitStorage());
 			selMsg.setWaterfloodVal(selectionInventory.getWaterfloodVal());
@@ -345,8 +377,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//supMsg.setSuppliersId(suppliersInventory.getSuppliersId());
 			supMsg.setGoodsId(goodsId);
 			supMsg.setId(suppliersId);
-			supMsg.setLeftNumber(this.leftnum);  //调整后的库存值
-			supMsg.setTotalNumber(this.totalnum);
+			supMsg.setLeftNumber(this.selOrSuppleftnum);  //调整后的库存值
+			supMsg.setTotalNumber(this.selOrSupptotalnum);
 			supMsg.setUserId(Long.valueOf(param.getUserId()));
 			supMsg.setLimitStorage(suppliersInventory.getLimitStorage());
 			supMsg.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
@@ -370,12 +402,21 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		if (param == null) {
 			return CreateInventoryResultEnum.INVALID_PARAM;
 		}
-		if (StringUtils.isEmpty(param.getId())) {
-			return CreateInventoryResultEnum.INVALID_PARAM;
+		if (StringUtils.isEmpty(param.getGoodsId())) {
+			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}
 		if (StringUtils.isEmpty(param.getType())) {
-			return CreateInventoryResultEnum.INVALID_PARAM;
+			return CreateInventoryResultEnum.INVALID_TYPE;
 		}
+		
+		if (param.getType().equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())&&StringUtils.isEmpty(param.getId())) {
+				return CreateInventoryResultEnum.INVALID_SELECTIONID;
+			}
+		if (param.getType().equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())&&StringUtils.isEmpty(param.getId())) {
+				return CreateInventoryResultEnum.INVALID_SUPPLIERSID;
+			}
+		
+		
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 

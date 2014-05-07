@@ -9,11 +9,13 @@ import com.tuan.core.common.lang.TuanBaseDO;
 public class AdjustWaterfloodParam extends TuanBaseDO {
 	
 	private static final long serialVersionUID = 1L;
-	//type 2:商品id，4:选型id，6:分店id
+	//必传参数
+	private String goodsId;
+	//type 2:可为空，4:选型id，6:分店id
 	private String id;
 	private String userId;
 	private int num;
-	//2:商品调整，4.选型库存调整 6.分店库存调整
+	//2:商品调整[也就是没有选型和分店的商品]，4.选型库存调整 6.分店库存调整
 	private String type;
 	
 	
@@ -40,6 +42,12 @@ public class AdjustWaterfloodParam extends TuanBaseDO {
 	}
 	public void setType(String type) {
 		this.type = type;
+	}
+	public String getGoodsId() {
+		return goodsId;
+	}
+	public void setGoodsId(String goodsId) {
+		this.goodsId = goodsId;
 	}
 	
 	

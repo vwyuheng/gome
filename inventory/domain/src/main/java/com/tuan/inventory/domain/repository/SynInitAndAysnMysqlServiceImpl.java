@@ -382,13 +382,14 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 }
 
 	@Override
-	public CallResult<GoodsSelectionDO> updateGoodsSelection(
+	public CallResult<GoodsSelectionDO> updateGoodsSelection(final GoodsInventoryDO goodsDO,
 			final GoodsSelectionDO selectionDO) throws Exception {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					try {
+					synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
 					synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
 					} catch (Exception e) {
 						logger.error(
@@ -412,6 +413,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeCheck() {
 					if (selectionDO == null) {
 						 logger.error(this.getClass()+"_create param invalid ,GoodsSelectionDO is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					if (goodsDO==null) {
+						logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());

@@ -138,10 +138,11 @@ public class GoodsInventoryUpdateController {
 		return ackInventoryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/update/adjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&id=2&num=-1&type=2
+	 * http://localhost:882/rest/j/update/adjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&id=0&num=-1&type=2
 	 * 库存调整
 	 * @param packet
-	 * @param id
+	 * @param goodsId 
+	 * @param id 
 	 * @param userId
 	 * @param type
 	 * @param num
@@ -150,7 +151,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/adjusti", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentInventory(@ModelAttribute UpdateRequestPacket packet,
-			String id, String userId,String type, String num, HttpServletRequest request) {
+			String goodsId,String id, String userId,String type, String num, HttpServletRequest request) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -158,7 +159,7 @@ public class GoodsInventoryUpdateController {
 				"adjustmentInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
 		GoodsdAdjustInventoryDomain adjustInventoryDomain = new GoodsdAdjustInventoryDomain(
-				packet, id,userId,type,num, lm, messageRoot);
+				packet,goodsId, id,userId,type,num, lm, messageRoot);
 		adjustInventoryDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验
@@ -172,7 +173,7 @@ public class GoodsInventoryUpdateController {
 		return adjustInventoryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/update/adjustw?&ip==127.0.0.1&client=ordercenter&t=123456789&id=2&num=-1&type=2
+	 * http://localhost:882/rest/j/update/adjustw?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&id=0&num=-1&type=2
 	 * 注水值调整接口
 	 * @param packet
 	 * @param id
@@ -184,7 +185,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/adjustw", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentWaterflood(@ModelAttribute UpdateRequestPacket packet,
-			String id, String userId,String type, String num, HttpServletRequest request) {
+			String goodsId,String id, String userId,String type, String num, HttpServletRequest request) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -192,7 +193,7 @@ public class GoodsInventoryUpdateController {
 				"adjustmentWaterflood");
 		LogModel lm = (LogModel) request.getAttribute("lm");
 		GoodsdAdjustWaterfloodDomain adjustWaterfloodDomain = new GoodsdAdjustWaterfloodDomain(
-				packet, id,userId,type,num, lm, messageRoot);
+				packet,goodsId,id,userId,type,num, lm, messageRoot);
 		adjustWaterfloodDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验

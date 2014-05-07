@@ -331,18 +331,38 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean adjustSelectionInventory(Long selectionId, int num) {
-		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+	public boolean adjustSelectionInventory(Long goodsId,Long selectionId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4sel(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 				+ String.valueOf(selectionId),
 				HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), (num));
 	}
 
 	@Override
-	public boolean adjustSuppliersInventory(Long suppliersId, int num) {
-		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+	public boolean adjustSuppliersInventory(Long goodsId,Long suppliersId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4supp(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(suppliersId),
 				HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public boolean adjustSelectionWaterflood(Long goodsId, Long selectionId,
+			int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.GOODS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(goodsId),QueueConstant.SELECTION_INVENTORY_PREFIX
+				+ ":"+String.valueOf(selectionId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
+	}
+
+	@Override
+	public boolean adjustSuppliersWaterflood(Long goodsId, Long suppliersId,
+			int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.GOODS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(goodsId),QueueConstant.SUPPLIERS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(suppliersId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
 	}
 }

@@ -22,6 +22,7 @@ public enum ResultEnum {
 	INVALID_SUPPLIERSID     ("-11",	"无效的商品分店id"),
 	INVALID_SELECTIONID     ("-12",	"无效的商品选型id"),
 	INCORRECT_UPDATE     ("-13",	"更改超过预期的记录数"),
+	INVALID_TYPE         ("-14", "无效的类型"),
 	DB_ERROR					("-99", 	"数据库错误"),
 	SYS_ERROR					("-100", 	"系统错误"),
 	
@@ -39,7 +40,9 @@ public enum ResultEnum {
 	INVALID_NUM     ("1015",	"扣减商品库存数量不能为负数"),
 	INVALID_SELECTIONNUM     ("1016",	"扣减商品选型库存数量不能为负数"),
 	INVALID_SUPPLIERSNUM     ("1017",	"扣减商品分店库存数量不能为负数"),
-	
+	SELECTION_GOODS         ("1018", "选型商品，选型不能为空！"),
+	SUPPLIERS_GOODS         ("1019", "分店商品，分店不能为空！"),
+	SEL_SUPP_GOODS         ("1020", "包含选型和分店的商品，选型和分店不能同时为空！"),
 	NO_DATA("0","没有可用的数据"),
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
@@ -108,6 +111,9 @@ public enum ResultEnum {
 		if(code.equals("-13")){
 			return ResultEnum.INCORRECT_UPDATE;
 		}
+		if(code.equals("-14")){
+			return ResultEnum.INVALID_TYPE;
+		}
 		if(code.equals("0")){
 			return ResultEnum.NO_DATA;
 		}
@@ -155,6 +161,15 @@ public enum ResultEnum {
 		}
 		if(code.equals("1017")){
 			return ResultEnum.INVALID_SUPPLIERSNUM;
+		}
+		if(code.equals("1018")){
+			return ResultEnum.SELECTION_GOODS;
+		}
+		if(code.equals("1019")){
+			return ResultEnum.SUPPLIERS_GOODS;
+		}
+		if(code.equals("1020")){
+			return ResultEnum.SEL_SUPP_GOODS;
 		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;

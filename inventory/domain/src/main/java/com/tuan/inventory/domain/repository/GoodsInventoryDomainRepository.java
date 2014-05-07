@@ -133,14 +133,14 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public Long updateSelectionInventoryById(Long selectionId, int num) {
 		return this.baseDAOService.updateSelectionInventory(selectionId, (num));
 	}
-	public boolean adjustSelectionInventoryById(Long selectionId, int num) {
-		return this.baseDAOService.adjustSelectionInventory(selectionId, (num));
+	public boolean adjustSelectionInventoryById(Long goodsId,Long selectionId, int num) {
+		return this.baseDAOService.adjustSelectionInventory(goodsId,selectionId, (num));
 	}
 	public Long updateSuppliersInventoryById(Long suppliersId, int num) {
 		return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
 	}
-	public boolean adjustSuppliersInventoryById(Long suppliersId, int num) {
-		return this.baseDAOService.adjustSuppliersInventory(suppliersId, (num));
+	public boolean adjustSuppliersInventoryById(Long goodsId,Long suppliersId, int num) {
+		return this.baseDAOService.adjustSuppliersInventory(goodsId,suppliersId, (num));
 	}
 	public Long updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
 		long result = 0;
@@ -216,8 +216,14 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public Long adjustSelectionWaterfloodById(Long selectionId, int num) {
 		return this.baseDAOService.adjustSelectionWaterflood(selectionId, (num));
 	}
+	public boolean adjustSelectionWaterfloodById(Long goodsId,Long selectionId, int num) {
+		return this.baseDAOService.adjustSelectionWaterflood(goodsId,selectionId, (num));
+	}
 	public Long adjustSuppliersWaterfloodById(Long suppliersId, int num) {
 		return this.baseDAOService.adjustSuppliersWaterflood(suppliersId, (num));
+	}
+	public boolean adjustSuppliersWaterfloodById(Long goodsId,Long suppliersId, int num) {
+		return this.baseDAOService.adjustSuppliersWaterflood(goodsId,suppliersId, (num));
 	}
 	
 	public Long deleteGoodsInventory(Long goodsId) {

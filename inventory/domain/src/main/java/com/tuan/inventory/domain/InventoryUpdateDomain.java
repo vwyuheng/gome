@@ -48,8 +48,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private boolean isEnough;
 	private boolean isSelectionEnough = true;
 	private boolean isSuppliersEnough = true;
-	// 是否需要初始化
-	//private boolean isInit;
+	//是否选型商品
+	private boolean isSelection;
+	// 是否分店商品
+	private boolean isSupplier;
 	// 需扣减的商品库存
 	private int goodsDeductNum = 0;
 	private int selectionDeductNum = 0;
@@ -217,7 +219,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		this.selectionDeductNum = deSelectionNum;
 		this.suppliersDeductNum = deSuppliersNum;
 		
-		this.goodsDeductNum = (deductNum + selectionDeductNum + suppliersDeductNum);
+		if(isSelection&&!isSupplier) {  //只包含选型的
+			this.goodsDeductNum = (selectionDeductNum);
+		}else if(isSupplier&&!isSelection) {  //只包含分店的
+			this.goodsDeductNum = (suppliersDeductNum);
+		}else if(isSupplier&&isSelection) {  //分店选型都有的
+			this.goodsDeductNum = (selectionDeductNum + suppliersDeductNum);
+		}else {
+			this.goodsDeductNum = (deductNum);
+		}
+		//是否需要校验下？
+		
 		// 扣减库存并返回扣减标识,计算库存并
 		if (goodsDeductNum >= 0) {
 			this.isEnough = true;
@@ -449,15 +461,21 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getGoodsId())) {
 			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}
+		//查询商品所属的选型
+		List<GoodsSelectionModel> selResult = goodsInventoryDomainRepository
+				.queryGoodsSelectionListByGoodsId(Long.valueOf(param.getGoodsId()));
+		//检查商品所属选型商品
+		if(!CollectionUtils.isEmpty(selResult)) {  //若商品存在选型，则为选型商品，
+			isSelection = true;
+		}
 		//校验商品选型id
 		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
+			
 			List<Long> selectionIdlist = null;
-			//查询商品所属的选型
-			List<GoodsSelectionModel> result = goodsInventoryDomainRepository
-					.queryGoodsSelectionListByGoodsId(Long.valueOf(param.getGoodsId()));
-			if(!CollectionUtils.isEmpty(result)) {
+			
+			if(!CollectionUtils.isEmpty(selResult)) {
 				selectionIdlist = new ArrayList<Long>();
-				 for(GoodsSelectionModel model : result) {
+				 for(GoodsSelectionModel model : selResult) {
 					 selectionIdlist.add(model.getId());
 				 }
 			}
@@ -473,15 +491,20 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			
 		}
+		//查询商品所属的分店
+		List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
+				.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
+		//检查商品所属分店商品
+		if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
+			isSupplier = true;
+		}
 		//校验商品分店id，若存在的话
 		if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
 			List<Long> suppliersIdlist = null;
-			//查询商品所属的分店
-			List<GoodsSuppliersModel> result = goodsInventoryDomainRepository
-					.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
-			if(!CollectionUtils.isEmpty(result)) {
+			
+			if(!CollectionUtils.isEmpty(suppResult)) {
 				 suppliersIdlist = new ArrayList<Long>();
-				 for(GoodsSuppliersModel model : result) {
+				 for(GoodsSuppliersModel model : suppResult) {
 					 suppliersIdlist.add(model.getSuppliersId());
 				 }
 			}
@@ -496,6 +519,22 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 			}
 			
+		}
+		if(isSelection&&!isSupplier) {  //只包含选型的
+			if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
+				return CreateInventoryResultEnum.SELECTION_GOODS;
+			}
+		}
+		if(isSupplier&&!isSelection) {  //只包含分店的
+			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
+				return CreateInventoryResultEnum.SUPPLIERS_GOODS;
+			}
+		}
+		
+		if(isSupplier&&isSelection) {  //分店选型都有的
+			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())&&CollectionUtils.isEmpty(param.getGoodsSelection())) {
+				return CreateInventoryResultEnum.SEL_SUPP_GOODS;
+			}
 		}
 		/*if (StringUtils.isEmpty(param.getOrderId())) {
 			return CreateInventoryResultEnum.INVALID_ORDER_ID;

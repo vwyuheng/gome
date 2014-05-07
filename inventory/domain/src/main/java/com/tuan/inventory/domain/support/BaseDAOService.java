@@ -82,9 +82,9 @@ public interface BaseDAOService {
 	public Long updateGoodsInventory(Long goodsId,int num);
 	public boolean adjustGoodsInventory(Long goodsId,int num);
 	public Long updateSelectionInventory(Long selectionId,int num);
-	public boolean adjustSelectionInventory(Long selectionId,int num);
+	public boolean adjustSelectionInventory(Long goodsId,Long selectionId,int num);
 	public Long updateSuppliersInventory(Long suppliersId,int num);
-	public boolean adjustSuppliersInventory(Long suppliersId,int num);
+	public boolean adjustSuppliersInventory(Long goodsId,Long suppliersId,int num);
 	
 	public void markQueueStatus(String member, int upStatusNum);
 	public void markQueueStatusAndDeleteCacheMember(String member,  int upStatusNum,String delkey);
@@ -93,7 +93,9 @@ public interface BaseDAOService {
 	
 	public Long adjustGoodsWaterflood(Long goodsId,int num);
 	public Long adjustSelectionWaterflood(Long selectionId,int num);
+	public boolean adjustSelectionWaterflood(Long goodsId,Long selectionId,int num);
 	public Long adjustSuppliersWaterflood(Long suppliersId,int num);
+	public boolean adjustSuppliersWaterflood(Long goodsId,Long suppliersId,int num);
 	
 	public Long deleteGoodsInventory(Long goodsId);
 	public Long deleteSelectionInventory(Long selectionId);

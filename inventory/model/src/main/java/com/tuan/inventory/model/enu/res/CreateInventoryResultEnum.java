@@ -15,9 +15,13 @@ public enum CreateInventoryResultEnum {
 	/**分店id无效*/
 	INVALID_SUPPLIERSID         (-11, "商品分店id无效"),
 	INVALID_SELECTIONID         (-12, "商品选型id无效"),
-	
+	INVALID_TYPE         (-14, "无效的类型"),
 	INVALID_SELECTIONNUM         (1016, "扣减商品选型库存数量不能为负数"),
 	INVALID_SUPPLIERSNUM         (1017, "扣减商品分店库存数量不能为负数"),
+	
+	SELECTION_GOODS         (1018, "选型商品，选型不能为空！"),
+	SUPPLIERS_GOODS         (1019, "分店商品，分店不能为空！"),
+	SEL_SUPP_GOODS         (1020, "包含选型和分店的商品，选型和分店不能同时为空！"),
 	DB_ERROR					(-99, 	"数据库错误"),
 	SYS_ERROR					(-100, 	"系统错误"),
 	INIT_INVENTORY_ERROR					(-10, 	"库存初始化过程中发生错误"),

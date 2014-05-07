@@ -241,7 +241,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
-	public boolean updateGoodsSelection(final GoodsSelectionDO selectionDO) {
+	public boolean updateGoodsSelection(final GoodsInventoryDO goodsDO,final GoodsSelectionDO selectionDO) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(selectionDO == null){
@@ -258,7 +258,7 @@ public class InventoryInitAndUpdateHandle  {
 			//if (selectionDO != null) {
 				
 				// 消费对列的信息
-				callResult = synInitAndAysnMysqlService.updateGoodsSelection(selectionDO);
+				callResult = synInitAndAysnMysqlService.updateGoodsSelection(goodsDO,selectionDO);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
