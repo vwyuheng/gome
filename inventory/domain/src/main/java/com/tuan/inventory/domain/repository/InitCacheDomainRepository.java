@@ -13,9 +13,10 @@ import com.tuan.inventory.dao.NullCacheInitDAO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO;
 import com.tuan.inventory.dao.data.GoodsSuppliersInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
-import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 /**
  * 用于初始化redis缓存
  * @author henry.yu
@@ -144,8 +145,42 @@ public class InitCacheDomainRepository {
 	public GoodsSuppliersInventoryDO getSuppliersInventoryDOById(int id) {
 		return goodTypeDomainRepository.selectGoodsSuppliersInventoryBySiId(id);
 	}
+	
+	/**
+	 * 根据goodsTypeId列表查询指定选型信息列表
+	 * @param goodsTypeIdList
+	 * @return
+	 */
+	public List<GoodsSelectionDO> selectSelectionByGoodsTypeIds(List<Long> goodsTypeIdList) {
+		
+		List<GoodsSelectionDO> result = null;
+		List<GoodsSelectionRelationGoodDO> selectionList = null;
+		selectionList = goodTypeDomainRepository.selectSelectionByGoodsTypeIds(goodsTypeIdList);
+		if(!CollectionUtils.isEmpty(selectionList)) {
+			result = new ArrayList<GoodsSelectionDO>();
+			for(GoodsSelectionRelationGoodDO selection:selectionList) {
+				GoodsSelectionDO rsrDo = new GoodsSelectionDO();
+				rsrDo.setId(selection.getId().longValue());
+				rsrDo.setSuppliersInventoryId(selection.getSuppliersId());
+				rsrDo.setGoodTypeId(selection.getGoodTypeId().longValue());
+				rsrDo.setLeftNumber(selection.getLeftNumber());
+				rsrDo.setTotalNumber(selection.getTotalNumber());
+				rsrDo.setLimitStorage(selection.getLimitStorage());
+				result.add(rsrDo);
+			}
+		}
+		return result ;
+
+	}
 	public GoodsInventoryDO getInventoryInfoByGoodsId(Long goodsId) {
 		return nullCacheInitDAO.selectRedisInventory(goodsId);
+	}
+	
+	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId) {
+		return nullCacheInitDAO.selectGoodsInventoryWMS(wmsGoodsId);
+	}
+	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId) {
+		return nullCacheInitDAO.selectIsOrNotGoodsWMS(goodsId);
 	}
 
 }

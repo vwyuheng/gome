@@ -1,12 +1,14 @@
-package com.tuan.inventory.dao.data.redis;
+package com.tuan.inventory.model;
 
 import com.tuan.core.common.lang.TuanBaseDO;
-/**
- * 物流商品库存信息
+
+/** 
+ * @ClassName: RedisGoodsSelectionRelationDO
+ * @Description: 物流
  * @author henry.yu
- * @date 20140310
+ * @date 2014.05.08
  */
-public class GoodsInventoryWMSDO extends TuanBaseDO {
+public class GoodsWmsModel extends TuanBaseDO{
 
 	private static final long serialVersionUID = 1L;
 	private Long id;// 主键id
@@ -23,25 +25,6 @@ public class GoodsInventoryWMSDO extends TuanBaseDO {
 	}
 	public void setId(Long id) {
 		this.id = id;
-	}
-	
-	public java.lang.Integer getTotalNumber() {
-		return totalNumber;
-	}
-	public void setTotalNumber(java.lang.Integer totalNumber) {
-		this.totalNumber = totalNumber;
-	}
-	public java.lang.Integer getLeftNumber() {
-		return leftNumber;
-	}
-	public void setLeftNumber(java.lang.Integer leftNumber) {
-		this.leftNumber = leftNumber;
-	}
-	public int getIsBeDelivery() {
-		return isBeDelivery;
-	}
-	public void setIsBeDelivery(int isBeDelivery) {
-		this.isBeDelivery = isBeDelivery;
 	}
 	public String getWmsGoodsId() {
 		return wmsGoodsId;
@@ -61,8 +44,25 @@ public class GoodsInventoryWMSDO extends TuanBaseDO {
 	public void setGoodsName(String goodsName) {
 		this.goodsName = goodsName;
 	}
+	public java.lang.Integer getTotalNumber() {
+		return totalNumber;
+	}
+	public void setTotalNumber(java.lang.Integer totalNumber) {
+		this.totalNumber = totalNumber;
+	}
+	public java.lang.Integer getLeftNumber() {
+		return leftNumber;
+	}
+	public void setLeftNumber(java.lang.Integer leftNumber) {
+		this.leftNumber = leftNumber;
+	}
+	public int getIsBeDelivery() {
+		return isBeDelivery;
+	}
+	public void setIsBeDelivery(int isBeDelivery) {
+		this.isBeDelivery = isBeDelivery;
+	}
+	
 	
 	
 }
-
-

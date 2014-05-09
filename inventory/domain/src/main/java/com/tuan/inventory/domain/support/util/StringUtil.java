@@ -136,7 +136,7 @@ public class StringUtil {
 		StringBuffer sb  = new StringBuffer();
 		//i.首先保存商品id与选型id的关联关系
 		for(GoodsSuppliersDO rgsi:rgsiList) {
-			sb.append(rgsi.getId());
+			sb.append(rgsi.getSuppliersId());
 			sb.append(String.valueOf((char) 29));
 		}
 		return sb.toString();
@@ -170,9 +170,9 @@ public class StringUtil {
 		StringBuffer sb  = new StringBuffer();
 			
 			for(GoodsSuppliersModel ogsm:goodsSelectionList) {  
-				if (ogsm.getId()!= null
-						&& ogsm.getId()> 0) { //商品选型的id,多个选型id以空格间隔的字符串
-					sb.append(ogsm.getId());
+				if (ogsm.getSuppliersId()!= null
+						&& ogsm.getSuppliersId()> 0) { //商品选型的id,多个选型id以空格间隔的字符串
+					sb.append(ogsm.getSuppliersId());
 					//sb.append(":");
 					//sb.append(ogsm.getCount().intValue());
 					sb.append(String.valueOf((char) 29));

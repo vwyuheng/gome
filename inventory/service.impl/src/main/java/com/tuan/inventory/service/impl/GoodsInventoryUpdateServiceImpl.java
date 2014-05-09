@@ -7,6 +7,8 @@ import com.tuan.inventory.domain.InventoryAdjustDomain;
 import com.tuan.inventory.domain.InventoryCallbackDomain;
 import com.tuan.inventory.domain.InventoryCreatorDomain;
 import com.tuan.inventory.domain.InventoryUpdateDomain;
+import com.tuan.inventory.domain.InventoryWmsCreaterDomain;
+import com.tuan.inventory.domain.InventoryWmsUpdateDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.WaterfloodAdjustmentDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -19,6 +21,7 @@ import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.param.rest.QueueKeyIdParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
@@ -103,6 +106,79 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("goodsId", inventoryCreatorDomain.getGoodsId());
+		writeSysLog(lm, true);
+		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
+		return new InventoryCallResult(result.getResultCode(), 
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
+	}
+	/**
+	 * 物流商品创建接口
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	@Override
+	public InventoryCallResult createWmsInventory(String clientIp,
+			String clientName, WmsInventoryParam param,Message traceMessage) {
+		if(traceMessage == null){
+			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
+					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
+		}
+		String method = "GoodsInventoryUpdateService.createWmsInventory";
+		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
+		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+		TraceMessageUtil.traceMessagePrintS(
+				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createWmsInventory");
+		//构建领域对象
+		final InventoryWmsCreaterDomain inventoryWmsCreaterDomain = new InventoryWmsCreaterDomain(clientIp, clientName, param, lm);
+		//注入仓储对象
+		inventoryWmsCreaterDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryWmsCreaterDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryWmsCreaterDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+		inventoryWmsCreaterDomain.setSequenceUtil(sequenceUtil);
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+			@Override
+			public TuanCallbackResult executeParamsCheck() {
+				CreateInventoryResultEnum resultEnum = inventoryWmsCreaterDomain.checkParam();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+			
+			@Override
+			public TuanCallbackResult executeBusiCheck() {
+				CreateInventoryResultEnum resEnum = inventoryWmsCreaterDomain.busiCheck();
+				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resEnum.getCode(), null,resEnum.getDescription());
+				}
+			}
+			
+			@Override
+			public TuanCallbackResult executeAction() {
+				CreateInventoryResultEnum resultEnum = inventoryWmsCreaterDomain.createWmsInventory();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+			
+			@Override
+			public void executeAfter() {
+				inventoryWmsCreaterDomain.sendNotify();
+			}
+		});
+		
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
+		.addMetaData("wmsGoodsId", param.getWmsGoodsId());
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -369,6 +445,71 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("goodsId", waterfloodAdjustmentDomain.getGoodsId());
+		writeSysLog(lm, true);
+		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
+		return new InventoryCallResult(result.getResultCode(), 
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
+	}
+	@Override
+	public InventoryCallResult adjustWmsInventory(String clientIp,
+			String clientName, WmsInventoryParam param, Message traceMessage) {
+		if(traceMessage == null){
+			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
+					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
+		}
+		String method = "GoodsInventoryUpdateService.adjustWmsInventory";
+		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
+		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+		TraceMessageUtil.traceMessagePrintS(
+				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustWmsInventory");
+		//构建领域对象
+		final InventoryWmsUpdateDomain adjustWmsDomain = new InventoryWmsUpdateDomain(clientIp, clientName, param, lm);
+		//注入仓储对象
+		adjustWmsDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		adjustWmsDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		adjustWmsDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+		adjustWmsDomain.setSequenceUtil(sequenceUtil);
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+			@Override
+			public TuanCallbackResult executeParamsCheck() {
+				CreateInventoryResultEnum resultEnum = adjustWmsDomain.checkParam();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeBusiCheck() {
+				CreateInventoryResultEnum resEnum = adjustWmsDomain.busiCheck();
+				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resEnum.getCode(), null,resEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeAction() {
+				CreateInventoryResultEnum resultEnum = adjustWmsDomain.updateAdjustWmsInventory();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public void executeAfter() {
+				
+			}
+		});
+
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
+		.addMetaData("wmsGoodsId", param.getWmsGoodsId());
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 

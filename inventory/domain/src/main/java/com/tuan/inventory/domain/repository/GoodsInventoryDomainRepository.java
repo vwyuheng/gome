@@ -8,12 +8,15 @@ import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
+import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.support.BaseDAOService;
@@ -30,6 +33,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	private BaseDAOService  baseDAOService;
 	@Resource
 	private NotifyServerSendMessage notifyServerSendMessage;
+	
 	
 	public void sendNotifyServerMessage(JSONObject jsonObj) {
 		this.notifyServerSendMessage.sendNotifyServerMessage(jsonObj);
@@ -52,6 +56,11 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		//已存在返回false,不存在返回true
 		return baseDAOService.isExists(goodsId);
 	}
+	//判断物流库存是否已存在
+	public boolean isWmsExists(String wmsGoodsId) {
+		//已存在返回false,不存在返回true
+		return baseDAOService.isWmsExists(wmsGoodsId);
+	}
 	public boolean isGoodsExists(Long goodsId) {
 		//已存在返回false,不存在返回true
 		return baseDAOService.isGoodsExists(goodsId,HashFieldEnum.leftNumber.toString());
@@ -65,7 +74,28 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return baseDAOService.isSupplierExists(suppliesId,HashFieldEnum.leftNumber.toString());
 	}
 	
-	
+	/**
+	 * 保存物流选型库存
+	 * @param selectionDO
+	 */
+	public void saveGoodsSelectionWmsInventory(List<GoodsSelectionDO> selectionDO) {
+		
+		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
+			for (GoodsSelectionDO srDO : selectionDO) { // for
+				if (srDO.getId() > 0) { // if选型
+					//首先根据选型id判断该选型是否已存在
+					GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
+					if(tmpSelDO==null) {  //不存在才创建
+						this.baseDAOService.saveGoodsSelectionWmsInventory(srDO);
+					}
+					
+				}
+				
+			}//for
+		}//if1
+		
+		
+	}
 	public void saveGoodsSelectionInventory(Long goodsId, List<GoodsSelectionDO> selectionDO) {
 
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
@@ -92,7 +122,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
-				if (sDO.getId() > 0) { // if分店
+				if (sDO.getSuppliersId() > 0) { // if分店
 					GoodsSuppliersDO tmpSuppDO = this.baseDAOService.querySuppliersInventoryById(sDO.getSuppliersId());
 					if(tmpSuppDO==null) { //不存在才创建
 						sDO.setGoodsId(goodsId);
@@ -107,11 +137,31 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		}//if1
 			
 	}
+	public void saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
+		if (wmsDO!=null) { // if1
+			//for (GoodsInventoryWMSDO wmsDO : wmsDOList) { // for
+			GoodsInventoryWMSDO tmpWmsDO = this.baseDAOService.queryWmsInventoryById(wmsDO.getWmsGoodsId());
+					if(tmpWmsDO==null&&!StringUtils.isEmpty(wmsDO.getWmsGoodsId())) { //不存在才创建
+						this.baseDAOService.saveGoodsWmsInventory(wmsDO);
+					}
+				
+			//}//for
+		}//if1
+		
+	}
+	//更新物流库存
+	public boolean updateGoodsWmsInventory(String wmsGoodsId,int num) {
+		if(StringUtils.isEmpty(wmsGoodsId)) { return false;}
+		return this.baseDAOService.updateGoodsWms(wmsGoodsId,num);
+	}
 	
 	
 	//根据商品id查询库存信息
 	public GoodsInventoryDO queryGoodsInventory(long goodsId) {
 		return this.baseDAOService.queryGoodsInventory(goodsId);
+	}
+	public GoodsInventoryWMSDO queryGoodsInventoryWms(String wmsGoodsId) {
+		return this.baseDAOService.queryWmsInventoryById(wmsGoodsId);
 	}
 	
 	// 根据商品选型id查询库存信息
@@ -154,6 +204,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return result;
 		
 	}
+	
 	//回滚选型库存
 	public Long rollbackSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
 		long result = 0;
@@ -171,8 +222,38 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		long result = 0;
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
-				if (param.getId() > 0) { // if选型
+				if (param.getId() > 0) { // if分店
 					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
+				}
+			}
+		}
+		return result;
+		
+	}
+	/**
+	 * 批量调整物流选型库存
+	 * @param selectionList
+	 * @return
+	 */
+	public boolean batchAdjustSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
+		boolean result = false;
+		if (!CollectionUtils.isEmpty(selectionList)) { // if1
+			for (GoodsWmsSelectionResult param : selectionList) { // for
+				if (param.getId() > 0) { // if分店
+					result = this.baseDAOService.adjustSelectionWmsInventory(param.getId(), (param.getLeftNum()),(param.getTotalNum()));
+				}
+			}
+		}
+		return result;
+		
+	}
+	
+	public boolean batchrollbackSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
+		boolean result = false;
+		if (!CollectionUtils.isEmpty(selectionList)) { // if1
+			for (GoodsWmsSelectionResult param : selectionList) { // for
+				if (param.getId() > 0) { // if分店
+					result = this.baseDAOService.adjustSelectionWmsInventory(param.getId(), (-param.getLeftNum()),(param.getTotalNum()));
 				}
 			}
 		}

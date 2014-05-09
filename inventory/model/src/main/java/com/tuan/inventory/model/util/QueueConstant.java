@@ -15,8 +15,10 @@ public class QueueConstant {
 	public final static String GOODS_INVENTORY_PREFIX="hash_goods.inventory";//商品总库存前缀
 	public final static String GOODS_SELECTION_RELATIONSHIP_PREFIX="set_goods_selection.relation";//商品id与选型id关联关系前缀
 	public final static String GOODS_SUPPLIERS_RELATIONSHIP_PREFIX="set_goods_suppliers.relation";//商品id与分店id关联关系前缀
+	public final static String GOODS_WMS_RELATIONSHIP_PREFIX="set_goods_wms.relation";//商品id与物流库存id关联关系前缀
 	public final static String SELECTION_INVENTORY_PREFIX="hash_selection.inventory";//选型商品库存前缀
 	public final static String SUPPLIERS_INVENTORY_PREFIX="hash_suppliers.inventory";//分店商品库存前缀
+	public final static String WMS_INVENTORY_PREFIX="hash_wms.inventory";//物流商品库存前缀
 	//队列状态
 	//public final static String ACTIVE = "1";  // 1:正常：有效可处理（active）
 	//public final static String LOCKED = "3";  //3：初始状态（locked）

@@ -53,6 +53,11 @@ public enum ResultEnum {
 	NOTNULL_SEL_SUPP_GOODS         ("1028", "包含选型和分店的商品，选型和分店都不能为空！"),
 	INVALID_SEL_LIMT         ("1029", "选型库存限制与商品库存限制不一致！"),
 	INVALID_SUPP_LIMT         ("1030", "分店库存限制与商品库存限制不一致！"),
+	QUERY_ERROR         ("1031", "通过商品类型id获取商品id时发生错误"),
+	INVALID_WMSGOODSID         ("1032", "物流编码无效"),
+	INVALID_WMSID         ("1033", "物流库存表主键无效"),
+	INVALID_GOODSTYPEID         ("1034", "无效的商品类型id"),
+	INVALID_SELIDANDGOODSTYPEID         ("1035", "无效的物流选型id和商品类型id"),
 	NO_DATA("0","没有可用的数据"),
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
@@ -210,6 +215,12 @@ public enum ResultEnum {
 		}
 		if(code.equals("1030")){
 			return ResultEnum.INVALID_SUPP_LIMT;
+		}
+		if(code.equals("1031")){
+			return ResultEnum.QUERY_ERROR;
+		}
+		if(code.equals("1032")){
+			return ResultEnum.INVALID_WMSGOODSID;
 		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;

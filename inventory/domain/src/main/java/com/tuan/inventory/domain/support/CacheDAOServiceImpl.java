@@ -13,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
@@ -365,4 +366,61 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 				+ ":"+String.valueOf(suppliersId),
 				HashFieldEnum.waterfloodVal.toString(), (num));
 	}
+
+	@Override
+	public void saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
+		
+      /* this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_WMS_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId), QueueConstant.WMS_INVENTORY_PREFIX
+		+ ":" + wmsDO.getWmsGoodsId(), wmsDO.getWmsGoodsId(), ObjectUtils.toHashMap(wmsDO));*/
+       
+       this.redisCacheUtil.hmset(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+				+ wmsDO.getWmsGoodsId(), ObjectUtils.toHashMap(wmsDO));
+ 
+     }
+
+	@Override
+	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId) {
+		Map<String, String> objMap = this.redisCacheUtil
+				.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+						+ wmsGoodsId);
+		if (!CollectionUtils.isEmpty(objMap)) {
+			return JsonUtils.convertStringToObject(
+					JsonUtils.convertObjectToString(objMap),
+					GoodsInventoryWMSDO.class);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean updateGoodsWms(String wmsGoodsId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+				+ wmsGoodsId,
+				HashFieldEnum.leftNumber.toString(),
+				HashFieldEnum.totalNumber.toString(),
+				(num));
+	}
+
+	@Override
+	public boolean adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), adjustTotalNum,(adjustLeftNum));
+	}
+
+	@Override
+	public boolean isWmsExists(String wmsGoodsId) {
+		//已存在返回false,不存在返回true
+		return this.redisCacheUtil.exists(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+				+ wmsGoodsId)?false:true;
+	}
+
+	@Override
+	public void saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO) {
+        this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
+		+ ":" + String.valueOf(selectionDO.getId()),ObjectUtils.toHashMap(selectionDO));
+    }
+
+	
 }

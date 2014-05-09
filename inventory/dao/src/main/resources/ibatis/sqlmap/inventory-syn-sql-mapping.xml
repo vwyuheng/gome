@@ -5,7 +5,10 @@
     <!-- 商品物流信息-->	
 	<resultMap id="GoodsInventoryWMSResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO">
 	    <result column="id" property="id" jdbcType="BIGINT" />
-	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+	   <!--  <result column="goods_id" property="goodsId" jdbcType="BIGINT" /> -->
+	    <result column="wms_goods_id" property="wmsGoodsId" jdbcType="VARCHAR" />
+	     <result column="goods_supplier" property="goodsSupplier" jdbcType="VARCHAR" />
+	      <result column="goods_sname" property="goodsName" jdbcType="VARCHAR" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="is_be_delivery" property="isBeDelivery" jdbcType="INTEGER" />   	    
@@ -16,7 +19,7 @@
 	    <result column="id" property="id" jdbcType="BIGINT" />
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
 	   <!--  <result column="user_id" property="userId" jdbcType="BIGINT" /> -->
-	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
+	    <result column="good_type_id" property="goodTypeId" jdbcType="BIGINT" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	     <result column="waterfloodVal" property="waterfloodVal" jdbcType="INTEGER" />
@@ -62,12 +65,85 @@
 	    <result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
 	    <result column="remark" property="remark" jdbcType="VARCHAR" />
 	 </resultMap>
-	 
+	
+	
+	  <!-- 更新物流商品选型库存可更新字段   -->	
+    <!-- <update id="updateGoodsWmsSelection" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
+      update jeehe_inventory_selection
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="totalNumber">
+			total_num = #totalNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNumber">
+			left_num = #leftNumber:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="waterfloodVal">
+			waterflood_val = #waterfloodVal:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where good_type_id = #goodTypeId:BIGINT#
+    </update> -->
+	
+	
+	
+	   <!-- 物流商品选型库存调整可更新字段   -->	
+    <update id="adjustGoodsWmsSelection" parameterClass="com.tuan.inventory.dao.data.GoodsWmsSelectionResult" >
+      update jeehe_inventory_selection
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="totalNum">
+			total_num = total_num + #totalNum:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="leftNum">
+			left_num = left_num + #leftNum:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where good_type_id = #goodTypeId:BIGINT#
+    </update>
+	
+	
+	 <!-- 通过物流编码查询物流商品的库存  -->	
+	<select id="selectGoodsInventoryWMS" resultMap="GoodsInventoryWMSResult"  parameterClass="java.lang.String">
+	SELECT
+	wms.id,
+	wms.wms_goods_id,
+	wms.goods_supplier,
+	wms.goods_sname,
+	wms.total_num,
+	wms.left_num,
+	wms.is_be_delivery
+
+	FROM
+	jeehe_goods_wms wms
+	WHERE wms.wms_goods_id = #wmsGoodsId:VARCHAR#
+	</select>
+	
+	 <!-- 通过商品ID查询是否物流商品  -->	
+	<select id="selectIsOrNotGoodsWMS" resultMap="GoodsInventoryWMSResult"  parameterClass="java.lang.Long">
+
+	SELECT
+	wms.id,
+	wms.wms_goods_id,
+	wms.goods_supplier,
+	wms.goods_sname,
+	wms.total_num,
+	wms.left_num,
+	wms.is_be_delivery
+	FROM
+	jeehe_goods_attribute ga,jeehe_goods_wms wms where ga.goods_wms_id = wms.id
+	AND
+	ga.goods_id = #goodsId:BIGINT#
+	</select>
 	 
 	   <!-- 更新物流商品可更新字段   -->	
     <update id="updateGoodsInventoryWMS" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO" >
       update jeehe_inventory_wms
       <dynamic prepend="set" >
+      <isNotNull prepend="," property="totalNumber">
+			goods_supplier = #goodsSupplier:VARCHAR#
+		</isNotNull>
+		<isNotNull prepend="," property="totalNumber">
+			goods_sname = #goodsName:VARCHAR#
+		</isNotNull>
         <isNotNull prepend="," property="totalNumber">
 			total_num = #totalNumber:INTEGER#
 		</isNotNull>
@@ -78,14 +154,16 @@
 			is_be_delivery = #isBeDelivery:INTEGER#
 		</isNotNull>
       </dynamic>
-      where id = #id:INTEGER# and goods_id = #goodsId:INTEGER#
+      where wms_goods_id = #wmsGoodsId:VARCHAR# and is_be_delivery = #isBeDelivery:INTEGER#
     </update>
 	 
 	  <!-- 插入物流商品库存信息 -->
   	<insert id="insertGoodsInventoryWMS" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO" >
     insert into jeehe_inventory_wms 
     (id,
-    goods_id,
+    wms_goods_id,
+    goods_supplier,
+	goods_sname,
     total_num, 
     left_num, 
     is_be_delivery
@@ -93,7 +171,9 @@
    )
     values (
             #id:BIGINT#,
-            #goodsId:BIGINT#,
+            #wmsGoodsId:VARCHAR#,
+            #goodsSupplier:VARCHAR#,
+            #goodsName:VARCHAR#,
             #totalNumber:INTEGER#,
             #leftNumber:INTEGER#,
             #isBeDelivery:INTEGER#
@@ -213,7 +293,7 @@
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>
-      where goods_id = #goodsId:INTEGER#
+      where goods_id = #goodsId:BIGINT#
     </update>
 	 
 	   <!-- 插入商品 库存信息 -->

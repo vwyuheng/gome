@@ -19,6 +19,7 @@ public class CreaterInventoryParam extends TuanBaseDO {
 	private Integer leftNumber;// 当前剩余数库存默认值:0
 	private int limitStorage; // 0:库存无限制；1：限制库存
 	private Integer waterfloodVal;  //注水值
+
 	//选型
 	private List<GoodsSelectionModel> goodsSelection;
 	//分店

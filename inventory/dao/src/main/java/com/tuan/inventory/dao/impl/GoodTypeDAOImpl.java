@@ -120,4 +120,16 @@ public class GoodTypeDAOImpl extends SqlMapClientDaoSupport implements GoodTypeD
 	
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GoodsSelectionRelationGoodDO> selectSelectionByGoodsTypeIds(List<Long> goodsTypeIdList){
+		if(goodsTypeIdList == null || goodsTypeIdList.isEmpty()){
+			return null;
+		}
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		paramMap.put("goodsTypeIdList", goodsTypeIdList);
+		
+		return super.getSqlMapClientTemplate().queryForList("selectSelectionByGoodsTypeIds", paramMap);
+	}
+
 }

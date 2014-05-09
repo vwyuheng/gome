@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
+import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -66,6 +68,21 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 	
 	}
+	public void saveBatchGoodsWms(List<GoodsSelectionDO> selectionDOList) throws Exception {
+		
+		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
+			for (GoodsSelectionDO srDO : selectionDOList) { // for
+				if (srDO.getId() > 0) { // if选型
+					//将商品id set到选型中
+					//srDO.setGoodsId(goodsId);
+					this.saveGoodsSelection(srDO);
+				}
+				
+			}//for
+		}//if1
+		
+		
+	}
 	
 	/***
 	 * 保存商品选型库存
@@ -116,6 +133,21 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 	
 	}
+	public void updateBatchGoodsSelectionWms(List<GoodsWmsSelectionResult> selectionResultList) throws Exception{
+		
+		if (!CollectionUtils.isEmpty(selectionResultList)) { // if1
+			for (GoodsWmsSelectionResult result : selectionResultList) { // for
+				if (result.getGoodTypeId() > 0) { // if选型
+					//将商品id set到选型中
+					//srDO.setGoodsId(goodsId);
+					this.updateGoodsSelectionWms(result);
+				}
+				
+			}//for
+		}//if1
+		
+		
+	}
 	
 	public void batchDelGoodsSelection(List<GoodsSelectionDO> selectionDOList) throws Exception{
 
@@ -155,6 +187,11 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 		}*/
 	}
+	public void updateGoodsSelectionWms(GoodsWmsSelectionResult selection) throws Exception{
+		
+		this.synInitAndAsynUpdateDAO.updateGoodsSelectionWmsDO(selection);
+		
+	}
 	/**
 	 * 批量保存分店库存信息
 	 * @param goodsId
@@ -175,7 +212,23 @@ public class SynInitAndAsynUpdateDomainRepository {
 		}//if1
 			
 	}
-	
+	/**
+	 * 批量保存物流库存信息
+	 * @param goodsId
+	 * @param wmsInventoryList
+	 * @throws Exception
+	 */
+	public void saveGoodsWms(GoodsInventoryWMSDO wmsInventory) throws Exception{
+		if (wmsInventory!=null) { // if1
+			//for (GoodsInventoryWMSDO wmsDO : wmsInventoryList) { // for
+				if (!StringUtils.isEmpty(wmsInventory.getWmsGoodsId())) { // if分店
+					this.saveGoodsInventoryWMS(wmsInventory);
+				}
+				
+			//}//for
+		}//if1
+			
+	}
 	/**
 	 * 保存商品分店库存
 	 * @param suppliersDO
@@ -266,7 +319,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * 保存物流商品库存
 	 * @param wmsDO
 	 */
-	public void saveGoodsInventoryWMS(GoodsInventoryWMSDO wmsDO) {
+	public void saveGoodsInventoryWMS(GoodsInventoryWMSDO wmsDO) throws Exception{
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryWMSDO(wmsDO);
 	}
 	/**

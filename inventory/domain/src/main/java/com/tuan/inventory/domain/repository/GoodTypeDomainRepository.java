@@ -96,6 +96,14 @@ public class GoodTypeDomainRepository {
 	public GoodsAttributeInventoryDO getNotSeleInventory(long goodsId) {
 		return goodTypeDAO.getNotSeleInventory(goodsId);
 	}
+	/**
+	 * 根据goodsTypeId列表查询指定选型信息列表
+	 * @param goodsTypeIdList
+	 * @return
+	 */
+	public List<GoodsSelectionRelationGoodDO> selectSelectionByGoodsTypeIds(List<Long> goodsTypeIdList) {
+		return goodTypeDAO.selectSelectionByGoodsTypeIds(goodsTypeIdList);
+	}
 
 	public GoodTypeDAO getGoodTypeDAO() {
 		return goodTypeDAO;

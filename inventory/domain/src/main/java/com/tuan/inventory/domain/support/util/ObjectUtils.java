@@ -77,7 +77,7 @@ public class ObjectUtils {
 		SuppliersNotifyMessageParam result = null;
 		if(supModel!=null) {
 			result = new SuppliersNotifyMessageParam();
-			result.setId(supModel.getId());
+			result.setId(supModel.getSuppliersId());  //存分店商品的id
 			result.setGoodsId(supModel.getGoodsId());
 			//result.setSuppliersId(supModel.getSuppliersId());
 			result.setLeftNumber(supModel.getLeftNumber());

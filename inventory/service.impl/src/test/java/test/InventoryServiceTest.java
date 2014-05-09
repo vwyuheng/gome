@@ -23,6 +23,7 @@ import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.service.GoodsInventoryScheduledService;
@@ -43,6 +44,89 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Resource
 	SequenceUtil sequenceUtil;
+	//物流库存调整
+	@Test
+	public void testAdjustWmsInventory() {
+		WmsInventoryParam param = new WmsInventoryParam();
+		//选型
+		 List<GoodsSelectionModel> goodsSelection = new ArrayList<GoodsSelectionModel>();
+		 param.setId(2l);
+		 param.setWmsGoodsId("2");
+		 param.setIsBeDelivery(1);
+		 param.setNum(1);
+		 for(int i=2;i>0;i--) {
+				GoodsSelectionModel smodel = new GoodsSelectionModel();
+				//smodel.setGoodsId(1L);
+				long goodTypeId = 2+i;
+				long id = 15+i;
+				smodel.setId(id);
+				smodel.setGoodTypeId(goodTypeId);
+				smodel.setNum(1);
+				goodsSelection.add(smodel);
+				
+				System.out.println("goodTypeId="+goodTypeId);
+				
+			}
+			param.setGoodsSelection(goodsSelection);
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryUpdateService.adjustWmsInventory(clientIP, clientName, param, traceMessage);
+	}
+	
+	//新增物流库存测试
+	@Test
+	public void testCreateWmsInventory() {
+		WmsInventoryParam param = new WmsInventoryParam();
+		//选型
+		 List<GoodsSelectionModel> goodsSelection = new ArrayList<GoodsSelectionModel>();
+		//分店
+		 String wmsGoodsId = String.valueOf(sequenceUtil.getSequence(SEQNAME.seq_inventory));
+		// String goodsId = "2001";
+		 System.out.println("wmsGoodsId="+wmsGoodsId);
+		 param.setId(sequenceUtil.getSequence(SEQNAME.seq_wms));
+		param.setGoodsName("test1");
+		param.setGoodsSupplier("55");
+		//param.setUserId("2");
+		param.setLeftNumber(100);
+		//param.setLimitStorage(1);
+		param.setTotalNumber(100);
+		param.setIsBeDelivery(1);
+		param.setWmsGoodsId(wmsGoodsId);
+		
+		for(int i=2;i>0;i--) {
+			GoodsSelectionModel smodel = new GoodsSelectionModel();
+			//smodel.setGoodsId(1L);
+			//smodel.setUserId(2l);
+			smodel.setId((15l+i));
+			//smodel.setId(2000l);
+			smodel.setTotalNumber(50);
+			smodel.setLeftNumber(50);
+			smodel.setLimitStorage(1);
+			smodel.setGoodTypeId(sequenceUtil.getSequence(SEQNAME.seq_goods_type));
+			
+			goodsSelection.add(smodel);
+			
+			
+		}
+		System.out.println("goodsSelectionparam="+LogUtil.formatListLog(goodsSelection));
+		param.setGoodsSelection(goodsSelection);
+		
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		System.out.println("11param="+LogUtil.formatObjLog(param));
+		goodsInventoryUpdateService.createWmsInventory(clientIP, clientName, param, traceMessage);
+		//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
+		
+	}
+	
+	
+	
 	
 	@Test
 	public void testInventory() {
@@ -57,6 +141,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	
+	
+	
 	@Test
 	public void testSuppliers() {
 		try {

@@ -3,6 +3,7 @@ package com.tuan.inventory.dao.impl;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
+import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -69,6 +70,11 @@ public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implem
 	public int deleteGoodsSuppliersDO(long suppliersId) {
 		return super.getSqlMapClientTemplate().delete("deleteGoodsSuppliers", suppliersId);
 		
+	}
+	//更新物流选型库存 
+	@Override
+	public void updateGoodsSelectionWmsDO(GoodsWmsSelectionResult selection) {
+		super.getSqlMapClientTemplate().update("adjustGoodsWmsSelection", selection);
 	}
 
 

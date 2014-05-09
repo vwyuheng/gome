@@ -7,7 +7,9 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
@@ -32,7 +34,137 @@ public class InventoryInitAndUpdateHandle  {
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	
+	public boolean saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(wmsDO ==null&&CollectionUtils.isEmpty(selectionList)){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.saveGoodsWmsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Boolean> callResult  = null;
+		try {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(wmsDO,selectionList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]wmsGoodsId:" + wmsDO==null?"":wmsDO.getWmsGoodsId();
+			} else {   //TODO 该处理也有问题
+				message = "saveGoodsInventory2Mysql_success[save2mysql success]wmsGoodsId:" + wmsDO.getWmsGoodsId();
+				if (wmsDO != null) {
+					this.goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
+				}
+				// 保选型库存
+				this.goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);	
+				
+			}
+			
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("selectionList",selectionList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	/**
+	 * 不维护 物流的商品保存
+	 * @param goodsId
+	 * @param goodsDO
+	 * @param selectionInventoryList
+	 * @param suppliersInventoryList
+	 * @return
+	 */
 	public boolean saveGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(goodsId <= 0){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.handleGoodsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Boolean> callResult  = null;
+		try {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsId;
+			} else {
+				message = "saveGoodsInventory2Mysql_success[save2mysql success]goodsId:" + goodsId;
+				if (goodsDO != null) {
+					this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
+							goodsDO);
+				}
+				// 保选型库存
+				if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+					this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
+							goodsId, selectionInventoryList);
+					
+					
+				}
+				// 保存分店库存
+				if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+					this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
+							goodsId, suppliersInventoryList);
+					
+				}
+				
+			}
+			
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("goodsDO",goodsDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("goodsDO",goodsDO)
+				.addMetaData("selectionInventoryList",selectionInventoryList)
+				.addMetaData("suppliersInventoryList",suppliersInventoryList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	public boolean saveGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,GoodsInventoryWMSDO wmsInventory,GoodsInventoryWMSDO wmsInventory4wmsGoodsId) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(goodsId <= 0){
@@ -46,7 +178,7 @@ public class InventoryInitAndUpdateHandle  {
 		CallResult<Boolean> callResult  = null;
 		try {
 				// 消费对列的信息
-				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList);
+				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
@@ -75,7 +207,14 @@ public class InventoryInitAndUpdateHandle  {
 									goodsId, suppliersInventoryList);
 						
 					}
-					
+					// 保存物流商品库存
+					if (wmsInventory!=null) {
+							this.goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsInventory);
+					}
+					// 保存物流商品库存
+					if (wmsInventory4wmsGoodsId!=null) {
+							this.goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsInventory4wmsGoodsId);
+					}
 				}
 			
 			
@@ -437,6 +576,103 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
+	
+	
+	/*public boolean updateBatchGoodsWms(final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(wmsDO ==null&&CollectionUtils.isEmpty(selectionList)){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.updateBatchGoodsSelectionWms");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Boolean> callResult  = null;
+		try {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.updateBatchGoodsWms(wmsDO, selectionList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "updateBatchGoodsWms2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]wmsGoodsId:" + wmsDO==null?"":wmsDO.getWmsGoodsId();
+			} 
+			
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("selectionList",selectionList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}*/
+	
+	public boolean batchAdjustGoodsWms(final GoodsInventoryWMSDO wmsDO,final List<GoodsWmsSelectionResult> selectionList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(wmsDO ==null&&CollectionUtils.isEmpty(selectionList)){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.batchAdjustGoodsWms");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Boolean> callResult  = null;
+		try {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO, selectionList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "updateBatchGoodsWms2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]wmsGoodsId:" + wmsDO==null?"":wmsDO.getWmsGoodsId();
+			} 
+			
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("selectionList",selectionList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	
+	
 	public boolean deleteBatchGoodsSelection( final List<GoodsSelectionDO> selectionInventoryList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;

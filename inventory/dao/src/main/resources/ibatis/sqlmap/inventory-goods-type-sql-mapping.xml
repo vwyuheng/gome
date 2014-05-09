@@ -148,6 +148,15 @@
 	</dynamic>			  
 	</select>
 	
+	
+	<!-- 根据主键查询商品id   -->	
+	<!-- <select id="selectSelectionGoodsId" parameterClass="java.lang.Long" >
+		select gt.goodId
+		from jeehe_good_type gt 
+		where gt.good_type_id  = #goodsTypeId:BIGINT# and gt.status = 1
+				  
+	</select> -->
+	
 	<!-- 通过分商品id获取选型信息   -->	
 	<select id="selectSelectionRelationBySrIds" resultMap="GoodsSelectionRelationAndGoodsResult" parameterClass="java.util.Map" >
 		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
@@ -170,5 +179,23 @@
 	<select id="selectGoodsNotSelectionInventoryByGoodsId" resultMap="GoodsAttributeInventoryResult"  parameterClass="java.lang.Long">
 		select goods_id,total_num,left_num,limit_storage 
 		from jeehe_goods_attribute where goods_id = #goodsId:BIGINT#
+	</select>
+	
+	
+	<!-- 通过分商品id获取选型信息   -->	
+	<select id="selectSelectionByGoodsTypeIds" resultMap="GoodsSelectionRelationAndGoodsResult" parameterClass="java.util.Map" >
+		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
+			sr.leftNumber,sr.limitNumber,sr.reduceTotalNumber,sr.`STATUS`,sr.suppliers_id,
+			sr.suppliers_sub_id,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage,gt.goodId,gt.name  
+		from jeehe_selection_relation sr ,jeehe_good_type gt 
+		where gt.id=sr.good_type_id  
+    <dynamic >
+	    <isNotNull prepend="and" property="goodsTypeIdList" > 
+	        sr.good_type_id in 
+	        <iterate property="goodsTypeIdList" open="(" close=")" conjunction=",">
+	            #goodsTypeIdList[]:BIGINT#
+	        </iterate>
+	    </isNotNull>
+	</dynamic>			  
 	</select>
 </sqlMap>

@@ -640,11 +640,11 @@ public class RedisCacheUtil {
 	 * 多个命令顺序调用时需开启事务
 	 * @param saddkey
 	 * @param hmsetkey
-	 * @param suppliersId  分店id
+	 * @param id  分店\选型\物流商品id
 	 * @param hash
 	 * @return
 	 */
-	public boolean saddAndhmset(final String saddkey,final String hmsetkey,final String suppliersId,final Map<String,String> hash) {
+	public boolean saddAndhmset(final String saddkey,final String hmsetkey,final String id,final Map<String,String> hash) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
 			public Boolean work(Jedis j) throws Exception {
@@ -656,7 +656,7 @@ public class RedisCacheUtil {
 					//开启事务
 					ts = j.multi(); 
 					
-					ts.sadd(saddkey,suppliersId);
+					ts.sadd(saddkey,id);
 					ts.hmset(hmsetkey,hash);
 					// 执行事务
 					ts.exec();
@@ -669,10 +669,10 @@ public class RedisCacheUtil {
 					LogModel lm = LogModel.newLogModel("RedisLockCache.saddAndhmset");
 					log.error(lm.addMetaData("saddkey", saddkey)
 							.addMetaData("hmsetkey", hmsetkey)
-							.addMetaData("suppliersId", suppliersId)
+							.addMetaData("id", id)
 							.addMetaData("hash", hash)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.saddAndhmset("+saddkey+","+hmsetkey+","+suppliersId+","+hash+") error!",e);
+					throw new CacheRunTimeException("jedis.saddAndhmset("+saddkey+","+hmsetkey+","+id+","+hash+") error!",e);
 				}
 				
 				return result;
@@ -726,6 +726,61 @@ public class RedisCacheUtil {
 		});
 
 	}
+	/**
+	 * 物流调整库存
+	 * @param key
+	 * @param field1
+	 * @param field2
+	 * @param value1  总
+	 * @param value2 剩余
+	 * @return
+	 */
+	public boolean hincrByAndhincrBy4wms(final String key, final String field1,final String field2, final long value1,final long value2) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = true;
+				Transaction ts = null;
+				try {
+					//开启事务
+					ts = j.multi(); 
+					//总库存
+					ts.hincrBy(key, field1, value1);
+					//剩余库存
+					ts.hincrBy(key, field2, value2);
+					//return j.hincrBy(key,field,value);
+					// 执行事务
+					ts.exec();
+				} catch (Exception e) {
+					result = false;
+					// 销毁事务
+					if (ts != null)
+						ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4wms");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("field1", field1)
+							.addMetaData("field2", field2)
+							.addMetaData("value1", value1)
+							.addMetaData("value2", value2)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4wms("+key+","+field1+","+field2+","+value1+value2+") error!",e);
+				}
+				return result;
+			}
+		});
+		
+	}
+	/**
+	 * 两个hincrBy顺序执行4注水
+	 * @param key1
+	 * @param key2
+	 * @param field
+	 * @param value
+	 * @return
+	 */
 	public boolean hincrByAndhincrBy4wf(final String key1, final String key2,final String field, final long value) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
@@ -763,6 +818,15 @@ public class RedisCacheUtil {
 		});
 		
 	}
+	/**
+	 * 四个hincrBy顺序执行 4分店库存
+	 * @param goodskey
+	 * @param suppkey
+	 * @param field1
+	 * @param field2
+	 * @param value
+	 * @return
+	 */
 	public boolean hincrByAndhincrBy4supp(final String goodskey,final String suppkey, final String field1,final String field2, final long value) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override
@@ -805,6 +869,15 @@ public class RedisCacheUtil {
 		});
 		
 	}
+	/**
+	 * 四个hincrBy顺序执行 4选型库存
+	 * @param goodskey
+	 * @param selkey
+	 * @param field1
+	 * @param field2
+	 * @param value
+	 * @return
+	 */
 	public boolean hincrByAndhincrBy4sel(final String goodskey,final String selkey, final String field1,final String field2, final long value) {
 		return jedisFactory.withJedisDo(new JWork<Boolean>() {
 			@Override

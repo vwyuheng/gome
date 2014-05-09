@@ -7,6 +7,7 @@ import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.wowotrace.trace.model.Message;
 
@@ -23,6 +24,7 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00001", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult createInventory(final String clientIp, final String clientName
 			,final CreaterInventoryParam param,Message traceMessage);
+	
 	/**
 	 * 更新商品库存
 	 * @param clientIp
@@ -67,6 +69,22 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00005", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult adjustmentWaterflood(
 			final String clientIp, final String clientName,final AdjustWaterfloodParam param,Message traceMessage);
+	
+	/**
+	 * 创建物流库存接口,根据传入的参数创建物流相关库存
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	InventoryCallResult createWmsInventory(final String clientIp, final String clientName
+			,final WmsInventoryParam param,Message traceMessage);
+	
+	@ProductCode(code = "00007", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	InventoryCallResult adjustWmsInventory(
+			final String clientIp, final String clientName,final WmsInventoryParam param,Message traceMessage);
 	/*@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult deleteInventory(
 			final String clientIp, final String clientName,final DeleteInventoryParam param,Message traceMessage);*/

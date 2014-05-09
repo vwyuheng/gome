@@ -163,10 +163,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 							suppliers.setOriginalGoodsInventory(suppliersDO
 									.getLeftNumber());
 							this.suppliersParam.add(suppliers);
-							// 更新selectionDO对象的库存属性值
-							suppliersDO.setLeftNumber(suppliers
-									.getOriginalGoodsInventory()
-									- suppliers.getGoodsInventory());
+							
 						}
 
 					}
@@ -231,10 +228,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		//是否需要校验下？
 		
 		// 扣减库存并返回扣减标识,计算库存并
-		if (goodsDeductNum >= 0) {
+		if ((originalGoodsInventory-goodsDeductNum) >= 0) {
 			this.isEnough = true;
 			// 更新inventoryInfoDO对象的库存属性值
-			this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum);
+			this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); //这个值不是扣减更新依据，是记录日志什么的用
 		}
 	}
 
