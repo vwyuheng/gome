@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.GoodsCreateInventoryDomain;
+import com.tuan.inventory.domain.GoodsWmsInventoryAdjustDomain;
+import com.tuan.inventory.domain.GoodsWmsInventoryCreateDomain;
 import com.tuan.inventory.domain.GoodsdAckInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
@@ -23,6 +25,7 @@ import com.tuan.inventory.model.param.rest.CreaterInventoryRestParam;
 import com.tuan.inventory.model.param.rest.RestTestParam;
 import com.tuan.inventory.model.param.rest.TestParam;
 import com.tuan.inventory.model.param.rest.UpdateInventoryRestParam;
+import com.tuan.inventory.model.param.rest.WmsInventoryRestParam;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
 import com.tuan.inventory.resp.outer.GoodsInventoryUpdateResp;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
@@ -206,10 +209,68 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return adjustWaterfloodDomain.makeResult(resEnum);
 	}
+	/**
+	 * http://localhost:882/rest/j/update/createwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&goodsSupplier=test&goodsName=55t&totalNumber=1000&leftNumber=800&isBeDelivery=1&goodsSelection=[{"goodTypeId":18,"id":18,"leftNumber":50,"totalNumber":50,"limitStorage":1}]
+	 * 物流库存创建接口
+	 * @param packet
+	 * @param param
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/createwms", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp createWmsInventory(@ModelAttribute UpdateRequestPacket packet,
+			@ModelAttribute WmsInventoryRestParam param, HttpServletRequest request) {
 
-	
-	
-	
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"createWmsInventory");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		GoodsWmsInventoryCreateDomain createWmsDomain = new GoodsWmsInventoryCreateDomain(
+				packet, param, lm, messageRoot);
+		createWmsDomain
+				.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = createWmsDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return createWmsDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = createWmsDomain.doBusiness();
+		// 返回结果
+		return createWmsDomain.makeResult(resEnum);
+	}
+	/**
+	 * http://localhost:882/rest/j/update/adjustwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&isBeDelivery=1&num=1&goodsSelection=[{"goodTypeId":18,"id":18,"num":1}]
+	 * 物流库存调整接口
+	 * @param packet
+	 * @param param
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/adjustwms", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustWmsInventory(@ModelAttribute UpdateRequestPacket packet,
+			@ModelAttribute WmsInventoryRestParam param, HttpServletRequest request) {
+
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"adjustWmsInventory");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		GoodsWmsInventoryAdjustDomain adjustWmsDomain = new GoodsWmsInventoryAdjustDomain(
+				packet, param, lm, messageRoot);
+		adjustWmsDomain
+				.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = adjustWmsDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return adjustWmsDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = adjustWmsDomain.doBusiness();
+		// 返回结果
+		return adjustWmsDomain.makeResult(resEnum);
+	}
 	
 	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	public void test(@ModelAttribute UpdateRequestPacket packet,
