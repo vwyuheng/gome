@@ -236,7 +236,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @return
 	 */
 	public boolean batchAdjustSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
-		boolean result = false;
+		boolean result = true;
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
 			for (GoodsWmsSelectionResult param : selectionList) { // for
 				if (param.getId() > 0) { // if分店
@@ -249,7 +249,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	
 	public boolean batchrollbackSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
-		boolean result = false;
+		boolean result = true;
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
 			for (GoodsWmsSelectionResult param : selectionList) { // for
 				if (param.getId() > 0) { // if分店

@@ -61,6 +61,7 @@ public class GoodsWmsInventoryCreateDomain extends AbstractGoodsInventoryDomain{
 			this.wmsGoodsId = JsonStrVerificationUtils.validateStr(reqparam.getWmsGoodsId()); 
 			this.totalNumber = reqparam.getTotalNumber();
 			this.leftNumber = reqparam.getLeftNumber();
+			this.isBeDelivery = reqparam.getIsBeDelivery();
 			this.goodsSupplier = JsonStrVerificationUtils.validateStr(reqparam.getGoodsSupplier());
 			this.goodsName = JsonStrVerificationUtils.validateStr(reqparam.getGoodsName());
 			String jsonSelectionResult =  reqparam.getGoodsSelection();

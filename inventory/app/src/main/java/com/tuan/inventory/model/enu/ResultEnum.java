@@ -225,6 +225,9 @@ public enum ResultEnum {
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;
 		}
+		if(code.equals("10999")){
+			return ResultEnum.SYSTEM_ERROR;
+		}
 		
 		if(code.equals("9999")){
 			return ResultEnum.ERROR_UNKONW;

@@ -292,6 +292,9 @@
 		<isNotNull prepend="," property="waterfloodVal">
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
+		<isNotNull prepend="," property="limitStorage">
+			limit_storage = #limitStorage:INTEGER#
+		</isNotNull>
       </dynamic>
       where goods_id = #goodsId:BIGINT#
     </update>

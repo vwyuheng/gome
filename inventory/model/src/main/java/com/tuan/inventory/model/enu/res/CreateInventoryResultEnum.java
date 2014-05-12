@@ -21,7 +21,7 @@ public enum CreateInventoryResultEnum {
 	AFT_ADJUST_WATERFLOOD			(1021, 	"调整后的注水值为负数"),
 	SELECTION_GOODS         (1018, "选型商品，选型不能为空！"),
 	SUPPLIERS_GOODS         (1019, "分店商品，分店不能为空！"),
-	SEL_SUPP_GOODS         (1020, "包含选型和分店的商品，选型和分店不能同时为空！"),
+	SEL_SUPP_GOODS         (1020, "包含选型和分店的商品，选型和分店都不能为空！"),
 	INVALID_WMSGOODSID         (1032, "物流编码无效"),
 	INVALID_WMSID         (1033, "物流库存表主键无效"),
 	INVALID_GOODSTYPEID         (1034, "无效的商品类型id"),

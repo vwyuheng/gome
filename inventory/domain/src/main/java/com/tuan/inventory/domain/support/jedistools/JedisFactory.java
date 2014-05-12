@@ -127,7 +127,6 @@ public class JedisFactory extends RedisBaseObject
     		returnBrokenRes(j);
     		j = null;
     		m_logger.error("jedisFactory.withJedisDo invoke error", ce);
-    		ce.printStackTrace();
     		return null;
     	}
     	catch (Exception e)  //其他异常
@@ -135,7 +134,6 @@ public class JedisFactory extends RedisBaseObject
     		returnBrokenRes(j);
     		j = null;
     		m_logger.error("jedisFactory.withJedisDo invoke error", e);
-    		e.printStackTrace();
     		return null;
     	}/*finally {
     		if(j!=null) 

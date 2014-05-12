@@ -108,9 +108,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 							// 选型库存，并且是库存充足时用
 							this.selectionParam.add(selection);
 							// 更新selectionDO对象的库存属性值
-							selectionDO.setLeftNumber(selection
-									.getOriginalGoodsInventory()
-									- selection.getGoodsInventory());
+							//selectionDO.setLeftNumber(selection
+									//.getOriginalGoodsInventory()
+									//- selection.getGoodsInventory());
 							// this.selectionRelation.add(selectionDO);
 						}
 
@@ -230,8 +230,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		// 扣减库存并返回扣减标识,计算库存并
 		if ((originalGoodsInventory-goodsDeductNum) >= 0) {
 			this.isEnough = true;
-			// 更新inventoryInfoDO对象的库存属性值
-			this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); //这个值不是扣减更新依据，是记录日志什么的用
+			// 更新inventoryInfoDO对象的库存属性值 TODO 更新全局变量尤其要小心谨慎
+			//this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); //这个值不是扣减更新依据，是记录日志什么的用
+			//this.inventoryInfoDO.setTotalNumber(totalNumber);
 		}
 	}
 
@@ -490,7 +491,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 		
 		if(isSupplier&&isSelection) {  //分店选型都有的
-			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())&&CollectionUtils.isEmpty(param.getGoodsSelection())) {
+			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())||CollectionUtils.isEmpty(param.getGoodsSelection())) {
 				return CreateInventoryResultEnum.SEL_SUPP_GOODS;
 			}
 		}

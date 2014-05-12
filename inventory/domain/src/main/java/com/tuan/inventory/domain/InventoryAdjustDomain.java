@@ -147,6 +147,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				}
 				if(inventoryDO.getLeftNumber()<0||inventoryDO.getTotalNumber()<0) {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+				}else if(inventoryDO.getTotalNumber()==0&&inventoryDO.getLimitStorage()==1) {//当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
+					inventoryDO.setLimitStorage(0); 
+					inventoryDO.setLeftNumber(Integer.MAX_VALUE);
+					inventoryDO.setTotalNumber(Integer.MAX_VALUE);
 				}
 				//更新mysql
 				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryDO);

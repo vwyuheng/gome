@@ -84,7 +84,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					if (selectionDO != null
 							/*&& selectionDO.getLimitStorage() == 1*/) { //为了计算销量 不管是否限制库存的都要扣减
 						// 扣减库存并返回扣减标识,计算库存并
-						if ((selectionDO.getLeftNumber() - model.getNum()) <= 0) {
+						if ((selectionDO.getLeftNumber() + model.getNum()) <= 0) {
 							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
 							this.isSelectionEnough = false;
 						} else {
@@ -130,7 +130,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		//赋值
 		this.wmsGoodsDeductNum = deductNum;
 		// 扣减库存并返回扣减标识,计算库存并
-		if (((orileftnum-deductNum) >= 0)||(oritotalnum-deductNum>=0)) {
+		if (((orileftnum+deductNum) >= 0)||(oritotalnum+deductNum>=0)) {
 			this.isEnough = true;
 			
 		}
@@ -183,8 +183,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			if (isEnough) {
 				if(wmsDO!=null) {
 					// 更新inventoryInfoDO对象的库存属性值
-					this.wmsDO.setLeftNumber(this.orileftnum - wmsGoodsDeductNum);
-					this.wmsDO.setTotalNumber(this.oritotalnum - wmsGoodsDeductNum);
+					this.wmsDO.setLeftNumber(this.orileftnum + wmsGoodsDeductNum);
+					this.wmsDO.setTotalNumber(this.oritotalnum + wmsGoodsDeductNum);
 				}
 				if(wmsDO.getLeftNumber()<0||wmsDO.getTotalNumber()<0) {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
@@ -216,7 +216,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				if (!verifyInventory()) {
 					// 回滚库存
 					// 先回滚总的 再回滚选型的
-					this.goodsInventoryDomainRepository.updateGoodsWmsInventory(wmsGoodsId, (wmsGoodsDeductNum));
+					this.goodsInventoryDomainRepository.updateGoodsWmsInventory(wmsGoodsId, (-wmsGoodsDeductNum));
 					this.goodsInventoryDomainRepository.batchrollbackSelectionWms(selectionParam);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}

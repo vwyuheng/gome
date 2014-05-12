@@ -66,6 +66,8 @@ public class CreaterGoodsSelectionParam extends TuanBaseDO{
 	public void setWaterfloodVal(Integer waterfloodVal) {
 		this.waterfloodVal = waterfloodVal;
 	}
+	
+	
 	public Long getGoodTypeId() {
 		return goodTypeId;
 	}
