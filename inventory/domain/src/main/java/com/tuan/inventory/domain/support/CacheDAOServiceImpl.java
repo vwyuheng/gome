@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain.support;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -322,17 +323,19 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	 * 商品库存调整
 	 */
 	@Override
-	public boolean adjustGoodsInventory(Long goodsId, int num) {
+	public List<Long> adjustGoodsInventory(Long goodsId, int num,int limitStorage) {
 
 		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),
 				HashFieldEnum.totalNumber.toString(),
-				HashFieldEnum.leftNumber.toString(), (num));
+				HashFieldEnum.leftNumber.toString(), 
+				HashFieldEnum.limitStorage.toString(),
+				(num),(limitStorage));
 	
 	}
 
 	@Override
-	public boolean adjustSelectionInventory(Long goodsId,Long selectionId, int num) {
+	public List<Long> adjustSelectionInventory(Long goodsId,Long selectionId, int num) {
 		return this.redisCacheUtil.hincrByAndhincrBy4sel(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 				+ String.valueOf(selectionId),
@@ -341,7 +344,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean adjustSuppliersInventory(Long goodsId,Long suppliersId, int num) {
+	public List<Long> adjustSuppliersInventory(Long goodsId,Long suppliersId, int num) {
 		return this.redisCacheUtil.hincrByAndhincrBy4supp(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(suppliersId),
@@ -350,7 +353,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean adjustSelectionWaterflood(Long goodsId, Long selectionId,
+	public List<Long> adjustSelectionWaterflood(Long goodsId, Long selectionId,
 			int num) {
 		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.GOODS_INVENTORY_PREFIX
 				+ ":"+String.valueOf(goodsId),QueueConstant.SELECTION_INVENTORY_PREFIX
@@ -359,7 +362,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean adjustSuppliersWaterflood(Long goodsId, Long suppliersId,
+	public List<Long> adjustSuppliersWaterflood(Long goodsId, Long suppliersId,
 			int num) {
 		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.GOODS_INVENTORY_PREFIX
 				+ ":"+String.valueOf(goodsId),QueueConstant.SUPPLIERS_INVENTORY_PREFIX
@@ -393,7 +396,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean updateGoodsWms(String wmsGoodsId, int num) {
+	public List<Long> updateGoodsWms(String wmsGoodsId, int num) {
 		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.WMS_INVENTORY_PREFIX + ":"
 				+ wmsGoodsId,
 				HashFieldEnum.leftNumber.toString(),
@@ -402,7 +405,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public boolean adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum) {
+	public List<Long> adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum) {
 		return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 				+ String.valueOf(selectionId),
 				HashFieldEnum.totalNumber.toString(),
@@ -421,6 +424,16 @@ public class CacheDAOServiceImpl implements BaseDAOService {
         this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
 		+ ":" + String.valueOf(selectionDO.getId()),ObjectUtils.toHashMap(selectionDO));
     }
+
+	@Override
+	public String setTag(String tag,int seconds, String tagValue) {
+		return this.redisCacheUtil.setex(tag, seconds, tagValue);
+	}
+
+	@Override
+	public boolean watch(String key,String tagval) {
+		return this.redisCacheUtil.watch(key,tagval);
+	}
 
 	
 }

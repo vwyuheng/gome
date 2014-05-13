@@ -68,7 +68,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private Long suppliersId;
 	//调整后库存
 	private long resultACK;
-	private boolean ack;
+	private List<Long> ack;
 	
 	//选型
 	private List<GoodsSelectionModel> selectionMsg;
@@ -353,11 +353,20 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		}
 	}
 	private boolean verifyselOrsuppWf() {
-		if(ack) {
-			return true;
+		boolean ret = true;
+		//if(resultACK) {
+		if(!CollectionUtils.isEmpty(ack)) {
+			for(long result:ack) {
+				if(result<0) {  //如果结果中存在小于0的则返回false
+					ret = false;
+					break;
+				}
+			}
+			
 		}else {
-			return false;
+			ret= false;
 		}
+		return ret;
 	}
 	/**
 	 * 参数检查

@@ -58,6 +58,9 @@ public enum ResultEnum {
 	INVALID_WMSID         ("1033", "物流库存表主键无效"),
 	INVALID_GOODSTYPEID         ("1034", "无效的商品类型id"),
 	INVALID_SELIDANDGOODSTYPEID         ("1035", "无效的物流选型id和商品类型id"),
+	SEL_OR_SUPP        ("1036", "包含选型和分店的商品，类型应为选型或分店！"),
+	AFT_ADJUST_INVENTORY			("1037", 	"库存调整后数量不能为负"),
+	NONE_LIMIT_STORAGE			("1038", 	"非限制库存商品无需调整其库存"),
 	NO_DATA("0","没有可用的数据"),
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
@@ -221,6 +224,25 @@ public enum ResultEnum {
 		}
 		if(code.equals("1032")){
 			return ResultEnum.INVALID_WMSGOODSID;
+		}
+		
+		if(code.equals("1033")){
+			return ResultEnum.INVALID_WMSID;
+		}
+		if(code.equals("1034")){
+			return ResultEnum.INVALID_GOODSTYPEID;
+		}
+		if(code.equals("1035")){
+			return ResultEnum.INVALID_SELIDANDGOODSTYPEID;
+		}
+		if(code.equals("1036")){
+			return ResultEnum.SEL_OR_SUPP;
+		}
+		if(code.equals("1037")){
+			return ResultEnum.AFT_ADJUST_INVENTORY;
+		}
+		if(code.equals("1038")){
+			return ResultEnum.NONE_LIMIT_STORAGE;
 		}
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;

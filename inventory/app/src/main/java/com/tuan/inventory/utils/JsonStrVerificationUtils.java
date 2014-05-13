@@ -1,5 +1,7 @@
 package com.tuan.inventory.utils;
 
+import org.apache.commons.lang.StringUtils;
+
 
 public class JsonStrVerificationUtils extends org.apache.commons.lang.StringUtils{
 	

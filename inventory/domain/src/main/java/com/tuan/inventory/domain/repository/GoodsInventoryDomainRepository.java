@@ -150,8 +150,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		
 	}
 	//更新物流库存
-	public boolean updateGoodsWmsInventory(String wmsGoodsId,int num) {
-		if(StringUtils.isEmpty(wmsGoodsId)) { return false;}
+	public List<Long> updateGoodsWmsInventory(String wmsGoodsId,int num) {
+		if(StringUtils.isEmpty(wmsGoodsId)) { return null;}
 		return this.baseDAOService.updateGoodsWms(wmsGoodsId,num);
 	}
 	
@@ -176,20 +176,20 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.updateGoodsInventory(goodsId, num);
 	}
 	
-	public boolean adjustGoodsInventory(Long goodsId, int num) {
-		return this.baseDAOService.adjustGoodsInventory(goodsId, num);
+	public List<Long> adjustGoodsInventory(Long goodsId, int num,int limitStorage) {
+		return this.baseDAOService.adjustGoodsInventory(goodsId, num,limitStorage);
 	}
 	
 	public Long updateSelectionInventoryById(Long selectionId, int num) {
 		return this.baseDAOService.updateSelectionInventory(selectionId, (num));
 	}
-	public boolean adjustSelectionInventoryById(Long goodsId,Long selectionId, int num) {
+	public List<Long> adjustSelectionInventoryById(Long goodsId,Long selectionId, int num) {
 		return this.baseDAOService.adjustSelectionInventory(goodsId,selectionId, (num));
 	}
 	public Long updateSuppliersInventoryById(Long suppliersId, int num) {
 		return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
 	}
-	public boolean adjustSuppliersInventoryById(Long goodsId,Long suppliersId, int num) {
+	public List<Long> adjustSuppliersInventoryById(Long goodsId,Long suppliersId, int num) {
 		return this.baseDAOService.adjustSuppliersInventory(goodsId,suppliersId, (num));
 	}
 	public Long updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
@@ -235,9 +235,10 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @param selectionList
 	 * @return
 	 */
-	public boolean batchAdjustSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
-		boolean result = true;
+	public List<Long> batchAdjustSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
+		List<Long> result = null;
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
+	
 			for (GoodsWmsSelectionResult param : selectionList) { // for
 				if (param.getId() > 0) { // if分店
 					result = this.baseDAOService.adjustSelectionWmsInventory(param.getId(), (param.getLeftNum()),(param.getTotalNum()));
@@ -248,8 +249,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		
 	}
 	
-	public boolean batchrollbackSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
-		boolean result = true;
+	public List<Long> batchrollbackSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
+		List<Long> result = null;
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
 			for (GoodsWmsSelectionResult param : selectionList) { // for
 				if (param.getId() > 0) { // if分店
@@ -297,13 +298,13 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public Long adjustSelectionWaterfloodById(Long selectionId, int num) {
 		return this.baseDAOService.adjustSelectionWaterflood(selectionId, (num));
 	}
-	public boolean adjustSelectionWaterfloodById(Long goodsId,Long selectionId, int num) {
+	public List<Long> adjustSelectionWaterfloodById(Long goodsId,Long selectionId, int num) {
 		return this.baseDAOService.adjustSelectionWaterflood(goodsId,selectionId, (num));
 	}
 	public Long adjustSuppliersWaterfloodById(Long suppliersId, int num) {
 		return this.baseDAOService.adjustSuppliersWaterflood(suppliersId, (num));
 	}
-	public boolean adjustSuppliersWaterfloodById(Long goodsId,Long suppliersId, int num) {
+	public List<Long> adjustSuppliersWaterfloodById(Long goodsId,Long suppliersId, int num) {
 		return this.baseDAOService.adjustSuppliersWaterflood(goodsId,suppliersId, (num));
 	}
 	
@@ -494,5 +495,19 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 */
 	public String queryMember(String key) {
 		return this.baseDAOService.queryMember(key);
+	}
+	/**
+	 * 设置tag
+	 * @param tag
+	 * @param seconds
+	 * @param tagValue
+	 * @return
+	 */
+	public String setTag(String tag,int seconds, String tagValue) {
+		return this.baseDAOService.setTag(tag,seconds,tagValue);
+	}
+	
+	public boolean watch(String key,String tagval) {
+		return this.baseDAOService.watch(key,tagval);
 	}
 }

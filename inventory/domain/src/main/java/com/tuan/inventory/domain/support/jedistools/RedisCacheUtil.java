@@ -1,5 +1,7 @@
 package com.tuan.inventory.domain.support.jedistools;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -7,6 +9,7 @@ import javax.annotation.Resource;
 
 import net.sf.json.JSONObject;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
 
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
@@ -318,6 +321,45 @@ public class RedisCacheUtil {
 			}
 		});
 
+	}
+	/**
+	 * 监视一个(或多个) key ，如果在事务执行之前这个(或这些) key 被其他命令所改动，那么事务将被打断。
+	 * @param key
+	 * @return
+	 */
+	public boolean watch(final String key,final String tagval) {
+		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+			@Override
+			public Boolean work(Jedis j) throws Exception {
+				if (j == null)
+					return false;
+				boolean result = false;
+				try {
+					 j.watch(key);
+					 String tag = j.get(key);
+					 if(tag!=null&&tag.equals(tagval)) {  //tag未被修改过，可以执行redis的数据更新操作
+						 result = true;
+						 //同时删除该key
+						 j.del(key);
+					 }else {  //tag 被修改过
+						 result = false;
+						
+					 }
+					// 保证下一个事务的执行不受影响
+					j.unwatch();
+					
+				} catch (Exception e) {
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.watch");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.watch("+key+") error!",e);
+				}
+				return result;
+			}
+			
+		});
+		
 	}
 	/**
 	 * 将一个 member 元素及其 score 值加入到有序集 key 当中
@@ -690,37 +732,111 @@ public class RedisCacheUtil {
 	 * @param value
 	 * @return
 	 */
-	public boolean hincrByAndhincrBy(final String key, final String field1,final String field2, final long value) {
-		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+	public List<Long> hincrByAndhincrBy(final String key, final String field1,final String field2, final long value) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
 			@Override
-			public Boolean work(Jedis j) throws Exception {
+			public List<Long> work(Jedis j) throws Exception {
 				if (j == null)
-				    return false;
-				boolean result = true;
-				Transaction ts = null;
+					return null;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p = null;
 				try {
 					//开启事务
-					ts = j.multi(); 
+					//ts = j.multi(); 
+					 p = j.pipelined();					
 					//总库存
-					ts.hincrBy(key, field1, value);
+					p.hincrBy(key, field1, value);
 					//剩余库存
-					ts.hincrBy(key, field2, value);
+					p.hincrBy(key, field2, value);
+					// 执行事务
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
+				} catch (Exception e) {
+					result = null;
+					// 销毁管道
+					if (p != null)
+						p.discard();
+					// 销毁事务
+					//if (ts != null)
+						//ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("field1", field1)
+							.addMetaData("field2", field2)
+							.addMetaData("value", value)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy("+key+","+field1+","+field2+","+value+") error!",e);
+				}
+				return result;
+			}
+		});
+		
+	}
+	/**
+	 * 两个hincrBy顺序执行
+	 * @param key
+	 * @param field1 总库存field
+	 * @param field2 剩余库存field
+	 * @param value
+	 * @return
+	 */
+	public List<Long> hincrByAndhincrBy(final String key, final String field1,final String field2,final String field3, final long value1,final long value2) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
+			@Override
+			public List<Long> work(Jedis j) throws Exception {
+				if (j == null)
+				    return null;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p = null;
+				try {
+					//开启事务
+					//ts = j.multi(); 
+					p = j.pipelined();					
+					//总库存
+					p.hincrBy(key, field1, value1);
+					//剩余库存
+					p.hincrBy(key, field2, value1);
+					//调整是否限制库存标识
+					p.hincrBy(key, field3, value2);
 					//return j.hincrBy(key,field,value);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
+					
 				} catch (Exception e) {
-					result = false;
+					result = null;
+					// 销毁管道
+					if (p != null)
+						p.discard();
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+					//	ts.discard();
 				//异常发生时记录日志
 				LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("field1", field1)
 						    .addMetaData("field2", field2)
-						    .addMetaData("value", value)
+						    .addMetaData("value1", value1)
+						     .addMetaData("value2", value2)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy("+key+","+field1+","+field2+","+value+") error!",e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy("+key+","+field1+","+field2+","+value1+","+value2+") error!",e);
 				}
 				return result;
 			}
@@ -736,29 +852,41 @@ public class RedisCacheUtil {
 	 * @param value2 剩余
 	 * @return
 	 */
-	public boolean hincrByAndhincrBy4wms(final String key, final String field1,final String field2, final long value1,final long value2) {
-		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+	public List<Long> hincrByAndhincrBy4wms(final String key, final String field1,final String field2, final long value1,final long value2) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
 			@Override
-			public Boolean work(Jedis j) throws Exception {
+			public List<Long> work(Jedis j) throws Exception {
 				if (j == null)
-					return false;
-				boolean result = true;
-				Transaction ts = null;
+					return null;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p = null;
 				try {
 					//开启事务
-					ts = j.multi(); 
+					//ts = j.multi(); 
+					p = j.pipelined();	
 					//总库存
-					ts.hincrBy(key, field1, value1);
+					p.hincrBy(key, field1, value1);
 					//剩余库存
-					ts.hincrBy(key, field2, value2);
+					p.hincrBy(key, field2, value2);
 					//return j.hincrBy(key,field,value);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
 				} catch (Exception e) {
-					result = false;
+					result = null;
+					if (p != null)
+						p.discard();
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+						//ts.discard();
 					//异常发生时记录日志
 					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4wms");
 					log.error(lm.addMetaData("key", key)
@@ -782,29 +910,42 @@ public class RedisCacheUtil {
 	 * @param value
 	 * @return
 	 */
-	public boolean hincrByAndhincrBy4wf(final String key1, final String key2,final String field, final long value) {
-		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+	public List<Long> hincrByAndhincrBy4wf(final String key1, final String key2,final String field, final long value) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
 			@Override
-			public Boolean work(Jedis j) throws Exception {
+			public List<Long> work(Jedis j) throws Exception {
 				if (j == null)
-					return false;
-				boolean result = true;
-				Transaction ts = null;
+					return null;
+				//boolean result = true;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p =  null;
 				try {
 					//开启事务
-					ts = j.multi(); 
+					//ts = j.multi(); 
+					p = j.pipelined();
 					//总库存
-					ts.hincrBy(key1, field, value);
+					p.hincrBy(key1, field, value);
 					//剩余库存
-					ts.hincrBy(key2, field, value);
+					p.hincrBy(key2, field, value);
 					//return j.hincrBy(key,field,value);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
 				} catch (Exception e) {
-					result = false;
+					result = null;
+					if (p != null)
+						p.discard();
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+						//ts.discard();
 					//异常发生时记录日志
 					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4wf");
 					log.error(lm.addMetaData("key1", key1)
@@ -828,33 +969,45 @@ public class RedisCacheUtil {
 	 * @param value
 	 * @return
 	 */
-	public boolean hincrByAndhincrBy4supp(final String goodskey,final String suppkey, final String field1,final String field2, final long value) {
-		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+	public List<Long> hincrByAndhincrBy4supp(final String goodskey,final String suppkey, final String field1,final String field2, final long value) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
 			@Override
-			public Boolean work(Jedis j) throws Exception {
+			public List<Long> work(Jedis j) throws Exception {
 				if (j == null)
-					return false;
-				boolean result = true;
-				Transaction ts = null;
+					return null;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p =  null;
 				try {
 					//开启事务
-					ts = j.multi(); 
+					//ts = j.multi(); 
+					p = j.pipelined();
 					//商品总库存
-					ts.hincrBy(goodskey, field1, value);
+					p.hincrBy(goodskey, field1, value);
 					//商品剩余库存
-					ts.hincrBy(goodskey, field2, value);
+					p.hincrBy(goodskey, field2, value);
 					//分店总库存
-					ts.hincrBy(suppkey, field1, value);
+					p.hincrBy(suppkey, field1, value);
 					//分店剩余库存
-					ts.hincrBy(suppkey, field2, value);
+					p.hincrBy(suppkey, field2, value);
 					//return j.hincrBy(key,field,value);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
 				} catch (Exception e) {
-					result = false;
+					result = null;
+					if (p != null)
+						p.discard();
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+						//ts.discard();
 					//异常发生时记录日志
 					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4supp");
 					log.error(lm.addMetaData("goodskey", goodskey)
@@ -879,42 +1032,56 @@ public class RedisCacheUtil {
 	 * @param value
 	 * @return
 	 */
-	public boolean hincrByAndhincrBy4sel(final String goodskey,final String selkey, final String field1,final String field2, final long value) {
-		return jedisFactory.withJedisDo(new JWork<Boolean>() {
+	public List<Long> hincrByAndhincrBy4sel(final String goodskey,final String selkey, final String field1,final String field2,/*final String field3, */final long value1/*,final long value2*/) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
 			@Override
-			public Boolean work(Jedis j) throws Exception {
+			public List<Long> work(Jedis j) throws Exception {
 				if (j == null)
-					return false;
-				boolean result = true;
-				Transaction ts = null;
+					return null;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p =  null;
 				try {
 					//开启事务
-					ts = j.multi(); 
+					//ts = j.multi(); 
+					p = j.pipelined();
 					//商品总库存
-					ts.hincrBy(goodskey, field1, value);
+					p.hincrBy(goodskey, field1, value1);
 					//商品剩余库存
-					ts.hincrBy(goodskey, field2, value);
+					p.hincrBy(goodskey, field2, value1);
 					//选型总库存
-					ts.hincrBy(selkey, field1, value);
+					p.hincrBy(selkey, field1, value1);
 					//选型剩余库存
-					ts.hincrBy(selkey, field2, value);
+					p.hincrBy(selkey, field2, value1);
+					
+					//p.hincrBy(goodskey, field3, value2);
+					//p.hincrBy(selkey, field3, value2);
 					//return j.hincrBy(key,field,value);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
+					//p.sync();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
 				} catch (Exception e) {
-					result = false;
-					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					result = null;
+					// 销毁管道
+					if (p != null)
+						p.discard();
 					//异常发生时记录日志
 					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4sel");
 					log.error(lm.addMetaData("goodskey", goodskey)
 							.addMetaData("selkey", selkey)
 							.addMetaData("field1", field1)
 							.addMetaData("field2", field2)
-							.addMetaData("value", value)
+							.addMetaData("value1", value1)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4sel("+goodskey+","+selkey+","+field1+","+field2+","+value+") error!",e);
+					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4sel("+goodskey+","+selkey+","+field1+","+field2+","+value1+") error!",e);
 				}
 				return result;
 			}

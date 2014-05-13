@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain.support;
 
+import java.util.List;
 import java.util.Set;
 
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
@@ -93,15 +94,15 @@ public interface BaseDAOService {
 	 * @return
 	 */
 	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId);
-	public boolean updateGoodsWms(String wmsGoodsId,int num);
+	public List<Long> updateGoodsWms(String wmsGoodsId,int num);
 	
 	public Long updateGoodsInventory(Long goodsId,int num);
-	public boolean adjustGoodsInventory(Long goodsId,int num);
+	public List<Long> adjustGoodsInventory(Long goodsId,int num,int limitStorage);
 	public Long updateSelectionInventory(Long selectionId,int num);
-	public boolean adjustSelectionInventory(Long goodsId,Long selectionId,int num);
-	public boolean adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum);
+	public List<Long> adjustSelectionInventory(Long goodsId,Long selectionId,int num);
+	public List<Long> adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum);
 	public Long updateSuppliersInventory(Long suppliersId,int num);
-	public boolean adjustSuppliersInventory(Long goodsId,Long suppliersId,int num);
+	public List<Long> adjustSuppliersInventory(Long goodsId,Long suppliersId,int num);
 	
 	public void markQueueStatus(String member, int upStatusNum);
 	public void markQueueStatusAndDeleteCacheMember(String member,  int upStatusNum,String delkey);
@@ -110,9 +111,9 @@ public interface BaseDAOService {
 	
 	public Long adjustGoodsWaterflood(Long goodsId,int num);
 	public Long adjustSelectionWaterflood(Long selectionId,int num);
-	public boolean adjustSelectionWaterflood(Long goodsId,Long selectionId,int num);
+	public List<Long> adjustSelectionWaterflood(Long goodsId,Long selectionId,int num);
 	public Long adjustSuppliersWaterflood(Long suppliersId,int num);
-	public boolean adjustSuppliersWaterflood(Long goodsId,Long suppliersId,int num);
+	public List<Long> adjustSuppliersWaterflood(Long goodsId,Long suppliersId,int num);
 	
 	public Long deleteGoodsInventory(Long goodsId);
 	public Long deleteSelectionInventory(Long selectionId);
@@ -129,4 +130,6 @@ public interface BaseDAOService {
 	//public GoodsInventoryDO queryGoodsInventory(Long goodsId) 
 	
 	public String queryMember(String key);
+	public String setTag(String tag,int seconds, String tagValue);
+	public boolean watch(final String key,String tagval);
 }

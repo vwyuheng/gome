@@ -4,10 +4,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.wowotrace.trace.model.Message;
 
-public class StringUtils extends org.apache.commons.lang.StringUtils{
+public class WrapUtils extends org.apache.commons.lang.StringUtils{
 	
 	/**
 	 * 创建trace对象
@@ -23,27 +25,13 @@ public class StringUtils extends org.apache.commons.lang.StringUtils{
 		return traceMessage;
 	}
 	
-	/**
-	 * 校验加密卡号是否满足：以逗号分隔，最多支持20张卡，最后无逗号分隔
-	 * @return
-	 */
-	public static boolean checkCardNo(String cardNos){
-		if(cardNos == null || cardNos.isEmpty()){
-			return false;
+	
+	public static Message makeTraceMessageByParam(String traceRootId,String traceId){
+		if(StringUtils.isEmpty(traceId)||StringUtils.isEmpty(traceRootId)){
+			return null;
 		}
-		try{
-			String lastChar = cardNos.substring(cardNos.length() - 1);
-			if(lastChar.equals(",")){
-				return false;
-			}
-			String cardNOs[] = cardNos.split(",") ;
-			if(cardNOs.length > 20){
-				return false;
-			}
-		}catch(Exception e){
-			return false;
-		}
-		return true;
+		Message traceMessage = Message.getMessage(traceRootId,traceId);
+		return traceMessage;
 	}
 	
 	/**

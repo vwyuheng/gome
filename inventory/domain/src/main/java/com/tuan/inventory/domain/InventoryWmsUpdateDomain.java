@@ -53,7 +53,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	// 领域中缓存选型和分店原始库存和扣减库存的list
 	private List<GoodsWmsSelectionResult> selectionParam;
 	// 当前库存
-	private boolean resultACK;
+	private List<Long> resultACK;
 	private SequenceUtil sequenceUtil;
 
 	public InventoryWmsUpdateDomain(String clientIp, String clientName,
@@ -137,11 +137,20 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	}
 
 	private boolean verifyInventory() {
-		if (resultACK) {
-			return true;
-		} else {
-			return false;
+		boolean ret = true;
+		//if(resultACK) {
+		if(!CollectionUtils.isEmpty(resultACK)) {
+			for(long result:resultACK) {
+				if(result<0) {  //如果结果中存在小于0的则返回false
+					ret = false;
+					break;
+				}
+			}
+			
+		}else {
+			ret= false;
 		}
+		return ret;
 	}
 
 	// 业务检查

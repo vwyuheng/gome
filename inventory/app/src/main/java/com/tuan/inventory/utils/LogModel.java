@@ -16,7 +16,7 @@ public class LogModel {
 	
 	private LogModel() {
 		datas = new HashMap<String, Object>();
-		traceId = StringUtils.makeSysSn();
+		traceId = WrapUtils.makeSysSn();
 		datas.put("_traceId", traceId);
 	}
 	

@@ -23,7 +23,6 @@ import com.tuan.inventory.resp.inner.GoodsSuppliersQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.utils.LogModel;
-import com.tuan.inventory.utils.StringUtils;
 import com.wowotrace.trace.model.Message;
 import com.wowotrace.trace.util.TraceMessageUtil;
 import com.wowotrace.traceEnum.MessageTypeEnum;
@@ -54,16 +53,11 @@ public class GoodsInventoryQueryController {
 	public @ModelAttribute("resp")GoodsSelectionQueryInnerResp goodsSelectionQuery(
 			@ModelAttribute("inputPacket") RequestPacket packet,
 			String goodsId, String selectionId, HttpServletRequest request) {
-		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if (traceMessage == null) {
-			GoodsSelectionQueryInnerResp resp = new GoodsSelectionQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(),
-					ResultEnum.NO_PARAMETER.getDescription());
-			return resp;
-		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage,
-				MessageTypeEnum.CENTS, "Inventory-App",
-				"GoodsInventoryQueryController", "goodsSelectionQuery");
+		Message	traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"gselection");
+		
 		LogModel lm = (LogModel) request.getAttribute("lm");
 		GoodsSelectionQueryDomain queryDomain = GoodsSelectionQueryDomain
 				.makeGoodsSelectionQueryDomain(packet, goodsId, selectionId,
@@ -99,14 +93,12 @@ public class GoodsInventoryQueryController {
 	@RequestMapping(value = "/gsuppliers", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSuppliersQueryInnerResp goodsSuppliersQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String suppliersId,HttpServletRequest request) {
-		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if(traceMessage == null){
-			GoodsSuppliersQueryInnerResp resp = new GoodsSuppliersQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
-			return resp;
-		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSuppliersQuery");
-		LogModel lm = (LogModel)request.getAttribute("lm");
+			Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"gsuppliers");
+		    LogModel lm = (LogModel)request.getAttribute("lm");
+		    
 		GoodsSupplierQueryDomain queryDomain = GoodsSupplierQueryDomain.makeGoodsSupplierQueryDomain(packet
 				,  goodsId, suppliersId,lm,traceMessage);
 		if(queryDomain == null){
@@ -137,14 +129,12 @@ public class GoodsInventoryQueryController {
 	@RequestMapping(value = "/goods", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsQueryInnerResp goodsInventoryQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
-		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if(traceMessage == null){
-			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
-			return resp;
-		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsInventoryQuery");
-		LogModel lm = (LogModel)request.getAttribute("lm");
+			Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"goods");
+		    LogModel lm = (LogModel)request.getAttribute("lm");
+		
 		GoodsQueryDomain queryDomain = GoodsQueryDomain.makeGoodsQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
@@ -174,14 +164,13 @@ public class GoodsInventoryQueryController {
 	@RequestMapping(value = "/gsellist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
-		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if(traceMessage == null){
-			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
-			return resp;
-		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSelectionListQuery");
+		
+			Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"gsellist");
 		LogModel lm = (LogModel)request.getAttribute("lm");
+		
 		GoodsSelectionListQueryDomain queryDomain = GoodsSelectionListQueryDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
@@ -212,14 +201,12 @@ public class GoodsInventoryQueryController {
 	@RequestMapping(value = "/sellist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSelectionListQueryInnerResp goodsSelectionListQueryByselidList(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,String selectionIdList,HttpServletRequest request) {
-		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if(traceMessage == null){
-			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
-			return resp;
-		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSelectionListQuery");
-		LogModel lm = (LogModel)request.getAttribute("lm");
+			Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"sellist");
+		    LogModel lm = (LogModel)request.getAttribute("lm");
+		     
 		GoodsSelectionListQueryBySelIdListDomain queryDomain = GoodsSelectionListQueryBySelIdListDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,selectionIdList,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
@@ -249,13 +236,10 @@ public class GoodsInventoryQueryController {
 	@RequestMapping(value = "/gsupplist", method = RequestMethod.POST)
 	public @ModelAttribute("resp")GoodsSuppliersListQueryInnerResp goodsSuppliersListQuery(@ModelAttribute("inputPacket") RequestPacket packet
 			,String goodsId,HttpServletRequest request) {
-		Message traceMessage = StringUtils.makeTraceMessage(packet);
-		if(traceMessage == null){
-			GoodsSuppliersListQueryInnerResp resp = new GoodsSuppliersListQueryInnerResp();
-			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
-			return resp;
-		}
-		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory-App", "GoodsInventoryQueryController", "goodsSuppliersListQuery");
+			Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"gsupplist");
 		LogModel lm = (LogModel)request.getAttribute("lm");
 		GoodsSuppliersListQueryDomain queryDomain = GoodsSuppliersListQueryDomain.makeGoodsSuppliersListQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){

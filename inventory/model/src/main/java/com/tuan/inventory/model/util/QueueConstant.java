@@ -31,7 +31,7 @@ public class QueueConstant {
 	//库存扣减返回参数：生成的队列主键id值的key名称定义
 	public final static String QUEUE_KEY_ID="queue:key.id";//异步触发记录日志流水的队列名称
 	
-	
+	public final static String INVENTORY_ADJUST="inventory:adjust"; //库存调整
 	/** 队列结果状态 status */
 	/*public static final int QUEUE_STATUS_NOT_CONSUMER = 1;//未消费
 	public static final int QUEUE_STATUS_CONSUMER_SUCCESS = 2;//消费成功(包括消费次数已经用完，也标记成功，但是队列的阿状态不一样)

@@ -36,11 +36,13 @@ public class Interceptor extends HandlerInterceptorAdapter {
 		LogModel lm = null;
 		Message messageRoot = null;
 		String traceRootId = request.getParameter("traceRootId");
-		if(traceRootId == null || traceRootId.isEmpty()){
+		String traceId = request.getParameter("traceId");
+		if(traceRootId == null || traceRootId.isEmpty()||traceId==null||traceId.isEmpty()){
 			messageRoot = TraceMessageUtil.newRootMessage();	//trace根
 			lm = LogModel.newLogModel(messageRoot.getTraceHeader().getRootId());
 		}else{
 			lm = LogModel.newLogModel(traceRootId);
+			messageRoot = WrapUtils.makeTraceMessageByParam(traceRootId,traceId);
 		}
 		lm.addMetaData("Params", readRequestParams(request)).setMethod(request.getRequestURI());
 		if(logger.isInfoEnabled()){
@@ -84,6 +86,7 @@ public class Interceptor extends HandlerInterceptorAdapter {
 	@SuppressWarnings({ "rawtypes" })
 	private Map readRequestParams(HttpServletRequest request) {
 		try {
+			@SuppressWarnings("unchecked")
 			Enumeration<String> enumer=request.getParameterNames();
 			Map<String,String> params=new HashMap<String,String>();
 			String key=null;

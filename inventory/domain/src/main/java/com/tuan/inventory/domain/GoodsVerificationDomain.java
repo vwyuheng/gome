@@ -181,7 +181,7 @@ public class GoodsVerificationDomain {
 		if(isSupplier&&isSelection) {  //分店选型都有的
 			//校验类型是否合法
 			if (!(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode()))&&!(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode()))) {//即非选型亦非分的
-				return CreateInventoryResultEnum.INVALID_TYPE;
+				return CreateInventoryResultEnum.SEL_OR_SUPP;
 			}else if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				if (StringUtils.isEmpty(id)) {
 					return CreateInventoryResultEnum.INVALID_SELECTIONID;
