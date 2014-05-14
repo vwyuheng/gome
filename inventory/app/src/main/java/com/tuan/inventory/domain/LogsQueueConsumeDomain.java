@@ -19,8 +19,7 @@ public class LogsQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	private UpdateRequestPacket packet;
-	//private static Logger logger = Logger.getLogger(LogsQueueConsumeDomain.class);
-	private static Log logger = LogFactory.getLog(LogsQueueConsumeDomain.class);
+	private static Log logger = LogFactory.getLog("INVENTORY.JOB.LOG");
 	
 	public LogsQueueConsumeDomain(UpdateRequestPacket packet,LogModel lm,Message messageRoot){
 		this.packet = packet;
@@ -45,8 +44,8 @@ public class LogsQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 			goodsInventoryScheduledService.logsQueueConsume(
 					clientIp, clientName, messageRoot);
 		} catch (Exception e) {
-			logger.error(lm.setMethod("LogsQueueConsumeDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logger.error(lm.addMetaData("errMsg", "LogsQueueConsumeDomain.doBusiness"+e.getMessage()).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

@@ -22,8 +22,8 @@ public class LockedQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	private InventoryScheduledParam param;
 	private UpdateRequestPacket packet;
-	//private static Logger logger = Logger.getLogger(LockedQueueConsumeDomain.class);
-	private static Log logger = LogFactory.getLog(LockedQueueConsumeDomain.class);
+	private static Log logger = LogFactory.getLog("INVENTORY.JOB.LOG");
+	
 	public LockedQueueConsumeDomain(UpdateRequestPacket packet,String period,LogModel lm,Message messageRoot){
 		this.packet = packet;
 		this.period = Integer.valueOf(period);
@@ -63,8 +63,8 @@ public class LockedQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 					clientIp, clientName, param, messageRoot);
 			
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logger.error(lm.addMetaData("errMsg","LockedQueueConsumeDomain.doBusiness"+ e.getMessage()).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

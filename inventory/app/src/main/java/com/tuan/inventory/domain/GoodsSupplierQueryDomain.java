@@ -38,7 +38,7 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 			
 		} catch (Exception e) {
 			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
-			return ResultEnum.ERROR_2000;
+			return ResultEnum.SYS_ERROR;
 		}
 		
 		if (queryCallResult == null ) {

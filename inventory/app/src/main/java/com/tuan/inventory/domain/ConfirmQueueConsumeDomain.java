@@ -19,8 +19,8 @@ public class ConfirmQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryScheduledService goodsInventoryScheduledService;
 	private UpdateRequestPacket packet;
-	//private static Logger logger = Logger.getLogger(ConfirmQueueConsumeDomain.class);
-	private static Log logger = LogFactory.getLog(ConfirmQueueConsumeDomain.class);
+	
+	private static Log logger = LogFactory.getLog("INVENTORY.JOB.LOG");
 	
 	public ConfirmQueueConsumeDomain(UpdateRequestPacket packet,LogModel lm,Message messageRoot){
 		this.packet = packet;
@@ -45,8 +45,8 @@ public class ConfirmQueueConsumeDomain extends AbstractGoodsInventoryDomain{
 			goodsInventoryScheduledService.confirmQueueConsume(
 					clientIp, clientName, messageRoot);
 		} catch (Exception e) {
-			logger.error(lm.setMethod("ConfirmQueueConsumeDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logger.error(lm.addMetaData("errMsg", "ConfirmQueueConsumeDomain.doBusiness"+e.getMessage()).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

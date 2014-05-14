@@ -63,7 +63,7 @@ public enum ResultEnum {
 	NONE_LIMIT_STORAGE			("1038", 	"非限制库存商品无需调整其库存"),
 	NO_DATA("0","没有可用的数据"),
 	
-	ERROR_2000	("2000",	"程序运行时错误"),
+	//ERROR_2000	("2000",	"程序运行时错误"),
 	NET_ERROR			("10998",	"网络异常"),
 	//SYSTEM_ERROR		("10999",	"系统错误"),
 	ERROR_UNKONW       ("9999",	"其它");
@@ -244,9 +244,9 @@ public enum ResultEnum {
 		if(code.equals("1038")){
 			return ResultEnum.NONE_LIMIT_STORAGE;
 		}
-		if(code.equals("2000")){
-			return ResultEnum.ERROR_2000;
-		}
+		//if(code.equals("2000")){
+		//	return ResultEnum.ERROR_2000;
+		//}
 		
 		
 		if(code.equals("9999")){

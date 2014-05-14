@@ -49,6 +49,9 @@ public class GoodsInventorySchedulerController {
 				"Inventory-app", "GoodsInventorySchedulerController",
 				"confirmQueueConsume");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/confirm")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("start", "start");
 		ConfirmQueueConsumeDomain confirmQueueConsumeDomain = new ConfirmQueueConsumeDomain(
 				packet, lm, messageRoot);
 		confirmQueueConsumeDomain
@@ -81,6 +84,10 @@ public class GoodsInventorySchedulerController {
 				"Inventory-app", "GoodsInventorySchedulerController",
 				"lockedQueueConsume");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/lock")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("period", period)
+		.addMetaData("start", "start");
 		LockedQueueConsumeDomain lockedQueueConsumeDomain = new LockedQueueConsumeDomain(
 				packet, period,lm, messageRoot);
 		lockedQueueConsumeDomain
@@ -112,6 +119,9 @@ public class GoodsInventorySchedulerController {
 				"Inventory-app", "GoodsInventorySchedulerController",
 				"logsQueueConsume");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/log")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("start", "start");
 		LogsQueueConsumeDomain logsQueueConsumeDomain = new LogsQueueConsumeDomain(
 				packet, lm, messageRoot);
 		logsQueueConsumeDomain
