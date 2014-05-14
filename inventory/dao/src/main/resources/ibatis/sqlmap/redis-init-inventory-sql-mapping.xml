@@ -16,7 +16,7 @@
 	<!-- 通过商品ID查询非选型实物商品的库存  -->	
 	<select id="selectRedisInventoryByGoodsId" resultMap="GoodsInventoryResult"  parameterClass="java.lang.Long">
 	select goods_id,goods_wms_id,0 AS user_id,total_num,left_num,limit_storage,0 AS waterflood_val
-	from (select ga.goods_id,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption
+	from (select ga.goods_id,ga.goods_wms_id,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption
 		from jeehe_goods_attribute ga  where ga.goods_id = #goodsId:BIGINT#) AS tmp
 	</select>
 	
