@@ -32,6 +32,60 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;
+	
+	
+	@Override
+	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,
+			final List<GoodsSelectionDO> selectionList) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							if(wmsDO!=null) {
+								 synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+							}
+							synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+							
+						} catch (Exception e) {
+							
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+										"Duplicate entry '" + wmsDO.getWmsGoodsId()
+										+ "' for key 'wmsGoodsId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (wmsDO == null&&CollectionUtils.isEmpty(selectionList)) {
+							logger.error(this.getClass()+"_create param invalid ,param is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
+	
 	@Override
 	public CallResult<Boolean> saveGoodsInventory(final long goodsId,final GoodsInventoryDO inventoryInfoDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList)
 			throws Exception {
@@ -495,13 +549,14 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 }
 
 	@Override
-	public CallResult<GoodsSuppliersDO> updateGoodsSuppliers(
+	public CallResult<GoodsSuppliersDO> updateGoodsSuppliers(final GoodsInventoryDO goodsDO,
 			final GoodsSuppliersDO suppliersDO) throws Exception {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					try {
+					synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
 					synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersDO);
 					} catch (Exception e) {
 						logger.error(
@@ -914,7 +969,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 }
 	@Override
-	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,
+	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,
 			final List<GoodsSelectionDO> selectionList) throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
@@ -924,6 +979,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(wmsDO!=null) {
 								 synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
 							}
+							synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
 							synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 							
 						} catch (Exception e) {
@@ -1014,6 +1070,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	
 	@Override
 	public CallResult<Boolean> batchUpdateGoodsWms(final GoodsInventoryWMSDO wmsDO,
+			final List<GoodsInventoryDO> wmsInventoryList,
 			final List<GoodsWmsSelectionResult> selectionList)
 			throws Exception {
 		
@@ -1025,6 +1082,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								 synInitAndAsynUpdateDomainRepository.updateGoodsInventoryWMS(wmsDO);
 							}
 							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(selectionList);
+							synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
 							
 						} catch (Exception e) {
 							
@@ -1064,6 +1122,55 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 		
 	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public CallResult<List<GoodsInventoryDO>> selectInventoryList4Wms(final
+			String wmsGoodsId) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					List<GoodsInventoryDO> goodsInventoryList = null;
+					try {
+						goodsInventoryList = initCacheDomainRepository.selectInventory4Wms(wmsGoodsId);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectIsOrNotGoodsWMSByGoodsId error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + wmsGoodsId
+											+ "' for key 'wmsGoodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectIsOrNotGoodsWMSByGoodsId error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							goodsInventoryList);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (StringUtils.isEmpty(wmsGoodsId)) {
+						 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	
+	return new CallResult<List<GoodsInventoryDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(List<GoodsInventoryDO>)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
 	
 	
 	

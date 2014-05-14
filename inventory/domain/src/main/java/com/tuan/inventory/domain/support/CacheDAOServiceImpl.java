@@ -397,7 +397,8 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public List<Long> updateGoodsWms(String wmsGoodsId, int num) {
-		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+		return this.redisCacheUtil.hincrByAndhincrBy(
+				QueueConstant.WMS_INVENTORY_PREFIX + ":"
 				+ wmsGoodsId,
 				HashFieldEnum.leftNumber.toString(),
 				HashFieldEnum.totalNumber.toString(),

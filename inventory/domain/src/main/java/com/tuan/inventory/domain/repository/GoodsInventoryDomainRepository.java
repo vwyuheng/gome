@@ -44,6 +44,17 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 		this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
+	public void saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
+		if(!CollectionUtils.isEmpty(goodsIds)) {
+			for(GoodsInventoryDO inventoryInfoDO:goodsIds) {
+				inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
+				inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
+				this.baseDAOService.saveInventory(inventoryInfoDO.getGoodsId(), inventoryInfoDO);
+			}
+		}
+		
+		
+	}
 	//将日志压入队列
 	public void pushLogQueues(final GoodsInventoryActionDO logActionDO){
 		this.baseDAOService.pushLogQueues(logActionDO);
@@ -176,6 +187,20 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.updateGoodsInventory(goodsId, num);
 	}
 	
+	public boolean updateBatchGoodsInventory(List<GoodsInventoryDO> goodsIds, int num) {
+	
+		if(!CollectionUtils.isEmpty(goodsIds)) {
+			for(GoodsInventoryDO goodsDO: goodsIds) {
+				long goodsId = goodsDO.getGoodsId();
+				long result = this.baseDAOService.updateGoodsInventory(goodsId, num);
+				if(result<0) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
 	public List<Long> adjustGoodsInventory(Long goodsId, int num,int limitStorage) {
 		return this.baseDAOService.adjustGoodsInventory(goodsId, num,limitStorage);
 	}
@@ -192,42 +217,57 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public List<Long> adjustSuppliersInventoryById(Long goodsId,Long suppliersId, int num) {
 		return this.baseDAOService.adjustSuppliersInventory(goodsId,suppliersId, (num));
 	}
-	public Long updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
-		long result = 0;
+	public boolean updateSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
+		boolean success = false;
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.baseDAOService.updateSelectionInventory(param.getId(), (-param.getGoodsInventory()));
+					long result = this.baseDAOService.updateSelectionInventory(param.getId(), (-param.getGoodsInventory()));
+					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
+						return false;
+					}else {
+						success = true;
+					}
 				}
 			}
 		}
-		return result;
+		return success;
 		
 	}
 	
 	//回滚选型库存
-	public Long rollbackSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
-		long result = 0;
+	public boolean rollbackSelectionInventory(List<GoodsSelectionAndSuppliersResult> selectionParam) {
+		boolean success = false;
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.baseDAOService.updateSelectionInventory(param.getId(), (param.getGoodsInventory()));
+					long	result = this.baseDAOService.updateSelectionInventory(param.getId(), (param.getGoodsInventory()));
+					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
+						return false;
+					}else {
+						success = true;
+					}
 				}
 			}
 		}
-		return result;
+		return success;
 		
 	}
-	public Long updateSuppliersInventory(List<GoodsSelectionAndSuppliersResult> suppliersParam) {
-		long result = 0;
+	public boolean updateSuppliersInventory(List<GoodsSelectionAndSuppliersResult> suppliersParam) {
+		boolean success = false;
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if分店
-					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
+					long result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
+					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
+						return false;
+					}else {
+						success = true;
+					}
 				}
 			}
 		}
-		return result;
+		return success;
 		
 	}
 	/**
@@ -262,16 +302,21 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		
 	}
 	//回滚分店库存
-	public Long rollbackSuppliersInventory(List<GoodsSelectionAndSuppliersResult> suppliersParam) {
-		long result = 0;
+	public boolean rollbackSuppliersInventory(List<GoodsSelectionAndSuppliersResult> suppliersParam) {
+		boolean success = false;
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if选型
-					result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
+					long result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
+					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
+						return false;
+					}else {
+						success = true;
+					}
 				}
 			}
 		}
-		return result;
+		return success;
 		
 	}
 	/**

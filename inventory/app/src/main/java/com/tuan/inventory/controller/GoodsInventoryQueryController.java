@@ -59,6 +59,10 @@ public class GoodsInventoryQueryController {
 					"gselection");
 		
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/gselection")
+		.addMetaData("goodsId", goodsId)
+		.addMetaData("selectionId", selectionId)
+		.addMetaData("RequestPacket", packet);
 		GoodsSelectionQueryDomain queryDomain = GoodsSelectionQueryDomain
 				.makeGoodsSelectionQueryDomain(packet, goodsId, selectionId,
 						lm, traceMessage);
@@ -98,7 +102,10 @@ public class GoodsInventoryQueryController {
 					"Inventory-app", "GoodsInventoryQueryController",
 					"gsuppliers");
 		    LogModel lm = (LogModel)request.getAttribute("lm");
-		    
+		    lm.setMethod("/gsuppliers")
+			.addMetaData("goodsId", goodsId)
+			.addMetaData("suppliersId", suppliersId)
+			.addMetaData("RequestPacket", packet);
 		GoodsSupplierQueryDomain queryDomain = GoodsSupplierQueryDomain.makeGoodsSupplierQueryDomain(packet
 				,  goodsId, suppliersId,lm,traceMessage);
 		if(queryDomain == null){
@@ -134,7 +141,9 @@ public class GoodsInventoryQueryController {
 					"Inventory-app", "GoodsInventoryQueryController",
 					"goods");
 		    LogModel lm = (LogModel)request.getAttribute("lm");
-		
+		    lm.setMethod("/goods")
+			.addMetaData("goodsId", goodsId)
+			.addMetaData("RequestPacket", packet);
 		GoodsQueryDomain queryDomain = GoodsQueryDomain.makeGoodsQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
@@ -170,7 +179,9 @@ public class GoodsInventoryQueryController {
 					"Inventory-app", "GoodsInventoryQueryController",
 					"gsellist");
 		LogModel lm = (LogModel)request.getAttribute("lm");
-		
+		 lm.setMethod("/gsellist")
+			.addMetaData("goodsId", goodsId)
+			.addMetaData("RequestPacket", packet);
 		GoodsSelectionListQueryDomain queryDomain = GoodsSelectionListQueryDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
@@ -206,7 +217,9 @@ public class GoodsInventoryQueryController {
 					"Inventory-app", "GoodsInventoryQueryController",
 					"sellist");
 		    LogModel lm = (LogModel)request.getAttribute("lm");
-		     
+		    lm.setMethod("/sellist")
+			.addMetaData("goodsId", goodsId)
+			.addMetaData("RequestPacket", packet);
 		GoodsSelectionListQueryBySelIdListDomain queryDomain = GoodsSelectionListQueryBySelIdListDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,selectionIdList,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
@@ -241,6 +254,9 @@ public class GoodsInventoryQueryController {
 					"Inventory-app", "GoodsInventoryQueryController",
 					"gsupplist");
 		LogModel lm = (LogModel)request.getAttribute("lm");
+		 lm.setMethod("/gsupplist")
+			.addMetaData("goodsId", goodsId)
+			.addMetaData("RequestPacket", packet);
 		GoodsSuppliersListQueryDomain queryDomain = GoodsSuppliersListQueryDomain.makeGoodsSuppliersListQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSuppliersListQueryInnerResp resp = new GoodsSuppliersListQueryInnerResp();

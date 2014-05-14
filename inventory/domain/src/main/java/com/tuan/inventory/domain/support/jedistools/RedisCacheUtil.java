@@ -24,7 +24,8 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
  * @date 2014.3
  */
 public class RedisCacheUtil {
-	private final static LocalLogger log = LocalLogger.getLog("RedisCacheUtil.LOG");
+	private final static LocalLogger log = LocalLogger.getLog("CACHE.ERROR");
+
 	@Resource
 	JedisFactory jedisFactory;
 	/**
@@ -45,10 +46,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.getData");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.hgetAll");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hgetAll("+key+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hgetAll("+key+") error!",e);
 				}
 				
 			}
@@ -75,11 +76,11 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.hmset");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.hmset");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("hash", hash)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hmset("+key+","+hash+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hmset("+key+","+hash+") error!",e);
 				}
 				
 			}
@@ -106,12 +107,12 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.hincrBy");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrBy");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("field", field)
 						    .addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrBy("+key+","+field+","+value+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrBy("+key+","+field+","+value+") error!",e);
 				}
 				
 			}
@@ -138,11 +139,11 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.sadd");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.sadd");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("member", member)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.sadd("+key+","+member+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.sadd("+key+","+member+") error!",e);
 				}
 				
 			}
@@ -169,12 +170,12 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.zrangeByScore");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.zrangeByScore");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("min", min)
 						    .addMetaData("max", max)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.zrangeByScore("+key+","+min+","+max+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.zrangeByScore("+key+","+min+","+max+") error!",e);
 				}
 				
 			}
@@ -198,11 +199,11 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.index");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.index");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("index", index)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.index("+key+","+index+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.index("+key+","+index+") error!",e);
 				}
 				
 			}
@@ -227,10 +228,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.smembers");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.smembers");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.smembers("+key+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.smembers("+key+") error!",e);
 				}
 				
 			}
@@ -253,10 +254,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.exists");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.exists");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.exists("+key+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.exists("+key+") error!",e);
 				}
 				
 			}
@@ -280,11 +281,11 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.lpush");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.lpush");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("strings", strings)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.lpush("+key+","+strings+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.lpush("+key+","+strings+") error!",e);
 				}
 				
 			}
@@ -310,12 +311,12 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.setex");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.setex");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("seconds", seconds)
 						    .addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-				 throw new CacheRunTimeException("jedis.setex("+key+","+seconds+","+value+") error!",e);
+				 throw new CacheRunTimeException("RedisCacheUtil.setex("+key+","+seconds+","+value+") error!",e);
 				}
 				
 			}
@@ -350,10 +351,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.watch");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.watch");
 					log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.watch("+key+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.watch("+key+") error!",e);
 				}
 				return result;
 			}
@@ -379,12 +380,12 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.zadd");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.zadd");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("score", score)
 						    .addMetaData("member", member)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-				 throw new CacheRunTimeException("jedis.zadd("+key+","+score+","+member+") error!",e);
+				 throw new CacheRunTimeException("RedisCacheUtil.zadd("+key+","+score+","+member+") error!",e);
 				}
 				
 			}
@@ -410,12 +411,12 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.lrem");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.lrem");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("count", count)
 						    .addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-				 throw new CacheRunTimeException("jedis.lrem("+key+","+count+","+value+") error!",e);
+				 throw new CacheRunTimeException("RedisCacheUtil.lrem("+key+","+count+","+value+") error!",e);
 				}
 				
 			}
@@ -438,10 +439,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.get");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.get");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-				 throw new CacheRunTimeException("jedis.get("+key+") error!",e);
+				 throw new CacheRunTimeException("RedisCacheUtil.get("+key+") error!",e);
 				}
 				
 			}
@@ -467,12 +468,12 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.zincrby");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.zincrby");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("score", score)
 						    .addMetaData("member", member)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-				 throw new CacheRunTimeException("jedis.zincrby("+key+","+score+","+member+") error!",e);
+				 throw new CacheRunTimeException("RedisCacheUtil.zincrby("+key+","+score+","+member+") error!",e);
 				}
 				
 			}
@@ -495,10 +496,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.incr");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.incr");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.incr("+key+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.incr("+key+") error!",e);
 				}
 				
 			}
@@ -522,11 +523,11 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.hexists");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.hexists");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("field", field)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hexists("+key+","+field+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hexists("+key+","+field+") error!",e);
 				}
 				
 			}
@@ -549,10 +550,10 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.del");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.del");
 				log.error(lm.addMetaData("key", key)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.del("+key+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.del("+key+") error!",e);
 				}
 				
 			}
@@ -575,11 +576,11 @@ public class RedisCacheUtil {
 					
 				} catch (Exception e) {
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.hdel");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.hdel");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("fields", fields)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hdel("+key+","+fields+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hdel("+key+","+fields+") error!",e);
 				}
 				
 			}
@@ -616,14 +617,14 @@ public class RedisCacheUtil {
 					if (ts != null)
 						ts.discard();
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.zincrbyAnddel");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.zincrbyAnddel");
 				log.error(lm
 						    .addMetaData("zincrbykey", zincrbykey)
 						    .addMetaData("upStatusNum", upStatusNum)
 						    .addMetaData("zincrbymember", zincrbymember)
 						    .addMetaData("delkey", delkey)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-				 throw new CacheRunTimeException("jedis.zincrbyAnddel("+delkey+","+zincrbykey+","+upStatusNum+","+zincrbymember+") error!",e);
+				 throw new CacheRunTimeException("RedisCacheUtil.zincrbyAnddel("+delkey+","+zincrbykey+","+upStatusNum+","+zincrbymember+") error!",e);
 				}
 				
 				return result;
@@ -666,12 +667,12 @@ public class RedisCacheUtil {
 					if (ts != null)
 						ts.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.setexAndzadd");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.setexAndzadd");
 					log.error(lm.addMetaData("setexkey", setexkey)
 							.addMetaData("zaddkey", zaddkey)
 							.addMetaData("queueDO", queueDO)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.setexAndzadd("+setexkey+","+zaddkey+","+queueDO+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.setexAndzadd("+setexkey+","+zaddkey+","+queueDO+") error!",e);
 				}
 				
 				return result;
@@ -709,13 +710,13 @@ public class RedisCacheUtil {
 					if (ts != null)
 						ts.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.saddAndhmset");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.saddAndhmset");
 					log.error(lm.addMetaData("saddkey", saddkey)
 							.addMetaData("hmsetkey", hmsetkey)
 							.addMetaData("id", id)
 							.addMetaData("hash", hash)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.saddAndhmset("+saddkey+","+hmsetkey+","+id+","+hash+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.saddAndhmset("+saddkey+","+hmsetkey+","+id+","+hash+") error!",e);
 				}
 				
 				return result;
@@ -744,7 +745,7 @@ public class RedisCacheUtil {
 				try {
 					//开启事务
 					//ts = j.multi(); 
-					 p = j.pipelined();					
+					 p = j.pipelined();		
 					//总库存
 					p.hincrBy(key, field1, value);
 					//剩余库存
@@ -768,13 +769,13 @@ public class RedisCacheUtil {
 					//if (ts != null)
 						//ts.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy");
 					log.error(lm.addMetaData("key", key)
 							.addMetaData("field1", field1)
 							.addMetaData("field2", field2)
 							.addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy("+key+","+field1+","+field2+","+value+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy("+key+","+field1+","+field2+","+value+") error!",e);
 				}
 				return result;
 			}
@@ -829,14 +830,14 @@ public class RedisCacheUtil {
 					//if (ts != null)
 					//	ts.discard();
 				//异常发生时记录日志
-				LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy");
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy");
 				log.error(lm.addMetaData("key", key)
 						    .addMetaData("field1", field1)
 						    .addMetaData("field2", field2)
 						    .addMetaData("value1", value1)
 						     .addMetaData("value2", value2)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy("+key+","+field1+","+field2+","+value1+","+value2+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy("+key+","+field1+","+field2+","+value1+","+value2+") error!",e);
 				}
 				return result;
 			}
@@ -888,14 +889,14 @@ public class RedisCacheUtil {
 					//if (ts != null)
 						//ts.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4wms");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy4wms");
 					log.error(lm.addMetaData("key", key)
 							.addMetaData("field1", field1)
 							.addMetaData("field2", field2)
 							.addMetaData("value1", value1)
 							.addMetaData("value2", value2)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4wms("+key+","+field1+","+field2+","+value1+value2+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy4wms("+key+","+field1+","+field2+","+value1+value2+") error!",e);
 				}
 				return result;
 			}
@@ -947,13 +948,13 @@ public class RedisCacheUtil {
 					//if (ts != null)
 						//ts.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4wf");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy4wf");
 					log.error(lm.addMetaData("key1", key1)
 							.addMetaData("key2", key2)
 							.addMetaData("field", field)
 							.addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4wf("+key1+","+key2+","+field+","+value+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy4wf("+key1+","+key2+","+field+","+value+") error!",e);
 				}
 				return result;
 			}
@@ -1009,14 +1010,14 @@ public class RedisCacheUtil {
 					//if (ts != null)
 						//ts.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4supp");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy4supp");
 					log.error(lm.addMetaData("goodskey", goodskey)
 							.addMetaData("suppkey", suppkey)
 							.addMetaData("field1", field1)
 							.addMetaData("field2", field2)
 							.addMetaData("value", value)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4supp("+goodskey+","+suppkey+","+field1+","+field2+","+value+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy4supp("+goodskey+","+suppkey+","+field1+","+field2+","+value+") error!",e);
 				}
 				return result;
 			}
@@ -1074,14 +1075,14 @@ public class RedisCacheUtil {
 					if (p != null)
 						p.discard();
 					//异常发生时记录日志
-					LogModel lm = LogModel.newLogModel("RedisLockCache.hincrByAndhincrBy4sel");
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy4sel");
 					log.error(lm.addMetaData("goodskey", goodskey)
 							.addMetaData("selkey", selkey)
 							.addMetaData("field1", field1)
 							.addMetaData("field2", field2)
 							.addMetaData("value1", value1)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
-					throw new CacheRunTimeException("jedis.hincrByAndhincrBy4sel("+goodskey+","+selkey+","+field1+","+field2+","+value1+") error!",e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy4sel("+goodskey+","+selkey+","+field1+","+field2+","+value1+") error!",e);
 				}
 				return result;
 			}

@@ -9,6 +9,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.core.common.lock.eum.LockResultCodeEnum;
+import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -16,6 +19,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -34,16 +38,14 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private AdjustWaterfloodParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private DLockImpl dLock;//分布式锁
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
 	private GoodsSelectionDO selectionInventory;
 	private GoodsSuppliersDO suppliersInventory;
-	//初始化用
-	//private List<GoodsSuppliersDO> suppliersInventoryList;
-	//private List<GoodsSelectionDO> selectionInventoryList;
+
 	//商品id 参数
 	private String goodsId2str;
 	private String type;
@@ -134,9 +136,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				}
 			}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("WaterfloodAdjustmentDomain errorMsg",
+							"busiCheck error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
@@ -218,7 +220,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				//更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(suppliersInventory);
+				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(inventoryDO,suppliersInventory);
 				if(handlerResult) {
 					this.ack = this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(goodsId,suppliersId, (adjustNum));
 					if(!verifyselOrsuppWf()) {  //TODO maybe有问题
@@ -230,15 +232,12 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						this.selOrSuppwfval = selectionInventory.getWaterfloodVal();
 					}
 				}
-			
-				//更新分店的mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
-				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersInventory);
 			}
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("adjustWaterfloodVal").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"adjustWaterfloodVal error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -267,7 +266,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				String paramJson = new Gson().toJson(notifyParam, orderParamType);
 				extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
 			} catch (Exception e) {
-				writeBusErrorLog(lm.addMetaData("errMsg", e.getMessage()), e);
+				writeBusUpdateErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
 			}
 		}
 		
@@ -298,18 +297,41 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				}
 	
 	//初始化库存
+	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 				this.fillParam();
 				this.goodsId = StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
-				//this.goodsId = Long.valueOf(id);
-				InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
-				//注入相关Repository
-				//create.setGoodsId(this.goodsId);
-				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
-				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-				return create.businessExecute();
+				//初始化加分布式锁
+				lm.addMetaData("WaterfloodAdjustmentDomain initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
+				writeBusInitLog(lm,false);
+				LockResult<String> lockResult = null;
+				CreateInventoryResultEnum resultEnum = null;
+				String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
+				try {
+					lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
+					if (lockResult == null
+							|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+									.getCode()) {
+						writeBusInitLog(
+								lm.setMethod("WaterfloodAdjustmentDomain initCheck dLock").addMetaData("errorMsg",
+										goodsId), false);
+					}
+					
+					InventoryInitDomain create = new InventoryInitDomain(
+							goodsId, lm);
+					//注入相关Repository
+					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+					create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+					resultEnum = create.businessExecute();
+				} finally{
+					dLock.unlockManual(key);
+				}
+				lm.addMetaData("result", resultEnum);
+				lm.addMetaData("result", "end");
+				writeBusInitLog(lm,false);
+				
+				return resultEnum;
 			}
 			
 	
@@ -337,8 +359,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			updateActionDO.setRemark("注水调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusUpdateErrorLog(lm
+					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -364,7 +386,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			}
 			
 		}else {
-			ret= false;
+			return true;
 		}
 		return ret;
 	}
@@ -407,8 +429,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			gsModel.setWaterfloodVal((int)resultACK);
 			selectionMsg.add(gsModel);
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillSelectionMsg")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusUpdateErrorLog(lm
+					.addMetaData("errMsg", "fillSelectionMsg error"+e.getMessage()),false, e);
 			this.selectionMsg = null;
 		}
 		this.selectionMsg = selectionMsg;
@@ -427,8 +449,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			gsModel.setWaterfloodVal((int)resultACK);
 			suppliersMsg.add(gsModel);
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillSuppliersMsg")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusUpdateErrorLog(lm
+					.addMetaData("errMsg", "fillSuppliersMsg error"+e.getMessage()),false, e);
 			this.suppliersMsg = null;
 		}
 		this.suppliersMsg = suppliersMsg;
@@ -451,6 +473,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
+	}
+
+	public void setdLock(DLockImpl dLock) {
+		this.dLock = dLock;
 	}
 
 	public Long getGoodsId() {

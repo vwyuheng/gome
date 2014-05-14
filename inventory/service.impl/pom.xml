@@ -35,6 +35,10 @@
    			<artifactId>logback-ext-spring</artifactId>
 		</dependency>
 		<!-- logback end -->
+		<dependency>
+		  	<groupId>com.tuan.cozy</groupId>
+	        <artifactId>cozy-common-lock-client-redis</artifactId>
+		</dependency>
 	   <dependency>
 			<groupId>com.tuan.cozy</groupId>
 			<artifactId>cozy-utils-trace</artifactId>

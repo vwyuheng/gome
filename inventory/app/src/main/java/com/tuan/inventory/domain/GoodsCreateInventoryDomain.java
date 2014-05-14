@@ -63,8 +63,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	// 是否分店商品
 	private boolean isSupplier;
 	
-	//private static Logger logger = Logger.getLogger(GoodsCreateInventoryDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsCreateInventoryDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
 	
 	@SuppressWarnings("unchecked")
 	public GoodsCreateInventoryDomain(UpdateRequestPacket packet,CreaterInventoryRestParam reqparam,LogModel lm,Message messageRoot){
@@ -303,20 +302,21 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 
 	@Override
 	public ResultEnum doBusiness() {
-		
+		logerror.info(lm.addMetaData("start", "start"));
+		InventoryCallResult resp = null;
 		try {
 			//调用
-			InventoryCallResult resp = goodsInventoryUpdateService.createInventory(
+			resp = goodsInventoryUpdateService.createInventory(
 					clientIp, clientName, param, messageRoot);
 			if(resp == null){
-				return ResultEnum.ERROR_2000;
+				return ResultEnum.SYS_ERROR;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errMsg", e.getMessage()).addMetaData("result", resp).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

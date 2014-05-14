@@ -19,7 +19,7 @@ public class WmsInventoryRestParam extends TuanBaseDO {
 	private int num;
 	//选型:这是一个json串 如：[{"limit":0,"id":2},{"limit":0,"id":1}] [List<CreaterGoodsSelectionParam>]
 	private String goodsSelection;
-	
+	private String goodsIds; //商品id的json串
 	
 	public int getNum() {
 		return num;
@@ -74,6 +74,12 @@ public class WmsInventoryRestParam extends TuanBaseDO {
 	}
 	public void setGoodsSelection(String goodsSelection) {
 		this.goodsSelection = goodsSelection;
+	}
+	public String getGoodsIds() {
+		return goodsIds;
+	}
+	public void setGoodsIds(String goodsIds) {
+		this.goodsIds = goodsIds;
 	}
 	
 

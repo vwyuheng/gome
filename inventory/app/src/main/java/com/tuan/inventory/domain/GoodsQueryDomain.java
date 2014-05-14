@@ -14,9 +14,7 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class GoodsQueryDomain extends GoodsDomain{
-	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
-	//private static Logger logger = Logger.getLogger(GoodsQueryDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsQueryDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTPQUERYRESULT.LOG");
 	private GoodsQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private GoodsQueryDomain(){}
@@ -30,17 +28,15 @@ public class GoodsQueryDomain extends GoodsDomain{
 	
 	@Override
 	public ResultEnum doBusiness() {
-		String method = "GoodsQueryDomain.doBusiness";
-		
-		//String respStr = null;
+		logerror.info(lm.addMetaData("start", "start").toJson(false));
 		CallResult<GoodsInventoryModel> queryCallResult = null;
 		try {
 			//
 			queryCallResult = goodsInventoryQueryService.findGoodsInventoryByGoodsId(clientIp, clientName, Long.parseLong(goodsId));
 			
 		} catch (Exception e) {
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
+			return ResultEnum.SYS_ERROR;
 		}
 		try{
 		if (queryCallResult == null ) {
@@ -53,11 +49,10 @@ public class GoodsQueryDomain extends GoodsDomain{
 			resp.setGoodsInventory(gsModel);
 			this.resp = resp;
 			this.resp.addHeadParameMap4Resp(parameterRespMap);
-			//respStr = JsonUtils.convertObjectToString(gsModel);
 		}
 		}catch(Exception e){
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(), e);
-			return ResultEnum.INVALID_RETURN;
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("result", resp).toJson(false), e);
+			return ResultEnum.SYS_ERROR;
 		}
 		
 		return ResultEnum.SUCCESS;
@@ -71,7 +66,6 @@ public class GoodsQueryDomain extends GoodsDomain{
 		if(this.resp != null){
 			resp.setGoodsInventory(this.resp.getGoodsInventory());
 		}
-		//return JsonUtils.convertObjectToString(resp);
 		return (resp);
 	}
 

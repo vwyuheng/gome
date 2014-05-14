@@ -27,12 +27,13 @@ import com.tuan.inventory.model.result.CallResult;
  */
 public class InventoryInitAndUpdateHandle  {
 	
-	private final static LocalLogger log = LocalLogger.getLog("LogsEventHandle.LOG");
+	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
 	
 	@Resource
 	SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	
 	
 	public boolean saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) {
 		boolean isSuccess = true;
@@ -80,6 +81,66 @@ public class InventoryInitAndUpdateHandle  {
 			
 		}
 		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	
+	
+	public boolean saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsSelectionDO> selectionList) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(wmsDO ==null&&CollectionUtils.isEmpty(selectionList)&&CollectionUtils.isEmpty(wmsInventoryList)){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.saveGoodsWmsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("wmsInventoryList",wmsInventoryList)
+				.addMetaData("selectionList",selectionList)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Boolean> callResult  = null;
+		try {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(wmsDO,wmsInventoryList,selectionList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]wmsGoodsId:" + wmsDO==null?"":wmsDO.getWmsGoodsId();
+			} else {   //TODO 该处理也有问题
+				message = "saveGoodsInventory2Mysql_success[save2mysql success]wmsGoodsId:" + wmsDO.getWmsGoodsId();
+				if (wmsDO != null) {
+					this.goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
+				}
+				// 保选型库存saveBatchGoodsInventory
+				this.goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);	
+				this.goodsInventoryDomainRepository.saveBatchGoodsInventory(wmsInventoryList);	
+				
+			}
+			
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("wmsInventoryList",wmsInventoryList)
+					.addMetaData("selectionList",selectionList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("wmsDO",wmsDO)
+				.addMetaData("wmsInventoryList",wmsInventoryList)
 				.addMetaData("selectionList",selectionList)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
@@ -428,7 +489,7 @@ public class InventoryInitAndUpdateHandle  {
 		return isSuccess;
 	}
 	
-	public boolean updateGoodsSuppliers(final GoodsSuppliersDO suppliersDO) {
+	public boolean updateGoodsSuppliers(final GoodsInventoryDO goodsDO,final GoodsSuppliersDO suppliersDO) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(suppliersDO == null){
@@ -436,7 +497,9 @@ public class InventoryInitAndUpdateHandle  {
 		}
 		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.updateGoodsSuppliers");
 		long startTime = System.currentTimeMillis();
-		log.info(lm.addMetaData("suppliersDO",suppliersDO)
+		log.info(lm.setMethod("InventoryInitAndUpdateHandle.updateGoodsSuppliers")
+				.addMetaData("goodsDO",goodsDO)
+				.addMetaData("suppliersDO",suppliersDO)
 				.addMetaData("startTime", startTime).toJson());
 		
 		CallResult<GoodsSuppliersDO> callResult  = null;
@@ -445,7 +508,7 @@ public class InventoryInitAndUpdateHandle  {
 			//if (suppliersDO != null) {
 				
 				// 消费对列的信息
-				callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(suppliersDO);
+				callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(goodsDO,suppliersDO);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
@@ -625,7 +688,7 @@ public class InventoryInitAndUpdateHandle  {
 		return isSuccess;
 	}*/
 	
-	public boolean batchAdjustGoodsWms(final GoodsInventoryWMSDO wmsDO,final List<GoodsWmsSelectionResult> selectionList) {
+	public boolean batchAdjustGoodsWms(final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsWmsSelectionResult> selectionList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(wmsDO ==null&&CollectionUtils.isEmpty(selectionList)){
@@ -640,7 +703,7 @@ public class InventoryInitAndUpdateHandle  {
 		CallResult<Boolean> callResult  = null;
 		try {
 			// 消费对列的信息
-			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO, selectionList);
+			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,wmsInventoryList, selectionList);
 			PublicCodeEnum publicCodeEnum = callResult
 					.getPublicCodeEnum();
 			

@@ -13,8 +13,7 @@ import com.tuan.notifyserver.core.pclient.ProducerClientQueue;
 public class NotifyServerHandler {
 	protected ExecutorService exec;
 	protected int threadNum = 10;
-	//private static Log logger = LogFactory.getLog(NotifyServerHandler.class);
-	protected static Log log = LogFactory.getLog("BUSINESS.USER");
+	protected static Log log = LogFactory.getLog("NOTIFYSERVER.USER");
 	public static NotifyServerHandler instance = new NotifyServerHandler();
 
 	public static NotifyServerHandler create() {
@@ -65,9 +64,9 @@ public class NotifyServerHandler {
 			try {
 				//String messageId = client.send(message.getSendMsg());
 				String messageId = client.send(message);
-				log.warn("UUID:" + messageId + message);
+				log.warn("UUID:" + messageId + ":"+message);
 			} catch (Exception e) {
-				log.error("Message Error for Sending to MQ !", e);
+				log.error("run,Message Error for Sending to MQ !", e);
 			}
 		}
 	}

@@ -63,6 +63,7 @@ public class GoodsInventoryWMSDO extends TuanBaseDO {
 	}
 	
 	
+	
 }
 
 

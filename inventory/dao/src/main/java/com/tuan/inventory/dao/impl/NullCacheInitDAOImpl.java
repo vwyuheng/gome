@@ -1,5 +1,7 @@
 package com.tuan.inventory.dao.impl;
 
+import java.util.List;
+
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.NullCacheInitDAO;
@@ -24,6 +26,12 @@ public class NullCacheInitDAOImpl extends SqlMapClientDaoSupport  implements Nul
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId) {
 		return (GoodsInventoryWMSDO) super.getSqlMapClientTemplate().
 				queryForObject("selectIsOrNotGoodsWMS", goodsId);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<GoodsInventoryDO> selectInventory4Wms(String wmsGoodsId) {
+		return  super.getSqlMapClientTemplate().queryForList("selectInventoryListByWmsGoodsId", wmsGoodsId);
 	}
 
 	

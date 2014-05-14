@@ -12,6 +12,7 @@ public class GoodsInventoryDO extends TuanBaseDO {
 	
 	private Long goodsId;// 商品ID(FK)
 	private Long userId;// 商品ID(FK)
+	private Long wmsId;// 商品物流ID(FK)
 	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
 	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
 	private java.lang.Integer limitStorage; // 0:库存无限制；1：限制库存
@@ -51,6 +52,12 @@ public class GoodsInventoryDO extends TuanBaseDO {
 	}
 	public void setWaterfloodVal(java.lang.Integer waterfloodVal) {
 		this.waterfloodVal = waterfloodVal;
+	}
+	public Long getWmsId() {
+		return wmsId;
+	}
+	public void setWmsId(Long wmsId) {
+		this.wmsId = wmsId;
 	}
 	
 	

@@ -6,11 +6,15 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.core.common.lock.eum.LockResultCodeEnum;
+import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -25,6 +29,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	private String clientName;
 	private CallbackParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
 	private String ack;
@@ -97,9 +102,9 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"busiCheck error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 
@@ -107,6 +112,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	}
 
 	// 回调确认
+	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum ackInventory() {
 		try {
 			// 首先填充日志信息
@@ -115,46 +121,88 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			//确认:只变状态，不删缓存
+			//确认:只变状态，此时不删缓存，异步处理时会删除的
 			if (isConfirm) {
 				String member = this.goodsInventoryDomainRepository.queryMember(key);
+				lm.addMetaData("markqueue start isConfirm:["+isConfirm+",key:"+(key) + "]", key).addMetaData("member[" + (member) + "]", member);
+				writeSysDeductLog(lm,true);
 				if(!StringUtils.isEmpty(member)) {
 					this.goodsInventoryDomainRepository.markQueueStatus(member, (upStatusNum));
 				}
+				lm.addMetaData("markqueue end isConfirm:["+isConfirm+",key:"+(key) + "]", key).addMetaData("member[" + (member)+",upStatusNum:"+upStatusNum + "]", member);
+				writeSysDeductLog(lm,true);
 			}
-			//回滚:即变状态，同时将缓存删除
-			if (isRollback) {
-				// 回滚库存
-				if (goodsId!=null&&goodsId > 0) {
-					this.goodsInventoryDomainRepository.updateGoodsInventory(
-							goodsId, (deductNum));
+			//回滚操作增加分布式锁
+			lm.addMetaData("isRollback","ackInventory isRollback,start").addMetaData("isRollback[" + (isRollback+":"+goodsId) + "]", goodsId);
+			writeSysDeductLog(lm,false);
+			LockResult<String> lockResult = null;
+			String key = DLockConstants.ROLLBACK_LOCK_KEY+"_goodsId_" + goodsId;
+			try {
+				lockResult = dLock.lockManualByTimes(key, DLockConstants.ROLLBACK_LOCK_TIME, DLockConstants.ROLLBACK_LOCK_RETRY_TIMES);
+				if (lockResult == null
+						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+								.getCode()) {
+					writeSysDeductLog(
+							lm.addMetaData("ackInventory","ackInventory").addMetaData("dLock rollback errorMsg",
+									goodsId), false);
 				}
-				if(!CollectionUtils.isEmpty(selectionParam)) {
-					 this.goodsInventoryDomainRepository
-						.rollbackSelectionInventory(selectionParam);
-				}
-				if(!CollectionUtils.isEmpty(suppliersParam)) {
-					this.goodsInventoryDomainRepository
-					.rollbackSuppliersInventory(suppliersParam);
-				}
-				if(queueDO!=null) {
-					// 将队列标记删除
-					//this.goodsInventoryDomainRepository.markQueueStatus(key,
-						//	(upStatusNum));
-					
-					String member = this.goodsInventoryDomainRepository.queryMember(key);
-					if(!StringUtils.isEmpty(member)) {
-						this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (upStatusNum),key);
+				//回滚:即变状态，同时将缓存删除
+				if (isRollback) {
+					lm.addMetaData("isRollback","ackInventory isRollback,start").addMetaData("isRollback[" + (isRollback+":"+goodsId) + "]", goodsId);
+					writeSysDeductLog(lm,true);
+					// 回滚库存
+					if (goodsId != null && goodsId > 0) {
+						lm.addMetaData("isRollback goods[" + (isRollback+":"+goodsId) + "]", goodsId+",deductNum:"+deductNum);
+						writeSysDeductLog(lm,true);
+					long rollbackAftNum = this.goodsInventoryDomainRepository
+								.updateGoodsInventory(goodsId, (deductNum));
+					lm.addMetaData("isRollback after[" + (isRollback+":"+goodsId) + "]", goodsId+",rollbackAftNum:"+rollbackAftNum);
+					writeSysDeductLog(lm,true);
 					}
-				}
-				
-				
-			}
+					if (!CollectionUtils.isEmpty(selectionParam)) {
+						lm.addMetaData("isRollback selection start[" + (isRollback+":"+selectionParam.toString()) + "]", selectionParam);
+						writeSysDeductLog(lm,true);
+						boolean rollbackSelAck = this.goodsInventoryDomainRepository
+								.rollbackSelectionInventory(selectionParam);
+						lm.addMetaData("isRollback selection end[" + (isRollback+":"+selectionParam.toString()) + "]", selectionParam+",rollbackselresult:"+rollbackSelAck);
+						writeSysDeductLog(lm,true);
+					}
+					if (!CollectionUtils.isEmpty(suppliersParam)) {
+						lm.addMetaData("isRollback suppliers start[" + (isRollback+":"+suppliersParam.toString()) + "]", suppliersParam);
+						writeSysDeductLog(lm,true);
+						boolean rollbackSuppAck =this.goodsInventoryDomainRepository
+								.rollbackSuppliersInventory(suppliersParam);
+						lm.addMetaData("isRollback suppliers end[" + (isRollback+":"+suppliersParam.toString()) + "]", suppliersParam+",rollbacksuppresult:"+rollbackSuppAck);
+						writeSysDeductLog(lm,true);
+					}
+					if (queueDO != null) {
+						// 将队列标记删除
+						//this.goodsInventoryDomainRepository.markQueueStatus(key,
+						//	(upStatusNum));
+						
+						String member = this.goodsInventoryDomainRepository
+								.queryMember(key);
+						lm.addMetaData("markqueue start isRollback:[" +isRollback+",key:"+ (key) + "]", key).addMetaData("member[" + (member) + "]", member);
+						writeSysDeductLog(lm,true);
+						if (!StringUtils.isEmpty(member)) {
+							this.goodsInventoryDomainRepository
+									.markQueueStatusAndDeleteCacheMember(
+											member, (upStatusNum), key);
+						}
+						lm.addMetaData("markqueue end isRollback:["+isRollback+",key:"+ (key) + "]", key).addMetaData("member[" + (member)+",upStatusNum:"+upStatusNum + "]", member);
+						writeSysDeductLog(lm,true);
+					}
 
+				}//isRollback
+			} finally{
+				dLock.unlockManual(key);
+			}
+			lm.addMetaData("result", "end");
+			writeSysDeductLog(lm,false);
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("createInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"ackInventory error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -183,16 +231,12 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				updateActionDO
 				.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
 			}
-			
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
-			
-			
 			updateActionDO.setRemark("回调确认");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -229,6 +273,10 @@ public class InventoryCallbackDomain extends AbstractDomain {
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
+	}
+
+	public void setdLock(DLockImpl dLock) {
+		this.dLock = dLock;
 	}
 
 	public Long getGoodsId() {

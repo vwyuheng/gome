@@ -89,10 +89,10 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"busiCheck error" + e.getMessage()),false, e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if (!isExists && !addSelection) {
 			return CreateInventoryResultEnum.IS_EXISTED;
@@ -111,10 +111,10 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("createWmsInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"createWmsInventory error" + e.getMessage()),false, e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		//保存库存
 		return this.saveInventory();
@@ -167,8 +167,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			updateActionDO.setRemark("新增物流库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -225,9 +224,9 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
+			this.writeBusUpdateErrorLog(
 					lm.setMethod("fillWmsSelection").addMetaData(
-							"errMsg", e.getMessage()), e);
+							"errMsg", e.getMessage()),false, e);
 			this.selectionRelation = null;
 			//return CreateInventoryResultEnum.RUNTIME_EXCEPTION;
 			
@@ -252,8 +251,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillGoodsWmsDO")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillGoodsWmsDO error" +e.getMessage()),false, e);
 			this.wmsDO = null;
 		}
 		this.wmsDO = wmsDO;
@@ -272,7 +270,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 				 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
 				 */
 			} catch (Exception e) {
-				writeBusErrorLog(lm.addMetaData("errMsg", e.getMessage()), e);
+				writeBusUpdateErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
 			}
 		}
 

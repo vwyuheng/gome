@@ -13,12 +13,34 @@ public abstract class AbstractInventoryService  {
 	protected InventoryServiceTemplate inventoryServiceTemplate;
 
 	protected static Log logSys = LogFactory.getLog("SYSERROR.LOG");
-	protected static Log logBus = LogFactory.getLog("BUSINESS.USER");
+	protected static Log logSysUpdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
+	protected static Log logBus = LogFactory.getLog("SYS.QUERYRESULT.LOG");
+	private static Log logInit=LogFactory.getLog("INVENTORY.INIT");
 	
 	public AbstractInventoryService() {
 		
 	}
+	/**
+	 * 记录库存初始化日志
+	 * @param lm
+	 * @param toJson
+	 */
+	protected void writeBusInitLog(LogModel lm,boolean toJson) {
+		if (logInit.isInfoEnabled()) {
+			logInit.info(lm.toJson(toJson));
+		}
+	}
 	protected void writeSysLog(LogModel lm, boolean purge) {
+		if (logSys.isInfoEnabled()) {
+			logSys.info(lm.toJson(purge));
+		}
+	}
+	protected void writeSysUpdateLog(LogModel lm, boolean purge) {
+		if (logSysUpdate.isInfoEnabled()) {
+			logSysUpdate.info(lm.toJson(purge));
+		}
+	}
+	protected void writeSysBusLog(LogModel lm, boolean purge) {
 		if (logSys.isInfoEnabled()) {
 			logSys.info(lm.toJson(purge));
 		}

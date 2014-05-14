@@ -33,12 +33,45 @@ public class SynInitAndAsynUpdateDomainRepository {
 		goodsDO.setLeftNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getLeftNumber());
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryDO(goodsDO);
 	}
+	
+	
+	public void saveBatchGoodsInventory(List<GoodsInventoryDO> wmsInventoryList) throws Exception {
+
+		if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
+			for (GoodsInventoryDO goodsDO : wmsInventoryList) { // for
+				if (goodsDO.getGoodsId() > 0) { // if选型
+					//将商品id set到选型中
+					this.saveGoodsInventory(goodsDO);
+				}
+				
+			}//for
+		}//if1
+			
+	
+	}
+	
+	
 	/**
 	 * 更新商品库存
 	 * @param goodsDO
 	 */
 	public void updateGoodsInventory(GoodsInventoryDO goodsDO) {
 		this.synInitAndAsynUpdateDAO.updateGoodsInventoryDO(goodsDO);
+	}
+	
+	
+	public void updateBatchGoodsInventory(List<GoodsInventoryDO> wmsInventoryList) throws Exception{
+		
+		if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
+			for (GoodsInventoryDO result : wmsInventoryList) { // for
+				if (result.getGoodsId() > 0) { // if选型
+					this.updateGoodsInventory(result);
+				}
+				
+			}//for
+		}//if1
+		
+		
 	}
 	
 	public int deleteGoodsInventory(long goodsId) {

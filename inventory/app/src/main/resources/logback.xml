@@ -7,10 +7,25 @@
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender> 
 
+	<!-- [公共Appender] 控制台STDOUT -->
+	<appender name="STDOUT-APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+		<param name="target" value="System.out"/>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<!-- [公共Appender] 控制台STDERR -->
+	<appender name="STDERR-APPENDER" class="ch.qos.logback.core.ConsoleAppender">
+		<param name="target" value="System.err"/>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>
+	<!-- [公共Appender] 汇总错误 -->
 	<appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/error/common-error.log</file> 
     	<filter class="ch.qos.logback.classic.filter.ThresholdFilter"> 
@@ -21,9 +36,48 @@
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender> 
+    
+    <!-- [公共Appender] Jakarta commons -->
+	<appender name="APACHE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/apache/common-apache.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/apache/common-apache.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>
+    
+    <!-- ===== [框架Appender] ===== -->
+	<!-- [框架Appender] USFP 基础设施 - 默认 -->
+	<appender name="USFP-DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/usfp/usfp-default.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/usfp/usfp-default.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>
+    
+    <!-- [应用Appender] 应用业务处理结果日志 -->
+	<appender name="UCORE-BUSINESS-RESULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/inventorybiz/inventory-biz-default.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/inventorybiz/inventory-biz-default.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>
+    
+    
 	<appender name="PERF-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/perf/common-perf.log</file>     
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
@@ -31,10 +85,10 @@
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender> 
-	
+	<!-- [公共Appender] 数据访问层 -->
 	<appender name="DAO-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/dao/common-dao.log</file> 
     	<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">    
@@ -46,10 +100,10 @@
           <maxFileSize>10MB</maxFileSize>
         </triggeringPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender> 
-	<appender name="TRACE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+	<!-- <appender name="TRACE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/trace/tracing.log</file>     
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
       		<fileNamePattern>${loggingRoot}/trace/tracing.log.%d{yyyy-MM-dd-HH}.gz</fileNamePattern> 
@@ -58,7 +112,8 @@
 		<encoder charset="UTF-8">
 			<pattern>%d - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
-    </appender>  
+    </appender>   -->
+    
 	<appender name="COMMON-BUSINESS-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/business/common-business.log</file>     
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
@@ -66,7 +121,7 @@
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender> 
     
@@ -77,7 +132,7 @@
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender>                                                                                                                                                                                                                                                                                                                                
                   
@@ -88,38 +143,212 @@
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{userEmail}/%X{userPhone}] - [%m]%n</pattern>
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
-    </appender>                                                                                                                                                                                                                                                                                                                       
+    </appender>  
+    <!--  error --> 
+    <appender name="SYSTEM-ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/commonsys/common-sys-error.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/commonsys/common-sys-error.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>     
+	<!-- notifyserver -->
+	<appender name="NOTIFY-MESSAGE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/notifymessage/notify-message-product.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/notifymessage/notify-message-product.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>   
+	<!-- redis cache -->
+	<appender name="CACHE-ERROR-RESULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/cache/inventory-redis-cache.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/cache/inventory-redis-cache.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>   
+	<!-- 库存初始化日志 -->   
+	<appender name="INVENTORY-INIT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/init/inventory-init-default.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/init/inventory-init-default.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>    
+	
+	<!--  query --> 
+    <appender name="HTTP-QUERY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/http/common-http-query.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/http/common-http-query.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
+    <appender name="SYS-QUERY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/read/business-sys-query.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/read/business-sys-query.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
+	<!--  update --> 
+    <appender name="HTTP-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/http/common-http-update.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/http/common-http-update.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
+    <appender name="SYS-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/write/business-sys-update.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/read/business-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender> 
+	<!-- 库存扣减过程记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="INVENTORY-DEDUCT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/write/business-inventory-deduct.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/update/business-inventory-deduct.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
 	<!-- ===================================================================== -->
 	<!-- Loggers                                                               -->
 	<!-- ===================================================================== -->
 
-
+	<!-- [公共Logger] 性能 - service性能  -->
 	<logger name="com.tuan.core.common.aop.pref.PerformanceMonitorInterceptor" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="PERF-APPENDER"/>
 	</logger>
-
+	<!-- [公共Logger] 控制台STDOUT - STDOUT -->
+	<logger name="STDOUT" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="STDOUT-APPENDER"/>
+	</logger>
+	<!-- [公共Logger] 控制台STDERR - STDERR -->
+	<logger name="STDERR" additivity="false">
+		<level value="ERROR"/>
+		<appender-ref ref="STDERR-APPENDER"/>
+	</logger>
+	<!-- ===== [框架Logger] ===== -->
+	<!-- [框架Logger] Jakarta commons - 默认 -->
+	<logger name="org.apache" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="APACHE-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</logger>
+	<!-- [框架Logger] 数据访问层 - Ibatis -->
 	<logger name="com.ibatis" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="DAO-APPENDER"/>
 		<appender-ref ref="ERROR-APPENDER"/>
 	</logger>
+	<!-- [框架Logger] 数据访问层 - SQL -->
 	<logger name="java.sql" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="DAO-APPENDER"/>
 		<appender-ref ref="ERROR-APPENDER"/>
-	</logger>		
-	<logger name="com.wowotrace.trace.model" additivity="false">
+	</logger>	
+	<!-- [框架Logger] USFP 基础设施层 - 默认日志 -->
+	<logger name="com.tuan.core.common" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="USFP-DEFAULT-APPENDER"/>
+		<appender-ref ref="ERROR-APPENDER"/>
+	</logger>
+	<!-- [应用Logger] 用户核心 - 业务结果日志 -->
+	<logger name="com.tuan.core.common.aop.product" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="UCORE-BUSINESS-RESULT-APPENDER"/>
+	</logger>
+	
+		
+	<!-- <logger name="com.wowotrace.trace.model" additivity="false">
 			<level value="INFO"/>
 			<appender-ref ref="TRACE-APPENDER"/>
+	</logger> -->
+	<!-- 库存扣减过程记录 -->
+	<logger name="INVENTORY.DEDUCT.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="INVENTORY-DEDUCT-APPENDER"/>
+	</logger>
+	<!-- 记录更新写入的 -->
+	 <logger name="HTTP.UPDATE.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="HTTP-UPDATE-APPENDER"/>
+	</logger>
+	<logger name="SYS.UPDATERESULT.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="SYS-UPDATE-APPENDER"/>
+	</logger>
+	<!-- 记录查询接口 -->
+	 <logger name="HTTPQUERYRESULT.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="HTTP-QUERY-APPENDER"/>
+	</logger>
+	 <logger name="SYS.QUERYRESULT.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="SYS-QUERY-APPENDER"/>
+	</logger>
+	<!-- 库存初始化日志 -->
+	<logger name="INVENTORY.INIT" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="INVENTORY-INIT-APPENDER"/>
+	</logger>
+	<!-- redis util log-->
+	<logger name="CACHE.ERROR" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="CACHE-ERROR-RESULT-APPENDER"/>
+	</logger>
+	<!-- notifyserver -->
+	<logger name="NOTIFYSERVER.USER" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="NOTIFY-MESSAGE-APPENDER"/>
 	</logger>
 
+	<!-- error -->
+    <logger name="SYSERROR.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="SYSTEM-ERROR-APPENDER"/>
+	</logger>
+	
 	<logger name="COMMON.BUSINESS" additivity="false">
 			<level value="INFO"/>
 			<appender-ref ref="COMMON-BUSINESS-APPENDER"/>
 	</logger>
+	
 	<logger name="COMMON.ALARM" additivity="false">
 			<level value="INFO"/>
 			<appender-ref ref="COMMON-ALARM-APPENDER"/>
@@ -128,6 +357,9 @@
 			<level value="INFO"/>
 			<appender-ref ref="COMMON-SERVICE-APPENDER"/>
 	</logger>
+	<!-- ===================================================================== -->
+	<!-- Root logger                                                           -->
+	<!-- ===================================================================== -->
 	<root level="INFO">           
 	    <appender-ref ref="DEFAULT-APPENDER"/>
 		  <appender-ref ref="ERROR-APPENDER"/>

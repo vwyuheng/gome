@@ -3,6 +3,8 @@ package com.tuan.inventory.domain.base;
 import java.util.SortedMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.GoodsSelectionQueryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
@@ -12,6 +14,7 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public abstract class GoodsSelectionDomain extends AbstractGoodsInventoryDomain{
+	private static Log logresult = LogFactory.getLog("HTTPQUERYRESULT.LOG");
 	public RequestPacket requestPacket;		//窝窝内部统一的请求报文头
 	public String goodsId;					//商品id
 	public String selectionId;					//选型id
@@ -84,5 +87,11 @@ public abstract class GoodsSelectionDomain extends AbstractGoodsInventoryDomain{
 		}
 		
 		return ResultEnum.SUCCESS;
+	}
+	
+	protected void writeLog(LogModel lm,boolean toJson) {
+		if (logresult.isInfoEnabled()) {
+			logresult.info(lm.toJson(toJson));
+		}
 	}
 }

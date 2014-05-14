@@ -25,7 +25,8 @@ public class WmsInventoryParam extends TuanBaseDO {
 	private int num;
 	//选型
 	private List<GoodsSelectionModel> goodsSelection;
-
+	//物流商品id列表
+	private List<Long> goodsIds;
 	public Long getId() {
 		return id;
 	}
@@ -96,6 +97,14 @@ public class WmsInventoryParam extends TuanBaseDO {
 
 	public void setNum(int num) {
 		this.num = num;
+	}
+
+	public List<Long> getGoodsIds() {
+		return goodsIds;
+	}
+
+	public void setGoodsIds(List<Long> goodsIds) {
+		this.goodsIds = goodsIds;
 	}
 	
 	

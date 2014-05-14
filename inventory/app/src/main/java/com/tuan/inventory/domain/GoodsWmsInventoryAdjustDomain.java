@@ -31,6 +31,7 @@ import com.wowotrace.trace.model.Message;
 public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 	//选型类型
 	private static Type typeSelection = new TypeToken<List<AdjustGoodsSelectionWmsParam>>(){}.getType();
+	private static Type type = new TypeToken<List<Long>>(){}.getType();
 	//物流库存主键
 	private Long id;// 主键id
 	private String wmsGoodsId;  //物流商品的一种编码
@@ -41,14 +42,15 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 	
 	//选型
 	private List<AdjustGoodsSelectionWmsParam> reqGoodsSelection;
-	
+	//物流商品id列表
+	private List<Long> goodsIds;
 	private UpdateRequestPacket packet;
 	private WmsInventoryParam param;		
 	private LogModel lm;
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
-	private static Log logger = LogFactory.getLog(GoodsWmsInventoryAdjustDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
 	
 	@SuppressWarnings("unchecked")
 	public GoodsWmsInventoryAdjustDomain(UpdateRequestPacket packet,WmsInventoryRestParam reqparam,LogModel lm,Message messageRoot){
@@ -59,10 +61,15 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 			this.num = reqparam.getNum();
 			this.isBeDelivery = reqparam.getIsBeDelivery();
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
-			
+			String jsonGoodsIdsResult = reqparam.getGoodsIds();
 			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonSelectionResult))) {
 				this.reqGoodsSelection =  (List<AdjustGoodsSelectionWmsParam>)new Gson().fromJson(jsonSelectionResult, typeSelection);
 			}
+			List<Long> goodsIdTmpList = null;
+			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonGoodsIdsResult))) {
+				goodsIdTmpList =  new Gson().fromJson(jsonGoodsIdsResult, type);
+			}
+			this.goodsIds = goodsIdTmpList;
 			
 		}
 		this.packet = packet;
@@ -78,7 +85,7 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 		param.setId(id);
 		param.setWmsGoodsId(wmsGoodsId);
 		param.setNum(num);
-		//param.setGoodsName(goodsName);
+		
 		//param.setGoodsSupplier(goodsSupplier);
 		//param.setLeftNumber(leftNumber);
 		//param.setTotalNumber(totalNumber);
@@ -103,6 +110,8 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 		}
 		if(!CollectionUtils.isEmpty(goodsSelection))
 		       param.setGoodsSelection(goodsSelection);
+		if(!CollectionUtils.isEmpty(goodsIds))
+			   param.setGoodsIds(goodsIds);
 		
 		return param;
 		
@@ -135,14 +144,14 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 			//调用
 			InventoryCallResult resp = goodsInventoryUpdateService.adjustWmsInventory(clientIp, clientName, param, messageRoot);
 			if(resp == null){
-				return ResultEnum.SYSTEM_ERROR;
+				return ResultEnum.SYS_ERROR;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsWmsInventoryAdjustDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errMsg","GoodsWmsInventoryAdjustDomain.doBusiness error"+ e.getMessage()).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}
@@ -167,6 +176,7 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("wmsGoodsId", wmsGoodsId);
 	    parameterMap.put("isBeDelivery",  String.valueOf(isBeDelivery));
 		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":LogUtil.formatListLog(goodsSelection));
+		parameterMap.put("goodsIds",  CollectionUtils.isEmpty(goodsIds)?"":LogUtil.formatListLog(goodsIds));
 		packet.addParameterMap(parameterMap);
 		super.init(packet.getClient(), packet.getIp());
 	}

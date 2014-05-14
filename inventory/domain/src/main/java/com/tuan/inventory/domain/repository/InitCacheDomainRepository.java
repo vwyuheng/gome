@@ -182,5 +182,8 @@ public class InitCacheDomainRepository {
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId) {
 		return nullCacheInitDAO.selectIsOrNotGoodsWMS(goodsId);
 	}
+	public List<GoodsInventoryDO> selectInventory4Wms(String wmsGoodsId) {
+		return nullCacheInitDAO.selectInventory4Wms(wmsGoodsId);
+	}
 
 }

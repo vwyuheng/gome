@@ -51,7 +51,7 @@ public class GoodsWmsInventoryCreateDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
-	private static Log logger = LogFactory.getLog(GoodsWmsInventoryCreateDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
 	
 	@SuppressWarnings("unchecked")
 	public GoodsWmsInventoryCreateDomain(UpdateRequestPacket packet,WmsInventoryRestParam reqparam,LogModel lm,Message messageRoot){
@@ -139,14 +139,14 @@ public class GoodsWmsInventoryCreateDomain extends AbstractGoodsInventoryDomain{
 			//调用
 			InventoryCallResult resp = goodsInventoryUpdateService.createWmsInventory(clientIp, clientName, param, messageRoot);
 			if(resp == null){
-				return ResultEnum.SYSTEM_ERROR;
+				return ResultEnum.SYS_ERROR;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsWmsInventoryCreateDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errMsg", "GoodsWmsInventoryCreateDomain.doBusiness error"+e.getMessage()).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

@@ -1,5 +1,7 @@
 package com.tuan.inventory.dao;
 
+import java.util.List;
+
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 /**
@@ -12,6 +14,7 @@ public interface NullCacheInitDAO {
 	public GoodsInventoryDO selectRedisInventory(Long goodsId);
 	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId);
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId);
+	public List<GoodsInventoryDO> selectInventory4Wms(String wmsGoodsId);
 
 }
 

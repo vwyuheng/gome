@@ -5,7 +5,7 @@
     <!-- 商品物流信息-->	
 	<resultMap id="GoodsInventoryWMSResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO">
 	    <result column="id" property="id" jdbcType="BIGINT" />
-	   <!--  <result column="goods_id" property="goodsId" jdbcType="BIGINT" /> -->
+	  <!--   <result column="goods_id" property="goodsId" jdbcType="BIGINT" /> -->
 	    <result column="wms_goods_id" property="wmsGoodsId" jdbcType="VARCHAR" />
 	     <result column="goods_supplier" property="goodsSupplier" jdbcType="VARCHAR" />
 	      <result column="goods_sname" property="goodsName" jdbcType="VARCHAR" />
@@ -30,7 +30,7 @@
    <!-- 商品主体库存信息-->	
 	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
-	    <!--  <result column="user_id" property="userId" jdbcType="BIGINT" /> -->
+	     <result column="goods_wms_id" property="wmsId" jdbcType="BIGINT" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
@@ -117,7 +117,7 @@
 	WHERE wms.wms_goods_id = #wmsGoodsId:VARCHAR#
 	</select>
 	
-	 <!-- 通过商品ID查询是否物流商品  -->	
+	 <!-- 通过物流编码查询是否物流商品  -->	
 	<select id="selectIsOrNotGoodsWMS" resultMap="GoodsInventoryWMSResult"  parameterClass="java.lang.Long">
 
 	SELECT
@@ -304,6 +304,7 @@
     insert into jeehe_inventory_attribute 
     (
     goods_id, 
+    goods_wms_id,
     total_num, 
     left_num, 
     limit_storage, 
@@ -311,6 +312,7 @@
    )
     values (
             #goodsId:BIGINT#,
+            #wmsId:BIGINT#,
             #totalNumber:INTEGER#,
             #leftNumber:INTEGER#,
             #limitStorage:INTEGER#,

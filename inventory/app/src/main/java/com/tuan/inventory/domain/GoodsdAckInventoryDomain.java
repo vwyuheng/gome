@@ -26,8 +26,8 @@ public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private CallbackParam param;
 	private UpdateRequestPacket packet;
-	//private static Logger logger = Logger.getLogger(GoodsdAckInventoryDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsdAckInventoryDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	
 	public GoodsdAckInventoryDomain(UpdateRequestPacket packet,String ack,String key,LogModel lm,Message messageRoot){
 		this.packet = packet;
 		this.ack = ack;
@@ -70,14 +70,14 @@ public class GoodsdAckInventoryDomain extends AbstractGoodsInventoryDomain{
 			InventoryCallResult resp = goodsInventoryUpdateService.callbackAckInventory(
 					clientIp, clientName, param, messageRoot);
 			if(resp == null){
-				return ResultEnum.ERROR_2000;
+				return ResultEnum.SYS_ERROR;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsCreateInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errMsg", "GoodsCreateInventoryDomain.doBusiness error"+e.getMessage()).toJson(false),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

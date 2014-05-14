@@ -105,9 +105,9 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+					lm.addMetaData("errorMsg",
+							"busiCheck error" + e.getMessage()),false, e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if (!isExists && !addSelection && !addSuppliers) {
 			return CreateInventoryResultEnum.IS_EXISTED;
@@ -127,8 +127,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
-					lm.setMethod("createInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+					lm.addMetaData("errorMsg",
+							"createInventory error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		//保存库存
@@ -156,7 +156,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
 			 */
 		} catch (Exception e) {
-			writeBusErrorLog(lm.addMetaData("errMsg", e.getMessage()), e);
+			writeBusErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
 		}
 	}
 
@@ -230,8 +230,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			updateActionDO.setRemark("新增库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillInventoryUpdateActionDO")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -279,8 +278,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
-					lm.setMethod("fillSelectionAndSuppliersModel").addMetaData(
-							"errMsg", e.getMessage()), e);
+					lm.addMetaData(
+							"errMsg", "fillSelection error"+e.getMessage()),false, e);
 			this.selectionRelation = null;
 		}
 	}
@@ -314,8 +313,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(
-					lm.setMethod("fillSuppliers").addMetaData("errMsg",
-							e.getMessage()), e);
+					lm.addMetaData("errMsg",
+							 "fillSuppliers error"+e.getMessage()),false, e);
 			this.suppliersRelation = null;
 		}
 	}
@@ -331,8 +330,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			inventoryInfoDO.setWaterfloodVal(param.getWaterfloodVal());
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("fillCardOrderInfoDO")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillRedisInventoryDO error"+e.getMessage()),false, e);
 			this.inventoryInfoDO = null;
 		}
 		this.inventoryInfoDO = inventoryInfoDO;

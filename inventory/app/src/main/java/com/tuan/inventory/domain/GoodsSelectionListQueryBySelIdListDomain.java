@@ -22,8 +22,7 @@ import com.wowotrace.trace.model.Message;
 
 public class GoodsSelectionListQueryBySelIdListDomain extends GoodsSelectionListBySelIdListDomain{
 	
-	//private static Logger logger = Logger.getLogger(GoodsSelectionListQueryBySelIdListDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsSelectionListQueryBySelIdListDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTPQUERYRESULT.LOG");
 	private static Type type = new TypeToken<List<Long>>(){}.getType();
 	private GoodsSelectionListQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
@@ -44,21 +43,17 @@ public class GoodsSelectionListQueryBySelIdListDomain extends GoodsSelectionList
 	
 	@Override
 	public ResultEnum doBusiness() {
-		String method = "GoodsQueryDomain.doBusiness";
-		
-		//String respStr = null;
+		logerror.info(lm.addMetaData("start", "start").toJson(false));
 		CallResult<List<GoodsSelectionModel>> queryCallResult = null;
 		try {
 			//
 			queryCallResult = goodsInventoryQueryService.findGoodsSelectionListBySelectionIdList(clientIp, clientName, Long.parseLong(goodsId),selectionIdList);
 			
 		} catch (Exception e) {
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
+			return ResultEnum.SYS_ERROR;
 		}
 		try{
-		/*if (queryCallResult == null || !queryCallResult.isSuccess()) {
-			return ResultEnum.INVALID_RETURN;*/
 		if (queryCallResult == null ) {
 				return ResultEnum.SYS_ERROR;
 		}else if (!queryCallResult.isSuccess()) {
@@ -72,8 +67,8 @@ public class GoodsSelectionListQueryBySelIdListDomain extends GoodsSelectionList
 		}
 			
 		}catch(Exception e){
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(), e);
-			return ResultEnum.INVALID_RETURN;
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("result", resp).toJson(false), e);
+			return ResultEnum.SYS_ERROR;
 		}
 		
 		return ResultEnum.SUCCESS;
@@ -87,7 +82,6 @@ public class GoodsSelectionListQueryBySelIdListDomain extends GoodsSelectionList
 		if(this.resp != null){
 			resp.setgSelectionList(this.resp.getgSelectionList());
 		}
-		//return JsonUtils.convertObjectToString(resp);
 		return (resp);
 	}
 

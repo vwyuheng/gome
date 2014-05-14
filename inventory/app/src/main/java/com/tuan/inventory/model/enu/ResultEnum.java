@@ -65,7 +65,7 @@ public enum ResultEnum {
 	
 	ERROR_2000	("2000",	"程序运行时错误"),
 	NET_ERROR			("10998",	"网络异常"),
-	SYSTEM_ERROR		("10999",	"系统错误"),
+	//SYSTEM_ERROR		("10999",	"系统错误"),
 	ERROR_UNKONW       ("9999",	"其它");
 
 	private String code;
@@ -247,9 +247,7 @@ public enum ResultEnum {
 		if(code.equals("2000")){
 			return ResultEnum.ERROR_2000;
 		}
-		if(code.equals("10999")){
-			return ResultEnum.SYSTEM_ERROR;
-		}
+		
 		
 		if(code.equals("9999")){
 			return ResultEnum.ERROR_UNKONW;

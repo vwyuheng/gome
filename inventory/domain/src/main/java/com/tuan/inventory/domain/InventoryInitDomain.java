@@ -35,6 +35,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	private List<GoodsSuppliersDO> suppliersInventoryList;
 	private List<GoodsSelectionDO> selectionInventoryList;
 	
+	private List<GoodsInventoryDO> wmsInventoryList;
 	private GoodsInventoryWMSDO wmsUpate;
 	private List<GoodsSelectionDO> selWmsList;
 	
@@ -85,13 +86,35 @@ public class InventoryInitDomain extends AbstractDomain{
 					// 初始化商品库存信息
 					CallResult<GoodsInventoryWMSDO> callGoodsWmsResult = this.synInitAndAysnMysqlService
 							.selectGoodsInventoryWMSByWmsGoodsId(wmsGoodsId);
+					
 					if (callGoodsWmsResult == null || !callGoodsWmsResult.isSuccess()) {
 						this.isInitWms = false;
 						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
 					}else {  //初始化赋值
 						this.wmsUpate = callGoodsWmsResult.getBusinessResult();
 					}
+					//通过物流编码查询商品id是否存在,
+					CallResult<List<GoodsInventoryDO>> callGoodsInventoryListDOResult = this.synInitAndAysnMysqlService
+							.selectInventoryList4Wms(wmsGoodsId);
+					if (callGoodsInventoryListDOResult == null || !callGoodsInventoryListDOResult.isSuccess()) {
+						this.isInitWms = false;
+						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+					}else {
+					     this.wmsInventoryList = 	callGoodsInventoryListDOResult.getBusinessResult();
+					}
 					
+					//根据商品检查是否已存在
+					if(!CollectionUtils.isEmpty(wmsInventoryList)) {
+						for(GoodsInventoryDO goodsDO:wmsInventoryList) {
+							if(goodsDO.getGoodsId()>0) {
+								GoodsInventoryDO tmpDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsDO.getGoodsId());
+								if(tmpDO!=null) {
+									wmsInventoryList.remove(tmpDO);
+								}
+							}
+							
+						}
+					}
 					
 				}
 			}
@@ -120,9 +143,9 @@ public class InventoryInitDomain extends AbstractDomain{
 				}
 			}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("initCheck4Wms").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusInitErrorLog(
+					lm.addMetaData("errorMsg",
+							"initCheck4Wms error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -197,9 +220,9 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 		}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("initCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusInitErrorLog(
+					lm.addMetaData("errorMsg",
+							"initCheck error" + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -213,12 +236,12 @@ public class InventoryInitDomain extends AbstractDomain{
 		boolean result = false;
 		try {
 			// 保存商品库存
-			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsUpate, selWmsList);
+			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsUpate,wmsInventoryList, selWmsList);
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("init4Wms").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			this.writeBusInitErrorLog(
+					lm.addMetaData("errorMsg",
+							"init4Wms error" + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if(!result) {
 			return CreateInventoryResultEnum.DB_ERROR;
@@ -235,10 +258,10 @@ public class InventoryInitDomain extends AbstractDomain{
 		// 保存商品库存
 		result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("init").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			this.writeBusInitErrorLog(
+					lm.addMetaData("errorMsg",
+							"init error" + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if(!result) {
 			return CreateInventoryResultEnum.DB_ERROR;
@@ -261,10 +284,10 @@ public class InventoryInitDomain extends AbstractDomain{
 			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("createInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"createInventory error" + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if(!result) {
 			return CreateInventoryResultEnum.DB_ERROR;
@@ -284,9 +307,9 @@ public class InventoryInitDomain extends AbstractDomain{
 			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsDO, selectionList);
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("createWmsInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"createWmsInventory error" + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		if(!result) {
@@ -307,23 +330,23 @@ public class InventoryInitDomain extends AbstractDomain{
 			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
 		} catch (Exception e) {
 			handler = false;
-			this.writeBusErrorLog(
-					lm.setMethod("updateMysqlInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"updateMysqlInventory error" + e.getMessage()),false,  e);
 		}
 		return handler;
 	}
 	//更新物流的库存信息
-	public boolean updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO,List<GoodsWmsSelectionResult> selectionList) {
+	public boolean updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult> selectionList) {
 		boolean handler = true;
 		try {
 			// 更新商品库存
-			handler = this.inventoryInitAndUpdateHandle.batchAdjustGoodsWms(wmsDO, selectionList);
+			handler = this.inventoryInitAndUpdateHandle.batchAdjustGoodsWms(wmsDO,wmsInventoryList, selectionList);
 		} catch (Exception e) {
 			handler = false;
-			this.writeBusErrorLog(
-					lm.setMethod("updateMysqlInventory").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusUpdateErrorLog(
+					lm.addMetaData("errorMsg",
+							"updateWmsMysqlInventory error" + e.getMessage()),false,  e);
 		}
 		return handler;
 	}

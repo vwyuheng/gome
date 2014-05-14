@@ -63,6 +63,9 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"createInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/create")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("param", param);
 		GoodsCreateInventoryDomain createInventoryDomain = new GoodsCreateInventoryDomain(
 				packet, param, lm, messageRoot);
 		createInventoryDomain
@@ -94,6 +97,9 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"createInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/up")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("param", param);
 		GoodsdUpdateInventoryDomain updateInventoryDomain = new GoodsdUpdateInventoryDomain(
 				packet, param, lm, messageRoot);
 		updateInventoryDomain
@@ -126,6 +132,9 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"callbackAckInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/ack")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("ack", ack).addMetaData("key", key);
 		GoodsdAckInventoryDomain ackInventoryDomain = new GoodsdAckInventoryDomain(
 				packet, ack,key, lm, messageRoot);
 		ackInventoryDomain
@@ -161,6 +170,13 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"adjustmentInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/adjusti")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("goodsId", goodsId)
+		.addMetaData("id", id)
+		.addMetaData("userId", userId)
+		.addMetaData("type", type)
+		.addMetaData("num", num);
 		GoodsdAdjustInventoryDomain adjustInventoryDomain = new GoodsdAdjustInventoryDomain(
 				packet,goodsId, id,userId,type,num, lm, messageRoot);
 		adjustInventoryDomain
@@ -195,6 +211,13 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"adjustmentWaterflood");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/adjustw")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("goodsId", goodsId)
+		.addMetaData("id", id)
+		.addMetaData("userId", userId)
+		.addMetaData("type", type)
+		.addMetaData("num", num);
 		GoodsdAdjustWaterfloodDomain adjustWaterfloodDomain = new GoodsdAdjustWaterfloodDomain(
 				packet,goodsId,id,userId,type,num, lm, messageRoot);
 		adjustWaterfloodDomain
@@ -226,6 +249,10 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"createWmsInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/createwms")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("param", param);
+		
 		GoodsWmsInventoryCreateDomain createWmsDomain = new GoodsWmsInventoryCreateDomain(
 				packet, param, lm, messageRoot);
 		createWmsDomain
@@ -241,7 +268,7 @@ public class GoodsInventoryUpdateController {
 		return createWmsDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/update/adjustwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&isBeDelivery=1&num=1&goodsSelection=[{"goodTypeId":18,"id":18,"num":1}]
+	 * http://localhost:882/rest/j/update/adjustwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&isBeDelivery=1&num=1&goodsIds=[173552,217335]&goodsSelection=[{"goodTypeId":18,"id":18,"num":1}]
 	 * 物流库存调整接口
 	 * @param packet
 	 * @param param
@@ -257,6 +284,10 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"adjustWmsInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/adjustwms")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("param", param);
+		
 		GoodsWmsInventoryAdjustDomain adjustWmsDomain = new GoodsWmsInventoryAdjustDomain(
 				packet, param, lm, messageRoot);
 		adjustWmsDomain

@@ -5,6 +5,7 @@
   	 <!-- 商品主体库存信息-->	
 	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+	    <result column="goods_wms_id" property="wmsId" jdbcType="BIGINT" />
 	     <result column="user_id" property="userId" jdbcType="BIGINT" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
@@ -14,8 +15,15 @@
 	
 	<!-- 通过商品ID查询非选型实物商品的库存  -->	
 	<select id="selectRedisInventoryByGoodsId" resultMap="GoodsInventoryResult"  parameterClass="java.lang.Long">
-	select goods_id,0 AS user_id,total_num,left_num,limit_storage,0 AS waterflood_val
+	select goods_id,goods_wms_id,0 AS user_id,total_num,left_num,limit_storage,0 AS waterflood_val
 	from (select ga.goods_id,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption
 		from jeehe_goods_attribute ga  where ga.goods_id = #goodsId:BIGINT#) AS tmp
+	</select>
+	
+	<!-- 更加物流编码查询商品库存信息 -->
+	<select id="selectInventoryListByWmsGoodsId" resultMap="GoodsInventoryResult"  parameterClass="java.lang.String">
+	select goods_id,goods_wms_id,0 AS user_id,total_num,left_num,limit_storage,0 AS waterflood_val
+	from (select ga.goods_id,ga.goods_wms_id,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption
+		from jeehe_goods_attribute ga ,jeehe_goods_wms wms WHERE ga.goods_wms_id = wms.id and wms.wms_goods_id = #wmsGoodsId:VARCHAR#) AS tmp
 	</select>
 </sqlMap>

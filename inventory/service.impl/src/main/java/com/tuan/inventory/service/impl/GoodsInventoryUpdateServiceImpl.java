@@ -2,6 +2,7 @@ package com.tuan.inventory.service.impl;
 
 import javax.annotation.Resource;
 
+import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryAdjustDomain;
 import com.tuan.inventory.domain.InventoryCallbackDomain;
@@ -42,6 +43,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Resource
 	private SequenceUtil sequenceUtil;
+	@Resource
+	private DLockImpl dLock;//分布式锁
 	
 	/**
 	 * 新增库存
@@ -49,13 +52,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult createInventory(String clientIp,
 			String clientName, CreaterInventoryParam param,Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.createInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
@@ -105,7 +105,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", inventoryCreatorDomain.getGoodsId());
+		.addMetaData("end", "end");
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -122,13 +123,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult createWmsInventory(String clientIp,
 			String clientName, WmsInventoryParam param,Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.createWmsInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createWmsInventory");
@@ -179,6 +177,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("wmsGoodsId", param.getWmsGoodsId());
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -190,13 +189,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult updateInventory(String clientIp,
 			String clientName, UpdateInventoryParam param, Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.updateInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory");
@@ -209,6 +205,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryUpdateDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
+		inventoryUpdateDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -250,6 +247,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("goodsId", inventoryUpdateDomain.getGoodsId());
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -258,13 +256,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult callbackAckInventory(String clientIp,
 			String clientName, CallbackParam param, Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.callbackAckInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "callbackAckInventory");
@@ -273,6 +268,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryCallbackDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCallbackDomain.setSequenceUtil(sequenceUtil);
+		inventoryCallbackDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -313,6 +309,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("goodsId", inventoryCallbackDomain.getGoodsId());
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -321,13 +318,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult adjustmentInventory(String clientIp,
 			String clientName, AdjustInventoryParam param, Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.adjustmentInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentInventory");
@@ -338,6 +332,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
+		inventoryAdjustDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -379,6 +374,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId());
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -388,13 +384,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	public InventoryCallResult adjustmentWaterflood(String clientIp,
 			String clientName, AdjustWaterfloodParam param,
 			Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.adjustmentWaterflood";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentWaterflood");
@@ -405,6 +398,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		waterfloodAdjustmentDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		waterfloodAdjustmentDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		waterfloodAdjustmentDomain.setSequenceUtil(sequenceUtil);
+		waterfloodAdjustmentDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -445,6 +439,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("goodsId", waterfloodAdjustmentDomain.getGoodsId());
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
@@ -453,13 +448,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult adjustWmsInventory(String clientIp,
 			String clientName, WmsInventoryParam param, Message traceMessage) {
-		if(traceMessage == null){
-			return new InventoryCallResult(CreateInventoryResultEnum.INVALID_PARAM.getCode()
-					,CreateInventoryResultEnum.INVALID_PARAM.getDescription(), null);
-		}
+		
 		String method = "GoodsInventoryUpdateService.adjustWmsInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustWmsInventory");
@@ -470,6 +462,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		adjustWmsDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		adjustWmsDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		adjustWmsDomain.setSequenceUtil(sequenceUtil);
+		adjustWmsDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -510,6 +503,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("wmsGoodsId", param.getWmsGoodsId());
+		writeSysUpdateLog(lm, false);
 		writeSysLog(lm, true);
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 

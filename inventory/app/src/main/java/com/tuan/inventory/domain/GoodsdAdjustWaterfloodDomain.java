@@ -34,8 +34,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private AdjustWaterfloodParam param;
 	private UpdateRequestPacket packet;
-	//private static Logger logger = Logger.getLogger(GoodsdAdjustWaterfloodDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsdAdjustWaterfloodDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
 	
 	public GoodsdAdjustWaterfloodDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot){
 		this.packet = packet;
@@ -90,14 +89,14 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 			InventoryCallResult resp = goodsInventoryUpdateService.adjustmentWaterflood(
 					clientIp, clientName, param, messageRoot);
 			if(resp == null){
-				return ResultEnum.ERROR_2000;
+				return ResultEnum.SYS_ERROR;
 			}
 			if(!(resp.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logger.error(lm.setMethod("GoodsdAdjustInventoryDomain.doBusiness").addMetaData("errMsg", e.getMessage()).toJson(),e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errMsg", "GoodsdAdjustWaterfloodDomain.doBusiness error"+e.getMessage()).toJson(),e);
+			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;
 	}

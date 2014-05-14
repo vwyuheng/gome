@@ -14,9 +14,8 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
-	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
-	//private static Logger logger = Logger.getLogger(GoodsSupplierQueryDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsSupplierQueryDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTPQUERYRESULT.LOG");
+
 	private GoodsSuppliersQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private GoodsSupplierQueryDomain(){}
@@ -30,8 +29,7 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 	
 	@Override
 	public ResultEnum doBusiness() {
-		String method = "GoodsSupplierQueryDomain.doBusiness";
-		
+		logerror.info(lm.addMetaData("start", "start").toJson(false));
 		String respStr = null;
 		CallResult<GoodsSuppliersModel> queryCallResult = null;
 		try {
@@ -39,11 +37,10 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 			queryCallResult = goodsInventoryQueryService.findGoodsSuppliersBySuppliersId(clientIp, clientName, Long.parseLong(goodsId), Long.parseLong(suppliersId));
 			
 		} catch (Exception e) {
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
 			return ResultEnum.ERROR_2000;
 		}
-		/*if (queryCallResult == null || !queryCallResult.isSuccess()) {
-			return ResultEnum.INVALID_RETURN;*/
+		
 		if (queryCallResult == null ) {
 			return ResultEnum.SYS_ERROR;
 		}else if (!queryCallResult.isSuccess()) {
@@ -53,7 +50,6 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 			GoodsSuppliersQueryInnerResp resp = new GoodsSuppliersQueryInnerResp();
 			resp.setGoodsSuppliers(goodsSuppliers);
 			this.resp = resp;
-			//this.resp = (GoodsSelectionQueryInnerResp)new Gson().fromJson(respStr, respType);
 			this.resp.addHeadParameMap4Resp(parameterRespMap);
 		}
 		
@@ -61,7 +57,7 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 			
 			
 		}catch(Exception e){
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).addMetaData("respStr", respStr).toJson(), e);
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("respStr", respStr).toJson(false), e);
 			return ResultEnum.INVALID_RETURN;
 		}
 		
@@ -76,7 +72,6 @@ public class GoodsSupplierQueryDomain extends GoodsSuppliersDomain{
 		if(this.resp != null){
 			resp.setGoodsSuppliers(this.resp.getGoodsSuppliers());
 		}
-		//return JsonUtils.convertObjectToString(resp);
 		return (resp);
 	}
 

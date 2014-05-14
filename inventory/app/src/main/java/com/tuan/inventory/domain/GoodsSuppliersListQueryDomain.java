@@ -16,9 +16,7 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class GoodsSuppliersListQueryDomain extends GoodsSuppliersListDomain{
-	//private static Type respType = new TypeToken<GoodsSelectionQueryInnerResp>(){}.getType();
-	//private static Logger logger = Logger.getLogger(GoodsSuppliersListQueryDomain.class);
-	private static Log logger = LogFactory.getLog(GoodsSuppliersListQueryDomain.class);
+	private static Log logerror = LogFactory.getLog("HTTPQUERYRESULT.LOG");
 	private GoodsSuppliersListQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private GoodsSuppliersListQueryDomain(){}
@@ -32,21 +30,18 @@ public class GoodsSuppliersListQueryDomain extends GoodsSuppliersListDomain{
 	
 	@Override
 	public ResultEnum doBusiness() {
-		String method = "GoodsQueryDomain.doBusiness";
-		
-		//String respStr = null;
+		logerror.info(lm.addMetaData("start", "start").toJson(false));
 		CallResult<List<GoodsSuppliersModel>> queryCallResult = null;
 		try {
 			//
 			queryCallResult = goodsInventoryQueryService.findGoodsSuppliersListByGoodsId(clientIp, clientName, Long.parseLong(goodsId));
 			
 		} catch (Exception e) {
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).toJson(), e);
-			return ResultEnum.ERROR_2000;
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
+			return ResultEnum.SYS_ERROR;
 		}
 		try{
-		/*if (queryCallResult == null || !queryCallResult.isSuccess()) {
-			return ResultEnum.INVALID_RETURN;*/
+		
 		if (queryCallResult == null ) {
 				return ResultEnum.SYS_ERROR;
 		}else if (!queryCallResult.isSuccess()) {
@@ -60,8 +55,8 @@ public class GoodsSuppliersListQueryDomain extends GoodsSuppliersListDomain{
 		}
 			
 		}catch(Exception e){
-			logger.error(lm.setMethod(method).addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(), e);
-			return ResultEnum.INVALID_RETURN;
+			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("result", resp).toJson(false), e);
+			return ResultEnum.SYS_ERROR;
 		}
 		
 		return ResultEnum.SUCCESS;
@@ -75,7 +70,6 @@ public class GoodsSuppliersListQueryDomain extends GoodsSuppliersListDomain{
 		if(this.resp != null){
 			resp.setgSuppliersList(this.resp.getgSuppliersList());
 		}
-		//return JsonUtils.convertObjectToString(resp);
 		return (resp);
 	}
 

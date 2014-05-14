@@ -6,12 +6,16 @@ import javax.annotation.Resource;
 
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.core.common.lock.eum.LockResultCodeEnum;
+import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
@@ -34,8 +38,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	@Resource
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
-	//@Resource
-	//GoodsInventoryInitService goodsInventoryInitService;
+	@Resource
+	private DLockImpl dLock;//分布式锁
 	
 	@Override
 	public CallResult<GoodsSelectionModel> findGoodsSelectionBySelectionId(
@@ -46,20 +50,14 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		lm.addMetaData("clientIp", clientIp)
 		.addMetaData("clientName", clientName)
 		.addMetaData("goodsId", goodsId)
-		.addMetaData("selectionId", selectionId);
+		.addMetaData("selectionId", selectionId)
+		.addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -104,11 +102,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
-				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
-		writeSysLog(lm.toJson());
+				.addMetaData("qresult", qresult.getResultObject()),
+				false);
+		writeSysLog(lm.toJson(false));
 		return new CallResult<GoodsSelectionModel>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
 				(GoodsSelectionModel) qresult.getResultObject(),
@@ -123,22 +121,14 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		lm.addMetaData("clientIp", clientIp)
 		  .addMetaData("clientName", clientName)
 		  . addMetaData("goodsId", goodsId)
-		  .addMetaData("suppliersId", suppliersId);
+		  .addMetaData("suppliersId", suppliersId)
+		  .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -181,10 +171,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
+				.addMetaData("end", "end")
+				,false);
 		writeSysLog(lm.toJson());
 		return new CallResult<GoodsSuppliersModel>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
@@ -199,22 +190,16 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsInventoryByGoodsId");
 		lm.addMetaData("clientIp", clientIp)
 		  .addMetaData("clientName", clientName)
-		  .addMetaData("goodsId", goodsId);
+		  .addMetaData("goodsId", goodsId)
+		  .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						//initCheck(goodsId);
+						
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
+				
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -257,10 +242,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
+				.addMetaData("end", "end")
+				,false);
 		writeSysLog(lm.toJson());
 		
 		return new CallResult<GoodsInventoryModel>(result.isSuccess(),
@@ -277,22 +263,14 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListByGoodsId");
 		lm.addMetaData("clientIp", clientIp)
 		  .addMetaData("clientName", clientName)
-		  .addMetaData("goodsId", goodsId);
+		  .addMetaData("goodsId", goodsId)
+		  .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -335,10 +313,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
+				.addMetaData("end", "end")
+				,false);
 		writeSysLog(lm.toJson());
 		return new CallResult<List<GoodsSelectionModel>>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
@@ -354,22 +333,15 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.newLogModel("GoodsInventoryQueryService.findGoodsSelectionListByGoodsId");
 		lm.addMetaData("clientIp", clientIp)
 		  .addMetaData("clientName", clientName)
-		  .addMetaData("goodsId", goodsId);
+		  .addMetaData("goodsId", goodsId)
+		   .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						//initCheck(goodsId);
+						
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -412,10 +384,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
+				.addMetaData("end", "end")
+				,false);
 		writeSysLog(lm.toJson());
 		return new CallResult<List<GoodsSuppliersModel>>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
@@ -434,22 +407,14 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		lm.addMetaData("clientIp", clientIp)
 		  .addMetaData("clientName", clientName)
 		  .addMetaData("goodsId", goodsId)
-		  .addMetaData("selectionIdList", selectionIdList);
+		  .addMetaData("selectionIdList", selectionIdList)
+		   .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						//initCheck(goodsId);
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -495,10 +460,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
+				.addMetaData("end", "end")
+				,false);
 		writeSysLog(lm.toJson());
 		return new CallResult<List<GoodsSelectionModel>>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
@@ -516,22 +482,15 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		lm.addMetaData("clientIp", clientIp)
 		  .addMetaData("clientName", clientName)
 				.addMetaData("goodsId", goodsId)
-		        .addMetaData("suppliersIdList", suppliersIdList);
+		        .addMetaData("suppliersIdList", suppliersIdList)
+		         .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						//初始化检查
-						//initCheck(goodsId);
+						
 						InventoryQueryEnum enumRes = null;
-						//初始化检查
-						/*InventoryCallResult callResult = goodsInventoryInitService.goodsInit(goodsId);
-						if(callResult == null){
-							enumRes = InventoryQueryEnum.SYS_ERROR;
-						}
-						if(!(callResult.getCode() == CreateInventoryResultEnum.SUCCESS.getCode())){
-							enumRes = InventoryQueryEnum.DB_ERROR;
-						}*/
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
@@ -574,10 +533,11 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				);
 		final int resultCode = result.getResultCode();
 		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
-		writeBusLog(lm.addMetaData("result", result.isSuccess())
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
-				.toJson(false));
+				.addMetaData("end", "end")
+				,false);
 		writeSysLog(lm.toJson());
 		return new CallResult<List<GoodsSuppliersModel>>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
@@ -587,14 +547,37 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	
 	
 	//初始化检查
+	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck(long goodsId,LogModel lm) {
-			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
-			//注入相关Repository
-			//create.setGoodsId(goodsId);
-			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-			return create.businessExecute();
+		//初始化加分布式锁
+		lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
+		writeBusInitLog(lm,false);
+		LockResult<String> lockResult = null;
+		CreateInventoryResultEnum resultEnum = null;
+		String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
+			try {
+				lockResult = dLock.lockManualByTimes(key, 5000L, 5);
+				if (lockResult == null
+						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+								.getCode()) {
+					writeBusInitLog(
+							lm.setMethod("dLock").addMetaData("errorMsg",
+									goodsId), false);
+				}
+				InventoryInitDomain create = new InventoryInitDomain(goodsId,
+						lm);
+				//注入相关Repository
+				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+				resultEnum = create.businessExecute();
+			} finally{
+				dLock.unlockManual(key);
+			}
+			lm.addMetaData("result", resultEnum);
+			lm.addMetaData("result", "end");
+			writeBusInitLog(lm,false);
+			return resultEnum;
 		}
 
 }

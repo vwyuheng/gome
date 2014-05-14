@@ -38,7 +38,11 @@
 	  <dependency>
 			<groupId>commons-validator</groupId>
 			<artifactId>commons-validator</artifactId>
-		</dependency>		
+		</dependency>	
+		<dependency>
+		  		<groupId>com.tuan.cozy</groupId>
+	<artifactId>cozy-common-lock-client-redis</artifactId>
+		</dependency>	
 	    <!-- notifyserver start -->
 	    <dependency>
 			<!-- <groupId>com.tuan.notifyserver.client</groupId>
