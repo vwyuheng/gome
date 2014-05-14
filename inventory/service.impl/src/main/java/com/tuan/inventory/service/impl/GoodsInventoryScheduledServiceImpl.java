@@ -26,7 +26,7 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 			String clientName,Message traceMessage) {
 		String method = "GoodsInventoryScheduledService.confirmQueueConsume";
 		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method)
+		writeSysJobLog(lm.setMethod(method)
 				.addMetaData("clientIp", clientIp)
 				.addMetaData("clientName", clientName)
 				.addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
@@ -47,7 +47,7 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 
 		String method = "GoodsInventoryScheduledService.lockedQueueConsume";
 		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method)
+		writeSysJobLog(lm.setMethod(method)
 				.addMetaData("clientIp", clientIp)
 				.addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString())
@@ -68,7 +68,7 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 			Message traceMessage) {
 		String method = "GoodsInventoryScheduledService.logsQueueConsume";
 		final LogModel lm = LogModel.newLogModel(traceMessage.getTraceHeader().getRootId());
-		writeSysLog(lm.setMethod(method)
+		writeSysJobLog(lm.setMethod(method)
 				.addMetaData("clientIp", clientIp)
 				.addMetaData("clientName", clientName)
 				.addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);

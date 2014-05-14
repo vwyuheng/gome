@@ -103,9 +103,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 			}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("preHandler").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"preHandler error" + e.getMessage()),false, e);
 		}
 		
 		
@@ -135,9 +135,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			//回滚mysql库存
 			this.rollback4Mysql();
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"businessHandler error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		
@@ -152,9 +152,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			return false;
 		}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("loadMessageData").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"loadMessageData error" + e.getMessage()),false, e);
 			return false;
 		}
 		return true;
@@ -173,7 +173,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
 			 */
 		} catch (Exception e) {
-			writeBusErrorLog(lm.setMethod("sendNotify").addMetaData("errMsg", e.getMessage()), e);
+			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
 		}
 	}
 	//回滚mysql数据
@@ -192,8 +192,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("rollback4Mysql")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusJobErrorLog(lm
+					.addMetaData("errMsg", "rollback4Mysql error"+e.getMessage()),false, e);
 			
 		}
 	}
@@ -284,8 +284,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("markDeleteAfterSendMsgSuccess")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusJobErrorLog(lm
+					.addMetaData("errMsg", "markDeleteAfterSendMsgSuccess error"+e.getMessage()),false, e);
 			
 		}
 	}
@@ -309,8 +309,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.setMethod("rollbackAndMarkDelete")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusJobErrorLog(lm
+					.addMetaData("errMsg", "rollbackAndMarkDelete error"+e.getMessage()),false, e);
 			
 		}
 	}
@@ -338,9 +338,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 			}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("rollback").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"rollback error" + e.getMessage()),false, e);
 			return false;
 		}
 		return true;

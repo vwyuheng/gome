@@ -38,9 +38,9 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 				}
 			}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("preHandler").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"preHandler error" + e.getMessage()),false, e);
 		}
 		
 		
@@ -61,10 +61,10 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 				}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"businessHandler error" + e.getMessage()),false, e);
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -85,9 +85,9 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			}
 			event.setUUID(String.valueOf(model.getId()));
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("fillActionEvent").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"fillActionEvent error" + e.getMessage()),false, e);
 			return false;
 		}
 		return true;

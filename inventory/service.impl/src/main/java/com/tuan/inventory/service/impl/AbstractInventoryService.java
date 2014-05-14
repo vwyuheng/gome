@@ -16,6 +16,7 @@ public abstract class AbstractInventoryService  {
 	protected static Log logSysUpdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	protected static Log logBus = LogFactory.getLog("SYS.QUERYRESULT.LOG");
 	private static Log logInit=LogFactory.getLog("INVENTORY.INIT");
+	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
 	
 	public AbstractInventoryService() {
 		
@@ -33,6 +34,11 @@ public abstract class AbstractInventoryService  {
 	protected void writeSysLog(LogModel lm, boolean purge) {
 		if (logSys.isInfoEnabled()) {
 			logSys.info(lm.toJson(purge));
+		}
+	}
+	protected void writeSysJobLog(LogModel lm, boolean purge) {
+		if (logJob.isInfoEnabled()) {
+			logJob.info(lm.toJson(purge));
 		}
 	}
 	protected void writeSysUpdateLog(LogModel lm, boolean purge) {

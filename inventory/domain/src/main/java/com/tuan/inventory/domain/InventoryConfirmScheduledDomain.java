@@ -66,9 +66,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			preresult = false;
-			this.writeBusErrorLog(
-					lm.setMethod("preHandler").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"preHandler error" + e.getMessage()),false, e);
 		}
 		
 		return preresult;
@@ -99,9 +99,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			this.markDelete();
 				
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"businessHandler error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
 		
@@ -116,9 +116,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			return false;
 		}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.setMethod("loadMessageData").addMetaData("errorMsg",
-							"DB error" + e.getMessage()), e);
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg",
+							"loadMessageData error" + e.getMessage()),false, e);
 			return false;
 		}
 		return true;
@@ -181,7 +181,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
 			 */
 		} catch (Exception e) {
-			writeBusErrorLog(lm.setMethod("sendNotify").addMetaData("errMsg", e.getMessage()), e);
+			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
 		}
 	}
 
@@ -226,8 +226,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			
 		} catch (Exception e) {
 			
-			this.writeBusErrorLog(lm.setMethod("markDelete")
-					.addMetaData("errMsg", e.getMessage()), e);
+			this.writeBusJobErrorLog(lm
+					.addMetaData("errMsg", "markDelete error"+e.getMessage()),false, e);
 			
 		}
 		
