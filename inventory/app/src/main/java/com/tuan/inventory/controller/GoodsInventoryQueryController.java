@@ -278,6 +278,7 @@ public class GoodsInventoryQueryController {
 		return (GoodsSuppliersListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
+	 * http://localhost:882/rest/j/query/isbedelivery?&ip==127.0.0.1&client=ordercenter&t=123456789&wmsGoodsId=T01000000116&traceId=123&traceRootId=456
 	 * 根据物流码查询发货仓库信息
 	 * @param packet
 	 * @param wmsGoodsId

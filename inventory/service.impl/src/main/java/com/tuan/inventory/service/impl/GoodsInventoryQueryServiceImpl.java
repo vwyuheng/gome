@@ -591,6 +591,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.queryGoodsInventoryWms(wmsGoodsId);
 						if(wmsDO!=null) {
 							isBeDeliveryModel = new WmsIsBeDeliveryModel();
+							//转换
 							switch (wmsDO.getIsBeDelivery()) {
 							case 0:
 								isBeDeliveryModel.setIsBeDelivery("wowo");
