@@ -21,13 +21,14 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl implements SynInitAndAysnMysqlService {
-	private static final Log logger = LogFactory.getLog(SynInitAndAysnMysqlServiceImpl.class);
+	private static final Log logger = LogFactory.getLog("SYSERROR.LOG");
 	@Resource
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	@Resource
@@ -1168,6 +1169,54 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	
 	return new CallResult<List<GoodsInventoryDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
 			(List<GoodsInventoryDO>)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+	@Override
+	public CallResult<WmsIsBeDeliveryDO> selectWmsIsBeDeliveryResult(final
+			String wmsGoodsId) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					WmsIsBeDeliveryDO wmsDO = null;
+					try {
+						wmsDO = initCacheDomainRepository.selectWmsIsBeDeliveryResult(wmsGoodsId);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectWmsIsBeDeliveryResult error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + wmsGoodsId
+											+ "' for key 'wmsGoodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectWmsIsBeDeliveryResult error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							wmsDO);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (StringUtils.isEmpty(wmsGoodsId)) {
+						 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<WmsIsBeDeliveryDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(WmsIsBeDeliveryDO)callBackResult.getBusinessObject(),
 			callBackResult.getThrowable());
 
 }

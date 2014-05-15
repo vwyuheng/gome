@@ -8,6 +8,8 @@ public enum InventoryQueryEnum {
 	INVALID_PARAM(-1, "传入参数错误"),
 	/**商品id无效*/
 	INVALID_GOODSID(-2, "商品id无效"),
+	/**商品id无效*/
+	INVALID_WMSGOODSID(1032, "物流编码无效"),
 	/**用户id无效*/
 	INVALID_SELECTIONID(-3, "选型id无效"),
 	/**无效客户端*/

@@ -4,12 +4,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.core.common.service.TuanCallbackResult;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -19,6 +21,7 @@ import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.WmsIsBeDeliveryModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.enu.res.InventoryQueryEnum;
@@ -545,6 +548,92 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				result.getThrowable());
 	}
 	
+	@Override
+	public CallResult<WmsIsBeDeliveryModel> findWmsIsBeDeliveryByWmsGoodsId(
+			final String clientIp, final String clientName, final String wmsGoodsId) {
+		final LogModel lm = LogModel
+				.newLogModel("GoodsInventoryQueryService.findWmsIsBeDeliveryByWmsGoodsId");
+		lm.addMetaData("clientIp", clientIp)
+		  .addMetaData("clientName", clientName)
+		  .addMetaData("wmsGoodsId", wmsGoodsId)
+		  .addMetaData("start", "start");
+		writeSysBusLog(lm,false);
+		TuanCallbackResult result = this.inventoryServiceTemplate
+				.execute(new InventoryQueryServiceCallback() {
+					@Override
+					public TuanCallbackResult preHandler() {
+						
+						InventoryQueryEnum enumRes = null;
+				
+						// 初始化检查
+						CreateInventoryResultEnum resultEnum =  initWmsCheck(wmsGoodsId,lm);
+						
+						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+						}
+						if (StringUtils.isEmpty(wmsGoodsId)) {
+							enumRes = InventoryQueryEnum.INVALID_WMSGOODSID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
+						return TuanCallbackResult.success();
+					}
+
+					@Override
+					public TuanCallbackResult doWork() {
+						InventoryQueryResult res = null;
+						WmsIsBeDeliveryModel isBeDeliveryModel = null;
+						GoodsInventoryWMSDO wmsDO = goodsInventoryDomainRepository
+								.queryGoodsInventoryWms(wmsGoodsId);
+						if(wmsDO!=null) {
+							isBeDeliveryModel = new WmsIsBeDeliveryModel();
+							switch (wmsDO.getIsBeDelivery()) {
+							case 0:
+								isBeDeliveryModel.setIsBeDelivery("wowo");
+								isBeDeliveryModel.setDescription("窝窝发货");
+								break;
+							case 1:
+								isBeDeliveryModel.setIsBeDelivery("shangjia");
+								isBeDeliveryModel.setDescription("商家发货");
+								break;
+							}
+			
+						}
+						if (isBeDeliveryModel != null) {
+							res = new InventoryQueryResult(
+									InventoryQueryEnum.SUCCESS, isBeDeliveryModel);
+							return TuanCallbackResult.success(res.getResult()
+									.getCode(), res);
+						} else {
+							res = new InventoryQueryResult(
+									InventoryQueryEnum.SYS_ERROR, null);
+							return TuanCallbackResult.failure(res.getResult()
+									.getCode(), null, res);
+						}
+
+					}
+
+				}
+
+				);
+		final int resultCode = result.getResultCode();
+		final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
+		writeSysBusLog(lm.addMetaData("result", result.isSuccess())
+				.addMetaData("resultCode", result.getResultCode())
+				.addMetaData("qresult", qresult.getResultObject())
+				.addMetaData("end", "end")
+				,false);
+		writeSysLog(lm.toJson());
+		
+		return new CallResult<WmsIsBeDeliveryModel>(result.isSuccess(),
+				PublicCodeEnum.valuesOf(resultCode),
+				(WmsIsBeDeliveryModel) qresult.getResultObject(),
+				result.getThrowable());
+	}
 	
 	//初始化检查
 	@SuppressWarnings("unchecked")
@@ -579,5 +668,41 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 			writeBusInitLog(lm,false);
 			return resultEnum;
 		}
+
+	    //初始化物流库存库存
+		@SuppressWarnings("unchecked")
+		public CreateInventoryResultEnum initWmsCheck(String wmsGoodsId,LogModel lm) {
+					//初始化加分布式锁
+					lm.addMetaData("GoodsInventoryQueryServiceImpl initWmsCheck","initWmsCheck,start").addMetaData("initWmsCheck[" + (wmsGoodsId) + "]", wmsGoodsId);
+					writeBusInitLog(lm,false);
+					LockResult<String> lockResult = null;
+					CreateInventoryResultEnum resultEnum = null;
+					String key = DLockConstants.INIT_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
+					try {
+						lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
+						if (lockResult == null
+								|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+										.getCode()) {
+							writeBusInitLog(
+									lm.addMetaData("GoodsInventoryQueryServiceImpl initWmsCheck dLock errorMsg",
+											wmsGoodsId), true);
+						}
+						InventoryInitDomain create = new InventoryInitDomain();
+						//注入相关Repository
+						create.setWmsGoodsId(wmsGoodsId);
+						create.setLm(lm);
+						create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+						create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+						create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+						resultEnum = create.business4WmsExecute();
+					} finally{
+						dLock.unlockManual(key);
+					}
+					lm.addMetaData("result", resultEnum);
+					lm.addMetaData("result", "end");
+					writeBusInitLog(lm,false);
+					return resultEnum;
+				}
+		
 
 }

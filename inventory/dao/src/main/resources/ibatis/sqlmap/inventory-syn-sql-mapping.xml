@@ -2,6 +2,11 @@
 <!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
 <sqlMap namespace="tuan-inventory" >
 
+    <!-- 物流发货仓库信息-->	
+	<resultMap id="WmsIsBeDeliveryResult" class="com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO">
+	    <result column="is_be_delivery" property="isBeDelivery" jdbcType="INTEGER" />  
+	    <result column="description" property="description" jdbcType="VARCHAR" />    
+	 </resultMap>
     <!-- 商品物流信息-->	
 	<resultMap id="GoodsInventoryWMSResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO">
 	    <result column="id" property="id" jdbcType="BIGINT" />
@@ -66,7 +71,27 @@
 	    <result column="remark" property="remark" jdbcType="VARCHAR" />
 	 </resultMap>
 	
-	
+	 <!-- 根据物流码查询发货仓库信息  -->	
+	<select id="selectWmsIsBeDeliveryResult" resultMap="WmsIsBeDeliveryResult"  parameterClass="java.lang.String">
+	SELECT
+	CASE
+	wms.is_be_delivery
+	WHEN 0
+	THEN 'wowo'
+	WHEN 1
+	THEN 'shangjia'
+	END is_be_delivery,
+	CASE
+	wms.is_be_delivery
+	WHEN 0
+	THEN '窝窝发货'
+	WHEN 1
+	THEN '商家发货'
+	END description
+	FROM
+	jeehe_inventory_wms wms
+	WHERE wms.wms_goods_id = #wmsGoodsId:VARCHAR#
+	</select>
 	  <!-- 更新物流商品选型库存可更新字段   -->	
     <!-- <update id="updateGoodsWmsSelection" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
       update jeehe_inventory_selection

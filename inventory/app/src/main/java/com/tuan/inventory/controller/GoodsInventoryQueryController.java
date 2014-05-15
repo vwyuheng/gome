@@ -14,12 +14,14 @@ import com.tuan.inventory.domain.GoodsSelectionListQueryDomain;
 import com.tuan.inventory.domain.GoodsSelectionQueryDomain;
 import com.tuan.inventory.domain.GoodsSupplierQueryDomain;
 import com.tuan.inventory.domain.GoodsSuppliersListQueryDomain;
+import com.tuan.inventory.domain.IsBeDeliveryQueryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.resp.inner.GoodsQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSelectionListQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSuppliersListQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSuppliersQueryInnerResp;
+import com.tuan.inventory.resp.inner.IsBeDeliveryQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.utils.LogModel;
@@ -274,5 +276,41 @@ public class GoodsInventoryQueryController {
 		resEnum = queryDomain.doBusiness();
 		//返回结果
 		return (GoodsSuppliersListQueryInnerResp) queryDomain.makeResult(resEnum);
+	}
+	/**
+	 * 根据物流码查询发货仓库信息
+	 * @param packet
+	 * @param wmsGoodsId
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/isbedelivery", method = RequestMethod.POST)
+	public @ModelAttribute("resp")IsBeDeliveryQueryInnerResp wmsIsBeDeliveryQuery(@ModelAttribute("inputPacket") RequestPacket packet
+			,String wmsGoodsId,HttpServletRequest request) {
+		Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryQueryController",
+				"isbedelivery");
+		LogModel lm = (LogModel)request.getAttribute("lm");
+		lm.setMethod("/isbedelivery")
+		.addMetaData("wmsGoodsId", wmsGoodsId)
+		.addMetaData("RequestPacket", packet);
+		IsBeDeliveryQueryDomain queryDomain = IsBeDeliveryQueryDomain.makeGoodsSuppliersListQueryDomain(packet,wmsGoodsId,lm,traceMessage);
+		if(queryDomain == null){
+			IsBeDeliveryQueryInnerResp resp = new IsBeDeliveryQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
+		//接口参数校验
+		ResultEnum resEnum = queryDomain.checkParameter();
+		//参数检查未通过时
+		if(resEnum.compareTo(ResultEnum.SUCCESS) != 0){
+			return (IsBeDeliveryQueryInnerResp) queryDomain.makeResult(resEnum);
+		}
+		//调用合作方接口
+		resEnum = queryDomain.doBusiness();
+		//返回结果
+		return (IsBeDeliveryQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 }

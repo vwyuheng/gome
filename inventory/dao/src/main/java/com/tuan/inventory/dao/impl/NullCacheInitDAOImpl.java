@@ -7,6 +7,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 import com.tuan.inventory.dao.NullCacheInitDAO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
+import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 
 public class NullCacheInitDAOImpl extends SqlMapClientDaoSupport  implements NullCacheInitDAO {
 
@@ -32,6 +33,12 @@ public class NullCacheInitDAOImpl extends SqlMapClientDaoSupport  implements Nul
 	@Override
 	public List<GoodsInventoryDO> selectInventory4Wms(String wmsGoodsId) {
 		return  super.getSqlMapClientTemplate().queryForList("selectInventoryListByWmsGoodsId", wmsGoodsId);
+	}
+
+	@Override
+	public WmsIsBeDeliveryDO selectWmsIsBeDeliveryResult(String wmsGoodsId) {
+		return  (WmsIsBeDeliveryDO) super.getSqlMapClientTemplate().
+				queryForObject("selectWmsIsBeDeliveryResult", wmsGoodsId);
 	}
 
 	

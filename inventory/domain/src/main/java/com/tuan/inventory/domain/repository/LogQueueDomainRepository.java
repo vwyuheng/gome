@@ -22,7 +22,7 @@ import com.tuan.inventory.model.util.QueueConstant;
  */
 public class LogQueueDomainRepository {
 	
-	private static final Log logger = LogFactory.getLog(LogQueueDomainRepository.class);
+	private static final Log logger = LogFactory.getLog("INVENTORY.JOB.LOG");
 	
 	/**
 	 * 日志队列信息dao

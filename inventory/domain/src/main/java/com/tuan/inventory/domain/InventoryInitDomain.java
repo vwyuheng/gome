@@ -370,6 +370,9 @@ public class InventoryInitDomain extends AbstractDomain{
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
 
+	public void setLm(LogModel lm) {
+		this.lm = lm;
+	}
 	public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;

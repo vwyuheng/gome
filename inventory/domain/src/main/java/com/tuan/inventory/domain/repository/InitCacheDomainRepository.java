@@ -17,6 +17,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 /**
  * 用于初始化redis缓存
  * @author henry.yu
@@ -28,7 +29,7 @@ public class InitCacheDomainRepository {
 	@Resource
 	private NullCacheInitDAO nullCacheInitDAO;
 	
-	private static Log log = LogFactory.getLog(InitCacheDomainRepository.class);
+	private static Log log = LogFactory.getLog("SYSERROR.LOG");
 	/**
 	 * 加载分店配型关系数据
 	 */
@@ -186,4 +187,7 @@ public class InitCacheDomainRepository {
 		return nullCacheInitDAO.selectInventory4Wms(wmsGoodsId);
 	}
 
+	public WmsIsBeDeliveryDO selectWmsIsBeDeliveryResult(String wmsGoodsId) {
+		return nullCacheInitDAO.selectWmsIsBeDeliveryResult(wmsGoodsId);
+	}
 }

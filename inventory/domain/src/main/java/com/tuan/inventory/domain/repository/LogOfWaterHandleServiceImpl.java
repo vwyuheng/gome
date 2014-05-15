@@ -15,7 +15,7 @@ import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 
 public class LogOfWaterHandleServiceImpl  extends TuanServiceTemplateImpl implements LogOfWaterHandleService {
-	private static final Log logger = LogFactory.getLog(LogOfWaterHandleServiceImpl.class);
+	private static final Log logger = LogFactory.getLog("INVENTORY.JOB.LOG");
 	@Resource
 	private LogQueueDomainRepository logQueueDomainRepository;
 	

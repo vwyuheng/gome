@@ -23,7 +23,6 @@ public class SynInitAndAsynUpdateDomainRepository {
 	@Resource
 	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
 	
-	//private static Log log = LogFactory.getLog(SynInitAndAsynUpdateDomainRepository.class);
 	/**
 	 * 保存插入商品库存
 	 * @param goodsDO

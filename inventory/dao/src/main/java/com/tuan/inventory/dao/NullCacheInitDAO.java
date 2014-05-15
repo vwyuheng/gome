@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
+import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 /**
  * 初始化redis cache商品库存信息dao
  * @author henry.yu
@@ -15,6 +16,7 @@ public interface NullCacheInitDAO {
 	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId);
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId);
 	public List<GoodsInventoryDO> selectInventory4Wms(String wmsGoodsId);
+	public WmsIsBeDeliveryDO selectWmsIsBeDeliveryResult(String wmsGoodsId);
 
 }
 

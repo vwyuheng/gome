@@ -7,6 +7,7 @@ import com.tuan.core.common.annotation.product.ProductLogLevelEnum;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.WmsIsBeDeliveryModel;
 import com.tuan.inventory.model.result.CallResult;
 
 public interface GoodsInventoryQueryService {
@@ -88,4 +89,14 @@ public interface GoodsInventoryQueryService {
 	@ProductCode(code = "00007", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	CallResult<List<GoodsSuppliersModel>> findGoodsSuppliersListBySuppliersIdList(final String clientIp, final String clientName, 
 			final long goodsId,final List<Long> suppliersIdList);
+	/***
+	 * 根据物流码查询发货仓库信息
+	 * @param clientIp
+	 * @param clientName
+	 * @param goodsId
+	 * @return
+	 */
+	@ProductCode(code = "00008", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
+	CallResult<WmsIsBeDeliveryModel> findWmsIsBeDeliveryByWmsGoodsId(final String clientIp, final String clientName, 
+			final String wmsGoodsId);
 }

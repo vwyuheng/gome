@@ -7,6 +7,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 import com.tuan.inventory.model.result.CallResult;
 
 public interface SynInitAndAysnMysqlService {
@@ -35,7 +36,7 @@ public interface SynInitAndAysnMysqlService {
 	public  CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(long goodsId);
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(String wmsGoodsId);
 	public CallResult<GoodsInventoryWMSDO> selectIsOrNotGoodsWMSByGoodsId(long goodsId);
-	
+	public CallResult<WmsIsBeDeliveryDO> selectWmsIsBeDeliveryResult(String wmsGoodsId);
 	public CallResult<List<GoodsInventoryDO>> selectInventoryList4Wms(String wmsGoodsId);
 	//删除
 	public CallResult<Integer> deleteGoodsInventory(long goodsId) throws Exception;

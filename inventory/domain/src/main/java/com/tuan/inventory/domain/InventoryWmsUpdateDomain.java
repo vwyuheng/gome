@@ -342,6 +342,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					InventoryInitDomain create = new InventoryInitDomain();
 					//注入相关Repository
 					create.setWmsGoodsId(wmsGoodsId);
+					create.setLm(lm);
 					create.setGoodsTypeIdList(selGoodsTypeIds);
 					create.setSelIds(selIds);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
