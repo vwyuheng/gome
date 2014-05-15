@@ -278,8 +278,8 @@ public class GoodsInventoryQueryController {
 		return (GoodsSuppliersListQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/query/isbedelivery?&ip==127.0.0.1&client=ordercenter&t=123456789&wmsGoodsId=T01000000116&traceId=123&traceRootId=456
-	 * 根据物流码查询发货仓库信息
+	 * http://localhost:882/rest/j/query/isbedelivery?&ip==127.0.0.1&client=ordercenter&t=123456789&wmsGoodsId=T01000000116&isBeDelivery=&traceId=123&traceRootId=456
+	 * 根据物流码和物流仓库类型查询发货仓库信息
 	 * @param packet
 	 * @param wmsGoodsId
 	 * @param request
@@ -287,7 +287,7 @@ public class GoodsInventoryQueryController {
 	 */
 	@RequestMapping(value = "/isbedelivery", method = RequestMethod.POST)
 	public @ModelAttribute("resp")IsBeDeliveryQueryInnerResp wmsIsBeDeliveryQuery(@ModelAttribute("inputPacket") RequestPacket packet
-			,String wmsGoodsId,HttpServletRequest request) {
+			,String wmsGoodsId,String isBeDelivery,HttpServletRequest request) {
 		Message traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
 				"Inventory-app", "GoodsInventoryQueryController",
@@ -296,7 +296,7 @@ public class GoodsInventoryQueryController {
 		lm.setMethod("/isbedelivery")
 		.addMetaData("wmsGoodsId", wmsGoodsId)
 		.addMetaData("RequestPacket", packet);
-		IsBeDeliveryQueryDomain queryDomain = IsBeDeliveryQueryDomain.makeGoodsSuppliersListQueryDomain(packet,wmsGoodsId,lm,traceMessage);
+		IsBeDeliveryQueryDomain queryDomain = IsBeDeliveryQueryDomain.makeGoodsSuppliersListQueryDomain(packet,wmsGoodsId,isBeDelivery,lm,traceMessage);
 		if(queryDomain == null){
 			IsBeDeliveryQueryInnerResp resp = new IsBeDeliveryQueryInnerResp();
 			resp.setResult(ResultEnum.NO_PARAMETER.getCode(), ResultEnum.NO_PARAMETER.getDescription());

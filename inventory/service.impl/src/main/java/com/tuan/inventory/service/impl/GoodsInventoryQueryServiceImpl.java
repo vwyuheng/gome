@@ -18,6 +18,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
@@ -550,7 +551,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	
 	@Override
 	public CallResult<WmsIsBeDeliveryModel> findWmsIsBeDeliveryByWmsGoodsId(
-			final String clientIp, final String clientName, final String wmsGoodsId) {
+			final String clientIp, final String clientName, final String wmsGoodsId,final String isBeDelivery) {
 		final LogModel lm = LogModel
 				.newLogModel("GoodsInventoryQueryService.findWmsIsBeDeliveryByWmsGoodsId");
 		lm.addMetaData("clientIp", clientIp)
@@ -590,18 +591,21 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						GoodsInventoryWMSDO wmsDO = goodsInventoryDomainRepository
 								.queryGoodsInventoryWms(wmsGoodsId);
 						if(wmsDO!=null) {
-							isBeDeliveryModel = new WmsIsBeDeliveryModel();
+							isBeDeliveryModel = ObjectUtils.toModel(wmsDO);
 							//转换
 							switch (wmsDO.getIsBeDelivery()) {
 							case 0:
-								isBeDeliveryModel.setIsBeDelivery("wowo");
+								isBeDeliveryModel.setIsBeDeliveryDesc("wowo");
 								isBeDeliveryModel.setDescription("窝窝发货");
 								break;
 							case 1:
-								isBeDeliveryModel.setIsBeDelivery("shangjia");
+								isBeDeliveryModel.setIsBeDeliveryDesc("shangjia");
 								isBeDeliveryModel.setDescription("商家发货");
 								break;
 							}
+							if(!StringUtils.isEmpty(isBeDelivery)&&wmsDO.getIsBeDelivery()!=Integer.valueOf(isBeDelivery)) {
+								isBeDeliveryModel = null;
+							}	
 			
 						}
 						if (isBeDeliveryModel != null) {

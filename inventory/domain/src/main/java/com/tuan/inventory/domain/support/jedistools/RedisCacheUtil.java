@@ -248,7 +248,7 @@ public class RedisCacheUtil {
 			@Override
 			public Boolean work(Jedis j) throws Exception {
 				if (j == null)
-					return null;
+					return false;
 				try {
 					return j.exists(key);
 					

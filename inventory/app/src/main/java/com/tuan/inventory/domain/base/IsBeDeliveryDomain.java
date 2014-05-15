@@ -13,7 +13,8 @@ import com.wowotrace.trace.model.Message;
 
 public abstract class IsBeDeliveryDomain extends AbstractGoodsInventoryDomain{
 	public RequestPacket requestPacket;		//窝窝内部统一的请求报文头
-	public String wmsGoodsId;					//物流编码
+	public String wmsGoodsId;	//物流编码
+	public String isBeDelivery;	
 	public LogModel lm;					
 	public Message traceMessage;					
 	
@@ -23,9 +24,10 @@ public abstract class IsBeDeliveryDomain extends AbstractGoodsInventoryDomain{
 	 * @return
 	 */
 	public void init(RequestPacket packet,String wmsGoodsId
-			,LogModel lm,Message traceMessage){
+			,String isBeDelivery,LogModel lm,Message traceMessage){
 		this.requestPacket = packet;
 		this.wmsGoodsId = wmsGoodsId;
+		this.isBeDelivery = isBeDelivery;
 		this.lm = lm;
 		this.traceMessage = traceMessage;
 		makeParameterMap(parameterMap);
@@ -36,12 +38,13 @@ public abstract class IsBeDeliveryDomain extends AbstractGoodsInventoryDomain{
 	 * @param packet	窝窝内部统一的请求报文头
 	 * @return
 	 */
-	public static IsBeDeliveryQueryDomain makeGoodsSuppliersListQueryDomain(RequestPacket packet,String wmsGoodsId,LogModel lm,Message traceMessage){
-				return IsBeDeliveryQueryDomain.makeInstance(packet,wmsGoodsId,lm,traceMessage);
+	public static IsBeDeliveryQueryDomain makeGoodsSuppliersListQueryDomain(RequestPacket packet,String wmsGoodsId,String isBeDelivery,LogModel lm,Message traceMessage){
+				return IsBeDeliveryQueryDomain.makeInstance(packet,wmsGoodsId,isBeDelivery,lm,traceMessage);
 	}
 	
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("wmsGoodsId", wmsGoodsId);
+		parameterMap.put("isBeDelivery", isBeDelivery);
 		requestPacket.addParameterMap(parameterMap);
 		super.init(requestPacket.getClient(), requestPacket.getIp());
 	}

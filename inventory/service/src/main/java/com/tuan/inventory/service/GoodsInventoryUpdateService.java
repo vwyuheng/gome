@@ -81,7 +81,14 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult createWmsInventory(final String clientIp, final String clientName
 			,final WmsInventoryParam param,Message traceMessage);
-	
+	/**
+	 * 
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
 	@ProductCode(code = "00007", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult adjustWmsInventory(
 			final String clientIp, final String clientName,final WmsInventoryParam param,Message traceMessage);

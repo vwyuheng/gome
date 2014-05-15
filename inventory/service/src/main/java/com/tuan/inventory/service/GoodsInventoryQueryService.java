@@ -98,5 +98,5 @@ public interface GoodsInventoryQueryService {
 	 */
 	@ProductCode(code = "00008", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	CallResult<WmsIsBeDeliveryModel> findWmsIsBeDeliveryByWmsGoodsId(final String clientIp, final String clientName, 
-			final String wmsGoodsId);
+			final String wmsGoodsId,final String isBeDelivery);
 }

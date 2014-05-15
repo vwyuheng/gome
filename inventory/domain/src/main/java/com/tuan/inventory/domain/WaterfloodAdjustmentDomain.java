@@ -162,7 +162,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					//调整注水数量
 					inventoryDO.setWaterfloodVal(inventoryDO.getWaterfloodVal()+(adjustNum));
 				}
-				if(inventoryDO.getWaterfloodVal()<0) {
+				if(inventoryDO!=null&&inventoryDO.getWaterfloodVal()<0) {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				//更新mysql

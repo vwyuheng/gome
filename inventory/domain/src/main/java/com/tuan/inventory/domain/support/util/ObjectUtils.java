@@ -16,6 +16,7 @@ import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
@@ -24,6 +25,7 @@ import com.tuan.inventory.model.GoodsInventoryQueueModel;
 import com.tuan.inventory.model.GoodsSelectionAndSuppliersModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.WmsIsBeDeliveryModel;
 import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
 import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 
@@ -188,6 +190,21 @@ public class ObjectUtils {
 				//result.setGoodsSelectionList(goodsSelectionList);
 			//if(!CollectionUtils.isEmpty(goodsSuppliersList))
 			//	result.setGoodsSuppliersList(goodsSuppliersList);
+		}
+		return result;
+	}
+	//
+	public static WmsIsBeDeliveryModel toModel(GoodsInventoryWMSDO wmsDO) {
+		WmsIsBeDeliveryModel result = null;
+		if(wmsDO!=null) {
+			result = new WmsIsBeDeliveryModel();
+			result.setId(wmsDO.getId());
+			result.setLeftNumber(wmsDO.getLeftNumber());
+			result.setTotalNumber(wmsDO.getTotalNumber());
+			result.setIsBeDelivery(wmsDO.getIsBeDelivery());
+			result.setGoodsName(wmsDO.getGoodsName());
+			result.setGoodsSupplier(wmsDO.getGoodsSupplier());
+			result.setWmsGoodsId(wmsDO.getWmsGoodsId());
 		}
 		return result;
 	}

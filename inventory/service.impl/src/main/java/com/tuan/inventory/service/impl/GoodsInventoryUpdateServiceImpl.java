@@ -56,7 +56,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.createInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
 		//构建领域对象
@@ -127,7 +127,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.createWmsInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createWmsInventory");
 		//构建领域对象
@@ -193,7 +193,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.updateInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory");
 		//构建领域对象
@@ -260,7 +260,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.callbackAckInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "callbackAckInventory");
 		//构建领域对象
@@ -322,7 +322,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.adjustmentInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentInventory");
 		//构建领域对象
@@ -388,7 +388,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.adjustmentWaterflood";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentWaterflood");
 		//构建领域对象
@@ -452,7 +452,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		String method = "GoodsInventoryUpdateService.adjustWmsInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage.traceHeader.getRootId()), true);
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustWmsInventory");
 		//构建领域对象

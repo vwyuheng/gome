@@ -235,7 +235,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						this.wmsDO.setTotalNumber(this.oritotalnum
 								+ wmsGoodsDeductNum);
 					}
-					if (wmsDO.getLeftNumber() < 0 || wmsDO.getTotalNumber() < 0) {
+					if ((wmsDO != null&&wmsDO.getLeftNumber() < 0) || (wmsDO != null&&wmsDO.getTotalNumber() < 0)) {
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 					}
 

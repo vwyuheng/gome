@@ -19,10 +19,10 @@ public class IsBeDeliveryQueryDomain extends IsBeDeliveryDomain{
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private IsBeDeliveryQueryDomain(){}
 	
-	public static IsBeDeliveryQueryDomain makeInstance(RequestPacket packet,String wmsGoodsId,LogModel lm
+	public static IsBeDeliveryQueryDomain makeInstance(RequestPacket packet,String wmsGoodsId,String isBeDelivery,LogModel lm
 			,Message traceMessage){
 		IsBeDeliveryQueryDomain queryDomain = new IsBeDeliveryQueryDomain();
-		queryDomain.init(packet,wmsGoodsId,lm,traceMessage);
+		queryDomain.init(packet,wmsGoodsId,isBeDelivery,lm,traceMessage);
 		return queryDomain;
 	}
 	
@@ -32,7 +32,7 @@ public class IsBeDeliveryQueryDomain extends IsBeDeliveryDomain{
 		CallResult<WmsIsBeDeliveryModel> queryCallResult = null;
 		try {
 			//
-			queryCallResult = goodsInventoryQueryService.findWmsIsBeDeliveryByWmsGoodsId(clientIp, clientName, wmsGoodsId);
+			queryCallResult = goodsInventoryQueryService.findWmsIsBeDeliveryByWmsGoodsId(clientIp, clientName, wmsGoodsId,isBeDelivery);
 			
 		} catch (Exception e) {
 			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
