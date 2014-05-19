@@ -844,6 +844,7 @@ public class RedisCacheUtil {
 		});
 
 	}
+	
 	/**
 	 * 物流调整库存
 	 * @param key

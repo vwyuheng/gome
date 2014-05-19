@@ -19,6 +19,7 @@ import com.tuan.inventory.domain.GoodsWmsInventoryCreateDomain;
 import com.tuan.inventory.domain.GoodsdAckInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
+import com.tuan.inventory.domain.GoodsdOverrideAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdUpdateInventoryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.param.rest.CreaterInventoryRestParam;
@@ -302,6 +303,50 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return adjustWmsDomain.makeResult(resEnum);
 	}
+	/***
+	 * 覆盖更新库存量，包括总量和剩余量
+	 * @param packet
+	 * @param goodsId
+	 * @param id
+	 * @param userId
+	 * @param type
+	 * @param totalnum
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/oradjusti", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp overrideAdjustInventory(@ModelAttribute UpdateRequestPacket packet,
+			String goodsId,String id, String userId,String type, String totalnum, HttpServletRequest request) {
+		
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"overrideAdjustInventory");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/oradjusti")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("goodsId", goodsId)
+		.addMetaData("id", id)
+		.addMetaData("userId", userId)
+		.addMetaData("type", type)
+		.addMetaData("totalnum", totalnum);
+		GoodsdOverrideAdjustInventoryDomain adjustInventoryDomain = new GoodsdOverrideAdjustInventoryDomain(
+				packet,goodsId, id,userId,type,totalnum, lm, messageRoot);
+		adjustInventoryDomain
+		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = adjustInventoryDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return adjustInventoryDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = adjustInventoryDomain.doBusiness();
+		// 返回结果
+		return adjustInventoryDomain.makeResult(resEnum);
+	}
+	
+	
+	
 	
 	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	public void test(@ModelAttribute UpdateRequestPacket packet,

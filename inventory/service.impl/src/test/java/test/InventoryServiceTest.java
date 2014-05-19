@@ -22,6 +22,7 @@ import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
+import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
@@ -44,6 +45,22 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Resource
 	SequenceUtil sequenceUtil;
+	
+	
+	@Test
+	public void testOverrideAdjustInventory() {
+		OverrideAdjustInventoryParam param = new OverrideAdjustInventoryParam();
+		param.setGoodsId("1");
+		param.setTotalnum(1000);
+		param.setLimitStorage(1);
+		param.setType(ResultStatusEnum.GOODS_SELF.getCode());
+		/*RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");*/
+		goodsInventoryUpdateService.overrideAdjustInventory(clientIP, clientName, param, null);
+	}
 	//物流库存调整
 	@Test
 	public void testAdjustWmsInventory() {

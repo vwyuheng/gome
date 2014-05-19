@@ -6,6 +6,7 @@ import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
+import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
@@ -95,4 +96,9 @@ public interface GoodsInventoryUpdateService {
 	/*@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult deleteInventory(
 			final String clientIp, final String clientName,final DeleteInventoryParam param,Message traceMessage);*/
+	
+	
+	@ProductCode(code = "00008", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	InventoryCallResult overrideAdjustInventory(
+			final String clientIp, final String clientName,final OverrideAdjustInventoryParam param,Message traceMessage);
 }

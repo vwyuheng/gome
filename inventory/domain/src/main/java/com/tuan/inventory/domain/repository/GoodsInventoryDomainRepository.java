@@ -129,7 +129,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 			
 	
 	}
-	
+	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
+		if(selectionDO!=null) {
+			this.baseDAOService.saveGoodsSelectionInventory(goodsId, selectionDO);
+		}
+		
+	}
 	public void saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
@@ -147,6 +152,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 			}//for
 		}//if1
 			
+	}
+	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
+		if(suppliersDO!=null) {
+			this.baseDAOService.saveGoodsSuppliersInventory(goodsId, suppliersDO);
+		}
+		
 	}
 	public void saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
 		if (wmsDO!=null) { // if1
