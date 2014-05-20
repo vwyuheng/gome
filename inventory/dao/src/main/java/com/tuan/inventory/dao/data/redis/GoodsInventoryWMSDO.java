@@ -17,7 +17,7 @@ public class GoodsInventoryWMSDO extends TuanBaseDO {
 	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
 	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
 	//private int limitStorage; // 0:库存无限制；1：限制库存
-	private int isBeDelivery; //物流仓库类型
+	private int isBeDelivery; //物流仓库类型 0:wowo   1:shangjia
 	
 	public Long getId() {
 		return id;

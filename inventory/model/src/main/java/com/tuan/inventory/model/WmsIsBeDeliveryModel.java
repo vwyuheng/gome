@@ -18,7 +18,7 @@ public class WmsIsBeDeliveryModel extends TuanBaseDO{
 	private String goodsName;    //商品名称
 	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
 	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
-	private int isBeDelivery; //物流仓库类型
+	private int isBeDelivery; //物流仓库类型 0:wowo   1:shangjia
 	
 	
 	private String isBeDeliveryDesc;

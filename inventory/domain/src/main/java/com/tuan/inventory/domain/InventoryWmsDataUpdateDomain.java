@@ -180,7 +180,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 					|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 							.getCode()) {
 				writeSysDeductLog(
-						lm.setMethod("dLock").addMetaData("deduct lock errorMsg",
+						lm.setMethod("dLock").addMetaData("updateAndInsertWmsData lock errorMsg",
 								goodsId), true);
 			}
 			// 首先填充日志信息

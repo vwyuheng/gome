@@ -14,7 +14,7 @@ public class UpdateWmsDataParam extends TuanBaseDO {
 	private String wmsGoodsId;  //物流商品的一种编码
 	private String goodsTypeIds;  //选项类型表id集合,以逗号分隔开；如：1,2,3或2
 	private String goodsSelectionIds;  //共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2
-	private int isBeDelivery;  // 仓库类型
+	private int isBeDelivery;  //物流仓库类型 0:wowo   1:shangjia
 	private int isAddGoodsSelection; // 商品是否添加配型 0：不添加；1：添加
 	
 	
