@@ -934,4 +934,58 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
+	
+	public boolean saveGoodsSuppliers(final long goodsId,final GoodsSuppliersDO suppliersDO) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(goodsId<0||suppliersDO ==null){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.saveGoodsWmsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("suppliersDO",suppliersDO)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<Boolean> callResult  = null;
+		try {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsSuppliers(suppliersDO);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]GoodsId:" + suppliersDO==null?"":String.valueOf(goodsId);
+			} else {   //TODO 该处理也有问题
+				message = "saveGoodsInventory2Mysql_success[save2mysql success]goodsId:" + String.valueOf(goodsId);
+				if (goodsId>0&&suppliersDO != null) {
+					this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersDO);
+				}
+			
+				
+			}
+			
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("suppliersDO",suppliersDO)
+					.addMetaData("goodsId",goodsId)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("goodsId",goodsId)
+				.addMetaData("suppliersDO",suppliersDO)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
 }

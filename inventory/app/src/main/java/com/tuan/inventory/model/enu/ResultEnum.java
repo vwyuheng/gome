@@ -61,6 +61,9 @@ public enum ResultEnum {
 	SEL_OR_SUPP        ("1036", "包含选型和分店的商品，类型应为选型或分店！"),
 	AFT_ADJUST_INVENTORY			("1037", 	"库存调整后数量不能为负"),
 	NONE_LIMIT_STORAGE			("1038", 	"非限制库存商品无需调整其库存"),
+	NO_SELECT_SELECTION			("1039", 	"当前物流码有选型信息，但用户没有选择相关选型."),
+	INVALID_GOODS_TYPE_ID			("1040", 	"无效的选型类型id."),
+	NO_WMS_DATA			("1041", 	"物流信息不存在."),
 	NO_DATA("0","没有可用的数据"),
 	
 	//ERROR_2000	("2000",	"程序运行时错误"),
@@ -243,6 +246,15 @@ public enum ResultEnum {
 		}
 		if(code.equals("1038")){
 			return ResultEnum.NONE_LIMIT_STORAGE;
+		}
+		if(code.equals("1039")){
+			return ResultEnum.NO_SELECT_SELECTION;
+		}
+		if(code.equals("1040")){
+			return ResultEnum.INVALID_GOODS_TYPE_ID;
+		}
+		if(code.equals("1041")){
+			return ResultEnum.NO_WMS_DATA;
 		}
 		//if(code.equals("2000")){
 		//	return ResultEnum.ERROR_2000;

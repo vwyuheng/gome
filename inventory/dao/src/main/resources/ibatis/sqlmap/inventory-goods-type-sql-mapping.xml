@@ -17,6 +17,7 @@
 	    <result column="totalNum_display_font" property="totalNumDisplayFont" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
 	 </resultMap>
+	
 	<!-- 非选型商品实时库存信息-->	
 	<resultMap id="GoodsAttributeInventoryResult" class="com.tuan.inventory.dao.data.GoodsAttributeInventoryDO">
 	    <result column="goods_id" property="goodsId" jdbcType="INTEGER" />
@@ -37,6 +38,7 @@
 	    <result column="reduceTotalNumber" property="reduceTotalNumber" jdbcType="INTEGER" />
 	    <result column="limitNumber" property="limitNumber" jdbcType="INTEGER" />
 	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
+	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
 	    <result column="leftTotalNum_display_font" property="leftTotalNumDisplayFont" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   	    
 	 </resultMap>	
@@ -53,6 +55,25 @@
 	    <result column="reduceTotalNumber" property="reduceTotalNumber" jdbcType="INTEGER" />
 	    <result column="limitNumber" property="limitNumber" jdbcType="INTEGER" />
 	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
+	    <result column="leftTotalNum_display_font" property="leftTotalNumDisplayFont" jdbcType="INTEGER" />
+	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   	    
+	    <result column="goodId" property="goodId" jdbcType="INTEGER" />
+	    <result column="name" property="name" jdbcType="VARCHAR" />
+	 </resultMap>	
+  
+	<resultMap id="GoodsSelectionResult" class="com.tuan.inventory.dao.data.GoodsSelectionRelationGoodDO">
+	    <result column="id" property="id" jdbcType="INTEGER" />
+	    <result column="suppliers_id" property="suppliersId" jdbcType="INTEGER" />
+	    <result column="STATUS" property="status" jdbcType="INTEGER" />
+	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
+	    <result column="ImageURL" property="ImageURL" jdbcType="VARCHAR" />
+	    <result column="totalNumber" property="totalNumber" jdbcType="INTEGER" />
+	    <result column="leftNumber" property="leftNumber" jdbcType="INTEGER" />
+	    <result column="addTotalNumber" property="addTotalNumber" jdbcType="INTEGER" />
+	    <result column="reduceTotalNumber" property="reduceTotalNumber" jdbcType="INTEGER" />
+	    <result column="limitNumber" property="limitNumber" jdbcType="INTEGER" />
+	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
+	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
 	    <result column="leftTotalNum_display_font" property="leftTotalNumDisplayFont" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   	    
 	    <result column="goodId" property="goodId" jdbcType="INTEGER" />
@@ -81,7 +102,7 @@
 	<select id="selectSelectionRelationBySrId" resultMap="GoodsSelectionRelationResult" parameterClass="int" >
 		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
 			sr.leftNumber,sr.limitNumber,sr.reduceTotalNumber,sr.`STATUS`,sr.suppliers_id,
-			sr.suppliers_sub_id,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage 
+			sr.suppliers_sub_id,sr.suppliers_inventory_id,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage 
 		from jeehe_selection_relation sr where sr.`STATUS` = 0 and sr.id = #selectionRelationId:INTEGER#
 	</select>
   
@@ -158,10 +179,10 @@
 	</select> -->
 	
 	<!-- 通过分商品id获取选型信息   -->	
-	<select id="selectSelectionRelationBySrIds" resultMap="GoodsSelectionRelationAndGoodsResult" parameterClass="java.util.Map" >
+	<select id="selectSelectionRelationBySrIds" resultMap="GoodsSelectionResult" parameterClass="java.util.Map" >
 		select sr.id,sr.addTotalNumber,sr.good_type_id,sr.ImageURL,
 			sr.leftNumber,sr.limitNumber,sr.reduceTotalNumber,sr.`STATUS`,sr.suppliers_id,
-			sr.suppliers_sub_id,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage,gt.goodId,gt.name  
+			sr.suppliers_sub_id,sr.`suppliers_inventory_id`,sr.totalNumber,sr.leftTotalNum_display_font,sr.limit_storage,gt.goodId,gt.name  
 		from jeehe_selection_relation sr ,jeehe_good_type gt 
 		where gt.id=sr.good_type_id  
     <dynamic >

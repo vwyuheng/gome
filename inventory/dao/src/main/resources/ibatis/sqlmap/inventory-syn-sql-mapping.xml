@@ -23,11 +23,13 @@
 	<resultMap id="GoodsSelectionResult" class="com.tuan.inventory.dao.data.redis.GoodsSelectionDO">
 	    <result column="id" property="id" jdbcType="BIGINT" />
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
+	     <result column="suppliers_id" property="suppliersId" jdbcType="BIGINT" />
 	   <!--  <result column="user_id" property="userId" jdbcType="BIGINT" /> -->
-	    <result column="good_type_id" property="goodTypeId" jdbcType="BIGINT" />
+	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	     <result column="waterfloodVal" property="waterfloodVal" jdbcType="INTEGER" />
+	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
 	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   	    
 	 </resultMap>
@@ -35,10 +37,13 @@
    <!-- 商品主体库存信息-->	
 	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
-	     <result column="goods_wms_id" property="wmsId" jdbcType="BIGINT" />
+	    <result column="goods_wms_id" property="wmsId" jdbcType="BIGINT" />
+	    <result column="good_selection_ids" property="goodsSelectionIds" jdbcType="VARCHAR" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
+	    <result column="add_goods_selection" property="isAddGoodsSelection" jdbcType="INTEGER" />
+	    <result column="direct_consumption" property="isDirectConsumption" jdbcType="INTEGER" />
 	     <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	 
@@ -258,6 +263,12 @@
     <update id="updateGoodsSelection" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
       update jeehe_inventory_selection
       <dynamic prepend="set" >
+       <isNotNull prepend="," property="suppliersId">
+			suppliers_id = #suppliersId:BIGINT#
+		</isNotNull>
+       <isNotNull prepend="," property="suppliersId">
+			good_type_id = #goodTypeId:INTEGER#
+		</isNotNull>
         <isNotNull prepend="," property="totalNumber">
 			total_num = #totalNumber:INTEGER#
 		</isNotNull>
@@ -266,6 +277,12 @@
 		</isNotNull>
 		<isNotNull prepend="," property="waterfloodVal">
 			waterflood_val = #waterfloodVal:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="suppliersSubId">
+			suppliers_sub_id = #suppliersSubId:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="suppliersInventoryId">
+			suppliers_inventory_id = #suppliersInventoryId:INTEGER#
 		</isNotNull>
       </dynamic>
       where id = #id:INTEGER#
@@ -276,22 +293,26 @@
     insert into jeehe_inventory_selection 
     (id,
     goods_id,
+    suppliers_id,
     good_type_id,
     total_num, 
     left_num, 
     limit_storage, 
     waterflood_val,
+    suppliers_sub_id,
     suppliers_inventory_id
     
    )
     values (
             #id:BIGINT#,
             #goodsId:BIGINT#,
+            #suppliersId:BIGINT#,
             #goodTypeId:INTEGER#,
             #totalNumber:INTEGER#,
             #leftNumber:INTEGER#,
             #limitStorage:INTEGER#,
             #waterfloodVal:INTEGER#,
+            #suppliersSubId:INTEGER#,
             #suppliersInventoryId:INTEGER#
            
     		)
@@ -314,11 +335,23 @@
 		<isNotNull prepend="," property="leftNumber">
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
+		<isNotNull prepend="," property="goodsSelectionIds">
+			good_selection_ids = #goodsSelectionIds:VARCHAR#
+		</isNotNull>
+		<isNotNull prepend="," property="wmsId">
+			goods_wms_id = #wmsId:BIGINT#
+		</isNotNull>
 		<isNotNull prepend="," property="waterfloodVal">
 			waterflood_val = #waterfloodVal:INTEGER#
 		</isNotNull>
 		<isNotNull prepend="," property="limitStorage">
 			limit_storage = #limitStorage:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="isAddGoodsSelection">
+			add_goods_selection = #isAddGoodsSelection:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="isDirectConsumption">
+			direct_consumption = #isDirectConsumption:INTEGER#
 		</isNotNull>
       </dynamic>
       where goods_id = #goodsId:BIGINT#
@@ -330,17 +363,23 @@
     (
     goods_id, 
     goods_wms_id,
+    good_selection_ids,
     total_num, 
     left_num, 
     limit_storage, 
+    add_goods_selection,
+    direct_consumption,
     waterflood_val
    )
     values (
             #goodsId:BIGINT#,
             #wmsId:BIGINT#,
+            #goodsSelectionIds:VARCHAR#,
             #totalNumber:INTEGER#,
             #leftNumber:INTEGER#,
             #limitStorage:INTEGER#,
+            #isAddGoodsSelection:INTEGER#,
+            #isDirectConsumption:INTEGER#,
             #waterfloodVal:INTEGER#
     		)
      </insert>

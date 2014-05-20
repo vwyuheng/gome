@@ -22,6 +22,7 @@ public class GoodsSelectionRelationDO extends TuanBaseDO{
 	private java.lang.Integer reduceTotalNumber; 	// 当前选型减少库存总量默认值：0
 	private java.lang.Integer limitNumber; 			// 当前选型限购数量0：无限制
 	private java.lang.Integer suppliersSubId; 	// 分店ID（当商品指定分店同时有配型时此值为分店ID并且suppliers_id为商品所属商家ID）
+	private java.lang.Integer suppliersInventoryId; //商家库存表ID(FK)
 	private java.lang.Integer leftTotalNumDisplayFont; //'剩余库存是否前台显示:0：不显示；1：显示',
 	  
 	private java.lang.Integer limitStorage;	//0:库存无限制；1：限制库存
@@ -103,4 +104,12 @@ public class GoodsSelectionRelationDO extends TuanBaseDO{
 	public java.lang.Integer getLeftTotalNumDisplayFont() {
 		return leftTotalNumDisplayFont;
 	}
+	public java.lang.Integer getSuppliersInventoryId() {
+		return suppliersInventoryId;
+	}
+	public void setSuppliersInventoryId(java.lang.Integer suppliersInventoryId) {
+		this.suppliersInventoryId = suppliersInventoryId;
+	}
+	
+	
 }

@@ -104,6 +104,8 @@ public class ObjectUtils {
 			result.setLeftNumber(selModel.getLeftNumber());
 			result.setTotalNumber(selModel.getTotalNumber());
 			result.setSuppliersInventoryId(selModel.getSuppliersInventoryId());
+			result.setSuppliersId(selModel.getSuppliersId());
+			result.setSuppliersSubId(selModel.getSuppliersSubId());
 			result.setLimitStorage(selModel.getLimitStorage());
 			result.setUserId(selModel.getUserId());
 			result.setWaterfloodVal(selModel.getWaterfloodVal());
@@ -116,10 +118,12 @@ public class ObjectUtils {
 			result = new GoodsSelectionModel();
 			result.setId(gsDO.getId());
 			result.setGoodsId(gsDO.getGoodsId());
+			result.setSuppliersId(gsDO.getSuppliersId());
 			result.setGoodTypeId(gsDO.getGoodTypeId());
 			result.setLeftNumber(gsDO.getLeftNumber());
 			result.setTotalNumber(gsDO.getTotalNumber());
 			result.setSuppliersInventoryId(gsDO.getSuppliersInventoryId());
+			result.setSuppliersSubId(gsDO.getSuppliersSubId());
 			result.setLimitStorage(gsDO.getLimitStorage());
 			result.setUserId(gsDO.getUserId());
 			result.setWaterfloodVal(gsDO.getWaterfloodVal());
@@ -163,10 +167,13 @@ public class ObjectUtils {
 		if(giDO!=null) {
 			result = new GoodsInventoryModel();
 			result.setGoodsId(giDO.getGoodsId());
+			result.setGoodsSelectionIds(giDO.getGoodsSelectionIds());
 			result.setLeftNumber(giDO.getLeftNumber());
 			result.setTotalNumber(giDO.getTotalNumber());
 			result.setLimitStorage(giDO.getLimitStorage());
 			result.setUserId(giDO.getUserId());
+			result.setIsAddGoodsSelection(giDO.getIsAddGoodsSelection());
+			result.setIsDirectConsumption(giDO.getIsDirectConsumption());
 			result.setWaterfloodVal(giDO.getWaterfloodVal());
 			if(!CollectionUtils.isEmpty(goodsSelectionList))
 			     result.setGoodsSelectionList(goodsSelectionList);

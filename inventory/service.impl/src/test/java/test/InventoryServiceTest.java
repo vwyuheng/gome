@@ -24,6 +24,7 @@ import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
@@ -47,6 +48,18 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	SequenceUtil sequenceUtil;
 	
 	
+	@Test
+	public void testUpdateWmsData() {
+		UpdateWmsDataParam param = new UpdateWmsDataParam();
+		param.setGoodsId("187237");
+		param.setSuppliersId("1");
+		param.setWmsGoodsId("T01000000116");
+		param.setIsBeDelivery(1);
+		param.setGoodsSelectionIds("1,2,3");
+		param.setGoodsTypeIds("3,4,5");
+		
+		goodsInventoryUpdateService.updateWmsData(clientIP, clientName, param, null);
+	}
 	@Test
 	public void testOverrideAdjustInventory() {
 		OverrideAdjustInventoryParam param = new OverrideAdjustInventoryParam();

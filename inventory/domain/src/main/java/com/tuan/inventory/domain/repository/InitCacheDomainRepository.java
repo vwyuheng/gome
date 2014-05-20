@@ -47,10 +47,14 @@ public class InitCacheDomainRepository {
 		}else {
 			GoodsSelectionDO rsrDo = new GoodsSelectionDO();
 			rsrDo.setId(srDo.getId().longValue());
+			rsrDo.setSuppliersId(Long.valueOf(srDo.getSuppliersId()));
 			rsrDo.setGoodTypeId(srDo.getGoodTypeId().longValue());
 			rsrDo.setLeftNumber(srDo.getLeftNumber());
 			rsrDo.setTotalNumber(srDo.getTotalNumber());
 			rsrDo.setLimitStorage(srDo.getLimitStorage());
+			rsrDo.setSuppliersInventoryId(srDo.getSuppliersInventoryId());
+			rsrDo.setSuppliersSubId(srDo.getSuppliersSubId());
+			
 			return rsrDo;
 		}
 		
@@ -70,11 +74,13 @@ public class InitCacheDomainRepository {
 			for(GoodsSelectionRelationGoodDO selection:selectionList) {
 				GoodsSelectionDO rsrDo = new GoodsSelectionDO();
 				rsrDo.setId(selection.getId().longValue());
-				rsrDo.setSuppliersInventoryId(selection.getSuppliersId());
+				rsrDo.setSuppliersId(Long.valueOf(selection.getSuppliersId()));
+				rsrDo.setSuppliersInventoryId(selection.getSuppliersInventoryId());
 				rsrDo.setGoodTypeId(selection.getGoodTypeId().longValue());
 				rsrDo.setLeftNumber(selection.getLeftNumber());
 				rsrDo.setTotalNumber(selection.getTotalNumber());
 				rsrDo.setLimitStorage(selection.getLimitStorage());
+				rsrDo.setSuppliersSubId(selection.getSuppliersSubId());
 				result.add(rsrDo);
 			}
 		}

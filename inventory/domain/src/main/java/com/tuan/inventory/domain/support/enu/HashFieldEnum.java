@@ -5,7 +5,8 @@ package com.tuan.inventory.domain.support.enu;
  * @date 2014/3/13
  */
 public enum HashFieldEnum {
-	totalNumber,leftNumber,limitStorage,isAddGoodsSelection,isDirectConsumption,waterfloodVal,isBeDelivery;
+	totalNumber,leftNumber,limitStorage,isAddGoodsSelection,
+	isDirectConsumption,waterfloodVal,isBeDelivery,goodsSelectionIds,wmsId,suppliersSubId,suppliersInventoryId;
 	
 	public static void main(String[] args) {
 		System.out.println(HashFieldEnum.totalNumber.toString());

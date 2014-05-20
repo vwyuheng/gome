@@ -8,6 +8,7 @@ import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.wowotrace.trace.model.Message;
@@ -83,7 +84,7 @@ public interface GoodsInventoryUpdateService {
 	InventoryCallResult createWmsInventory(final String clientIp, final String clientName
 			,final WmsInventoryParam param,Message traceMessage);
 	/**
-	 * 
+	 * 调整物流库存：增量调整
 	 * @param clientIp
 	 * @param clientName
 	 * @param param
@@ -97,8 +98,26 @@ public interface GoodsInventoryUpdateService {
 	InventoryCallResult deleteInventory(
 			final String clientIp, final String clientName,final DeleteInventoryParam param,Message traceMessage);*/
 	
-	
+	/**
+	 * 库存调整：全量调整
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
 	@ProductCode(code = "00008", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult overrideAdjustInventory(
 			final String clientIp, final String clientName,final OverrideAdjustInventoryParam param,Message traceMessage);
+	/**
+	 * 物流关系数据更新接口
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	@ProductCode(code = "00009", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	InventoryCallResult updateWmsData(
+			final String clientIp, final String clientName,final UpdateWmsDataParam param,Message traceMessage);
 }

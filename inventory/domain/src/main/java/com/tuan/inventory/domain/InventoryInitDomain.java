@@ -146,7 +146,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
 							"initCheck4Wms error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 		
@@ -223,7 +223,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
 							"initCheck error" + e.getMessage()),false,  e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 

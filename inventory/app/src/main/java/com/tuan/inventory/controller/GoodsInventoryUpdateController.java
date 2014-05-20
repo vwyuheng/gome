@@ -21,6 +21,7 @@ import com.tuan.inventory.domain.GoodsdAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
 import com.tuan.inventory.domain.GoodsdOverrideAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdUpdateInventoryDomain;
+import com.tuan.inventory.domain.UpdateWmsDataDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.param.rest.CreaterInventoryRestParam;
 import com.tuan.inventory.model.param.rest.RestTestParam;
@@ -304,6 +305,7 @@ public class GoodsInventoryUpdateController {
 		return adjustWmsDomain.makeResult(resEnum);
 	}
 	/***
+	 * http://localhost:882/rest/j/update/oradjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1&id=0&totalnum=-1&type=2
 	 * 覆盖更新库存量，包括总量和剩余量
 	 * @param packet
 	 * @param goodsId
@@ -344,9 +346,48 @@ public class GoodsInventoryUpdateController {
 		// 返回结果
 		return adjustInventoryDomain.makeResult(resEnum);
 	}
-	
-	
-	
+	/**
+	 * http://localhost:882/rest/j/update/upwmsdata?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=187237&wmsGoodsId=T01000000010&isBeDelivery=1&suppliersId=1&goodsTypeIds=173552,217335&goodsSelectionIds=1,2,3
+	 * 物流关系数据更新接口
+	 * @param packet
+	 * @param goodsId
+	 * @param suppliersId
+	 * @param wmsGoodsId
+	 * @param goodsTypeIds
+	 * @param goodsSelectionIds
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/upwmsdata", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp updateWmsData(@ModelAttribute UpdateRequestPacket packet,
+			String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds, HttpServletRequest request) {
+		
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"updateWmsData");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/upwmsdata")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("goodsId", goodsId)
+		.addMetaData("suppliersId", suppliersId)
+		.addMetaData("wmsGoodsId", wmsGoodsId)
+		.addMetaData("goodsTypeIds", goodsTypeIds)
+		.addMetaData("goodsSelectionIds", goodsSelectionIds);
+		UpdateWmsDataDomain upWmsDataDomain = new UpdateWmsDataDomain(
+				packet,goodsId, suppliersId,wmsGoodsId,isBeDelivery,goodsTypeIds,goodsSelectionIds, lm, messageRoot);
+		upWmsDataDomain
+		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = upWmsDataDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return upWmsDataDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = upWmsDataDomain.doBusiness();
+		// 返回结果
+		return upWmsDataDomain.makeResult(resEnum);
+	}
 	
 	@RequestMapping(value = "/test", method = RequestMethod.POST)
 	public void test(@ModelAttribute UpdateRequestPacket packet,

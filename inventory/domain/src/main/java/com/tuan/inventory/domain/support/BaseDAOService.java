@@ -1,6 +1,7 @@
 package com.tuan.inventory.domain.support;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
@@ -132,4 +133,8 @@ public interface BaseDAOService {
 	public String queryMember(String key);
 	public String setTag(String tag,int seconds, String tagValue);
 	public boolean watch(final String key,String tagval);
+	
+	
+	public void updateFileds(Long goodsId,Map<String, String> hash);
+	public void updateSelectionFileds(Long selectionId,Map<String, String> hash);
 }

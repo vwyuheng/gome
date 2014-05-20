@@ -12,6 +12,7 @@ public class GoodsSelectionModel extends TuanBaseDO{
 
 	private static final long serialVersionUID = 1L;
 	private Long id;  //选型id
+	private Long suppliersId;	// 商家ID（当商品不指定分店同时有配型时,此值为商品所属商家ID）,
 	private Long userId;
 	private Long goodsId;	// 商品id
 	private Long goodTypeId; // 选型类型表ID(FK)关联到选型表ID
@@ -20,6 +21,7 @@ public class GoodsSelectionModel extends TuanBaseDO{
 	private Integer waterfloodVal;  //注水值
 	private int limitStorage;	//0:库存无限制；1：限制库存
 	private long suppliersInventoryId; //商家库存表ID(FK)
+	private long suppliersSubId; 	// 分店ID（当商品指定分店同时有配型时此值为分店ID并且suppliers_id为商品所属商家ID）
 	//库存扣减量
 	private int num;
 	
@@ -84,6 +86,18 @@ public class GoodsSelectionModel extends TuanBaseDO{
 	}
 	public void setSuppliersInventoryId(long suppliersInventoryId) {
 		this.suppliersInventoryId = suppliersInventoryId;
+	}
+	public Long getSuppliersId() {
+		return suppliersId;
+	}
+	public void setSuppliersId(Long suppliersId) {
+		this.suppliersId = suppliersId;
+	}
+	public long getSuppliersSubId() {
+		return suppliersSubId;
+	}
+	public void setSuppliersSubId(long suppliersSubId) {
+		this.suppliersSubId = suppliersSubId;
 	}
 	
 	

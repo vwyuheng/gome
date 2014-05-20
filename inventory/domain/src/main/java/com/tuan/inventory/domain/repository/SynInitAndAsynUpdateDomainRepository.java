@@ -22,7 +22,8 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 public class SynInitAndAsynUpdateDomainRepository {
 	@Resource
 	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
-	
+	//@Resource
+	//private SequenceUtil sequenceUtil;
 	/**
 	 * 保存插入商品库存
 	 * @param goodsDO
@@ -234,6 +235,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
 				
 				if (sDO.getSuppliersId() > 0) { // if分店
+					//sDO.setId(sequenceUtil.getSequence(SEQNAME.seq_suppliers));
 					sDO.setGoodsId(goodsId);
 					sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
 					sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
@@ -244,6 +246,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 		}//if1
 			
 	}
+	
 	/**
 	 * 批量保存物流库存信息
 	 * @param goodsId

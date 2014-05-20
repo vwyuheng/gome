@@ -1220,6 +1220,57 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			callBackResult.getThrowable());
 
 }
+
+	@Override
+	public CallResult<Boolean> saveGoodsSuppliers(final GoodsSuppliersDO suppliersDO)
+			throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							if(suppliersDO!=null) {
+								 synInitAndAsynUpdateDomainRepository.saveGoodsSuppliers(suppliersDO);
+							}
+							
+						} catch (Exception e) {
+							
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliers error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+										"Duplicate entry '" + suppliersDO.getGoodsId()
+										+ "' for key 'goodsId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliers error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (suppliersDO == null) {
+							logger.error(this.getClass()+"_create param invalid ,param is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
 	
 	
 	

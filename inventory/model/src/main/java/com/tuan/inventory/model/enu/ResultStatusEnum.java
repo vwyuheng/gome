@@ -15,7 +15,7 @@ public enum ResultStatusEnum {
 	GOODS_SELECTION      ("4", "选型商品库存"),
 	GOODS_SUPPLIERS      ("6", "分店商品库存"),
 	GOODS_WMS      ("8", "物流商品库存"),
-	GOODS_WMS_SELECTION      ("20", "物流选型商品库存"),
+	GOODS_WMS_SELECTION      ("21", "物流选型商品库存"),
 	//业务类型type
 	INIT_INVENTORY   ("10",   "初始化库存"),
 	DELETE_INVENTORY   ("11",   "删除库存"),
@@ -27,6 +27,7 @@ public enum ResultStatusEnum {
 	ADJUST_INVENTORY   ("17",   "手工调整库存"),
 	FAULT_COMPENSATION_INVENTORY   ("18",   "出错补偿还库存"),
 	ADJUST_WMSINVENTORY   ("20",   "物流库存调整"),
+	UPDATE_WMSDATA   ("22",   " 更新物流相关数据"),
 	ADD_WMSINVENTORY   ("19",   "新增物流库存");
 	
 	

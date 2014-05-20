@@ -34,6 +34,8 @@ public enum CreateInventoryResultEnum {
 	SEL_OR_SUPP        (1036, "包含选型和分店的商品，类型应为选型或分店！"),
 	AFT_ADJUST_INVENTORY			(1037, 	"库存调整后数量不能为负"),
 	NONE_LIMIT_STORAGE			(1038, 	"非限制库存商品无需调整其库存"),
+	NO_SELECT_SELECTION			(1039, 	"当前物流码有选型信息，但用户没有选择相关选型."),
+	NO_WMS_DATA			(1041, 	"物流信息不存在."),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),

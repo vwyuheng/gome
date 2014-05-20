@@ -436,6 +436,22 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		return this.redisCacheUtil.watch(key,tagval);
 	}
 
+	@Override
+	public void updateFileds(Long goodsId, Map<String, String> hash) {
+
+		this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId), hash);
+
+	}
+
+	@Override
+	public void updateSelectionFileds(Long selectionId, Map<String, String> hash) {
+
+		this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId), hash);
+
+	}
+
 	
 	
 }

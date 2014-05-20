@@ -695,20 +695,29 @@ public class RedisCacheUtil {
 				if (j == null)
 					return false;
 				boolean result = true;
-				Transaction ts = null;
+				//Transaction ts = null;
+				Pipeline  p = null;
 				try {
 					//开启事务
-					ts = j.multi(); 
-					
-					ts.sadd(saddkey,id);
-					ts.hmset(hmsetkey,hash);
+					//ts = j.multi(); 
+					p = j.pipelined();		
+					p.sadd(saddkey,id);
+					p.hmset(hmsetkey,hash);
 					// 执行事务
-					ts.exec();
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					
 				} catch (Exception e) {
 					result = false;
+					// 销毁管道
+					if (p != null)
+						p.discard();
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+						//ts.discard();
 					//异常发生时记录日志
 					LogModel lm = LogModel.newLogModel("RedisCacheUtil.saddAndhmset");
 					log.error(lm.addMetaData("saddkey", saddkey)

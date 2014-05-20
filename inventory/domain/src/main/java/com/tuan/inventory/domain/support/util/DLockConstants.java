@@ -25,4 +25,8 @@ public class DLockConstants {
 	public static final String ADJUST_LOCK_KEY = "adjust";
 	public static final int ADJUST_LOCK_RETRY_TIMES = 5;
 	public static final long ADJUSTK_LOCK_TIME = 3000L;
+	//物流数据更新的分布式锁参数
+	public static final String UPDATEWMS_LOCK_KEY = "updatewmsdata";
+	public static final int UPDATEWMS_LOCK_RETRY_TIMES = 5;
+	public static final long UPDATEWMS_LOCK_TIME = 3000L;
 }
