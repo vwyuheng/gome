@@ -29,7 +29,7 @@ public class SequenceUtil {
 		long startTime = System.currentTimeMillis();
 		result = redisCacheUtil.incr(key);
 		long endTime = System.currentTimeMillis();
-		logger.error("key: " + key + "   value: " + result
+		logger.info("key: " + key + "   value: " + result
 				+ " Processed Time: " + (endTime - startTime) + " ms");
 		return result;
 

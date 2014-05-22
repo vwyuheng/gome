@@ -13,11 +13,16 @@
 	<name>inventory-app</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
+	
 	 <!--add by henry.yu @2014/4/22 仅用于本地测试 -->
      <dependency>
 				<groupId>commons-dbcp</groupId>
 				<artifactId>commons-dbcp</artifactId>
 			</dependency>
+	 <dependency>
+		<groupId>com.tuan.job</groupId>
+		<artifactId>jobclient</artifactId>
+	 </dependency>
 		<!-- start -->
 		<dependency>
 			<groupId>org.springframework</groupId>

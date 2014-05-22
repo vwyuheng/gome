@@ -16,10 +16,12 @@
 		<constructor-arg index="1">
 			<set>
 				<!-- <value>10.8.35.1:26379</value> -->
-				<value>redis212.55tuan.me:26379</value>
+				<!-- <value>redis212.55tuan.me:26379</value>
 				<value>redis213.55tuan.me:26379</value>
 				<value>redis74.55tuan.me:26379</value>
-				<value>redis75.55tuan.me:26379</value>
+				<value>redis75.55tuan.me:26379</value> -->
+				
+				<value>10.9.210.29:26379</value>
 			</set>
 		</constructor-arg>
 		<constructor-arg index="2" ref="jedisPoolConfig" />

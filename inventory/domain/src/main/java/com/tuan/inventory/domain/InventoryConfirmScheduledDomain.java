@@ -63,6 +63,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					if (verifyId(model.getId()))
 						listQueueIdMarkDelete.add(model.getId());
 				}
+			}else {
+				writeJobLog("获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
 			preresult = false;
@@ -80,7 +82,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		try {
 			// 业务检查前的预处理
 			if(!preHandler()){
-				return CreateInventoryResultEnum.DB_ERROR;
+				return CreateInventoryResultEnum.SYS_ERROR;
 			}
 			
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {

@@ -59,6 +59,11 @@ public abstract class AbstractDomain {
 			logBus.info(message);
 		}
 	}
+	protected void writeJobLog(String message) {
+		if (logJob.isInfoEnabled()) {
+			logJob.info(message);
+		}
+	}
 	protected void writeBusErrorLog(String message,Exception e) {
 		if (logBus.isErrorEnabled()) {
 			logBus.error(message,e);

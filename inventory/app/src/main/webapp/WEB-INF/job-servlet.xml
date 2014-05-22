@@ -7,10 +7,14 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
-	default-lazy-init="true" default-autowire="byName">
-    
-    <!-- 定义与系统或环境有关的行为 -->
-    <import resource="classpath:/bean/inventory-center-root-bean.xml" /> 
-    <!-- 引入其它资源，需要开发人员随时维护 -->
-  
+	default-autowire="byName">
+	<context:component-scan base-package="com.tuan.job.client.controller" />
+	
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
+	
+	<bean id="jobContextUtil" class="com.tuan.job.util.JobContextUtil" />
+	
+	<bean id="confirmQueueConsumeJob" class="com.tuan.inventory.job.ConfirmQueueConsumeJob" scope="prototype" />
+	<bean id="lockedQueueConsumeJob" class="com.tuan.inventory.job.LockedQueueConsumeJob" scope="prototype" />
+	<bean id="logsQueueConsumeJob" class="com.tuan.inventory.job.LogsQueueConsumeJob" scope="prototype" />
 </beans>

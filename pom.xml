@@ -31,9 +31,16 @@
 		<trace.version>1.0.1.20140110</trace.version>
 		<!-- 分布式锁 -->
 		<dlock.version>1.0.1.20140514</dlock.version>
+		<!-- jobcenter版本 -->
+		<jobclient.version>1.0.2.20140521</jobclient.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+			<groupId>com.tuan.job</groupId>
+			<artifactId>jobclient</artifactId>
+			<version>${jobclient.version}</version>
+			</dependency>
 			<dependency>
 				<groupId>com.tuan.cozy</groupId>
 				<artifactId>cozy-utils-trace</artifactId>

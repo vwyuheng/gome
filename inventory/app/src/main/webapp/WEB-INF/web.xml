@@ -40,6 +40,16 @@
 		<url-pattern>/rest/j/*</url-pattern>
 		<url-pattern>/rest/x/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>job</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>job</servlet-name>
+		<url-pattern>/job/*</url-pattern>
+    </servlet-mapping>
 	<!-- end2 -->
 	<!-- start -->
     <filter>
@@ -61,8 +71,7 @@
 	</filter-mapping>
 	<!-- end -->
 	<!-- 配置Spring初始文件 -->
-
-<error-page>
+	<error-page>
 		<error-code>500</error-code>
 		<location>/error/500.jsp</location>
 	</error-page>
