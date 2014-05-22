@@ -58,7 +58,7 @@ public interface BaseDAOService {
 	 * @param selectionModel
 	 */
 	public boolean saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO);
-	public void saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO);
+	public String saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO);
 	/**
 	 * 保存商品分店库存
 	 * @param goodsId
@@ -70,7 +70,7 @@ public interface BaseDAOService {
 	 * @param goodsId
 	 * @param wmsDO
 	 */
-	public void saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO);
+	public String saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO);
 	/**
 	 * 根据商品id查询库存信息
 	 * @param goodsId

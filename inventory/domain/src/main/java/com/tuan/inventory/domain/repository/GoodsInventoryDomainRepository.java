@@ -46,15 +46,24 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 		return this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
-	public void saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
+	public String saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO inventoryInfoDO:goodsIds) {
 				inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
 				inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
-				this.baseDAOService.saveInventory(inventoryInfoDO.getGoodsId(), inventoryInfoDO);
+				String result = this.baseDAOService.saveInventory(inventoryInfoDO.getGoodsId(), inventoryInfoDO);
+				if(StringUtils.isEmpty(result)) {
+					return null;
+				}else {
+					if(!result.equalsIgnoreCase("OK")) {
+						return null;
+					}
+				}
 			}
+		}else {
+			return null;
 		}
-		
+		return "OK";
 		
 	}
 	//将日志压入队列
@@ -91,22 +100,29 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * 保存物流选型库存
 	 * @param selectionDO
 	 */
-	public void saveGoodsSelectionWmsInventory(List<GoodsSelectionDO> selectionDO) {
-		
+	public String saveGoodsSelectionWmsInventory(List<GoodsSelectionDO> selectionDO) {
+		String success = null;
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
 					//首先根据选型id判断该选型是否已存在
 					GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
 					if(tmpSelDO==null) {  //不存在才创建
-						this.baseDAOService.saveGoodsSelectionWmsInventory(srDO);
+						String retAck = this.baseDAOService.saveGoodsSelectionWmsInventory(srDO);
+						if(!retAck.equalsIgnoreCase("ok")) {
+							return null;
+						}else {
+							success = retAck;
+						}
+					}else {
+						success = "OK";
 					}
 					
 				}
 				
 			}//for
 		}//if1
-		
+		return success;
 		
 	}
 	public boolean saveGoodsSelectionInventory(Long goodsId, List<GoodsSelectionDO> selectionDO) {
@@ -161,23 +177,27 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		}//if1
 		return true;
 	}
-	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
+	public boolean saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
 		if(suppliersDO!=null) {
-			this.baseDAOService.saveGoodsSuppliersInventory(goodsId, suppliersDO);
+			return this.baseDAOService.saveGoodsSuppliersInventory(goodsId, suppliersDO);
+		}else {
+			return false;
 		}
 		
 	}
-	public void saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
+	public String saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
 		if (wmsDO!=null) { // if1
 			//for (GoodsInventoryWMSDO wmsDO : wmsDOList) { // for
 			GoodsInventoryWMSDO tmpWmsDO = this.baseDAOService.queryWmsInventoryById(wmsDO.getWmsGoodsId());
 					if(tmpWmsDO==null&&!StringUtils.isEmpty(wmsDO.getWmsGoodsId())) { //不存在才创建
-						this.baseDAOService.saveGoodsWmsInventory(wmsDO);
+						return this.baseDAOService.saveGoodsWmsInventory(wmsDO);
+					}else {
+						return "OK";
 					}
 				
 			//}//for
 		}//if1
-		
+		return null;
 	}
 	//更新物流库存
 	public List<Long> updateGoodsWmsInventory(String wmsGoodsId,int num) {

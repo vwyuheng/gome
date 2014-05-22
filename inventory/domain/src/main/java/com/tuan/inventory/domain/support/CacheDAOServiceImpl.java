@@ -371,13 +371,13 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
+	public String saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
 		
       /* this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_WMS_RELATIONSHIP_PREFIX + ":"
 				+ String.valueOf(goodsId), QueueConstant.WMS_INVENTORY_PREFIX
 		+ ":" + wmsDO.getWmsGoodsId(), wmsDO.getWmsGoodsId(), ObjectUtils.toHashMap(wmsDO));*/
        
-       this.redisCacheUtil.hmset(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+       return this.redisCacheUtil.hmset(QueueConstant.WMS_INVENTORY_PREFIX + ":"
 				+ wmsDO.getWmsGoodsId(), ObjectUtils.toHashMap(wmsDO));
  
      }
@@ -421,8 +421,8 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO) {
-        this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
+	public String saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO) {
+        return this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
 		+ ":" + String.valueOf(selectionDO.getId()),ObjectUtils.toHashMap(selectionDO));
     }
 
