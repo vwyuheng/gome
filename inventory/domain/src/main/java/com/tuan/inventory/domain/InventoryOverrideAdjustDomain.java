@@ -179,8 +179,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						// 调整商品总库存数量
 						inventoryDO.setTotalNumber(afttotalnum);
 
-						if (inventoryDO.getLimitStorage() == 0) {
-							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
+						if (inventoryDO.getLimitStorage() == 0&&inventoryDO.getTotalNumber() != 0) {
+							inventoryDO.setLimitStorage(1); // 更新数据库用
+							//return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
 						} else if (inventoryDO.getTotalNumber() == 0
 								&& inventoryDO.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
 							inventoryDO.setLimitStorage(0); // 更新数据库用
@@ -206,8 +207,10 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
 								.getCode())) {
-					if (selectionInventory.getLimitStorage() == 0) {
-						return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
+					if (selectionInventory.getLimitStorage() == 0&&selectionInventory.getTotalNumber() != 0) {
+						inventoryDO.setLimitStorage(1); // 更新数据库用
+						selectionInventory.setLimitStorage(1);
+						//return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
 					} 
 					
 					if (selectionInventory != null) {
@@ -272,8 +275,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
 								.getCode())) {
 					if (suppliersInventory != null) {
-						if (suppliersInventory.getLimitStorage() == 0) {
-							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
+						if (suppliersInventory.getLimitStorage() == 0&&suppliersInventory.getTotalNumber() != 0) {
+							inventoryDO.setLimitStorage(1); // 更新数据库用
+							suppliersInventory.setLimitStorage(1);
 						} 
 						//调整的总量
 						int adjustnum = aftSelOrSupptotalnum - preselOrSupptotalnum;
