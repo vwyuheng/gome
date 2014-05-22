@@ -23,6 +23,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
+import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
@@ -493,7 +494,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 }
 
 	@Override
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(final Long goodsId, final int adjustNum,final int limitStorage,
 			final GoodsInventoryDO inventoryInfoDO) throws Exception {
 		
 	    TuanCallbackResult callBackResult = super.execute(
@@ -501,6 +502,21 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeAction() {
 					try {
 					synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
+					List<Long>	resultACK = goodsInventoryDomainRepository
+							.adjustGoodsInventory(goodsId, (adjustNum),
+									limitStorage);
+					if(!DataUtil.verifyInventory(resultACK)) {  //已更新的库存回滚
+						logger.info("rollback start resultACK:"+resultACK);
+						List<Long> rollbackResponeResult =	goodsInventoryDomainRepository
+								.adjustGoodsInventory(goodsId,
+										(-adjustNum), (-limitStorage));
+						logger.info("rollback end rollbackResponeResult:"+rollbackResponeResult.toString());
+						throw new TuanRuntimeException(
+								QueueConstant.FAIL_ADJUST_INVENTORY,
+								"SynInitAndAysnMysqlServiceImpl.adjustGoodsInventory to redis error occured!",
+								new Exception());
+					}
+					
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
@@ -538,6 +554,52 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			callBackResult.getThrowable());
 
 }
+	@Override
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(
+			final GoodsInventoryDO inventoryInfoDO) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
+						} catch (Exception e) {
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
+								throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
+										"update invalid '" + inventoryInfoDO.getGoodsId()
+										+ "' for key 'goodsId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								inventoryInfoDO);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (inventoryInfoDO == null) {
+							logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<GoodsInventoryDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(GoodsInventoryDO)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override

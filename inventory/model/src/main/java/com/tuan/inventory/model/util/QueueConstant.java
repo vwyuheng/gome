@@ -64,6 +64,7 @@ public class QueueConstant {
 	public static final int INVALID_TIME = 1003;// 时间戳无效
 	public static final int INVALID_RETURN = 1010;// 返回值不正确
 	
+	public static final int FAIL_ADJUST_INVENTORY = -2; //	库存调整失败
 		
 	
 	

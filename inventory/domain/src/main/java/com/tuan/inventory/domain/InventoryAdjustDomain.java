@@ -209,34 +209,35 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					//goodsInventoryDomainRepository.setTag(QueueConstant.INVENTORY_ADJUST+String.valueOf(goodsId), 60*15, tagVal);
 					//更新mysql
 					boolean handlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsInventory(inventoryDO);
+							.updateGoodsInventory(goodsId, (adjustNum),
+									limitStorage,inventoryDO);
 					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage).addMetaData("handlerResult", handlerResult);
 					writeSysUpdateLog(lm,true);
 					if (handlerResult) {
 						//监控该tag
 						//boolean tag = goodsInventoryDomainRepository.watch(QueueConstant.INVENTORY_ADJUST+String.valueOf(goodsId),tagVal);
 						//if(tag) {
-						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
-						writeSysUpdateLog(lm,true);
-						this.resultACK = this.goodsInventoryDomainRepository
+						/*lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
+						writeSysUpdateLog(lm,true);*/
+						/*this.resultACK = this.goodsInventoryDomainRepository
 								.adjustGoodsInventory(goodsId, (adjustNum),
-										limitStorage);
-						lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("resultACK", resultACK);
-						writeSysUpdateLog(lm,true);
-						if (!verifyInventory()) {
+										limitStorage);*/
+						/*lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("resultACK", resultACK);
+						writeSysUpdateLog(lm,true);*/
+						/*if (!verifyInventory()) {
 							lm.addMetaData("adjustInventory","rollback redis,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("limitStorage", limitStorage);
 							writeSysUpdateLog(lm,true);
 							//将库存还原到调整前
 							List<Long> rollbackResponeResult =	this.goodsInventoryDomainRepository
 									.adjustGoodsInventory(goodsId,
 											(-adjustNum), (-limitStorage));
-							lm.addMetaData("adjustInventory","rollback redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("limitStorage", limitStorage).addMetaData("rollbackResponeResult", rollbackResponeResult);
+							//lm.addMetaData("adjustInventory","rollback redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("limitStorage", limitStorage).addMetaData("rollbackResponeResult", rollbackResponeResult);
 							writeSysUpdateLog(lm,true);
 							return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
-						} else {
+						} else {*/
 							this.goodsleftnum = inventoryDO.getLeftNumber();
 							this.goodstotalnum = inventoryDO.getTotalNumber();
-						}
+						//}
 
 					}
 				} else if (type

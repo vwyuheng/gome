@@ -24,6 +24,8 @@ public enum PublicCodeEnum {
 	UNKNOW_ERROR(QueueConstant.UNKNOW_ERROR,"UNKNOW_ERROR"),
 	
 	//addd
+	FAIL_ADJUST_INVENTORY(QueueConstant.FAIL_ADJUST_INVENTORY,"FAIL_ADJUST_INVENTORY"),
+	
 	INVALID_IP(QueueConstant.INVALID_IP,"INVALID_IP"),
 	INVALID_CLIENT(QueueConstant.INVALID_CLIENT,"INVALID_CLIENT"),
 	INVALID_TIME(QueueConstant.INVALID_TIME,"INVALID_TIME"),
@@ -58,6 +60,8 @@ public enum PublicCodeEnum {
 			return SYSTEM_DB_EXCEPTION;
 		} else if(code == QueueConstant.SERVICE_REDIS_FALIURE){
 			return SYSTEM_REDIS_EXCEPTION;
+		} else if(code == QueueConstant.FAIL_ADJUST_INVENTORY){
+			return FAIL_ADJUST_INVENTORY;
 		} 
 		else if(code == QueueConstant.INVALID_IP){
 			return INVALID_IP;

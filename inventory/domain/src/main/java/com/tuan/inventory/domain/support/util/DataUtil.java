@@ -13,14 +13,33 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.validator.GenericValidator;
+import org.springframework.util.CollectionUtils;
 
 public class DataUtil {
 
+	public static boolean verifyInventory(List<Long> resultACK) {
+		boolean ret = true;
+		//if(resultACK) {
+		if(!CollectionUtils.isEmpty(resultACK)) {
+			for(long result:resultACK) {
+				if(result<0) {  //如果结果中存在小于0的则返回false
+					ret = false;
+					break;
+				}
+			}
+			
+		}else {
+			ret= false;
+		}
+		return ret;
+	}
+	
 	private static Number parseNumber(Object param, Number defaultValue) {
 		if (param == null) {
 			return defaultValue;
