@@ -156,6 +156,7 @@ public class InventoryInitAndUpdateHandle  {
 	 * @param suppliersInventoryList
 	 * @return
 	 */
+	@SuppressWarnings("static-access")
 	public boolean saveGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
@@ -168,6 +169,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("startTime", startTime).toJson());
 		
 		CallResult<Boolean> callResult  = null;
+		CallResult<Integer> rbackMysqlCallResult  = null;
 		try {
 			// 消费对列的信息
 			callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList);
@@ -183,8 +185,23 @@ public class InventoryInitAndUpdateHandle  {
 			} else {
 				message = "saveGoodsInventory2Mysql_success[save2mysql success]goodsId:" + goodsId;
 				if (goodsDO != null) {
-					this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
+					String retAck = this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 							goodsDO);
+					if(!retAck.equalsIgnoreCase("ok")) {
+						//回滚mysql
+						rbackMysqlCallResult =	synInitAndAysnMysqlService.deleteGoodsInventory(goodsId);
+						PublicCodeEnum rbackPublicCodeEnum = rbackMysqlCallResult
+								.getPublicCodeEnum();
+						if (rbackPublicCodeEnum != rbackPublicCodeEnum.SUCCESS) {   //当数据已经存在时返回true,为的是删除缓存中的队列数据
+							// 消息数据不存并且不成功
+							isSuccess = false;
+							message = "rollback2Mysql_error[" + publicCodeEnum.getMessage()
+									+ "]goodsId:" + goodsId;
+						} else {
+							isSuccess = false;
+						}
+						
+					}
 				}
 				// 保选型库存
 				if (!CollectionUtils.isEmpty(selectionInventoryList)) {

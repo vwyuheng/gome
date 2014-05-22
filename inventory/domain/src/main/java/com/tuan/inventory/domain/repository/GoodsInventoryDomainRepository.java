@@ -41,10 +41,10 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		this.notifyServerSendMessage.sendNotifyServerMessage(jsonObj);
 	}
 	//保存商品库存
-	public void saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
+	public String saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
 		inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
 		inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
-		this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
+		return this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
 	public void saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
 		if(!CollectionUtils.isEmpty(goodsIds)) {

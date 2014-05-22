@@ -51,7 +51,7 @@ public interface BaseDAOService {
 	 * 保存商品库存
 	 * @param inventoryInfoDO
 	 */
-	public void saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO);
+	public String saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO);
 	/**
 	 * 保存商品选型库存
 	 * @param goodsId

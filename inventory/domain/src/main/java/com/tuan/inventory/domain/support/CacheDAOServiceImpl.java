@@ -44,9 +44,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void saveInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
+	public String saveInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
 
-		this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+		return this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId), ObjectUtils.toHashMap(inventoryInfoDO));
 
 	}
