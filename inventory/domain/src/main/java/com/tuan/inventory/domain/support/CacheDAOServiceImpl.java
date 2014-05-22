@@ -52,7 +52,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
+	public boolean saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
 		/*this.redisCacheUtil.sadd(
 				QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
 						+ String.valueOf(goodsId),
@@ -60,13 +60,13 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
 				+ ":" + String.valueOf(selectionDO.getId()), ObjectUtils.toHashMap(selectionDO));
 */
-		this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
+		return this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
 				+ String.valueOf(goodsId), QueueConstant.SELECTION_INVENTORY_PREFIX
 				+ ":" + String.valueOf(selectionDO.getId()), String.valueOf(selectionDO.getId()), ObjectUtils.toHashMap(selectionDO));
 	}
 
 	@Override
-	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
+	public boolean saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
 		/*this.redisCacheUtil.sadd(
 				QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
 						+ String.valueOf(goodsId),
@@ -74,7 +74,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		this.redisCacheUtil.hmset(QueueConstant.SUPPLIERS_INVENTORY_PREFIX
 				+ ":" + String.valueOf(suppliersDO.getId()), ObjectUtils.toHashMap(suppliersDO));*/
 		
-		this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
+		return this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
 						+ String.valueOf(goodsId), QueueConstant.SUPPLIERS_INVENTORY_PREFIX
 				+ ":" + String.valueOf(suppliersDO.getSuppliersId()), String.valueOf(suppliersDO.getSuppliersId()), ObjectUtils.toHashMap(suppliersDO));
 

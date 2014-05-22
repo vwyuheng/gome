@@ -33,7 +33,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;
-	
+	@Resource
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	
 	@Override
 	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,
@@ -97,9 +98,44 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							if(inventoryInfoDO!=null) {
 								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+								String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
+										inventoryInfoDO);
+								if(!retAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory to redis error occured!",
+											new Exception());
+								}
 							}
 							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+							
+							// 保选型库存
+							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
+										goodsId, selectionInventoryList);
+								if(!selSuccess) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionInventory to redis error occured!",
+											new Exception());
+								}
+								
+								
+							}
+							// 保存分店库存
+							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+								boolean suppSuccess =	goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
+										goodsId, suppliersInventoryList);
+								if(!suppSuccess) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliersInventory to redis error occured!",
+											new Exception());
+								}
+								
+								
+							}
 							
 						} catch (Exception e) {
 							

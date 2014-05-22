@@ -55,6 +55,7 @@ public class QueueConstant {
 	
 	
 	public static final int UNKNOW_ERROR = -9;// 未知错误
+	public static final int SERVICE_REDIS_FALIURE = -88;// redis数据库异常
 	public static final int SERVICE_DATABASE_FALIURE = -99;// 数据库异常
 	public static final int SERVICE_SYSTEM_FALIURE = -100;// 系统级别异常
 	

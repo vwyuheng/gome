@@ -109,8 +109,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		
 		
 	}
-	public void saveGoodsSelectionInventory(Long goodsId, List<GoodsSelectionDO> selectionDO) {
-
+	public boolean saveGoodsSelectionInventory(Long goodsId, List<GoodsSelectionDO> selectionDO) {
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
@@ -121,14 +120,18 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						srDO.setGoodsId(goodsId);
 						srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
 						srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
-						this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
+					boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
+					if(!subRet) {
+						return false;
+					  }
+					
 					}
 					
 				}
 				
 			}//for
 		}//if1
-			
+	    return true;
 	
 	}
 	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
@@ -137,7 +140,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		}
 		
 	}
-	public void saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
+	public boolean saveGoodsSuppliersInventory(Long goodsId, List<GoodsSuppliersDO> suppliersDO) {
 		if (!CollectionUtils.isEmpty(suppliersDO)) { // if1
 			for (GoodsSuppliersDO sDO : suppliersDO) { // for
 				if (sDO.getSuppliersId() > 0) { // if分店
@@ -146,14 +149,17 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						sDO.setGoodsId(goodsId);
 						sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
 						sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
-						this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
+						boolean retAck = this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
+						if(!retAck) {
+							return false;
+						}
 					}
 					
 				}
 				
 			}//for
 		}//if1
-			
+		return true;
 	}
 	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
 		if(suppliersDO!=null) {

@@ -156,7 +156,6 @@ public class InventoryInitAndUpdateHandle  {
 	 * @param suppliersInventoryList
 	 * @return
 	 */
-	@SuppressWarnings("static-access")
 	public boolean saveGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
@@ -169,7 +168,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("startTime", startTime).toJson());
 		
 		CallResult<Boolean> callResult  = null;
-		CallResult<Integer> rbackMysqlCallResult  = null;
+		//CallResult<Integer> rbackMysqlCallResult  = null;
 		try {
 			// 消费对列的信息
 			callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList);
@@ -183,8 +182,8 @@ public class InventoryInitAndUpdateHandle  {
 				message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
 						+ "]goodsId:" + goodsId;
 			} else {
-				message = "saveGoodsInventory2Mysql_success[save2mysql success]goodsId:" + goodsId;
-				if (goodsDO != null) {
+				message = "saveGoodsInventory2MysqlAndRedis_success[save2mysqlAndRedis success]goodsId:" + goodsId;
+				/*if (goodsDO != null) {
 					String retAck = this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 							goodsDO);
 					if(!retAck.equalsIgnoreCase("ok")) {
@@ -202,8 +201,8 @@ public class InventoryInitAndUpdateHandle  {
 						}
 						
 					}
-				}
-				// 保选型库存
+				}*/
+				/*// 保选型库存
 				if (!CollectionUtils.isEmpty(selectionInventoryList)) {
 					this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 							goodsId, selectionInventoryList);
@@ -215,7 +214,7 @@ public class InventoryInitAndUpdateHandle  {
 					this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 							goodsId, suppliersInventoryList);
 					
-				}
+				}*/
 				
 			}
 			

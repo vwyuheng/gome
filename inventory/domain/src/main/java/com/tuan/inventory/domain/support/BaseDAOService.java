@@ -57,14 +57,14 @@ public interface BaseDAOService {
 	 * @param goodsId
 	 * @param selectionModel
 	 */
-	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO);
+	public boolean saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO);
 	public void saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO);
 	/**
 	 * 保存商品分店库存
 	 * @param goodsId
 	 * @param selectionModel
 	 */
-	public void saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO);
+	public boolean saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO);
 	/**
 	 * 保存商品物流库存
 	 * @param goodsId
