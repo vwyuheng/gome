@@ -101,6 +101,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					}
 					
 				}
+			}else {
+				writeJobLog("获取队列:("+ResultStatusEnum.LOCKED.getDescription()+"),状态为：("+ResultStatusEnum.LOCKED.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(
@@ -138,7 +140,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg",
 							"businessHandler error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;

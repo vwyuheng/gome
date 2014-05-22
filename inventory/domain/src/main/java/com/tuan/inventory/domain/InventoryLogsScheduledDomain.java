@@ -36,6 +36,8 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 				for (GoodsInventoryActionModel model : queueLogList) {
 				  this.model = model;
 				}
+			}else {
+				writeJobLog("获取队列:("+"日志"+")的队列为空！");
 			}
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(

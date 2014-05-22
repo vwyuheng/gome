@@ -7,7 +7,7 @@
 		<Arg>
 			<New class="org.apache.commons.dbcp.BasicDataSource">
 				<Set name="driverClassName">com.mysql.jdbc.Driver</Set>
-				<Set name="url">jdbc:mysql://wowomerge.55tuan.me:3306/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
+				<Set name="url">jdbc:mysql://10.9.210.29:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
 <!-- 				<Set name="url">jdbc:mysql://10.8.210.189:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set> -->
 				<Set name="username">Minventory</Set>
 				<Set name="password">123456</Set>
@@ -21,7 +21,7 @@
 		<Arg>
 			<New class="org.apache.commons.dbcp.BasicDataSource">
 				<Set name="driverClassName">com.mysql.jdbc.Driver</Set>
-				<Set name="url">jdbc:mysql://wowomerge.55tuan.me:3306/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
+				<Set name="url">jdbc:mysql://10.9.210.29:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
 <!-- 				<Set name="url">jdbc:mysql://10.8.210.189:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set> -->
 				<Set name="username">Minventory</Set>
 				<Set name="password">123456</Set>
