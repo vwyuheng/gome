@@ -93,6 +93,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			}
 		}
 	}
+	//接口幂等控制
 	public boolean idemptent() {
 		//根据key取已缓存的tokenid  
 		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.CREATE_INVENTORY + "_"+ String.valueOf(goodsId));
@@ -116,7 +117,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	}
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
-
 		try {
 			// 业务检查前的预处理
 			this.preHandler();

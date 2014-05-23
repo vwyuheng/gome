@@ -203,7 +203,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"ackInventory error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
