@@ -89,15 +89,16 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		CreateInventoryResultEnum resultEnum = null;
 		try {
-			//初始化检查
-			resultEnum = this.initCheck();
-			//真正的库存调整业务处理
-			if(goodsId!=null&&goodsId>0) {
-				
+			if (!StringUtils.isEmpty(tokenid)) { // if
 				this.idemptent = idemptent();
 				if(idemptent) {
 					return CreateInventoryResultEnum.SUCCESS;
 				}
+			}
+			//初始化检查
+			resultEnum = this.initCheck();
+			//真正的库存调整业务处理
+			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if(inventoryDO!=null) {
@@ -168,7 +169,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum adjustInventory() {
 		try {
-
 			if(idemptent) {  //幂等控制，已处理成功
 				return CreateInventoryResultEnum.SUCCESS;
 			}

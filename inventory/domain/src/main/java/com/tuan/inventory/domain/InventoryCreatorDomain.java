@@ -69,9 +69,11 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	public void preHandler() {
 		this.tokenid = param.getTokenid();
 		this.goodsId = Long.valueOf(param.getGoodsId());
-		this.idemptent = idemptent();
-		if(idemptent) {
-			return ;
+		if (!StringUtils.isEmpty(tokenid)) { // if
+			this.idemptent = idemptent();
+			if(idemptent) {
+				return ;
+			}
 		}
 		// 商品库存是否存在
 		isExists = this.goodsInventoryDomainRepository.isExists(goodsId);
