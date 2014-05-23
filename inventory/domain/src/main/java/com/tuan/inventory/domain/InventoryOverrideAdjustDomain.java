@@ -53,7 +53,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private String goodsId2str;
 	private String type;
 	private String id;
-	
+	private String tokenid;  //redis序列,解决接口幂等问题
 	private String businessType;
 	// 调整前剩余库存
 	private int preleftnum = 0;
@@ -76,6 +76,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private long selectionId;
 	private long suppliersId;
 	
+	boolean idemptent = false;
+	
 	public InventoryOverrideAdjustDomain(String clientIp, String clientName,
 			OverrideAdjustInventoryParam param, LogModel lm) {
 		this.clientIp = clientIp;
@@ -91,6 +93,11 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			resultEnum = this.initCheck();
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
+				
+				this.idemptent = idemptent();
+				if(idemptent) {
+					return CreateInventoryResultEnum.SUCCESS;
+				}
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if(inventoryDO!=null) {
@@ -133,11 +140,38 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
-
+	//接口幂等处理
+	public boolean idemptent() {
+		//根据key取已缓存的tokenid  
+		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.OVERRIDE_ADJUST_INVENTORY + "_"+ String.valueOf(goodsId));
+		if(StringUtils.isEmpty(gettokenid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
+			if(StringUtils.isNotEmpty(tokenid)) {
+				goodsInventoryDomainRepository.setTag(DLockConstants.OVERRIDE_ADJUST_INVENTORY + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, tokenid);
+			}
+					
+		}else {  //否则比对token值
+			if(StringUtils.isNotEmpty(tokenid)) {
+				if(tokenid.equalsIgnoreCase(gettokenid)) { //重复请求过来，判断是否处理成功
+				//根据处理成功后设置的tag来判断之前http请求处理是否成功
+				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS + "_"+ String.valueOf(goodsId));
+				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
+								return true;
+							}
+						}
+					}
+		}
+		return false;
+	}
+	
+	
 	// 库存系统新增库存 正数：+ 负数：-
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum adjustInventory() {
 		try {
+
+			if(idemptent) {  //幂等控制，已处理成功
+				return CreateInventoryResultEnum.SUCCESS;
+			}
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
@@ -193,17 +227,17 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					writeSysUpdateLog(lm,true);
 					//更新mysql
 					boolean handlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsInventory(inventoryDO);
+							.updateGoodsInventory(goodsId,inventoryDO);
 					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString()).addMetaData("handlerResult", String.valueOf(handlerResult));
 					writeSysUpdateLog(lm,true);
-					if (handlerResult) {
+					/*if (handlerResult) {
 						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("type", type);
 						writeSysUpdateLog(lm,true);
-						this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
+//						this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
 						lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type);
 						writeSysUpdateLog(lm,true);
 
-					}
+					}*/
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
 								.getCode())) {
@@ -346,6 +380,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 							"adjustInventory error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
+		//处理成返回前设置tag
+		goodsInventoryDomainRepository.setTag(DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -364,6 +400,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		}
 		// 初始化参数
 		private void fillParam() {
+			this.tokenid = param.getTokenid();
 			//商品id，必传参数，该参数无论是选型还是分店都要传过来
 			this.goodsId2str = param.getGoodsId();
 			// 2:商品 4：选型 6：分店

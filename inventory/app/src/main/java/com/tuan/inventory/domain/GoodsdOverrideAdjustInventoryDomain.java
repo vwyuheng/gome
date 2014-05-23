@@ -20,6 +20,7 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
+	private String tokenid;  //redis序列,解决接口幂等问题
 	//商品id
 	private String goodsId;
 	//type 2:商品id，4:选型id，6:分店id
@@ -35,8 +36,9 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	private OverrideAdjustInventoryParam param;
 	private UpdateRequestPacket packet;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
-	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String totalnum,LogModel lm,Message messageRoot){
+	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String id,String userId,String type,String totalnum,LogModel lm,Message messageRoot){
 		this.packet = packet;
+		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);
 		this.goodsId = goodsId;
 		this.id = id;
 		this.userId = userId;
@@ -51,6 +53,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	
 	public OverrideAdjustInventoryParam fillAdjustIParam() {
 		OverrideAdjustInventoryParam param = new OverrideAdjustInventoryParam();
+		param.setTokenid(tokenid);
 		param.setGoodsId(goodsId);
 		param.setId(id);
 		param.setUserId(userId);
@@ -116,6 +119,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	
 	@Override
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
+		parameterMap.put("tokenid", tokenid);
 		parameterMap.put("id", id);
 		parameterMap.put("userId", userId);
 		parameterMap.put("type", type);

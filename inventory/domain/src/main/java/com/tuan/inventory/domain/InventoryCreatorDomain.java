@@ -16,6 +16,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -43,7 +44,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 	private List<GoodsSelectionModel> selectionList;
 	private List<GoodsSuppliersModel> suppliersList;
-
+	
+	private String tokenid;  //redis序列,解决接口幂等问题
 	private Long goodsId;
 	private Long userId;
 	// 商品库存是否存在
@@ -52,7 +54,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	boolean addSelection = false;
 	// 新增分店
 	boolean addSuppliers = false;
-
+	boolean idemptent = false;
+	
 	public InventoryCreatorDomain(String clientIp, String clientName,
 			CreaterInventoryParam param, LogModel lm) {
 		this.clientIp = clientIp;
@@ -64,8 +67,12 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	 * 业务处理前的预处理
 	 */
 	public void preHandler() {
-
+		this.tokenid = param.getTokenid();
 		this.goodsId = Long.valueOf(param.getGoodsId());
+		this.idemptent = idemptent();
+		if(idemptent) {
+			return ;
+		}
 		// 商品库存是否存在
 		isExists = this.goodsInventoryDomainRepository.isExists(goodsId);
 		if (isExists) { // 不存在
@@ -84,7 +91,27 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			}
 		}
 	}
-
+	public boolean idemptent() {
+		//根据key取已缓存的tokenid  
+		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.CREATE_INVENTORY + "_"+ String.valueOf(goodsId));
+		if(StringUtils.isEmpty(gettokenid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
+			if(StringUtils.isNotEmpty(tokenid)) {
+				goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, tokenid);
+			}
+					
+		}else {  //否则比对token值
+			if(StringUtils.isNotEmpty(tokenid)) {
+				if(tokenid.equalsIgnoreCase(gettokenid)) { //重复请求过来，判断是否处理成功
+				//根据处理成功后设置的tag来判断之前http请求处理是否成功
+				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ String.valueOf(goodsId));
+				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
+								return true;
+							}
+						}
+					}
+		}
+		return false;
+	}
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 
@@ -109,6 +136,10 @@ public class InventoryCreatorDomain extends AbstractDomain {
 							"busiCheck error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
+		
+		if(idemptent) {  //幂等控制，已处理成功
+			return CreateInventoryResultEnum.SUCCESS;
+		}
 		if (!isExists && !addSelection && !addSuppliers) {
 			return CreateInventoryResultEnum.IS_EXISTED;
 		}
@@ -118,6 +149,9 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	// 新增库存
 	public CreateInventoryResultEnum createInventory() {
 		try {
+			if(idemptent) {  //幂等控制，已处理成功
+				return CreateInventoryResultEnum.SUCCESS;
+			}
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
@@ -129,7 +163,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			this.writeBusErrorLog(
 					lm.addMetaData("errorMsg",
 							"createInventory error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		//保存库存
 		return this.saveInventory();

@@ -13,6 +13,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.result.CallResult;
@@ -292,6 +293,8 @@ public class InventoryInitDomain extends AbstractDomain{
 		if(!result) {
 			return CreateInventoryResultEnum.DB_ERROR;
 		}
+		//处理成功后设置的一个tag
+		goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
 		return CreateInventoryResultEnum.SUCCESS;	
 	}
 	/**

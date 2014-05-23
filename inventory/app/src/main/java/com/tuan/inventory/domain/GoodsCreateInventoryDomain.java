@@ -35,6 +35,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private static Type typeSelection = new TypeToken<List<CreaterGoodsSelectionParam>>(){}.getType();
 	//分店类型
 	private static Type typeSuppliers = new TypeToken<List<CreaterGoodsSuppliersParam>>(){}.getType();
+	private String tokenid;  //redis序列,解决顺序问题
 	private String userId;
 	private String goodsId;// 商品ID(FK)
 	private Integer totalNumber;// 当前总库存999999：无限制
@@ -68,7 +69,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	@SuppressWarnings("unchecked")
 	public GoodsCreateInventoryDomain(UpdateRequestPacket packet,CreaterInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {
-			
+			this.tokenid = reqparam.getTokenid();
 			this.userId = reqparam.getUserId();
 			this.goodsId = reqparam.getGoodsId();
 			this.totalNumber = reqparam.getTotalNumber();
@@ -96,6 +97,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	
 	public CreaterInventoryParam fillCreateParam() {
 		CreaterInventoryParam param = new CreaterInventoryParam();
+		param.setTokenid(tokenid);
 		param.setGoodsId(this.goodsId);
 		param.setUserId(userId);
 		param.setWaterfloodVal(waterfloodVal);

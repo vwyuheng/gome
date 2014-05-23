@@ -13,6 +13,7 @@ import com.tuan.inventory.model.GoodsSuppliersModel;
 public class CreaterInventoryParam extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
+	private String tokenid;  //redis序列,解决接口幂等问题
 	private String userId;
 	private String goodsId;// 商品ID(FK)
 	private Integer totalNumber;// 当前总库存999999：无限制
@@ -72,6 +73,13 @@ public class CreaterInventoryParam extends TuanBaseDO {
 	public void setGoodsSuppliers(List<GoodsSuppliersModel> goodsSuppliers) {
 		this.goodsSuppliers = goodsSuppliers;
 	}
+	public String getTokenid() {
+		return tokenid;
+	}
+	public void setTokenid(String tokenid) {
+		this.tokenid = tokenid;
+	}
+	
 	
 	
 }

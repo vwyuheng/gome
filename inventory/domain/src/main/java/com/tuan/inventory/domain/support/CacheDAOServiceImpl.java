@@ -437,9 +437,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void updateFileds(Long goodsId, Map<String, String> hash) {
+	public String updateFileds(Long goodsId, Map<String, String> hash) {
 
-		this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+		return this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId), hash);
 
 	}
@@ -450,6 +450,12 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 				+ String.valueOf(selectionId), hash);
 
+	}
+
+	@Override
+	public String queryToken(String key) {
+		
+		return  this.redisCacheUtil.get(key);
 	}
 
 	

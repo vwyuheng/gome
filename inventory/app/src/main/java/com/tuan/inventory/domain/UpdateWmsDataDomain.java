@@ -19,6 +19,7 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
+	private String tokenid;  //redis序列,解决接口幂等问题
 	private String goodsId;// 商品ID(FK)
 	private String suppliersId;// 分店ID(FK)
 	private String wmsGoodsId;  //物流商品的一种编码
@@ -31,8 +32,9 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 	private UpdateWmsDataParam param;
 	private UpdateRequestPacket packet;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
-	public UpdateWmsDataDomain(UpdateRequestPacket packet,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds,LogModel lm,Message messageRoot){
+	public UpdateWmsDataDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds,LogModel lm,Message messageRoot){
 		this.packet = packet;
+		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);
 		this.goodsId = goodsId;
 		this.suppliersId = suppliersId;
 		this.wmsGoodsId = wmsGoodsId;
@@ -49,6 +51,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 	
 	public UpdateWmsDataParam fillAdjustIParam() {
 		UpdateWmsDataParam param = new UpdateWmsDataParam();
+		param.setTokenid(tokenid);
 		param.setGoodsId(goodsId);
 		param.setSuppliersId(suppliersId);
 		param.setWmsGoodsId(wmsGoodsId);
@@ -116,6 +119,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 	
 	@Override
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
+		parameterMap.put("tokenid", tokenid);
 		parameterMap.put("goodsId", goodsId);
 		parameterMap.put("suppliersId", suppliersId);
 		parameterMap.put("wmsGoodsId", wmsGoodsId);

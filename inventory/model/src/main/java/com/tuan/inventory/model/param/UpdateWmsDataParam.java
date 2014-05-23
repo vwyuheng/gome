@@ -9,6 +9,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 public class UpdateWmsDataParam extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
+	private String tokenid;  //redis序列,解决接口幂等问题
 	private String goodsId;// 商品ID(FK)
 	private String suppliersId;// 分店ID(FK)
 	private String wmsGoodsId;  //物流商品的一种编码
@@ -59,6 +60,12 @@ public class UpdateWmsDataParam extends TuanBaseDO {
 	}
 	public void setIsBeDelivery(int isBeDelivery) {
 		this.isBeDelivery = isBeDelivery;
+	}
+	public String getTokenid() {
+		return tokenid;
+	}
+	public void setTokenid(String tokenid) {
+		this.tokenid = tokenid;
 	}
 	
 	

@@ -166,16 +166,18 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				//更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(inventoryDO);
+				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId, (adjustNum),inventoryDO);
 				if(handlerResult) {
-					this.resultACK = this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (adjustNum));
-					if(!verifyWaterflood()) {
+//					this.resultACK = this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (adjustNum));
+					/*if(!verifyWaterflood()) {
 						//将注水还原到调整前
 						this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (-adjustNum));
-						return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
-					}else {
+						
+					}else {*/
 						this.goodswfval = inventoryDO.getWaterfloodVal();
-					}
+					//}
+				}else {
+					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
 				}
 				
 				//更新mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
@@ -367,13 +369,13 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		this.updateActionDO = updateActionDO;
 		return true;
 	}
-	private boolean verifyWaterflood() {
+	/*private boolean verifyWaterflood() {
 		if(resultACK>=0) {
 			return true;
 		}else {
 			return false;
 		}
-	}
+	}*/
 	private boolean verifyselOrsuppWf() {
 		boolean ret = true;
 		//if(resultACK) {

@@ -580,6 +580,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public String queryMember(String key) {
 		return this.baseDAOService.queryMember(key);
 	}
+	public String queryToken(String key) {
+		return this.baseDAOService.queryToken(key);
+	}
 	/**
 	 * 设置tag
 	 * @param tag
@@ -595,8 +598,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.watch(key,tagval);
 	}
 	
-	public void updateFields(Long goodsId, Map<String, String> hash) {
-		 this.baseDAOService.updateFileds(goodsId, hash);
+	public String updateFields(Long goodsId, Map<String, String> hash) {
+		 return this.baseDAOService.updateFileds(goodsId, hash);
 	}
 	
 	public void updateSelectionFields(List<GoodsSelectionDO> selectionDOList) {

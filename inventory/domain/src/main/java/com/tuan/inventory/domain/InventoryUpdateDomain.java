@@ -116,7 +116,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 			}// for
 
-		} // if selection
+		} else { // if selection
+			isSelectionEnough = false;
+		}
 		} catch (Exception e) {
 			isSelectionEnough = false;
 			this.writeBusUpdateErrorLog(
@@ -164,6 +166,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 				}// if
 			}
+		}else {
+			isSuppliersEnough = false;
 		}
 		} catch (Exception e) {
 			isSuppliersEnough = false;

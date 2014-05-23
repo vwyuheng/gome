@@ -1,6 +1,7 @@
 package com.tuan.inventory.domain.support.job.handle;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -363,7 +364,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
-	public boolean updateGoodsInventory(final GoodsInventoryDO goodsDO) {
+	public boolean updateGoodsInventory(final Long goodsId,final GoodsInventoryDO goodsDO) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(goodsDO == null){
@@ -379,7 +380,99 @@ public class InventoryInitAndUpdateHandle  {
 			
 			//if (goodsDO != null) {
 			// 消费对列的信息
-			callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsDO);
+			callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsDO);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "updateGoodsInventory_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsDO.getGoodsId();
+			} else {
+				message = "updateGoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
+			}
+			//} 
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("goodsDO",goodsDO)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	public boolean updateGoodsInventory(final Long goodsId,final int adjustNum,final GoodsInventoryDO goodsDO) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(goodsDO == null){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.handleGoodsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<GoodsInventoryDO> callResult  = null;
+		try {
+			
+			//if (goodsDO != null) {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,adjustNum,goodsDO);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+				// 消息数据不存并且不成功
+				isSuccess = false;
+				message = "updateGoodsInventory_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsDO.getGoodsId();
+			} else {
+				message = "updateGoodsInventory_success[save success]goodsId:" + goodsDO.getGoodsId();
+			}
+			//} 
+			
+		} catch (Exception e) {
+			isSuccess = false;
+			log.error(lm.addMetaData("goodsDO",goodsDO)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+			
+		}
+		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("callResult",callResult)
+				.addMetaData("message",message)
+				.addMetaData("endTime", System.currentTimeMillis())
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		return isSuccess;
+	}
+	public boolean updateGoodsInventory(final Long goodsId,final Map<String, String> hash,final GoodsInventoryDO goodsDO) {
+		boolean isSuccess = true;
+		String message = StringUtils.EMPTY;
+		if(goodsDO == null){
+			isSuccess = false;
+		}
+		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.handleGoodsInventory");
+		long startTime = System.currentTimeMillis();
+		log.info(lm.addMetaData("goodsDO",goodsDO)
+				.addMetaData("startTime", startTime).toJson());
+		
+		CallResult<GoodsInventoryDO> callResult  = null;
+		try {
+			
+			//if (goodsDO != null) {
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsDO);
 			PublicCodeEnum publicCodeEnum = callResult
 					.getPublicCodeEnum();
 			

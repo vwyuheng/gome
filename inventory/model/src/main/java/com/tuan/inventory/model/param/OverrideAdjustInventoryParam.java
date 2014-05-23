@@ -9,6 +9,7 @@ import com.tuan.core.common.lang.TuanBaseDO;
 public class OverrideAdjustInventoryParam extends TuanBaseDO {
 	
 	private static final long serialVersionUID = 1L;
+	private String tokenid;  //redis序列,解决接口幂等问题
 	//必传参数
 	private String goodsId;
 	//type 2:可为空，4:选型id，6:分店id
@@ -59,6 +60,12 @@ public class OverrideAdjustInventoryParam extends TuanBaseDO {
 	}
 	public void setLimitStorage(int limitStorage) {
 		this.limitStorage = limitStorage;
+	}
+	public String getTokenid() {
+		return tokenid;
+	}
+	public void setTokenid(String tokenid) {
+		this.tokenid = tokenid;
 	}
 	
 	

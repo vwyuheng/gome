@@ -29,4 +29,23 @@ public class DLockConstants {
 	public static final String UPDATEWMS_LOCK_KEY = "updatewmsdata";
 	public static final int UPDATEWMS_LOCK_RETRY_TIMES = 5;
 	public static final long UPDATEWMS_LOCK_TIME = 3000L;
+	
+	
+	//接口幂等key的前缀
+	//库存创建接口
+	public final static String CREATE_INVENTORY = "create";
+	//创建成功后更新的key
+	public final static String CREATE_INVENTORY_SUCCESS = "create_success";
+	//全量调整库存接口
+	public final static String OVERRIDE_ADJUST_INVENTORY = "oradjusti";
+	//调整成功后更新的key
+	public final static String OVERRIDE_ADJUST_INVENTORY_SUCCESS = "oradjusti_success";
+	//物流数据更新接口
+	public final static String UPDATE_WMS_DATA = "upwmsdata";
+	//更新成功后更新的key
+	public final static String UPDATE_WMS_DATA_SUCCESS = "upwmsdata_success";
+	//处理成功的标识
+	public final static String HANDLER_SUCCESS = "success";
+	//缓存的时长
+	public final static int IDEMPOTENT_DURATION_TIME = 60*15;
 }

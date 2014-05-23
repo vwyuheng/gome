@@ -1,6 +1,7 @@
 package com.tuan.inventory.domain;
 
 import java.util.List;
+import java.util.Map;
 
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -25,6 +26,9 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<Boolean> updateGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(Long goodsId, int adjustNum,int limitStorage,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,int adjustNum,GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,GoodsSelectionDO selectionDO) throws Exception;
 	public CallResult<GoodsSuppliersDO> updateGoodsSuppliers(GoodsInventoryDO goodsDO,GoodsSuppliersDO suppliersDO) throws Exception;
 	
