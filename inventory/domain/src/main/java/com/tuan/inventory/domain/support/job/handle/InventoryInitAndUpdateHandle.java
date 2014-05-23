@@ -45,7 +45,7 @@ public class InventoryInitAndUpdateHandle  {
 		LogModel lm = LogModel.newLogModel("InventoryInitAndUpdateHandle.saveGoodsWmsInventory");
 		long startTime = System.currentTimeMillis();
 		log.info(lm.addMetaData("wmsDO",wmsDO)
-				.addMetaData("startTime", startTime).toJson());
+				.addMetaData("startTime", startTime).toJson(true));
 		
 		CallResult<Boolean> callResult  = null;
 		try {
@@ -78,7 +78,7 @@ public class InventoryInitAndUpdateHandle  {
 					.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true),e);
 			
 		}
 		log.info(lm.addMetaData("wmsDO",wmsDO)
@@ -86,7 +86,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
 				.addMetaData("endTime", System.currentTimeMillis())
-				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
 		return isSuccess;
 	}
 	
