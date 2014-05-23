@@ -12,9 +12,12 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
+import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.result.CallResult;
 /**
@@ -23,6 +26,7 @@ import com.tuan.inventory.model.result.CallResult;
  * @date 2014/4/23
  */
 public class InventoryInitDomain extends AbstractDomain{
+	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
@@ -279,23 +283,50 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param suppliersInventoryList
 	 */
 	public CreateInventoryResultEnum createInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
-		boolean result = false;
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
 		try {
 		// 保存商品库存		
-			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+		//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);	
+				// 消费对列的信息
+				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+				if(callResult==null) {
+					return CreateInventoryResultEnum.SYS_ERROR;
+				}
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS
+						/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+					// 消息数据不存并且不成功
+					message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+							+ "]goodsId:" + goodsId;
+				     return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+					
+				} else {
+					message = "saveGoodsInventory2MysqlAndRedis_success[save2mysqlAndRedis success]goodsId:" + goodsId;
+					//处理成功后设置的一个tag
+					goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+				}
 			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"createInventory error" + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("inventoryInfoDO",inventoryInfoDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		}
-		if(!result) {
-			return CreateInventoryResultEnum.DB_ERROR;
-		}
-		//处理成功后设置的一个tag
-		goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
-		return CreateInventoryResultEnum.SUCCESS;	
+		
+		return CreateInventoryResultEnum.SUCCESS;
+		
 	}
 	/**
 	 * 创建物流商品库存
