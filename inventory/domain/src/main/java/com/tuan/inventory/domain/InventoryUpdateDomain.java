@@ -20,6 +20,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -65,7 +66,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
 	// 当前库存
-	private long resultACK;
+	private List<Long> resultACK;
 	private SequenceUtil sequenceUtil;
 
 	public InventoryUpdateDomain(String clientIp, String clientName,
@@ -101,6 +102,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						} else {
 							selection = new GoodsSelectionAndSuppliersResult();
 							selection.setId(model.getId());
+							selection.setWmsGoodsId(model.getWmsGoodsId());  //物流
 							// 扣减的库存量
 							selection.setGoodsInventory(model.getNum());
 							selection.setOriginalGoodsInventory(selectionDO
@@ -112,7 +114,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 					}
 
-				}// if
+				}// if选型
 
 			}// for
 
@@ -178,7 +180,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 	
 	}
-
+	
 	private void calculateInventory() {
 		// 再次查询商品库存信息[确保最新数据]
 		this.inventoryInfoDO = this.goodsInventoryDomainRepository
@@ -235,11 +237,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	private boolean verifyInventory() {
-		if (resultACK >= 0) {
-			return true;
-		} else {
-			return false;
-		}
+		return DataUtil.verifyInventory(resultACK);
 	}
 
 	// 业务检查
@@ -308,7 +306,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("rollback,start", "start rollback inventory!");
 					writeSysDeductLog(lm,true);
 					// 回滚库存
-				long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+					List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (goodsDeductNum));
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("robackNum", goodsDeductNum).addMetaData("rollbackAck", rollbackAck).addMetaData("rollback,end", "end rollback inventory!");
 					writeSysDeductLog(lm,true);
@@ -332,7 +330,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("rollback,start", "start rollback selection inventory!");
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚选型的
-						long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+						List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 								goodsId, (goodsDeductNum));
 						boolean rbackACK = this.goodsInventoryDomainRepository
 								.rollbackSelectionInventory(selectionParam);
@@ -359,7 +357,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("rollback,start", "start rollback suppliers inventory!");
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚分店的
-						long rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
+						List<Long> rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
 								goodsId, (goodsDeductNum));
 						boolean rbackACK4Supp = this.goodsInventoryDomainRepository
 								.rollbackSuppliersInventory(suppliersParam);
@@ -574,11 +572,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
 			
 			List<Long> selectionIdlist = null;
-			
+			//List<Long> wmsIdlist = null;
 			if(!CollectionUtils.isEmpty(selResult)) {
 				selectionIdlist = new ArrayList<Long>();
+				//wmsIdlist = new ArrayList<Long>();
 				 for(GoodsSelectionModel model : selResult) {
 					 selectionIdlist.add(model.getId());
+					 //wmsIdlist.add(model.getWmsId());
 				 }
 			}
 			if(!CollectionUtils.isEmpty(selectionIdlist)) {

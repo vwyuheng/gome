@@ -357,6 +357,21 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public void saveGoodsInventoryWMS(GoodsInventoryWMSDO wmsDO) throws Exception{
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryWMSDO(wmsDO);
 	}
+	
+	public void batchUpdateGoodsInventoryWMS(List<GoodsInventoryWMSDO> wmsList) throws Exception{
+		
+		if (!CollectionUtils.isEmpty(wmsList)) { // if1
+			for (GoodsInventoryWMSDO result : wmsList) { // for
+				if (!StringUtils.isEmpty(result.getWmsGoodsId())) { // if选型
+					this.updateGoodsInventoryWMS(result);
+				}
+				
+			}//for
+		}//if1
+		
+		
+	}
+	
 	/**
 	 * 更新物流商品库存
 	 * @param wmsDO

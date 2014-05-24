@@ -97,12 +97,13 @@ public interface BaseDAOService {
 	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId);
 	public List<Long> updateGoodsWms(String wmsGoodsId,int num);
 	
-	public Long updateGoodsInventory(Long goodsId,int num);
+	public List<Long> updateGoodsInventory(Long goodsId,int num);
 	public List<Long> adjustGoodsInventory(Long goodsId,int num,int limitStorage);
-	public Long updateSelectionInventory(Long selectionId,int num);
+	public List<Long> updateSelectionInventory(Long selectionId,int num);
+	public List<Long> updateSelectionInventory(Long selectionId,String wmsGoodsId,int num);
 	public List<Long> adjustSelectionInventory(Long goodsId,Long selectionId,int num);
 	public List<Long> adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum);
-	public Long updateSuppliersInventory(Long suppliersId,int num);
+	public List<Long> updateSuppliersInventory(Long suppliersId,int num);
 	public List<Long> adjustSuppliersInventory(Long goodsId,Long suppliersId,int num);
 	
 	public void markQueueStatus(String member, int upStatusNum);

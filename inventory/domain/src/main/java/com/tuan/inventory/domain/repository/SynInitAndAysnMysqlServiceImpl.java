@@ -342,7 +342,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	public CallResult<Boolean> updateGoodsInventory(final long goodsId,
 			final GoodsInventoryDO goodsDO,
 			final List<GoodsSelectionDO> selectionInventoryList,
-			final List<GoodsSuppliersDO> suppliersInventoryList) throws Exception {
+			final List<GoodsSuppliersDO> suppliersInventoryList,final List<GoodsInventoryWMSDO> wmsInventoryList) throws Exception {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
@@ -356,6 +356,9 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						if (!CollectionUtils.isEmpty(suppliersInventoryList)) { // if1
 							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+						}
+						if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
+							synInitAndAsynUpdateDomainRepository.batchUpdateGoodsInventoryWMS(wmsInventoryList);
 						}
 						
 						

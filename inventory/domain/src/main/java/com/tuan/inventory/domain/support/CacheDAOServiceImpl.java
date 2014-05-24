@@ -138,23 +138,35 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 
 	@Override
-	public Long updateGoodsInventory(Long goodsId, int num) {
-		return this.redisCacheUtil.hincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+	public List<Long> updateGoodsInventory(Long goodsId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),
+				HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), (num));
 	}
 
 	@Override
-	public Long updateSelectionInventory(Long selectionId, int num) {
-		return this.redisCacheUtil.hincrBy(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+	public List<Long> updateSelectionInventory(Long selectionId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 				+ String.valueOf(selectionId),
+						HashFieldEnum.totalNumber.toString(),
+						HashFieldEnum.leftNumber.toString(), (num));
+	}
+	@Override
+	public List<Long> updateSelectionInventory(Long selectionId, String wmsGoodsId,int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4sel(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				QueueConstant.WMS_INVENTORY_PREFIX + ":"
+						+ wmsGoodsId,
+				HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), (num));
 	}
 
 	@Override
-	public Long updateSuppliersInventory(Long suppliersId, int num) {
-		return this.redisCacheUtil.hincrBy(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+	public List<Long> updateSuppliersInventory(Long suppliersId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(suppliersId),
+				HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), (num));
 	}
 

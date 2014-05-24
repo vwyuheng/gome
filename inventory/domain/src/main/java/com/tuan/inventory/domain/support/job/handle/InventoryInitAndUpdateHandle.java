@@ -502,7 +502,7 @@ public class InventoryInitAndUpdateHandle  {
 				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
-	public boolean updateGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList) {
+	public boolean updateGoodsInventory(final long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
 		boolean isSuccess = true;
 		String message = StringUtils.EMPTY;
 		if(goodsDO == null){
@@ -513,12 +513,12 @@ public class InventoryInitAndUpdateHandle  {
 		log.info(lm.addMetaData("goodsDO",goodsDO)
 				.addMetaData("startTime", startTime).toJson());
 		
-		CallResult<GoodsInventoryDO> callResult  = null;
+		CallResult<Boolean> callResult  = null;
 		try {
 			
 			if (goodsDO != null) {
 				// 消费对列的信息
-				callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsDO);
+				callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				

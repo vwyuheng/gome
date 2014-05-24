@@ -11,6 +11,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -201,20 +202,21 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	//异步更新mysql商品库存
-		public boolean asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+		public boolean asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsList) {
 			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
 			//create.setGoodsId(goodsId);
 			//注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-			return create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+			return create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 		}
 		/**
 		 * 组装数据并更新
 		 */
 		private boolean fillParamAndUpdate() {
 			List<GoodsSelectionDO> selectionInventoryList = null;
+			List<GoodsInventoryWMSDO> wmsList = null;
 			List<GoodsSuppliersDO> suppliersInventoryList = null;
 			GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
 			long goodsId = goodsInventoryModel.getGoodsId();
@@ -225,10 +227,12 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			inventoryInfoDO.setLeftNumber(goodsInventoryModel.getLeftNumber());
 			if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSelectionList())) {
 				selectionInventoryList = new ArrayList<GoodsSelectionDO>();
+				wmsList = new ArrayList<GoodsInventoryWMSDO>();
 				List<GoodsSelectionModel> selectionModelList = goodsInventoryModel.getGoodsSelectionList();
 				if(!CollectionUtils.isEmpty(selectionModelList)) {
 					for(GoodsSelectionModel selModel:selectionModelList) {
 						selectionInventoryList.add(ObjectUtils.toSelectionDO(selModel));
+						wmsList.add(ObjectUtils.toWmsDO(selModel));//物流更新
 					}
 				}
 			}
@@ -242,7 +246,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 			}
 		   //调用数据同步
-			return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList);
+			return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 		}
 	
 	

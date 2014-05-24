@@ -72,6 +72,7 @@ public class ObjectUtils {
 			int sales = selModel.getTotalNumber() - selModel.getLeftNumber();
 			result.setSales(String.valueOf(sales));
 			result.setWaterfloodVal(selModel.getWaterfloodVal());
+			result.setWmsGoodsId(selModel.getWmsGoodsId());
 		}
 		return result;
 	}
@@ -94,6 +95,17 @@ public class ObjectUtils {
 	}
 	
 	
+	public static GoodsInventoryWMSDO toWmsDO(GoodsSelectionModel selModel) {
+		GoodsInventoryWMSDO result = null;
+		if(selModel!=null) {
+			result = new GoodsInventoryWMSDO();
+			result.setWmsGoodsId(selModel.getWmsGoodsId());
+			result.setLeftNumber(selModel.getLeftNumber());
+			result.setTotalNumber(selModel.getTotalNumber());
+			
+		}
+		return result;
+	}
 	public static GoodsSelectionDO toSelectionDO(GoodsSelectionModel selModel) {
 		GoodsSelectionDO result = null;
 		if(selModel!=null) {

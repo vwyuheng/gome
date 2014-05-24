@@ -429,11 +429,11 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public boolean updateMysqlInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+	public boolean updateMysqlInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
 		boolean handler = true;
 		try {
 		// 更新商品库存
-			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
 		} catch (Exception e) {
 			handler = false;
 			this.writeBusUpdateErrorLog(
