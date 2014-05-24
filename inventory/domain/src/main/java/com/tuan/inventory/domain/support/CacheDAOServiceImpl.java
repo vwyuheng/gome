@@ -445,9 +445,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void updateSelectionFileds(Long selectionId, Map<String, String> hash) {
+	public String updateSelectionFileds(Long selectionId, Map<String, String> hash) {
 
-		this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+		return this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 				+ String.valueOf(selectionId), hash);
 
 	}

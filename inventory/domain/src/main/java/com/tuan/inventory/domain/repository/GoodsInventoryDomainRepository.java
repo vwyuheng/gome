@@ -602,19 +602,26 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		 return this.baseDAOService.updateFileds(goodsId, hash);
 	}
 	
-	public void updateSelectionFields(List<GoodsSelectionDO> selectionDOList) {
-	
+	public String updateSelectionFields(List<GoodsSelectionDO> selectionDOList) {
+	    String success = null;
 		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
 			for (GoodsSelectionDO param : selectionDOList) { // for
 				if (param.getId() > 0) { // if分店
 					Map<String, String> hash = new HashMap<String, String>();
 					hash.put(HashFieldEnum.suppliersSubId.toString(),  String.valueOf(param.getSuppliersSubId()));
 					hash.put(HashFieldEnum.suppliersInventoryId.toString(), String.valueOf(param.getSuppliersInventoryId()));
-					this.baseDAOService.updateSelectionFileds(param.getId(), hash);
+					String retAck =	this.baseDAOService.updateSelectionFileds(param.getId(), hash);
+					if(!retAck.equalsIgnoreCase("ok")) {
+						return null;
+					}else {
+						success = retAck;
+					}
 		
 				}
 			}
+		}else {
+			return null;
 		}
-		
+		return success;
 	}
 }

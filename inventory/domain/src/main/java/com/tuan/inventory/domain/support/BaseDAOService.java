@@ -136,7 +136,7 @@ public interface BaseDAOService {
 	
 	
 	public String updateFileds(Long goodsId,Map<String, String> hash);
-	public void updateSelectionFileds(Long selectionId,Map<String, String> hash);
+	public String updateSelectionFileds(Long selectionId,Map<String, String> hash);
 	
 	public String queryToken(String key);
 }

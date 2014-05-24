@@ -28,9 +28,11 @@ import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
+import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	private LogModel lm;
@@ -202,6 +204,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	// 更新物流相关数据
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum updateAndInsertWmsData() {
+		String message = StringUtils.EMPTY;
 		if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}
@@ -230,20 +233,36 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				//扣减开始记录日志
 				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("goodsSelectionIds", goodsSelectionIds).addMetaData("start", "start update wmsdata!");
 				writeSysDeductLog(lm,true);
+			Map<String, String> hash = null;
 			if (inventoryInfoDO != null) {
 				inventoryInfoDO.setGoodsSelectionIds(goodsSelectionIds);
-				Map<String, String> hash = new HashMap<String, String>();
+				hash = new HashMap<String, String>();
 				hash.put(HashFieldEnum.goodsSelectionIds.toString(), goodsSelectionIds);
 				hash.put(HashFieldEnum.wmsId.toString(), String.valueOf(wmsDO.getId()));
 				if(wmsDO!=null) {
 					inventoryInfoDO.setWmsId(wmsDO.getId());
 				}
 				//先更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId, hash,inventoryInfoDO);
-				if(handlerResult) {
+				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId, hash,inventoryInfoDO);
+				//if(handlerResult) {
 				
 //					 this.goodsInventoryDomainRepository.updateFields(goodsId, hash);
+				//}
+				
+				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					message = "updateAndInsertWmsData>updateGoodsInventory_error[" + publicCodeEnum.getMessage()
+							+ "]goodsId:" + goodsId;
+					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+				} else {
+					message = "updateAndInsertWmsData>updateGoodsInventory_success[save success]goodsId:" + goodsId;
 				}
+				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("hash", hash).addMetaData("inventoryInfoDO", inventoryInfoDO).addMetaData("message", message);
+				writeSysDeductLog(lm,true);
 			}
 			
 			if(suppliersDO!=null) {  //存在，更新配置关系
@@ -258,11 +277,29 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				//不能为空，有约束限制
 				suppliersDO.setTotalNumber(0);
 				suppliersDO.setLeftNumber(0);
-				inventoryInitAndUpdateHandle.saveGoodsSuppliers(goodsId, suppliersDO);
+//				inventoryInitAndUpdateHandle.saveGoodsSuppliers(goodsId, suppliersDO);
+				// 消费对列的信息
+				CallResult<Boolean> callResult = synInitAndAysnMysqlService.saveGoodsSuppliers(goodsId,suppliersDO);
+					PublicCodeEnum publicCodeEnum = callResult
+							.getPublicCodeEnum();
+					
+					if (publicCodeEnum != PublicCodeEnum.SUCCESS
+							/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+						// 消息数据不存并且不成功
+						message = "updateAndInsertWmsData>saveGoodsSuppliers_error[" + publicCodeEnum.getMessage()
+								+ "]GoodsId:" + suppliersDO==null?"":String.valueOf(goodsId);
+						return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+					} else {   //TODO 该处理也有问题
+						message = "updateAndInsertWmsData>saveGoodsSuppliers_success[save2mysql success]goodsId:" + String.valueOf(goodsId);
+						
+					}
+					
+					lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData>saveGoodsSuppliers").addMetaData("goodsId", goodsId).addMetaData("suppliersDO", suppliersDO).addMetaData("message", message);
+					writeSysDeductLog(lm,true);
 			
 			}
 			//更新选型
-        	boolean handlerResult = false;
+        	//boolean handlerResult = false;
 			//更新配置关系
             if(!CollectionUtils.isEmpty(selectionDOList)) {
             	for(GoodsSelectionDO selDO: selectionDOList) {
@@ -270,12 +307,28 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
             		selDO.setSuppliersSubId(suppliersId);
             	}
             	//更新选型
-            	handlerResult = inventoryInitAndUpdateHandle.updateBatchGoodsSelection(goodsId, selectionDOList);
-            	if(handlerResult) {  //更新redis
-            		goodsInventoryDomainRepository.updateSelectionFields(selectionDOList);
-            	}
+            	//handlerResult = inventoryInitAndUpdateHandle.updateBatchGoodsSelection(goodsId, selectionDOList);
+            	//if(handlerResult) {  //更新redis
+            	//	goodsInventoryDomainRepository.updateSelectionFields(selectionDOList);
+            	//}
+            	// 消费对列的信息
+            	CallResult<List<GoodsSelectionDO>> callResult = synInitAndAysnMysqlService.updateBatchGoodsSelection(goodsId,selectionDOList);
+        				PublicCodeEnum publicCodeEnum = callResult
+        						.getPublicCodeEnum();
+        				
+        				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+        					// 消息数据不存并且不成功
+        					message = "updateAndInsertWmsData>updateBatchGoodsSelection_error[" + publicCodeEnum.getMessage()
+        							+ "]goodsId:" + goodsId;
+        					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+        				} else {
+        					message = "updateAndInsertWmsData>updateBatchGoodsSelection_success[save success]goodsId:" + goodsId;
+        				}
+        				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("selectionDOList", selectionDOList).addMetaData("message", message);
+        				writeSysDeductLog(lm,true);	
+            	
             }
-				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("handlerResult", String.valueOf(handlerResult)).addMetaData("wmsDO", wmsDO.toString()).addMetaData("deduct,end", "end deduct inventory!");
+				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("deduct,end", "end deduct inventory!");
 				writeSysDeductLog(lm,true);
 
 		} catch (Exception e) {
