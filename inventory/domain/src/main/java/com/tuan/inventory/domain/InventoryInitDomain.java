@@ -319,7 +319,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					.addMetaData("inventoryInfoDO",inventoryInfoDO)
 					.addMetaData("selectionInventoryList",selectionInventoryList)
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
-					.addMetaData("callResult",callResult)
+					//.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
@@ -335,20 +335,44 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @return
 	 */
 	public CreateInventoryResultEnum createWmsInventory(GoodsInventoryWMSDO wmsDO,List<GoodsSelectionDO> selectionList) {
-		boolean result = false;
+		CallResult<Boolean> callResult  = null;
+		String message = StringUtils.EMPTY;
+		long startTime = System.currentTimeMillis();
 		try {
 			// 保存商品库存		
-			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsDO, selectionList);
+//			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsDO, selectionList);
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(wmsDO,selectionList);
+			PublicCodeEnum publicCodeEnum = callResult.getPublicCodeEnum();
+
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+			/* && publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED) */) { // 当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+			message = "saveGoodsWmsInventory.createWmsInventory2Mysql_error["
+						+ publicCodeEnum.getMessage() + "]wmsGoodsId:" + wmsDO == null ? ""
+						: wmsDO.getWmsGoodsId();
+			return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+			} else { 
+				message = "saveGoodsWmsInventory.createWmsInventory2Mysql_success[save2mysql success]wmsGoodsId:"
+						+ wmsDO.getWmsGoodsId();
+				
+
+			}
 			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"createWmsInventory error" + e.getMessage()),false,  e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("selectionList",selectionList)
+					//.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
 		}
-		if(!result) {
-			return CreateInventoryResultEnum.DB_ERROR;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;	
 	}
 	/**
