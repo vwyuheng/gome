@@ -23,12 +23,14 @@ import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
 import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
+import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryAdjustDomain extends AbstractDomain {
 	
@@ -156,6 +158,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	// 库存系统新增库存 正数：+ 负数：-
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum adjustInventory() {
+		String message = StringUtils.EMPTY;
 		try {
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
@@ -202,43 +205,28 @@ public class InventoryAdjustDomain extends AbstractDomain {
 									+ Integer.MAX_VALUE;
 						}
 					}
-					lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage);
-					writeSysUpdateLog(lm,true);
-					//设置标记tag，为防止高并发时 redis与mysql数据不一致,必须保证每个线程是唯一的
-					//String tagVal = String.valueOf(goodsId)+":"+System.nanoTime();
-					//goodsInventoryDomainRepository.setTag(QueueConstant.INVENTORY_ADJUST+String.valueOf(goodsId), 60*15, tagVal);
-					//更新mysql
-					boolean handlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsInventory(goodsId, (adjustNum),
-									limitStorage,inventoryDO);
-					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage).addMetaData("handlerResult", handlerResult);
-					writeSysUpdateLog(lm,true);
-					if (handlerResult) {
-						//监控该tag
-						//boolean tag = goodsInventoryDomainRepository.watch(QueueConstant.INVENTORY_ADJUST+String.valueOf(goodsId),tagVal);
-						//if(tag) {
-						/*lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
-						writeSysUpdateLog(lm,true);*/
-						/*this.resultACK = this.goodsInventoryDomainRepository
-								.adjustGoodsInventory(goodsId, (adjustNum),
-										limitStorage);*/
-						/*lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("resultACK", resultACK);
-						writeSysUpdateLog(lm,true);*/
-						/*if (!verifyInventory()) {
-							lm.addMetaData("adjustInventory","rollback redis,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("limitStorage", limitStorage);
-							writeSysUpdateLog(lm,true);
-							//将库存还原到调整前
-							List<Long> rollbackResponeResult =	this.goodsInventoryDomainRepository
-									.adjustGoodsInventory(goodsId,
-											(-adjustNum), (-limitStorage));
-							//lm.addMetaData("adjustInventory","rollback redis,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("limitStorage", limitStorage).addMetaData("rollbackResponeResult", rollbackResponeResult);
-							writeSysUpdateLog(lm,true);
-							return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
-						} else {*/
+					if(inventoryDO!=null&&goodsId>0) {
+						lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage);
+						writeSysUpdateLog(lm,true);
+						 // 消费对列的信息
+						CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,(adjustNum),limitStorage,inventoryDO);
+						PublicCodeEnum publicCodeEnum = callResult.getPublicCodeEnum();
+
+						if (publicCodeEnum != PublicCodeEnum.SUCCESS) { //
+							// 消息数据不存并且不成功
+							message = "updateGoodsInventory_error["
+									+ publicCodeEnum.getMessage() + "]goodsId:"
+									+ goodsId;
+							return CreateInventoryResultEnum
+									.valueOfEnum(publicCodeEnum.getCode());
+						} else {
+							message = "updateGoodsInventory_success[save success]goodsId:"
+									+ goodsId;
 							this.goodsleftnum = inventoryDO.getLeftNumber();
 							this.goodstotalnum = inventoryDO.getTotalNumber();
-						//}
-
+						}
+						lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage).addMetaData("message", message);
+						writeSysUpdateLog(lm,true);
 					}
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
