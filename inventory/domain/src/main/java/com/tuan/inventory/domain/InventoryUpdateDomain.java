@@ -317,31 +317,34 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			// 更新选型库存
 			if (isSelectionEnough) {
-				//扣减开始记录日志
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("start", "start deduct selection inventory!");
-				writeSysDeductLog(lm,true);
-				boolean rACK = this.goodsInventoryDomainRepository
-						.updateSelectionInventory(selectionParam);
-				
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("resultAck", rACK).addMetaData("end", "end deduct selection inventory!");
-				writeSysDeductLog(lm,true);
-				// 校验库存
-				if (!rACK) {
-					// 回滚库存
-					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("rollback,start", "start rollback selection inventory!");
+				if(!CollectionUtils.isEmpty(selectionParam)) {
+					//扣减开始记录日志
+					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("start", "start deduct selection inventory!");
 					writeSysDeductLog(lm,true);
-					// 先回滚总的 再回滚选型的
-					long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
-							goodsId, (goodsDeductNum));
-					boolean rbackACK = this.goodsInventoryDomainRepository
-							.rollbackSelectionInventory(selectionParam);
-					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("resultAck", rollbackAck+",selectionRollback:"+rbackACK).addMetaData("rollback,end", "start rollback selection inventory!");
+					boolean rACK = this.goodsInventoryDomainRepository
+							.updateSelectionInventory(selectionParam);
+					
+					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("resultAck", rACK).addMetaData("end", "end deduct selection inventory!");
 					writeSysDeductLog(lm,true);
-					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+					// 校验库存
+					if (!rACK) {
+						// 回滚库存
+						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("rollback,start", "start rollback selection inventory!");
+						writeSysDeductLog(lm,true);
+						// 先回滚总的 再回滚选型的
+						long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+								goodsId, (goodsDeductNum));
+						boolean rbackACK = this.goodsInventoryDomainRepository
+								.rollbackSelectionInventory(selectionParam);
+						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("resultAck", rollbackAck+",selectionRollback:"+rbackACK).addMetaData("rollback,end", "start rollback selection inventory!");
+						writeSysDeductLog(lm,true);
+						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+					}
 				}
+				
 			}
 			// 更新分店库存
-			if (isSuppliersEnough) {
+			if (isSuppliersEnough&&!CollectionUtils.isEmpty(suppliersParam)) {
 				//扣减开始记录日志
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("start", "start deduct suppliers inventory!");
 				writeSysDeductLog(lm,true);
