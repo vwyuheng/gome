@@ -249,9 +249,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()
 								+ (adjustNum));
 
-						if (selectionInventory.getLimitStorage() == 0) {
+						/*if (selectionInventory.getLimitStorage() == 0) {
 							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
-						} /*else if (selectionInventory.getTotalNumber() == 0
+						}*/ /*else if (selectionInventory.getTotalNumber() == 0
 								&& selectionInventory.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
 							selectionInventory.setLimitStorage(0); // 更新数据库用
 							selectionInventory.setLeftNumber(Integer.MAX_VALUE);
