@@ -117,7 +117,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}// for
 
 		} else { // if selection
-			isSelectionEnough = false;
+			//isSelectionEnough = false;
 		}
 		} catch (Exception e) {
 			isSelectionEnough = false;
@@ -167,7 +167,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}// if
 			}
 		}else {
-			isSuppliersEnough = false;
+			//isSuppliersEnough = false;
 		}
 		} catch (Exception e) {
 			isSuppliersEnough = false;
@@ -344,30 +344,33 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				
 			}
 			// 更新分店库存
-			if (isSuppliersEnough&&!CollectionUtils.isEmpty(suppliersParam)) {
-				//扣减开始记录日志
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("start", "start deduct suppliers inventory!");
-				writeSysDeductLog(lm,true);
-				boolean rACK4Supp = this.goodsInventoryDomainRepository
-						.updateSuppliersInventory(suppliersParam);
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("resultAck", rACK4Supp).addMetaData("end", "end deduct suppliers inventory!");
-				writeSysDeductLog(lm,true);
-				// 校验库存
-				if (!verifyInventory()) {
-					// 回滚库存
-					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("rollback,start", "start rollback suppliers inventory!");
+			if (isSuppliersEnough) {
+				if(!CollectionUtils.isEmpty(suppliersParam)) {
+					//扣减开始记录日志
+					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("start", "start deduct suppliers inventory!");
 					writeSysDeductLog(lm,true);
-					// 先回滚总的 再回滚分店的
-					long rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
-							goodsId, (goodsDeductNum));
-					boolean rbackACK4Supp = this.goodsInventoryDomainRepository
-							.rollbackSuppliersInventory(suppliersParam);
-					
-					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("resultAck", rbackAck4Supp+",suppliersRollback:"+rbackACK4Supp).addMetaData("rollback,end", "start rollback suppliers inventory!");
+					boolean rACK4Supp = this.goodsInventoryDomainRepository
+							.updateSuppliersInventory(suppliersParam);
+					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("resultAck", rACK4Supp).addMetaData("end", "end deduct suppliers inventory!");
 					writeSysDeductLog(lm,true);
-					
-					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+					// 校验库存
+					if (!verifyInventory()) {
+						// 回滚库存
+						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("rollback,start", "start rollback suppliers inventory!");
+						writeSysDeductLog(lm,true);
+						// 先回滚总的 再回滚分店的
+						long rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
+								goodsId, (goodsDeductNum));
+						boolean rbackACK4Supp = this.goodsInventoryDomainRepository
+								.rollbackSuppliersInventory(suppliersParam);
+						
+						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("resultAck", rbackAck4Supp+",suppliersRollback:"+rbackACK4Supp).addMetaData("rollback,end", "start rollback suppliers inventory!");
+						writeSysDeductLog(lm,true);
+						
+						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+					}
 				}
+				
 			}
 
 		} catch (Exception e) {
