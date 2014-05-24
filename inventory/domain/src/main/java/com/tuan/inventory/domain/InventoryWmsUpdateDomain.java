@@ -112,7 +112,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 			}// for
 
-		} // if selection
+		} else {// if selection
+			isSelectionEnough = false;
+		}
 		} catch (Exception e) {
 			isSelectionEnough = false;
 			this.writeBusUpdateErrorLog(

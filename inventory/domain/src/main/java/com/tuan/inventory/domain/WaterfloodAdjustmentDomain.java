@@ -26,10 +26,12 @@ import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
+import com.tuan.inventory.model.result.CallResult;
 
 public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private LogModel lm;
@@ -149,6 +151,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 
 	// 调整注水 正数：+ 负数：-
 	public CreateInventoryResultEnum adjustWaterfloodVal() {
+		String message = StringUtils.EMPTY;
 		try {
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
@@ -165,23 +168,28 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if(inventoryDO!=null&&inventoryDO.getWaterfloodVal()<0) {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
-				//更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId, (adjustNum),inventoryDO);
-				if(handlerResult) {
-//					this.resultACK = this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (adjustNum));
-					/*if(!verifyWaterflood()) {
-						//将注水还原到调整前
-						this.goodsInventoryDomainRepository.adjustGoodsWaterflood(goodsId, (-adjustNum));
+				lm.addMetaData("adjustWaterfloodVal","adjustWaterfloodVal start").addMetaData("goodsId", goodsId).addMetaData("inventoryDO", inventoryDO);
+				writeSysUpdateLog(lm,true);
+				if(goodsId>0&&inventoryDO!=null) {
+					CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,adjustNum,inventoryDO);
+					PublicCodeEnum publicCodeEnum = callResult
+								.getPublicCodeEnum();
 						
-					}else {*/
-						this.goodswfval = inventoryDO.getWaterfloodVal();
-					//}
-				}else {
-					return CreateInventoryResultEnum.FAIL_ADJUST_WATERFLOOD;
+						if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+							// 消息数据不存并且不成功
+							message = "WaterfloodAdjustmentDomain.adjustWaterfloodVal_error[" + publicCodeEnum.getMessage()
+									+ "]goodsId:" + goodsId;
+							return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+						} else {
+							message = "WaterfloodAdjustmentDomain.adjustWaterfloodVal_success[save success]goodsId:" + goodsId;
+							this.goodswfval = inventoryDO.getWaterfloodVal();
+						}
+						lm.addMetaData("adjustWaterfloodVal","adjustWaterfloodVal start").addMetaData("goodsId", goodsId).addMetaData("inventoryDO", inventoryDO).addMetaData("adjustNum", adjustNum).addMetaData("message", message);
+						writeSysUpdateLog(lm,true);
 				}
+				lm.addMetaData("adjustWaterfloodVal","adjustWaterfloodVal end").addMetaData("message", message);
+				writeSysUpdateLog(lm,true);
 				
-				//更新mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
-				//this.synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryDO);
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				if(selectionInventory!=null) {
 					//调整注水数量
