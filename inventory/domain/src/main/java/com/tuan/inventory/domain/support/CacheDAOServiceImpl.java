@@ -135,13 +135,19 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		return null;
 	}
 
-
-
 	@Override
-	public List<Long> updateGoodsInventory(Long goodsId, int num) {
+	public List<Long> updateInventory(Long goodsId, int num) {
 		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),
 				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public Long updateGoodsInventory(Long goodsId, int num) {
+		return this.redisCacheUtil.hincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),
+				//HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), (num));
 	}
 

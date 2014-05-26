@@ -223,16 +223,16 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.querySuppliersInventoryById(suppliersId);
 	}
 	
-	public List<Long> updateGoodsInventory(Long goodsId, int num) {
+	public Long updateGoodsInventory(Long goodsId, int num) {
 		return this.baseDAOService.updateGoodsInventory(goodsId, num);
 	}
-	
+	//to
 	public boolean updateBatchGoodsInventory(List<GoodsInventoryDO> goodsIds, int num) {
 		boolean success = false;
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO goodsDO: goodsIds) {
 				long goodsId = goodsDO.getGoodsId();
-				List<Long> result = this.baseDAOService.updateGoodsInventory(goodsId, num);
+				List<Long> result = this.baseDAOService.updateInventory(goodsId, num);
 				success = DataUtil.verifyInventory(result);
 			}
 		}

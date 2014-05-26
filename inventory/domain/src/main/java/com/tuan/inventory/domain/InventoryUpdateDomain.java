@@ -20,7 +20,6 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -66,7 +65,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
 	// 当前库存
-	private List<Long> resultACK;
+	private Long resultACK;
 	private SequenceUtil sequenceUtil;
 
 	public InventoryUpdateDomain(String clientIp, String clientName,
@@ -236,10 +235,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 	}
 
-	private boolean verifyInventory() {
+	/*private boolean verifyInventory() {
 		return DataUtil.verifyInventory(resultACK);
+	}*/
+	
+	private boolean verifyInventory() {
+		if (resultACK >= 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
-
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		// 初始化检查
@@ -306,7 +312,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("rollback,start", "start rollback inventory!");
 					writeSysDeductLog(lm,true);
 					// 回滚库存
-					List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+					Long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId, (goodsDeductNum));
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("robackNum", goodsDeductNum).addMetaData("rollbackAck", rollbackAck).addMetaData("rollback,end", "end rollback inventory!");
 					writeSysDeductLog(lm,true);
@@ -330,7 +336,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("rollback,start", "start rollback selection inventory!");
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚选型的
-						List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+						Long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 								goodsId, (goodsDeductNum));
 						boolean rbackACK = this.goodsInventoryDomainRepository
 								.rollbackSelectionInventory(selectionParam);
@@ -357,7 +363,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("rollback,start", "start rollback suppliers inventory!");
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚分店的
-						List<Long> rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
+						Long rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
 								goodsId, (goodsDeductNum));
 						boolean rbackACK4Supp = this.goodsInventoryDomainRepository
 								.rollbackSuppliersInventory(suppliersParam);
