@@ -237,6 +237,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										new Exception());
 							}
 						}
+						
 						if (!CollectionUtils.isEmpty(selectionInventoryList)) {
 							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 							boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(

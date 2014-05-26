@@ -319,6 +319,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					writeSysDeductLog(lm,true);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
+			}else {
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新选型库存
 			if (isSelectionEnough) {
