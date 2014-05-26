@@ -68,10 +68,10 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
 			
 			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonSelectionResult))) {
-				this.reqGoodsSelection =  (List<GoodsSelectionRestParam>)new Gson().fromJson(jsonSelectionResult, typeSelection);
+				this.reqGoodsSelection =  (List<GoodsSelectionRestParam>)new Gson().fromJson(JsonStrVerificationUtils.validateStr(jsonSelectionResult), typeSelection);
 			}
 			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonSuppliersResult))) {
-				this.reqGoodsSuppliers =  (List<GoodsSuppliersRestParam>)new Gson().fromJson(jsonSuppliersResult, typeSuppliers);
+				this.reqGoodsSuppliers =  (List<GoodsSuppliersRestParam>)new Gson().fromJson(JsonStrVerificationUtils.validateStr(jsonSuppliersResult), typeSuppliers);
 			}
 		}
 		this.packet = packet;

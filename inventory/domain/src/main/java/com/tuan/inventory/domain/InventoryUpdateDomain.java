@@ -47,6 +47,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSuppliersModel> suppliersList;
 	
 	private Long goodsId;
+	//private String wmsGoodsId;
 	private Long userId;
 	private boolean isEnough;
 	private boolean isSelectionEnough = true;
@@ -404,6 +405,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
+		//this.wmsGoodsId = param
 		// 初始化加分布式锁
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
@@ -422,7 +424,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			InventoryInitDomain create = new InventoryInitDomain(goodsId, lm);
 			// 注入相关Repository
-			// create.setGoodsId(this.goodsId);
+		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
