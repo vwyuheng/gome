@@ -14,4 +14,30 @@
 	<bean id="goodsInventoryScheduledService" class="com.tuan.inventory.service.impl.GoodsInventoryScheduledServiceImpl"/>
 	<bean id="goodsInventoryUpdateService" class="com.tuan.inventory.service.impl.GoodsInventoryUpdateServiceImpl"/>
 	
+	<!-- notify消费者 -->
+	<import resource="classpath:com/tuan/notifyserver/core/bean/client/notifyserver-cclient-jetty.xml" />
+	<bean id="consumerClientCheckAbstract" abstract="true">
+		<property name="port" value="50505"/>
+	</bean>
+	<bean id="consumerClientPortAbstract" abstract="true" parent="consumerClientAbstract" >
+		<property name="localPort" value="50615" />
+		<property name="checkPort" value="50505" />
+	</bean>
+	<bean id="consumerClientReceiveAbstract" abstract="true">
+		<property name="port" value="50615"/>
+	</bean>
+	<bean id="consumerReceiver" class="com.tuan.inventory.service.impl.MessageNotifyCallBackServiceImpl" />
+	<bean id="inventoryUpdateConsumerReceiver" class="com.tuan.inventory.service.impl.InventoryUpdateCallBackServiceImpl" />
+	
+	
+	<bean id="consumerClientAbstract" abstract="true">
+		<property name="customerGroupName" value="cardorder"/>
+		<property name="consumerReceiverMap">
+			<map>
+				<entry key="GOODS_UPDATE_FOR_STOCK_CENTER" value-ref="consumerReceiver" />
+				<entry key="inventorycenter" value-ref="inventoryUpdateConsumerReceiver" />
+			</map>
+		</property>
+	</bean>
+	
 </beans>
