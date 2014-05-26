@@ -348,7 +348,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					create.setWmsGoodsId(wmsGoodsId);
 					create.setLm(lm);
 					create.setGoodsTypeIdList(selGoodsTypeIds);
-					create.setSelIds(selIds);
+					//create.setSelIds(selIds);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 					create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);

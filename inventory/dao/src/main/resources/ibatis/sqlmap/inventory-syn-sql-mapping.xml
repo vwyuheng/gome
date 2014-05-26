@@ -133,7 +133,7 @@
 	
 	
 	 <!-- 通过物流编码查询物流商品的库存  -->	
-	<select id="selectGoodsInventoryWMS" resultMap="GoodsInventoryWMSResult"  parameterClass="java.lang.String">
+	<select id="selectGoodsInventoryWMS" resultMap="GoodsInventoryWMSResult"  parameterClass="java.util.Map">
 	SELECT
 	wms.id,
 	wms.wms_goods_id,
@@ -146,6 +146,9 @@
 	FROM
 	jeehe_goods_wms wms
 	WHERE wms.wms_goods_id = #wmsGoodsId:VARCHAR#
+	 <isNotNull prepend="and" property="isBeDelivery" >  
+      is_be_delivery = #isBeDelivery:INTEGER#
+      </isNotNull>
 	</select>
 	
 	 <!-- 通过物流编码查询是否物流商品  -->	
@@ -163,6 +166,7 @@
 	jeehe_goods_attribute ga,jeehe_goods_wms wms where ga.goods_wms_id = wms.id
 	AND
 	ga.goods_id = #goodsId:BIGINT#
+	
 	</select>
 	 
 	   <!-- 更新物流商品可更新字段   -->	

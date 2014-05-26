@@ -1288,14 +1288,14 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 	@Override
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(final
-			String wmsGoodsId) {
+			String wmsGoodsId,final int isBeDelivery) {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					GoodsInventoryWMSDO wmsDO = null;
 					try {
-						wmsDO = initCacheDomainRepository.selectGoodsInventoryWMS(wmsGoodsId);
+						wmsDO = initCacheDomainRepository.selectGoodsInventoryWMS(wmsGoodsId,isBeDelivery);
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryWMSByWmsGoodsId error occured!"
@@ -1521,7 +1521,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			}, null);
 	final int resultCode = callBackResult.getResultCode();
 	return new CallResult<List<GoodsSelectionDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(List<GoodsSelectionDO>)callBackResult.getBusinessObject(),
+			callBackResult.getBusinessObject()==null?null:(List<GoodsSelectionDO>)callBackResult.getBusinessObject(),
 			callBackResult.getThrowable());
 
 }

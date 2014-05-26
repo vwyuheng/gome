@@ -54,7 +54,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		param.setGoodsId("187237");
 		param.setSuppliersId("1");
 		param.setWmsGoodsId("T01000000116");
-		param.setIsBeDelivery(1);
+		param.setIsBeDelivery("1");
 		param.setGoodsSelectionIds("1,2,3");
 		param.setGoodsTypeIds("3,4,5");
 		

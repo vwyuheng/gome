@@ -1,7 +1,10 @@
 package com.tuan.inventory.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.NullCacheInitDAO;
@@ -18,9 +21,16 @@ public class NullCacheInitDAOImpl extends SqlMapClientDaoSupport  implements Nul
 	}
 
 	@Override
-	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId) {
+	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,int isBeDelivery) {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		if (!StringUtils.isEmpty(wmsGoodsId)) {
+			paramMap.put("wmsGoodsId", wmsGoodsId);
+		}
+		
+		paramMap.put("isBeDelivery", isBeDelivery);
+		
 		return (GoodsInventoryWMSDO) super.getSqlMapClientTemplate().
-				queryForObject("selectGoodsInventoryWMS", wmsGoodsId);
+				queryForObject("selectGoodsInventoryWMS", paramMap);
 	}
 
 	@Override
