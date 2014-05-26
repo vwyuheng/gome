@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
@@ -31,6 +33,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 
 public class InventoryUpdateDomain extends AbstractDomain {
+	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -320,8 +323,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}else {
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("robackNum", goodsDeductNum).addMetaData("originalGoodsInventory", originalGoodsInventory).addMetaData("end", CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription());
-				writeSysDeductLog(lm,true);
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",originalGoodsInventory="+originalGoodsInventory+",goodsDeductNum="+goodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新选型库存
@@ -352,8 +355,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 				
 			}else {
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("isEnough", isEnough).addMetaData("isSelectionEnough", isSelectionEnough).addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("end", CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription());
-				writeSysDeductLog(lm,true);
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",isSelectionEnough="+isSelectionEnough+",selectionParam="+selectionParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新分店库存
@@ -385,8 +388,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 				
 			}else {
-				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("isEnough", isEnough).addMetaData("isSuppliersEnough", isSuppliersEnough).addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("end", CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription());
-				writeSysDeductLog(lm,true);
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",isSuppliersEnough="+isSuppliersEnough+",suppliersParam="+suppliersParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 
