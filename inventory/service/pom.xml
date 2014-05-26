@@ -13,6 +13,18 @@
 	<name>inventory-service</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
+	<!-- main notifyserver jar begin -->
+		<dependency>
+			<groupId>com.tuan.notifyserver.client.consumer.jetty</groupId>
+			<artifactId>notifyserver-client-consumer-jetty</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.tuan.notifyserver.client.producer</groupId>
+			<artifactId>notifyserver-client-producer</artifactId>
+		</dependency>
+		<!-- main notifyserver jar end -->
+	
 	<dependency>
 			<groupId>com.tuan.cozy</groupId>
 			<artifactId>cozy-utils-trace</artifactId>
