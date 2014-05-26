@@ -49,7 +49,7 @@ public class GoodsInventoryUpdateController {
 	@Resource
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	/**
-	 * http://localhost:882/rest/j/update/create?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&userId=2&totalNumber=1000&leftNumber=1000&limitStorage=1&waterfloodVal=100&goodsSelection=[{"goodTypeId":0,"goodsId":2,"id":16,"leftNumber":50,"limitStorage":1,"num":0,"suppliersInventoryId":0,"totalNumber":50,"userId":2,"waterfloodVal":20},{"goodTypeId":0,"goodsId":2,"id":17,"leftNumber":50,"limitStorage":1,"num":0,"suppliersInventoryId":0,"totalNumber":50,"userId":2,"waterfloodVal":20}]&goodsSuppliers=[{"goodsId":2,"id":15,"leftNumber":50,"limitStorage":1,"num":0,"suppliersId":0,"totalNumber":50,"userId":2,"waterfloodVal":20},{"goodsId":2,"id":16,"leftNumber":50,"limitStorage":1,"num":0,"suppliersId":0,"totalNumber":50,"userId":2,"waterfloodVal":20}]
+	 * http://localhost:882/rest/j/update/create?&ip==127.0.0.1&client=ordercenter&t=123456789&tokenid=1&goodsId=2&userId=2&totalNumber=1000&leftNumber=1000&limitStorage=1&waterfloodVal=100&goodsSelection=[{"goodTypeId":0,"goodsId":2,"id":16,"leftNumber":50,"limitStorage":1,"num":0,"suppliersInventoryId":0,"totalNumber":50,"userId":2,"waterfloodVal":20},{"goodTypeId":0,"goodsId":2,"id":17,"leftNumber":50,"limitStorage":1,"num":0,"suppliersInventoryId":0,"totalNumber":50,"userId":2,"waterfloodVal":20}]&goodsSuppliers=[{"goodsId":2,"id":15,"leftNumber":50,"limitStorage":1,"num":0,"suppliersId":0,"totalNumber":50,"userId":2,"waterfloodVal":20},{"goodsId":2,"id":16,"leftNumber":50,"limitStorage":1,"num":0,"suppliersId":0,"totalNumber":50,"userId":2,"waterfloodVal":20}]
 	 * 创建商品库存信息,包括其下的选型及分店
 	 * @param packet
 	 * @param param
@@ -305,7 +305,7 @@ public class GoodsInventoryUpdateController {
 		return adjustWmsDomain.makeResult(resEnum);
 	}
 	/***
-	 * http://localhost:882/rest/j/update/oradjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=1&id=0&totalnum=-1&type=2
+	 * http://localhost:882/rest/j/update/oradjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&tokenid=1&goodsId=1&id=0&totalnum=-1&type=2
 	 * 覆盖更新库存量，包括总量和剩余量
 	 * @param packet
 	 * @param goodsId
@@ -348,7 +348,7 @@ public class GoodsInventoryUpdateController {
 		return adjustInventoryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/update/upwmsdata?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=187237&wmsGoodsId=T01000000010&isBeDelivery=1&suppliersId=1&goodsTypeIds=173552,217335&goodsSelectionIds=1,2,3
+	 * http://localhost:882/rest/j/update/upwmsdata?&ip==127.0.0.1&client=ordercenter&t=123456789&tokenid=1&goodsId=187237&wmsGoodsId=T01000000010&isBeDelivery=1&suppliersId=1&goodsTypeIds=173552,217335&goodsSelectionIds=1,2,3
 	 * 物流关系数据更新接口
 	 * @param packet
 	 * @param goodsId
