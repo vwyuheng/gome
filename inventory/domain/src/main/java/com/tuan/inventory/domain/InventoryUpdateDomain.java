@@ -351,6 +351,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					}
 				}
 				
+			}else {
+				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("isEnough", isEnough).addMetaData("isSelectionEnough", isSelectionEnough).addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("end", CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription());
+				writeSysDeductLog(lm,true);
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新分店库存
 			if (isSuppliersEnough) {
@@ -380,6 +384,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					}
 				}
 				
+			}else {
+				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("isEnough", isEnough).addMetaData("isSuppliersEnough", isSuppliersEnough).addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("end", CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription());
+				writeSysDeductLog(lm,true);
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 
 		} catch (Exception e) {
