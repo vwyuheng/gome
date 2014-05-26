@@ -320,6 +320,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}else {
+				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("robackNum", goodsDeductNum).addMetaData("originalGoodsInventory", originalGoodsInventory).addMetaData("end", CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription());
+				writeSysDeductLog(lm,true);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新选型库存
