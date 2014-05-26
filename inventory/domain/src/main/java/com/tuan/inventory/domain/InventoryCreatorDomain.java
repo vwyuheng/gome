@@ -93,6 +93,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			}
 		}
 	}
+	//接口幂等控制
 	public boolean idemptent() {
 		//根据key取已缓存的tokenid  
 		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.CREATE_INVENTORY + "_"+ String.valueOf(goodsId));
@@ -116,11 +117,12 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	}
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
-
 		try {
 			// 业务检查前的预处理
 			this.preHandler();
-
+			if(idemptent) {  //幂等控制，已处理成功
+				return CreateInventoryResultEnum.SUCCESS;
+			}
 			if (addSelection) { // 选型库存
 				// 填充商品选型库库存信息
 				this.fillSelection();
@@ -139,9 +141,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
-		if(idemptent) {  //幂等控制，已处理成功
-			return CreateInventoryResultEnum.SUCCESS;
-		}
 		if (!isExists && !addSelection && !addSuppliers) {
 			return CreateInventoryResultEnum.IS_EXISTED;
 		}

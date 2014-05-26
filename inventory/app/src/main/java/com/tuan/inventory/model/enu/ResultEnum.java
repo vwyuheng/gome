@@ -25,7 +25,7 @@ public enum ResultEnum {
 	INVALID_TYPE         ("-14", "无效的类型"),
 	DB_ERROR					("-99", 	"数据库错误"),
 	SYS_ERROR					("-100", 	"系统错误"),
-	
+	SERVICE_REDIS_FALIURE					("-88", 	"redis数据库错误"),
 	
 	INVALID_ISLIMIT_STORAGE     ("1007",	"是否限制库存无效"),      
 	INVALID_ACK     ("1008",	"无效的确认标识"),
@@ -137,6 +137,9 @@ public enum ResultEnum {
 		}
 		if(code.equals("0")){
 			return ResultEnum.NO_DATA;
+		}
+		if(code.equals("-88")){
+			return ResultEnum.SERVICE_REDIS_FALIURE;
 		}
 		if(code.equals("-99")){
 			return ResultEnum.DB_ERROR;

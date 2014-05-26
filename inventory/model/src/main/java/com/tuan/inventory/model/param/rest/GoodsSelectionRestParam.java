@@ -18,6 +18,7 @@ public class GoodsSelectionRestParam extends TuanBaseDO {
 	//选型需扣减的商品库存
 	private int stNum;
 	
+	private String wmsGoodsId;  //物流编码
 	
 	
 	public int getStNum() {
@@ -32,6 +33,13 @@ public class GoodsSelectionRestParam extends TuanBaseDO {
 	public void setSelectionId(Long selectionId) {
 		this.selectionId = selectionId;
 	}
+	public String getWmsGoodsId() {
+		return wmsGoodsId;
+	}
+	public void setWmsGoodsId(String wmsGoodsId) {
+		this.wmsGoodsId = wmsGoodsId;
+	}
+	
 	
 	
 	

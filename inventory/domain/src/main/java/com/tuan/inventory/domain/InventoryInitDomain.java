@@ -12,9 +12,12 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
+import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.result.CallResult;
 /**
@@ -23,6 +26,7 @@ import com.tuan.inventory.model.result.CallResult;
  * @date 2014/4/23
  */
 public class InventoryInitDomain extends AbstractDomain{
+	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
@@ -234,19 +238,43 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * 物流库存初始化
 	 */
 	public CreateInventoryResultEnum init4Wms() {
-		boolean result = false;
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
 		try {
 			// 保存商品库存
-			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsUpate,wmsInventoryList, selWmsList);
+			//result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsUpate,wmsInventoryList, selWmsList);
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(wmsUpate,wmsInventoryList,selWmsList);
+				PublicCodeEnum publicCodeEnum = callResult
+								.getPublicCodeEnum();
+						
+						if (publicCodeEnum != PublicCodeEnum.SUCCESS
+								/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+							// 消息数据不存并且不成功
+							message = "init4Wms_error[" + publicCodeEnum.getMessage()
+									+ "]wmsGoodsId:" + wmsUpate==null?"":wmsUpate.getWmsGoodsId();
+							return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+						} else {   //TODO 该处理也有问题
+							message = "init4Wms_success[init4Wms success]wmsGoodsId:" + wmsUpate.getWmsGoodsId();
+							
+							
+						}
 		} catch (Exception e) {
 			this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
 							"init4Wms error" + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("wmsUpate",wmsUpate)
+					.addMetaData("wmsInventoryList",wmsInventoryList)
+					.addMetaData("selWmsList",selWmsList)
+					//.addMetaData("callResult",callResult)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("message",message)
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		}
-		if(!result) {
-			return CreateInventoryResultEnum.DB_ERROR;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;
 		
 	}
@@ -254,19 +282,43 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * 库存初始化
 	 */
 	public CreateInventoryResultEnum init() {
-		boolean result = false;
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
 		try {
 		// 保存商品库存
-		result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
+		//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				message = "init_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsId;
+				return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+			} else {
+				message = "init_success[save success]goodsId:" + goodsId;
+				
+			}
 		} catch (Exception e) {
 			this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
 							"init error" + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("inventoryInfoDO",inventoryInfoDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					//.addMetaData("callResult",callResult)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("message",message)
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		}
-		if(!result) {
-			return CreateInventoryResultEnum.DB_ERROR;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;
 			
 	}
@@ -279,23 +331,50 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param suppliersInventoryList
 	 */
 	public CreateInventoryResultEnum createInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
-		boolean result = false;
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
 		try {
 		// 保存商品库存		
-			result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+		//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);	
+				// 消费对列的信息
+				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+				if(callResult==null) {
+					return CreateInventoryResultEnum.SYS_ERROR;
+				}
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS
+						/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+					// 消息数据不存并且不成功
+					message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
+							+ "]goodsId:" + goodsId;
+				     return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+					
+				} else {
+					message = "saveGoodsInventory2MysqlAndRedis_success[save2mysqlAndRedis success]goodsId:" + goodsId;
+					//处理成功后设置的一个tag
+					goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+				}
 			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"createInventory error" + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("inventoryInfoDO",inventoryInfoDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					//.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 		}
-		if(!result) {
-			return CreateInventoryResultEnum.DB_ERROR;
-		}
-		//处理成功后设置的一个tag
-		goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
-		return CreateInventoryResultEnum.SUCCESS;	
+		
+		return CreateInventoryResultEnum.SUCCESS;
+		
 	}
 	/**
 	 * 创建物流商品库存
@@ -304,20 +383,44 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @return
 	 */
 	public CreateInventoryResultEnum createWmsInventory(GoodsInventoryWMSDO wmsDO,List<GoodsSelectionDO> selectionList) {
-		boolean result = false;
+		CallResult<Boolean> callResult  = null;
+		String message = StringUtils.EMPTY;
+		long startTime = System.currentTimeMillis();
 		try {
 			// 保存商品库存		
-			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsDO, selectionList);
+//			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsDO, selectionList);
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(wmsDO,selectionList);
+			PublicCodeEnum publicCodeEnum = callResult.getPublicCodeEnum();
+
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+			/* && publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED) */) { // 当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+			message = "saveGoodsWmsInventory.createWmsInventory2Mysql_error["
+						+ publicCodeEnum.getMessage() + "]wmsGoodsId:" + wmsDO == null ? ""
+						: wmsDO.getWmsGoodsId();
+			return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+			} else { 
+				message = "saveGoodsWmsInventory.createWmsInventory2Mysql_success[save2mysql success]wmsGoodsId:"
+						+ wmsDO.getWmsGoodsId();
+				
+
+			}
 			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"createWmsInventory error" + e.getMessage()),false,  e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("selectionList",selectionList)
+					//.addMetaData("callResult",callResult)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
 		}
-		if(!result) {
-			return CreateInventoryResultEnum.DB_ERROR;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;	
 	}
 	/**
@@ -326,11 +429,11 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public boolean updateMysqlInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+	public boolean updateMysqlInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
 		boolean handler = true;
 		try {
 		// 更新商品库存
-			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
 		} catch (Exception e) {
 			handler = false;
 			this.writeBusUpdateErrorLog(

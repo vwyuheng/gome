@@ -31,7 +31,8 @@
 	     <result column="waterfloodVal" property="waterfloodVal" jdbcType="INTEGER" />
 	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
 	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
-	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   	    
+	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   
+	    <result column="wms_goods_id" property="wmsGoodsId" jdbcType="VARCHAR" />	    
 	 </resultMap>
 	 	
    <!-- 商品主体库存信息-->	
@@ -184,7 +185,10 @@
 			is_be_delivery = #isBeDelivery:INTEGER#
 		</isNotNull>
       </dynamic>
-      where wms_goods_id = #wmsGoodsId:VARCHAR# and is_be_delivery = #isBeDelivery:INTEGER#
+      where wms_goods_id = #wmsGoodsId:VARCHAR# 
+      <isNotNull prepend="and" property="isBeDelivery" >  
+      is_be_delivery = #isBeDelivery:INTEGER#
+      </isNotNull>
     </update>
 	 
 	  <!-- 插入物流商品库存信息 -->
@@ -284,6 +288,9 @@
 		<isNotNull prepend="," property="suppliersInventoryId">
 			suppliers_inventory_id = #suppliersInventoryId:INTEGER#
 		</isNotNull>
+		<isNotNull prepend="," property="wmsGoodsId">
+			wms_goods_id = #wmsGoodsId:VARCHAR#
+		</isNotNull>
       </dynamic>
       where id = #id:INTEGER#
     </update>
@@ -300,8 +307,8 @@
     limit_storage, 
     waterflood_val,
     suppliers_sub_id,
-    suppliers_inventory_id
-    
+    suppliers_inventory_id,
+    wms_goods_id
    )
     values (
             #id:BIGINT#,
@@ -313,8 +320,8 @@
             #limitStorage:INTEGER#,
             #waterfloodVal:INTEGER#,
             #suppliersSubId:INTEGER#,
-            #suppliersInventoryId:INTEGER#
-           
+            #suppliersInventoryId:INTEGER#,
+            #wmsGoodsId:VARCHAR#
     		)
      </insert>
 	 

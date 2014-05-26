@@ -28,6 +28,7 @@ public enum CreateInventoryResultEnum {
 	INVALID_SELIDANDGOODSTYPEID         (1035, "无效的物流选型id和商品类型id"),
 	RUNTIME_EXCEPTION	(2000,	"程序运行时错误"),
 	QUERY_ERROR         (1031, "通过商品类型id获取商品id时发生错误"),
+	SERVICE_REDIS_FALIURE					(-88, 	"redis数据库错误"),
 	DB_ERROR					(-99, 	"数据库错误"),
 	SYS_ERROR					(-100, 	"系统错误"),
 	INIT_INVENTORY_ERROR					(-10, 	"库存初始化过程中发生错误"),
@@ -82,15 +83,16 @@ public enum CreateInventoryResultEnum {
 				return INVALID_SELECTIONID;
 			case 1:
 				return INVALID_LOG_PARAM;
-				/*
-			case 2:
-				return ADD_INVENTORY_SELECTION;
-			case 3:
-				return ADD_INVENTORY_SUPPLIERS;*/
+			case -14:
+				return INVALID_TYPE;
+			case 1016:
+				return INVALID_SELECTIONNUM;
+			
 				
 				
 				
-				
+			case -88:
+				return SERVICE_REDIS_FALIURE;
 			case -99:
 				return DB_ERROR;
 			case -100:

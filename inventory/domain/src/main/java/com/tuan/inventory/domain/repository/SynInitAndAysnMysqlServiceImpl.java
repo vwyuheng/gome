@@ -62,20 +62,23 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 												new Exception());
 									}
 							}
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
-							String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);
-							if(StringUtils.isEmpty(retselAck)) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
-										new Exception());
+							if (!CollectionUtils.isEmpty(selectionList)) { // if1
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+								String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);
+								if(StringUtils.isEmpty(retselAck)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retselAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
 							}
-							if(!retselAck.equalsIgnoreCase("ok")) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
-										new Exception());
-							}
+							
 							
 						} catch (Exception e) {
 							
@@ -141,11 +144,10 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											new Exception());
 								}
 							}
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 							
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 										goodsId, selectionInventoryList);
 								if(!selSuccess) {
@@ -159,6 +161,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							// 保存分店库存
 							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 								boolean suppSuccess =	goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 										goodsId, suppliersInventoryList);
 								if(!suppSuccess) {
@@ -234,9 +237,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										new Exception());
 							}
 						}
-						synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
-						
 						if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 							boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 									goodsId, selectionInventoryList);
 							if(!selSuccess) {
@@ -248,10 +250,9 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						
 					
 					}
-						
-						synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 						// 保存分店库存
 						if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 							boolean suppSuccess = goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 										goodsId, suppliersInventoryList);
 							if(!suppSuccess) {
@@ -263,8 +264,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						
 							
 						}
-						
-						
 						
 						if(wmsInventory!=null) {
 							 synInitAndAsynUpdateDomainRepository.saveGoodsWms( wmsInventory);
@@ -343,7 +342,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	public CallResult<Boolean> updateGoodsInventory(final long goodsId,
 			final GoodsInventoryDO goodsDO,
 			final List<GoodsSelectionDO> selectionInventoryList,
-			final List<GoodsSuppliersDO> suppliersInventoryList) throws Exception {
+			final List<GoodsSuppliersDO> suppliersInventoryList,final List<GoodsInventoryWMSDO> wmsInventoryList) throws Exception {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
@@ -352,8 +351,16 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if(goodsDO!=null) {
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
 						}
-						synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);
-						synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+						if (!CollectionUtils.isEmpty(selectionInventoryList)) { // if1
+							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);
+						}
+						if (!CollectionUtils.isEmpty(suppliersInventoryList)) { // if1
+							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+						}
+						if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
+							synInitAndAsynUpdateDomainRepository.batchUpdateGoodsInventoryWMS(wmsInventoryList);
+						}
+						
 						
 					} catch (Exception e) {
 						logger.error(
@@ -724,19 +731,22 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
-							String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);
-							if(StringUtils.isEmpty(retAck)) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
-										new Exception());
+							if(!CollectionUtils.isEmpty(hash)) {
+								String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);
+								if(StringUtils.isEmpty(retAck)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+											new Exception());
+								}
 							}
-							if(!retAck.equalsIgnoreCase("ok")) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
-										new Exception());
-							}
+							
 						} catch (Exception e) {
 							logger.error(
 									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
@@ -786,6 +796,19 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeAction() {
 					try {
 					synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionDOList);
+					String retAck = goodsInventoryDomainRepository.updateSelectionFields(selectionDOList);
+					if(StringUtils.isEmpty(retAck)) {
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_REDIS_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.updateSelectionFields to redis error occured!",
+								new Exception());
+					}
+					if(!retAck.equalsIgnoreCase("ok")) {
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_REDIS_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.updateSelectionFields to redis error occured!",
+								new Exception());
+					}
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.updateBatchGoodsSelection error occured!"
@@ -806,7 +829,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							selectionDOList);
 				}
 				public TuanCallbackResult executeCheck() {
-					if (CollectionUtils.isEmpty(selectionDOList)) {
+					if (goodsId<=0||CollectionUtils.isEmpty(selectionDOList)) {
 						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSelectionDO> is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
@@ -881,8 +904,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					try {
-					synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
-					synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
+						if(goodsDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+						}
+						if(selectionDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
+						}
+					
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"
@@ -935,8 +963,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					try {
-					synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
-					synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersDO);
+						if(goodsDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+						}
+						if(suppliersDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersDO);
+						}
+					
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSuppliers error occured!"
@@ -1371,37 +1404,40 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 												new Exception());
 									}
 							}
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
-							String retWms = goodsInventoryDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
-							if(StringUtils.isEmpty(retWms)) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsInventory to redis error occured!",
-										new Exception());
+							if(!CollectionUtils.isEmpty(wmsInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
+								String retWms = goodsInventoryDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
+								if(StringUtils.isEmpty(retWms)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retWms.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsInventory to redis error occured!",
+											new Exception());
+								}
 							}
-							if(!retWms.equalsIgnoreCase("ok")) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsInventory to redis error occured!",
-										new Exception());
+							if(!CollectionUtils.isEmpty(selectionList)) {
+								//mysql的有事务
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+								String retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);	
+								if(StringUtils.isEmpty(retselWms)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retselWms.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
 							}
-							//mysql的有事务
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 							
-							
-							String retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);	
-							if(StringUtils.isEmpty(retselWms)) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
-										new Exception());
-							}
-							if(!retselWms.equalsIgnoreCase("ok")) {
-								throw new TuanRuntimeException(
-										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
-										new Exception());
-							}
 							
 						} catch (Exception e) {
 							
@@ -1502,8 +1538,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(wmsDO!=null) {
 								 synInitAndAsynUpdateDomainRepository.updateGoodsInventoryWMS(wmsDO);
 							}
-							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(selectionList);
-							synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
+							if (!CollectionUtils.isEmpty(selectionList)) { // if1
+								synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(selectionList);
+							}
+							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
+								synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
+							}
+							
 							
 						} catch (Exception e) {
 							

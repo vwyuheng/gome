@@ -23,6 +23,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.support.BaseDAOService;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
+import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -225,32 +226,30 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public Long updateGoodsInventory(Long goodsId, int num) {
 		return this.baseDAOService.updateGoodsInventory(goodsId, num);
 	}
-	
+	//to
 	public boolean updateBatchGoodsInventory(List<GoodsInventoryDO> goodsIds, int num) {
-	
+		boolean success = false;
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO goodsDO: goodsIds) {
 				long goodsId = goodsDO.getGoodsId();
-				long result = this.baseDAOService.updateGoodsInventory(goodsId, num);
-				if(result<0) {
-					return false;
-				}
+				List<Long> result = this.baseDAOService.updateInventory(goodsId, num);
+				success = DataUtil.verifyInventory(result);
 			}
 		}
-		return true;
+		return success;
 	}
 	
 	public List<Long> adjustGoodsInventory(Long goodsId, int num,int limitStorage) {
 		return this.baseDAOService.adjustGoodsInventory(goodsId, num,limitStorage);
 	}
 	
-	public Long updateSelectionInventoryById(Long selectionId, int num) {
+	public List<Long> updateSelectionInventoryById(Long selectionId, int num) {
 		return this.baseDAOService.updateSelectionInventory(selectionId, (num));
 	}
 	public List<Long> adjustSelectionInventoryById(Long goodsId,Long selectionId, int num) {
 		return this.baseDAOService.adjustSelectionInventory(goodsId,selectionId, (num));
 	}
-	public Long updateSuppliersInventoryById(Long suppliersId, int num) {
+	public List<Long> updateSuppliersInventoryById(Long suppliersId, int num) {
 		return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
 	}
 	public List<Long> adjustSuppliersInventoryById(Long goodsId,Long suppliersId, int num) {
@@ -261,13 +260,24 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
 				if (param.getId() > 0) { // if选型
-					long result = this.baseDAOService.updateSelectionInventory(param.getId(), (-param.getGoodsInventory()));
-					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
-						return false;
-					}else {
-						success = true;
-					}
+					long selectionId = param.getId();
+					 List<Long> result = this.baseDAOService.updateSelectionInventory(selectionId,param.getWmsGoodsId(), (-param.getGoodsInventory()));
+					 String ret = null;
+					//更新物流编码到选型模型中
+					 if(!StringUtils.isEmpty(param.getWmsGoodsId())) {
+						 Map<String,String> hash = new HashMap<String,String>();
+						 hash.put(HashFieldEnum.wmsGoodsId.toString(), param.getWmsGoodsId());
+	 					 ret = this.baseDAOService.updateSelectionFileds(selectionId, hash);
+	 					 
+					 }
+					 success = DataUtil.verifyInventory(result);
+					 if(success&&!StringUtils.isEmpty(ret)&&ret.equalsIgnoreCase("ok")) {
+						 success = true;
+					 }else {
+						 success = false;
+					 }
 				}
+			
 			}
 		}
 		return success;
@@ -280,12 +290,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
 				if (param.getId() > 0) { // if选型
-					long	result = this.baseDAOService.updateSelectionInventory(param.getId(), (param.getGoodsInventory()));
-					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
-						return false;
-					}else {
-						success = true;
-					}
+					List<Long>	result = this.baseDAOService.updateSelectionInventory(param.getId(),param.getWmsGoodsId(), (param.getGoodsInventory()));
+					success = DataUtil.verifyInventory(result);
 				}
 			}
 		}
@@ -297,12 +303,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if分店
-					long result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
-					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
-						return false;
-					}else {
-						success = true;
-					}
+					List<Long> result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
+					success = DataUtil.verifyInventory(result);
 				}
 			}
 		}
@@ -346,12 +348,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if选型
-					long result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
-					if(result<0) {   //保证有任何一个扣减后结果小于0则返回false
-						return false;
-					}else {
-						success = true;
-					}
+					List<Long> result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
+					success = DataUtil.verifyInventory(result);
 				}
 			}
 		}
@@ -534,6 +532,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 				//,this.queryGoodsSuppliersListByGoodsId(goodsId)
 				);
 	}
+	public GoodsInventoryModel queryAllInventoryDataByGoodsId(long goodsId) {
+		return ObjectUtils.toModel(this.queryGoodsInventory(goodsId)
+				,this.queryGoodsSelectionListByGoodsId(goodsId)
+				,this.queryGoodsSuppliersListByGoodsId(goodsId)
+				);
+	}
 	/**
 	 * 根据队列状态取队列列表
 	 * @param status
@@ -602,19 +606,26 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		 return this.baseDAOService.updateFileds(goodsId, hash);
 	}
 	
-	public void updateSelectionFields(List<GoodsSelectionDO> selectionDOList) {
-	
+	public String updateSelectionFields(List<GoodsSelectionDO> selectionDOList) {
+	    String success = null;
 		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
 			for (GoodsSelectionDO param : selectionDOList) { // for
 				if (param.getId() > 0) { // if分店
 					Map<String, String> hash = new HashMap<String, String>();
 					hash.put(HashFieldEnum.suppliersSubId.toString(),  String.valueOf(param.getSuppliersSubId()));
 					hash.put(HashFieldEnum.suppliersInventoryId.toString(), String.valueOf(param.getSuppliersInventoryId()));
-					this.baseDAOService.updateSelectionFileds(param.getId(), hash);
+					String retAck =	this.baseDAOService.updateSelectionFileds(param.getId(), hash);
+					if(!retAck.equalsIgnoreCase("ok")) {
+						return null;
+					}else {
+						success = retAck;
+					}
 		
 				}
 			}
+		}else {
+			return null;
 		}
-		
+		return success;
 	}
 }

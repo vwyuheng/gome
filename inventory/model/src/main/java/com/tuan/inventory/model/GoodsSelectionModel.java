@@ -24,7 +24,7 @@ public class GoodsSelectionModel extends TuanBaseDO{
 	private long suppliersSubId; 	// 分店ID（当商品指定分店同时有配型时此值为分店ID并且suppliers_id为商品所属商家ID）
 	//库存扣减量
 	private int num;
-	
+	private String wmsGoodsId;  //物流编码
 	public int getNum() {
 		return num;
 	}
@@ -99,6 +99,13 @@ public class GoodsSelectionModel extends TuanBaseDO{
 	public void setSuppliersSubId(long suppliersSubId) {
 		this.suppliersSubId = suppliersSubId;
 	}
+	public String getWmsGoodsId() {
+		return wmsGoodsId;
+	}
+	public void setWmsGoodsId(String wmsGoodsId) {
+		this.wmsGoodsId = wmsGoodsId;
+	}
+	
 	
 	
 	

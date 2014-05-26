@@ -95,6 +95,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 				GoodsSelectionModel gsModel = new GoodsSelectionModel();
 				gsModel.setId(rparam.getSelectionId());
 				gsModel.setNum(rparam.getStNum());
+				gsModel.setWmsGoodsId(rparam.getWmsGoodsId());
 				goodsSelection.add(gsModel);
 			}
 		}

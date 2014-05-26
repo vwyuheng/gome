@@ -13,6 +13,8 @@ public class SelectionNotifyMessageParam extends TuanBaseDO{
 	private Integer waterfloodVal;  //注水值
 	private int limitStorage;	//0:库存无限制；1：限制库存
 	private String sales; //销量
+	private String wmsGoodsId;  //物流编码
+	
 	public static String getNotifyType() {
 		return notifyType;
 	}
@@ -66,6 +68,12 @@ public class SelectionNotifyMessageParam extends TuanBaseDO{
 	}
 	public void setSales(String sales) {
 		this.sales = sales;
+	}
+	public String getWmsGoodsId() {
+		return wmsGoodsId;
+	}
+	public void setWmsGoodsId(String wmsGoodsId) {
+		this.wmsGoodsId = wmsGoodsId;
 	}
 	
 	

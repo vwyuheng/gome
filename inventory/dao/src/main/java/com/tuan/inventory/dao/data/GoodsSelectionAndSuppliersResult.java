@@ -14,6 +14,7 @@ public class GoodsSelectionAndSuppliersResult extends TuanBaseDO {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	private String wmsGoodsId;  //物流编码
 	//需扣减的商品库存
 	private int goodsInventory;
 	//原库存
@@ -36,6 +37,13 @@ public class GoodsSelectionAndSuppliersResult extends TuanBaseDO {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	public String getWmsGoodsId() {
+		return wmsGoodsId;
+	}
+	public void setWmsGoodsId(String wmsGoodsId) {
+		this.wmsGoodsId = wmsGoodsId;
+	}
+	
 	
 	
 }

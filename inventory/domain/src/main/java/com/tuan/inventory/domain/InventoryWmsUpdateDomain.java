@@ -112,7 +112,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 			}// for
 
-		} // if selection
+		} else {// if selection
+			//isSelectionEnough = false;
+		}
 		} catch (Exception e) {
 			isSelectionEnough = false;
 			this.writeBusUpdateErrorLog(
@@ -189,6 +191,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				//商品库存扣减的计算
 				this.calculateInventory();
 			}
+			
+			//}
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
@@ -280,7 +284,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 				// 更新选型库存
-				if (isSelectionEnough) {
+				if (isSelectionEnough&&!CollectionUtils.isEmpty(selectionList)) {
 					lm.addMetaData("updateAdjustWmsInventory","selection mysql,start").addMetaData("selectionParam", selectionParam);
 					writeSysUpdateLog(lm,true);
 					resultACK = this.goodsInventoryDomainRepository
