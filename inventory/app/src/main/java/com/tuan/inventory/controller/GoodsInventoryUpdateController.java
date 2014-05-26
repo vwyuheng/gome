@@ -83,7 +83,7 @@ public class GoodsInventoryUpdateController {
 		return createInventoryDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/update/up?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&userId=2&orderId=3&num=1&goodsSelection=[{"stNum":1,"selectionId":16,"wmsGoodsId":1},{"stNum":1,"selectionId":17}]&goodsSuppliers=[{"ssNum":1,"suppliersId":15},{"ssNum":1,"suppliersId":16}]
+	 * http://localhost:882/rest/j/update/up?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2&userId=2&orderId=3&num=1&goodsSelection=[{"stNum":1,"selectionId":16,"wmsGoodsId":"1"},{"stNum":1,"selectionId":17}]&goodsSuppliers=[{"ssNum":1,"suppliersId":15},{"ssNum":1,"suppliersId":16}]
 	 * 库存扣减
 	 * @param packet
 	 * @param param
