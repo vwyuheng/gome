@@ -15,4 +15,5 @@
     <bean id="synInitAndAsynUpdateDAO" class="com.tuan.inventory.dao.impl.SynInitAndAsynUpdateDAOImpl" parent="baseSqlMapClientDAO"/>
     <bean id="nullCacheInitDAO" class="com.tuan.inventory.dao.impl.NullCacheInitDAOImpl" parent="baseSqlMapClientDAO"/>
     <bean id="logOfWaterDAO" class="com.tuan.inventory.dao.impl.LogOfWaterDAOImpl" parent="baseSqlMapClientDAO"/>
+    <bean id="goodNumUpdateDAO" class="com.tuan.inventory.dao.impl.GoodNumberUpdateDAOImpl" parent="GoodNumUpdateDAO"/>
 </beans>
