@@ -65,9 +65,9 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))){
 			return ResultEnum.INVALID_GOODSID;
 		}
-		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(suppliersId))){
+		/*if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(suppliersId))){
 			return ResultEnum.INVALID_SUPPLIERSID;
-		}
+		}*/
 		if (StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(wmsGoodsId))) {
 			return ResultEnum.INVALID_WMSGOODSID;
 		}

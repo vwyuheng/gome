@@ -268,7 +268,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			if(suppliersDO!=null) {  //存在，更新配置关系
 				premaryKey4Suppliers = suppliersDO.getId();
 				
-			}else {  //插入关系数据
+			}else if(suppliersId!=null&&suppliersId!=0){  //插入关系数据
 				GoodsSuppliersDO suppliersDO = new  GoodsSuppliersDO();
 				premaryKey4Suppliers = sequenceUtil.getSequence(SEQNAME.seq_suppliers);
 				suppliersDO.setId(premaryKey4Suppliers);
