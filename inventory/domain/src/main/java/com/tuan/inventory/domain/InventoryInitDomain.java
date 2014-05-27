@@ -47,16 +47,13 @@ public class InventoryInitDomain extends AbstractDomain{
 	private List<GoodsInventoryDO> wmsInventoryRadySaveList;
 	private GoodsInventoryWMSDO wmsUpate;
 	private List<GoodsSelectionDO> selWmsList;
-	//private List<GoodsSelectionDO> selWmsList4GoodsTypeId;
 	
 	private List<GoodsSelectionDO> selWmsList4GoodsTypeId ;
 	private long goodsId;
 	private String wmsGoodsId;
 	private String isBeDelivery;
 	private List<Long> goodsTypeIdList;
-	//private List<Long> goodsTypeIdList2Saved;
-	//private List<Long> selIds;
-	//private List<Long> selIdsList2Saved;
+	
 	// 是否需要初始化
 	private boolean isInit;
 	// 是否需要初始化物流商品
@@ -133,28 +130,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					
 				}
 			}
-			//处理选型的
-			/*if(!CollectionUtils.isEmpty(selIds)) {
-				selIdsList2Saved = new ArrayList<Long>();
-				for(long selectionId:selIds) {
-					//根据选型id校验下该列表下的选型是否已存在
-					GoodsSelectionModel wmsSel = this.goodsInventoryDomainRepository.queryGoodsSelectionBySelectionId(selectionId);
-					if(wmsSel!=null) {
-						//goodsTypeIdList2Saved = new ArrayList<Long>();
-						//for(Long id:goodsTypeIdList) {
-							if(!(wmsSel.getId()!=null&&wmsSel.getId().equals(selectionId))) {
-								selIdsList2Saved.add(selectionId);
-							}
-						//}
-						//从goodsTypeIdList移除选型类型id
-						//goodsTypeIdList.remove(wmsSel.getGoodTypeId());
-					}else {
-						selIdsList2Saved = selIds;
-					}
-				}
-				
-				
-			}*/
+			
 			//处理物流选型类型的
 			if(!CollectionUtils.isEmpty(goodsTypeIdList)) {
 				//根据选型id校验下该列表下的选型是否已存在
@@ -169,18 +145,15 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 				if(!CollectionUtils.isEmpty(selWmsList)) {
 					selWmsList4GoodsTypeId = new ArrayList<GoodsSelectionDO>();
-				//for(long typeId:goodsTypeIdList) {
-						//goodsTypeIdList2Saved = new ArrayList<Long>();
 						for(GoodsSelectionDO selDO:selWmsList) {
-							//if(selDO.getId()!=null&&selDO.getGoodTypeId().equals(typeId)) {
 								//根据选型id查询下是否已存在
 								GoodsSelectionModel wmsSel = this.goodsInventoryDomainRepository.queryGoodsSelectionBySelectionId(selDO.getId());
 								if(wmsSel==null) {
 									selWmsList4GoodsTypeId.add(selDO);
 								}
-							//}
+							
 						}
-					//}
+					
 				}else {
 					this.isInitWms = false;
 					return CreateInventoryResultEnum.INVALID_SELECTION_GOODSTYPEID;
@@ -188,17 +161,7 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 				
 			}
-			/*
-			if(!CollectionUtils.isEmpty(goodsTypeIdList2Saved)) {
-				CallResult<List<GoodsSelectionDO>> callSelListResult = this.synInitAndAysnMysqlService
-						.selectSelectionByGoodsTypeIds(goodsTypeIdList2Saved);
-				if (callSelListResult == null || !callSelListResult.isSuccess()) {
-					this.isInitWms = false;
-					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-				}else {  //初始化赋值
-					this.selWmsList = callSelListResult.getBusinessResult();
-				}
-			}*/
+			
 		} catch (Exception e) {
 			this.isInitWms = false;
 			this.writeBusInitErrorLog(
