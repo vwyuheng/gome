@@ -13,7 +13,7 @@
 	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" />
 	
 	<bean id="jobContextUtil" class="com.tuan.job.util.JobContextUtil" />
-	
+	<!-- job inteface name need less 20 characters -->
 	<bean id="confirmQueueTask" class="com.tuan.inventory.job.ConfirmQueueConsumeJob" scope="prototype" />
 	<bean id="lockedQueueTask" class="com.tuan.inventory.job.LockedQueueConsumeJob" scope="prototype" />
 	<bean id="logsQueueTask" class="com.tuan.inventory.job.LogsQueueConsumeJob" scope="prototype" />
