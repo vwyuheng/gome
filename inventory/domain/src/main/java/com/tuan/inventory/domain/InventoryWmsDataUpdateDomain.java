@@ -128,7 +128,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			if(StringUtils.isNotEmpty(tokenid)) {
 				if(tokenid.equalsIgnoreCase(gettokenid)) { //重复请求过来，判断是否处理成功
 				//根据处理成功后设置的tag来判断之前http请求处理是否成功
-				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.UPDATE_WMS_DATA_SUCCESS + "_"+ String.valueOf(goodsId));
+				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.UPDATE_WMS_DATA_SUCCESS + "_"+ tokenid);
 				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
 								return true;
 							}
@@ -385,7 +385,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		lm.addMetaData("result", "end");
 		writeSysDeductLog(lm,false);
 		//处理成返回前设置tag
-		goodsInventoryDomainRepository.setTag(DLockConstants.UPDATE_WMS_DATA_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+		goodsInventoryDomainRepository.setTag(DLockConstants.UPDATE_WMS_DATA_SUCCESS + "_"+ tokenid, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 	

@@ -390,7 +390,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public CreateInventoryResultEnum createInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+	public CreateInventoryResultEnum createInventory(String tokenid,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
 		String message = StringUtils.EMPTY;
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
@@ -413,8 +413,11 @@ public class InventoryInitDomain extends AbstractDomain{
 					
 				} else {
 					message = "saveGoodsInventory2MysqlAndRedis_success[save2mysqlAndRedis success]goodsId:" + goodsId;
-					//处理成功后设置的一个tag
-					goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+					if(!StringUtils.isEmpty(tokenid)) {
+						//处理成功后设置的一个tag
+						goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ tokenid, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+					}
+					
 				}
 			
 		} catch (Exception e) {
