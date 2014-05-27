@@ -14,7 +14,7 @@
 	
 	<bean id="jobContextUtil" class="com.tuan.job.util.JobContextUtil" />
 	
-	<bean id="confirmQueueConsumeJob" class="com.tuan.inventory.job.ConfirmQueueConsumeJob" scope="prototype" />
-	<bean id="lockedQueueConsumeJob" class="com.tuan.inventory.job.LockedQueueConsumeJob" scope="prototype" />
-	<bean id="logsQueueConsumeJob" class="com.tuan.inventory.job.LogsQueueConsumeJob" scope="prototype" />
+	<bean id="confirmQueueTask" class="com.tuan.inventory.job.ConfirmQueueConsumeJob" scope="prototype" />
+	<bean id="lockedQueueTask" class="com.tuan.inventory.job.LockedQueueConsumeJob" scope="prototype" />
+	<bean id="logsQueueTask" class="com.tuan.inventory.job.LogsQueueConsumeJob" scope="prototype" />
 </beans>
