@@ -7,7 +7,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.LogOfWaterHandleService;
-import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
 import com.tuan.inventory.domain.support.job.event.Event;
 import com.tuan.inventory.domain.support.job.event.EventHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
@@ -68,7 +67,6 @@ public class LogsEventHandle implements EventHandle {
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
-			throw new CacheRunTimeException("LogsEventHandle.handleEvent run exception!",e);
 		}
 		logger.info(lm.addMetaData("event",event)
 				.addMetaData("element",logModel)
