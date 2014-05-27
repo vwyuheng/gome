@@ -77,21 +77,29 @@
 	            <artifactId>notifyserver-client-producer</artifactId>
 				<version>${notifyserver.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.tuan.notifyserver.common</groupId>
-				<artifactId>notifyserver-common</artifactId>
-				<version>${notifyserver.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.tuan.notifyserver.core</groupId>
-				<artifactId>notifyserver-core</artifactId>
-				<version>${notifyserver.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.tuan.notifyserver.console</groupId>
-				<artifactId>notifyserver-console</artifactId>
-				<version>${notifyserver.version}</version>
-			</dependency>
+			
+			<!-- main notifyserver jar begin -->
+		<dependency>
+			<groupId>com.tuan.notifyserver.client.consumer.jetty</groupId>
+			<artifactId>notifyserver-client-consumer-jetty</artifactId>
+			<version>${notifyserver.version}</version>
+		</dependency>
+		<!-- main notifyserver jar end -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>com.tuan.notifyserver.common</groupId> -->
+<!-- 				<artifactId>notifyserver-common</artifactId> -->
+<!-- 				<version>${notifyserver.version}</version> -->
+<!-- 			</dependency> -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>com.tuan.notifyserver.core</groupId> -->
+<!-- 				<artifactId>notifyserver-core</artifactId> -->
+<!-- 				<version>${notifyserver.version}</version> -->
+<!-- 			</dependency> -->
+<!-- 			<dependency> -->
+<!-- 				<groupId>com.tuan.notifyserver.console</groupId> -->
+<!-- 				<artifactId>notifyserver-console</artifactId> -->
+<!-- 				<version>${notifyserver.version}</version> -->
+<!-- 			</dependency> -->
 			<dependency>
 				<groupId>io.netty</groupId>
 				<artifactId>netty</artifactId>

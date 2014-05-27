@@ -8,4 +8,5 @@
 	<sqlMap resource="ibatis/sqlmap/inventory-goods-type-sql-mapping.xml" />
 	<sqlMap resource="ibatis/sqlmap/inventory-syn-sql-mapping.xml" />
 	<sqlMap resource="ibatis/sqlmap/redis-init-inventory-sql-mapping.xml" />
+	<sqlMap resource="ibatis/sqlmap/update-inventory-goods-num-sql-mapping.xml" />
 </sqlMapConfig>
