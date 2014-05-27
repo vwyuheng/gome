@@ -123,14 +123,7 @@ public class InventoryInitDomain extends AbstractDomain{
 						for(GoodsInventoryDO goodsDO:wmsInventoryList) {
 							if(goodsDO.getGoodsId()>0) {
 								GoodsInventoryDO tmpDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsDO.getGoodsId());
-								if(tmpDO!=null) {
-									for(GoodsInventoryDO iDO:wmsInventoryList) {
-										if(!(iDO.getGoodsId()!=null&&iDO.getGoodsId().equals(tmpDO.getGoodsId()))) {
-											wmsInventoryRadySaveList.add(iDO);
-										}
-									}
-									
-								}else {
+								if(tmpDO==null) {
 									wmsInventoryRadySaveList.add(goodsDO);
 								}
 							}
@@ -176,18 +169,18 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 				if(!CollectionUtils.isEmpty(selWmsList)) {
 					selWmsList4GoodsTypeId = new ArrayList<GoodsSelectionDO>();
-				for(long typeId:goodsTypeIdList) {
+				//for(long typeId:goodsTypeIdList) {
 						//goodsTypeIdList2Saved = new ArrayList<Long>();
 						for(GoodsSelectionDO selDO:selWmsList) {
-							if(selDO.getId()!=null&&selDO.getGoodTypeId().equals(typeId)) {
+							//if(selDO.getId()!=null&&selDO.getGoodTypeId().equals(typeId)) {
 								//根据选型id查询下是否已存在
 								GoodsSelectionModel wmsSel = this.goodsInventoryDomainRepository.queryGoodsSelectionBySelectionId(selDO.getId());
 								if(wmsSel==null) {
 									selWmsList4GoodsTypeId.add(selDO);
 								}
-							}
+							//}
 						}
-					}
+					//}
 				}else {
 					this.isInitWms = false;
 					return CreateInventoryResultEnum.INVALID_SELECTION_GOODSTYPEID;

@@ -174,6 +174,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 				}
 			}
 		}
+		writeJobLog("[fillParamAndUpdate]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsInventoryList:("+wmsInventoryList+")");
 	   //调用数据同步
 		return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsInventoryList);
 	}
