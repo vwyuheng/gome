@@ -47,7 +47,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							if(wmsDO!=null) {
-								 synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+							}
+							if (!CollectionUtils.isEmpty(selectionList)) { // if1
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+							}
+							if(wmsDO!=null) {
+								 //synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
 								 String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
 								 if(StringUtils.isEmpty(retAck)) {
 										throw new TuanRuntimeException(
@@ -63,7 +69,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 									}
 							}
 							if (!CollectionUtils.isEmpty(selectionList)) { // if1
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 								String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);
 								if(StringUtils.isEmpty(retselAck)) {
 									throw new TuanRuntimeException(
@@ -129,6 +135,17 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							if(inventoryInfoDO!=null) {
 								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+							}
+							// 保选型库存
+							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+							}
+							// 保存分店库存
+							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);	
+							}
+							if(inventoryInfoDO!=null) {
+								//synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 								String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 										inventoryInfoDO);
 								if(StringUtils.isEmpty(retAck)) {
@@ -147,7 +164,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 										goodsId, selectionInventoryList);
 								if(!selSuccess) {
@@ -161,7 +178,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							// 保存分店库存
 							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 								boolean suppSuccess =	goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 										goodsId, suppliersInventoryList);
 								if(!suppSuccess) {
@@ -220,8 +237,26 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
+							if(inventoryInfoDO!=null) {
+								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+							}
+							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+							}
+							// 保存分店库存
+							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+							}
+							
+							if(wmsInventory!=null) {
+								synInitAndAsynUpdateDomainRepository.saveGoodsWms( wmsInventory);
+							}
+							
+							if(wmsInventory4wmsGoodsId!=null) {
+								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsInventory4wmsGoodsId);
+							}
 						if(inventoryInfoDO!=null) {
-							synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+							//synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 							String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 									inventoryInfoDO);
 							 if(StringUtils.isEmpty(retAck)) {
@@ -239,7 +274,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						
 						if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+							//synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 							boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 									goodsId, selectionInventoryList);
 							if(!selSuccess) {
@@ -248,12 +283,10 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionInventory to redis error occured!",
 										new Exception());
 							}
-						
-					
 					}
 						// 保存分店库存
 						if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-							synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
+							//synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 							boolean suppSuccess = goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 										goodsId, suppliersInventoryList);
 							if(!suppSuccess) {
@@ -267,7 +300,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						
 						if(wmsInventory!=null) {
-							 synInitAndAsynUpdateDomainRepository.saveGoodsWms( wmsInventory);
+							// synInitAndAsynUpdateDomainRepository.saveGoodsWms( wmsInventory);
 							 String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsInventory);
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
@@ -284,7 +317,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						  
 						if(wmsInventory4wmsGoodsId!=null) {
-							synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsInventory4wmsGoodsId);
+							//synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsInventory4wmsGoodsId);
 							 String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsInventory4wmsGoodsId);
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
@@ -746,6 +779,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
 											new Exception());
 								}
+							}else {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"collection hash  is null, error occured!",
+										new Exception());
 							}
 							
 						} catch (Exception e) {
@@ -1390,7 +1428,17 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							if(wmsDO!=null) {
-								 synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+							}
+							if(!CollectionUtils.isEmpty(wmsInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
+							}
+							if(!CollectionUtils.isEmpty(selectionList)) {
+								//mysql的有事务
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+							}
+							if(wmsDO!=null) {
+								// synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
 								 String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
 								 if(StringUtils.isEmpty(retAck)) {
 										throw new TuanRuntimeException(
@@ -1406,7 +1454,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 									}
 							}
 							if(!CollectionUtils.isEmpty(wmsInventoryList)) {
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
+								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
 								String retWms = goodsInventoryDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
 								if(StringUtils.isEmpty(retWms)) {
 									throw new TuanRuntimeException(
@@ -1423,7 +1471,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							if(!CollectionUtils.isEmpty(selectionList)) {
 								//mysql的有事务
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 								String retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);	
 								if(StringUtils.isEmpty(retselWms)) {
 									throw new TuanRuntimeException(
