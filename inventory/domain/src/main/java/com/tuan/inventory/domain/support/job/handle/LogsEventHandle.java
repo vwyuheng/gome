@@ -3,12 +3,13 @@ package com.tuan.inventory.domain.support.job.handle;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.LogOfWaterHandleService;
 import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
 import com.tuan.inventory.domain.support.job.event.Event;
 import com.tuan.inventory.domain.support.job.event.EventHandle;
-import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
@@ -22,8 +23,8 @@ import com.tuan.inventory.model.result.CallResult;
  */
 public class LogsEventHandle implements EventHandle {
 	
-	private final static LocalLogger log = LocalLogger.getLog("LogsEventHandle.LOG");
-	
+	//private final static LocalLogger log = LocalLogger.getLog("LogsEventHandle.LOG");
+	private static final Log logger = LogFactory.getLog("INVENTORY.JOB.LOG");
 	@Resource
 	LogOfWaterHandleService logOfWaterHandleService;
 	
@@ -36,7 +37,7 @@ public class LogsEventHandle implements EventHandle {
 		}
 		LogModel lm = LogModel.newLogModel("LogsEventHandle.handleEvent");
 		long startTime = System.currentTimeMillis();
-		log.info(lm.addMetaData("event",event)
+		logger.info(lm.addMetaData("event",event)
 				.addMetaData("startTime", startTime).toJson());
 		GoodsInventoryActionModel logModel = null;
 		CallResult<GoodsInventoryActionModel> callResult  = null;
@@ -61,7 +62,7 @@ public class LogsEventHandle implements EventHandle {
 			
 		} catch (Exception e) {
 			isSuccess = false;
-			log.error(lm.addMetaData("event",event)
+			logger.error(lm.addMetaData("event",event)
 					.addMetaData("element",logModel)
 					.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
@@ -69,7 +70,7 @@ public class LogsEventHandle implements EventHandle {
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
 			throw new CacheRunTimeException("LogsEventHandle.handleEvent run exception!",e);
 		}
-		log.info(lm.addMetaData("event",event)
+		logger.info(lm.addMetaData("event",event)
 				.addMetaData("element",logModel)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
