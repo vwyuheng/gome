@@ -2,7 +2,6 @@ package com.tuan.inventory.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -50,7 +49,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	private List<GoodsSelectionDO> selWmsList;
 	//private List<GoodsSelectionDO> selWmsList4GoodsTypeId;
 	
-	private CopyOnWriteArrayList<GoodsSelectionDO> selWmsList4GoodsTypeId ;
+	private List<GoodsSelectionDO> selWmsList4GoodsTypeId ;
 	private long goodsId;
 	private String wmsGoodsId;
 	private String isBeDelivery;
@@ -176,11 +175,11 @@ public class InventoryInitDomain extends AbstractDomain{
 				}
 				
 				if(!CollectionUtils.isEmpty(selWmsList)) {
-					selWmsList4GoodsTypeId = new CopyOnWriteArrayList<GoodsSelectionDO>();
+					selWmsList4GoodsTypeId = new ArrayList<GoodsSelectionDO>();
 				for(long typeId:goodsTypeIdList) {
 						//goodsTypeIdList2Saved = new ArrayList<Long>();
 						for(GoodsSelectionDO selDO:selWmsList) {
-							if(!(selDO.getId()!=null&&selDO.getGoodTypeId().equals(typeId))) {
+							if(selDO.getId()!=null&&selDO.getGoodTypeId().equals(typeId)) {
 								//根据选型id查询下是否已存在
 								GoodsSelectionModel wmsSel = this.goodsInventoryDomainRepository.queryGoodsSelectionBySelectionId(selDO.getId());
 								if(wmsSel==null) {

@@ -177,10 +177,10 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			}
 		}
 		// 初始化检查
-		CreateInventoryResultEnum resultEnum =	this.initCheck();
-		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-				return resultEnum;
-		}
+		//CreateInventoryResultEnum resultEnum =	this.initCheck();
+		//if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+		//		return resultEnum;
+		//}
 		//初始化
 		CreateInventoryResultEnum resultWmsEnum = this.initWmsCheck(wmsGoodsId,isBeDelivery,goodsTypeIdList, lm);
 		if(resultWmsEnum!=null&&!(resultWmsEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
