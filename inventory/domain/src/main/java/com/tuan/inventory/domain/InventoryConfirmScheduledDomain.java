@@ -65,7 +65,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 						listQueueIdMarkDelete.add(model.getId());
 				}
 			}else {
-				writeJobLog("获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
+				writeJobLog("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
 			preresult = false;
