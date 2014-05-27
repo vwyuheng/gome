@@ -18,6 +18,7 @@ public class GoodsSelectionAndSuppliersModel extends TuanBaseDO {
 	private int goodsInventory;
 	//原库存
 	private int originalGoodsInventory;
+	private String wmsGoodsId;//物流编码
 	public int getGoodsInventory() {
 		return goodsInventory;
 	}
@@ -35,6 +36,12 @@ public class GoodsSelectionAndSuppliersModel extends TuanBaseDO {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public String getWmsGoodsId() {
+		return wmsGoodsId;
+	}
+	public void setWmsGoodsId(String wmsGoodsId) {
+		this.wmsGoodsId = wmsGoodsId;
 	}
 	
 	
