@@ -156,7 +156,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			if(StringUtils.isNotEmpty(tokenid)) {
 				if(tokenid.equalsIgnoreCase(gettokenid)) { //重复请求过来，判断是否处理成功
 				//根据处理成功后设置的tag来判断之前http请求处理是否成功
-				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS + "_"+ String.valueOf(goodsId));
+				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS + "_"+ tokenid);
 				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
 								return true;
 							}
@@ -470,8 +470,10 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 							"adjustInventory error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-		//处理成返回前设置tag
-		goodsInventoryDomainRepository.setTag(DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+		if(!StringUtils.isEmpty(tokenid)) {
+			//处理成返回前设置tag
+			goodsInventoryDomainRepository.setTag(DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS + "_"+ tokenid, DLockConstants.IDEMPOTENT_DURATION_TIME, DLockConstants.HANDLER_SUCCESS);
+		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 

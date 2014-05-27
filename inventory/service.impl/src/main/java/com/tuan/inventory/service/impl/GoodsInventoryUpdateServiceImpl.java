@@ -39,8 +39,8 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService implements GoodsInventoryUpdateService {
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	//@Resource
-	//private InitCacheDomainRepository initCacheDomainRepository;
+	/*@Resource
+	private InitCacheDomainRepository initCacheDomainRepository;*/
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	@Resource
@@ -597,6 +597,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		wmsDataUpdateDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		wmsDataUpdateDomain.setSequenceUtil(sequenceUtil);
 		wmsDataUpdateDomain.setdLock(dLock);
+		//wmsDataUpdateDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {

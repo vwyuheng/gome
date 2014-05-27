@@ -74,7 +74,7 @@ public class InitCacheDomainRepository {
 			for(GoodsSelectionRelationGoodDO selection:selectionList) {
 				GoodsSelectionDO rsrDo = new GoodsSelectionDO();
 				rsrDo.setId(selection.getId().longValue());
-				rsrDo.setSuppliersId(Long.valueOf(selection.getSuppliersId()));
+				rsrDo.setSuppliersId(Long.valueOf(selection==null?0:(selection.getSuppliersId()==null?0:selection.getSuppliersId())));
 				rsrDo.setSuppliersInventoryId(selection.getSuppliersInventoryId());
 				rsrDo.setGoodTypeId(selection.getGoodTypeId().longValue());
 				rsrDo.setLeftNumber(selection.getLeftNumber());
@@ -168,7 +168,7 @@ public class InitCacheDomainRepository {
 			for(GoodsSelectionRelationGoodDO selection:selectionList) {
 				GoodsSelectionDO rsrDo = new GoodsSelectionDO();
 				rsrDo.setId(selection.getId().longValue());
-				rsrDo.setSuppliersInventoryId(selection.getSuppliersId());
+				rsrDo.setSuppliersInventoryId(selection!=null?(selection.getSuppliersId()!=null?selection.getSuppliersId():0):0);
 				rsrDo.setGoodTypeId(selection.getGoodTypeId().longValue());
 				rsrDo.setLeftNumber(selection.getLeftNumber());
 				rsrDo.setTotalNumber(selection.getTotalNumber());
@@ -183,8 +183,8 @@ public class InitCacheDomainRepository {
 		return nullCacheInitDAO.selectRedisInventory(goodsId);
 	}
 	
-	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId) {
-		return nullCacheInitDAO.selectGoodsInventoryWMS(wmsGoodsId);
+	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,int isBeDelivery) {
+		return nullCacheInitDAO.selectGoodsInventoryWMS(wmsGoodsId,isBeDelivery);
 	}
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId) {
 		return nullCacheInitDAO.selectIsOrNotGoodsWMS(goodsId);

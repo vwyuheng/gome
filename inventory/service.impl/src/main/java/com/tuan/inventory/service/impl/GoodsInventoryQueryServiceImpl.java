@@ -567,7 +567,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						InventoryQueryEnum enumRes = null;
 				
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initWmsCheck(wmsGoodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initWmsCheck(wmsGoodsId,isBeDelivery,lm);
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -676,7 +676,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 
 	    //初始化物流库存库存
 		@SuppressWarnings("unchecked")
-		public CreateInventoryResultEnum initWmsCheck(String wmsGoodsId,LogModel lm) {
+		public CreateInventoryResultEnum initWmsCheck(String wmsGoodsId,String isBeDelivery,LogModel lm) {
 					//初始化加分布式锁
 					lm.addMetaData("GoodsInventoryQueryServiceImpl initWmsCheck","initWmsCheck,start").addMetaData("initWmsCheck[" + (wmsGoodsId) + "]", wmsGoodsId);
 					writeBusInitLog(lm,false);
@@ -695,6 +695,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						InventoryInitDomain create = new InventoryInitDomain();
 						//注入相关Repository
 						create.setWmsGoodsId(wmsGoodsId);
+						create.setIsBeDelivery(isBeDelivery);
 						create.setLm(lm);
 						create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 						create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);

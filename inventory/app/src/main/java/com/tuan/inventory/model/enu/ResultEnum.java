@@ -64,6 +64,7 @@ public enum ResultEnum {
 	NO_SELECT_SELECTION			("1039", 	"当前物流码有选型信息，但用户没有选择相关选型."),
 	INVALID_GOODS_TYPE_ID			("1040", 	"无效的选型类型id."),
 	NO_WMS_DATA			("1041", 	"物流信息不存在."),
+	INVALID_SELECTION_GOODSTYPEID         ("1042", "非法的商品选型类型id"),
 	NO_DATA("0","没有可用的数据"),
 	
 	//ERROR_2000	("2000",	"程序运行时错误"),
@@ -258,6 +259,9 @@ public enum ResultEnum {
 		}
 		if(code.equals("1041")){
 			return ResultEnum.NO_WMS_DATA;
+		}
+		if(code.equals("1042")){
+			return ResultEnum.INVALID_SELECTION_GOODSTYPEID;
 		}
 		//if(code.equals("2000")){
 		//	return ResultEnum.ERROR_2000;

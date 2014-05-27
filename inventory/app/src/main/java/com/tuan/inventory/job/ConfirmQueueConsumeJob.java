@@ -38,7 +38,7 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 		// 业务处理
 		inventoryConfirmScheduledDomain.businessHandler();
 		long endTime = System.currentTimeMillis();
-		runResult = "业务处理历时" + (startTime - endTime) + "milliseconds(毫秒)执行完成!";
+		runResult = "[ConfirmQueueTask]业务处理历时" + (startTime - endTime) + "milliseconds(毫秒)执行完成!";
 		logJob.info(lm.setMethod(method)
 				.addMetaData("endTime",endTime).addMetaData("runResult",runResult).toJson(true));	
 		// 完成任务退出，通知任务中心jobcenter

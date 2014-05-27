@@ -103,7 +103,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					
 				}
 			}else {
-				writeJobLog("获取队列:("+ResultStatusEnum.LOCKED.getDescription()+"),状态为：("+ResultStatusEnum.LOCKED.getCode()+")的队列为空！");
+				writeJobLog("[LockedTask]获取队列:("+ResultStatusEnum.LOCKED.getDescription()+"),状态为：("+ResultStatusEnum.LOCKED.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(

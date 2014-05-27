@@ -249,9 +249,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public List<Long> adjustSelectionInventoryById(Long goodsId,Long selectionId, int num) {
 		return this.baseDAOService.adjustSelectionInventory(goodsId,selectionId, (num));
 	}
-	public List<Long> updateSuppliersInventoryById(Long suppliersId, int num) {
-		return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
-	}
+	/*public List<Long> updateSuppliersInventoryById(Long suppliersId, int num) {
+		//return this.baseDAOService.updateSuppliersInventory(suppliersId, (num));
+	}*/
 	public List<Long> adjustSuppliersInventoryById(Long goodsId,Long suppliersId, int num) {
 		return this.baseDAOService.adjustSuppliersInventory(goodsId,suppliersId, (num));
 	}
@@ -303,8 +303,11 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if分店
-					List<Long> result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
-					success = DataUtil.verifyInventory(result);
+					Long result = this.baseDAOService.updateSuppliersInventory(param.getId(), (-param.getGoodsInventory()));
+					/*success = DataUtil.verifyInventory(result);*/
+					if(result!=null&&result>=0) {
+						success = true;
+					}
 				}
 			}
 		}
@@ -348,8 +351,11 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(suppliersParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : suppliersParam) { // for
 				if (param.getId() > 0) { // if选型
-					List<Long> result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
-					success = DataUtil.verifyInventory(result);
+					Long result = this.baseDAOService.updateSuppliersInventory(param.getId(), (param.getGoodsInventory()));
+					//success = DataUtil.verifyInventory(result);
+					if(result!=null&&result>=0) {
+						success = true;
+					}
 				}
 			}
 		}

@@ -258,7 +258,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory redis,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("wmsGoodsDeductNum", wmsGoodsDeductNum).addMetaData("goodsList", goodsList);
 				writeSysUpdateLog(lm,true);
 				//redis
-				// 扣减库存
+				// 调整物流库存
 				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsWmsInventory(wmsGoodsId,
 								(wmsGoodsDeductNum));
@@ -348,7 +348,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					create.setWmsGoodsId(wmsGoodsId);
 					create.setLm(lm);
 					create.setGoodsTypeIdList(selGoodsTypeIds);
-					create.setSelIds(selIds);
+					//create.setSelIds(selIds);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 					create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);

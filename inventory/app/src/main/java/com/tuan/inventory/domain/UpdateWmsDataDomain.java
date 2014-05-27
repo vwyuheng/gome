@@ -55,7 +55,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 		param.setGoodsId(goodsId);
 		param.setSuppliersId(suppliersId);
 		param.setWmsGoodsId(wmsGoodsId);
-		param.setIsBeDelivery(Integer.valueOf(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(isBeDelivery))?"0":isBeDelivery));
+		param.setIsBeDelivery(JsonStrVerificationUtils.validateStr(isBeDelivery));
 		param.setGoodsTypeIds(goodsTypeIds);
 		param.setGoodsSelectionIds(goodsSelectionIds);
 		return param;
@@ -65,9 +65,9 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))){
 			return ResultEnum.INVALID_GOODSID;
 		}
-		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(suppliersId))){
+		/*if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(suppliersId))){
 			return ResultEnum.INVALID_SUPPLIERSID;
-		}
+		}*/
 		if (StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(wmsGoodsId))) {
 			return ResultEnum.INVALID_WMSGOODSID;
 		}

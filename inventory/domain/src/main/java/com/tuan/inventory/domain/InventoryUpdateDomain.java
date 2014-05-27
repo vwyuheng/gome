@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
@@ -31,6 +33,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 
 public class InventoryUpdateDomain extends AbstractDomain {
+	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -47,6 +50,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSuppliersModel> suppliersList;
 	
 	private Long goodsId;
+	//private String wmsGoodsId;
 	private Long userId;
 	private boolean isEnough;
 	private boolean isSelectionEnough = true;
@@ -318,6 +322,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					writeSysDeductLog(lm,true);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
+			}else {
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",originalGoodsInventory="+originalGoodsInventory+",goodsDeductNum="+goodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				logSysDeduct.info(message);
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新选型库存
 			if (isSelectionEnough) {
@@ -346,6 +354,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					}
 				}
 				
+			}else {
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",isSelectionEnough="+isSelectionEnough+",selectionParam="+selectionParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				logSysDeduct.info(message);
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新分店库存
 			if (isSuppliersEnough) {
@@ -375,6 +387,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					}
 				}
 				
+			}else {
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",isSuppliersEnough="+isSuppliersEnough+",suppliersParam="+suppliersParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				logSysDeduct.info(message);
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 
 		} catch (Exception e) {
@@ -404,6 +420,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
+		//this.wmsGoodsId = param
 		// 初始化加分布式锁
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
@@ -422,7 +439,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			InventoryInitDomain create = new InventoryInitDomain(goodsId, lm);
 			// 注入相关Repository
-			// create.setGoodsId(this.goodsId);
+		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
