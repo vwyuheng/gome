@@ -314,7 +314,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
             	for(GoodsSelectionDO selDO: selectionDOList) {
             		//selDO.setSuppliersInventoryId(premaryKey4Suppliers);
             		//selDO.setSuppliersSubId(suppliersId);
-            		//TODO 计算总剩余库存和总库存
+            		//计算总剩余库存和总库存
             		leftNum = leftNum+selDO.getLeftNumber();
             		totalNum = totalNum+selDO.getTotalNumber();
             		
@@ -341,7 +341,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
         				writeSysDeductLog(lm,true);	
             	
             }else {
-            	//TODO 将物流的剩余库存和总库存更新到对应的商品表
+            	// 将物流的剩余库存和总库存更新到对应的商品表
             	if(wmsDO!=null) {
             		leftNum = wmsDO.getLeftNumber();
             		totalNum = wmsDO.getTotalNumber();
