@@ -67,14 +67,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	 * 业务处理前的预处理
 	 */
 	public void preHandler() {
-		this.tokenid = param.getTokenid();
-		this.goodsId = Long.valueOf(param.getGoodsId());
-		if (!StringUtils.isEmpty(tokenid)) { // if
-			this.idemptent = idemptent();
-			if(idemptent) {
-				return ;
-			}
-		}
 		// 商品库存是否存在
 		isExists = this.goodsInventoryDomainRepository.isExists(goodsId);
 		if (isExists) { // 不存在
@@ -118,11 +110,17 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		try {
+			this.goodsId = Long.valueOf(param.getGoodsId());
+			this.tokenid = param.getTokenid();
+			 //幂等控制，已处理成功
+			if (!StringUtils.isEmpty(tokenid)) { // if
+				this.idemptent = idemptent();
+				if(idemptent) {
+					return CreateInventoryResultEnum.SUCCESS;
+				}
+			}
 			// 业务检查前的预处理
 			this.preHandler();
-			if(idemptent) {  //幂等控制，已处理成功
-				return CreateInventoryResultEnum.SUCCESS;
-			}
 			if (addSelection) { // 选型库存
 				// 填充商品选型库库存信息
 				this.fillSelection();
