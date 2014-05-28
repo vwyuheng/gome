@@ -243,6 +243,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 					}
 
+				}else {
+					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isEnough:"+isEnough+",orileftnum:"+orileftnum+",oritotalnum="+oritotalnum+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+					logSysDeduct.info(message);
+					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory mysql,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("wmsDO", wmsDO).addMetaData("goodsList", goodsList).addMetaData("selectionParam", selectionParam);
 				writeSysUpdateLog(lm,true);
@@ -306,6 +310,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						writeSysUpdateLog(lm,true);
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 					}
+				}else {
+					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isSelectionEnough:"+isSelectionEnough+",wmsGoodsId:"+wmsGoodsId+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",wmsGoodsDeductNum:"+wmsGoodsDeductNum+",selectionParam:"+selectionParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+					logSysDeduct.info(message);
+					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			} finally{
 				dLock.unlockManual(key);

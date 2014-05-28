@@ -323,7 +323,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}else {
-				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",originalGoodsInventory="+originalGoodsInventory+",goodsDeductNum="+goodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",originalGoodsInventory:"+originalGoodsInventory+",goodsDeductNum:"+goodsDeductNum+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
@@ -355,7 +355,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 				
 			}else {
-				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",isSelectionEnough="+isSelectionEnough+",selectionParam="+selectionParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",isSelectionEnough:"+isSelectionEnough+",selectionParam:"+selectionParam+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
@@ -388,7 +388,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 				
 			}else {
-				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId"+goodsId+",isSuppliersEnough="+isSuppliersEnough+",suppliersParam="+suppliersParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
+				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",isSuppliersEnough:"+isSuppliersEnough+",suppliersParam:"+suppliersParam+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
