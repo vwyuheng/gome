@@ -17,7 +17,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -40,7 +39,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private OverrideAdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	
 	private SequenceUtil sequenceUtil;
@@ -569,7 +568,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+				//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 				//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
 				resultEnum = create.businessExecute();
 			}finally{
@@ -716,10 +715,10 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		this.sequenceUtil = sequenceUtil;
 	}
 
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 	public Long getGoodsId() {
 		return goodsId;
 	}

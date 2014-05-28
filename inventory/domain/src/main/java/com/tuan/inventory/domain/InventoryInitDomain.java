@@ -12,7 +12,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
@@ -31,7 +30,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	//private InitCacheDomainRepository initCacheDomainRepository;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private GoodsInventoryDO inventoryInfoDO;
 	//根据商品id得到的物流商品信息
@@ -455,32 +454,84 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public boolean updateMysqlInventory(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
-		boolean handler = true;
+	public CreateInventoryResultEnum updateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
+	
+		CallResult<Boolean> callResult  = null;
+		String message = StringUtils.EMPTY;
+		long startTime = System.currentTimeMillis();
 		try {
 		// 更新商品库存
-			 handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
+			// handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
+					// 消费对列的信息
+					callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
+					PublicCodeEnum publicCodeEnum = callResult
+							.getPublicCodeEnum();
+					
+					if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+						// 消息数据不存并且不成功
+						message = "updateMysqlInventory2Mysql_error[" + publicCodeEnum.getMessage()
+								+ "]goodsId:" + goodsId;
+						return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+					} else {
+						message = "updateMysqlInventory2mysql_success[save2mysql success]goodsId:" + goodsId;
+					}
+				//} 
 		} catch (Exception e) {
-			handler = false;
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"updateMysqlInventory error" + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("inventoryInfoDO",inventoryInfoDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					.addMetaData("wmsInventoryList",wmsInventoryList)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
 		}
-		return handler;
+		return CreateInventoryResultEnum.SUCCESS;	
+		
 	}
 	//更新物流的库存信息
-	public boolean updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult> selectionList) {
-		boolean handler = true;
+	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult> selectionList) {
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
 		try {
 			// 更新商品库存
-			handler = this.inventoryInitAndUpdateHandle.batchAdjustGoodsWms(wmsDO,wmsInventoryList, selectionList);
+			//handler = this.inventoryInitAndUpdateHandle.batchAdjustGoodsWms(wmsDO,wmsInventoryList, selectionList);
+			// 消费对列的信息
+			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,wmsInventoryList, selectionList);
+						PublicCodeEnum publicCodeEnum = callResult
+								.getPublicCodeEnum();
+						
+						if (publicCodeEnum != PublicCodeEnum.SUCCESS
+								/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+							// 消息数据不存并且不成功
+							message = "updateBatchGoodsWms2Mysql_error[" + publicCodeEnum.getMessage()
+									+ "]wmsGoodsId:" + wmsDO==null?"":wmsDO.getWmsGoodsId();
+							return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+							
+						} else {
+							message = "updateMysqlInventory2mysql_success[save2mysql success]wmsDO:" + wmsDO;
+						} 
 		} catch (Exception e) {
-			handler = false;
+			//handler = false;
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"updateWmsMysqlInventory error" + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("wmsDO",wmsDO)
+					.addMetaData("wmsInventoryList",wmsInventoryList)
+					.addMetaData("selectionList",selectionList)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
 		}
-		return handler;
+		return CreateInventoryResultEnum.SUCCESS;	
 	}
 	
 	public void setWmsGoodsId(String wmsGoodsId) {
@@ -505,10 +556,10 @@ public class InventoryInitDomain extends AbstractDomain{
 	public void setLm(LogModel lm) {
 		this.lm = lm;
 	}
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 	
 	public void setIsBeDelivery(String isBeDelivery) {
 		this.isBeDelivery = isBeDelivery;

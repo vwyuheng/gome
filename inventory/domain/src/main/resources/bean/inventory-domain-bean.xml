@@ -23,5 +23,5 @@
 	<bean id="synInitAndAsynUpdateDomainRepository" class="com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository"/>
 	
 	<bean id="synInitAndAysnMysqlService" class="com.tuan.inventory.domain.repository.SynInitAndAysnMysqlServiceImpl"/>	
-	<bean id="inventoryInitAndUpdateHandle" class="com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle"/>
+	<!-- <bean id="inventoryInitAndUpdateHandle" class="com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle"/> -->
 </beans>

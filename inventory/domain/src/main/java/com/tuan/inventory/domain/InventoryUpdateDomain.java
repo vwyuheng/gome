@@ -19,7 +19,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -40,7 +39,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private UpdateInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
@@ -442,7 +441,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+			//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 			resultEnum = create.businessExecute();
 		} finally {
 			dLock.unlockManual(key);
@@ -653,10 +652,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
 
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;

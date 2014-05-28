@@ -16,7 +16,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -35,7 +34,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	private WmsInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryWMSDO wmsDO;
@@ -206,7 +205,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	}
 
 	// 库存系统新增库存
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "static-access" })
 	public CreateInventoryResultEnum updateAdjustWmsInventory() {
 		try {
 			// 首先填充日志信息
@@ -252,13 +251,16 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				writeSysUpdateLog(lm,true);
 				//
 				//更新mysql
-				boolean handlerResult = this.synUpdateMysqlInventory(wmsDO,
+				CreateInventoryResultEnum handlerResultEnum = this.synUpdateMysqlInventory(wmsDO,
 						goodsList, selectionParam);
-				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory mysql,end").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("handlerResult", handlerResult);
-				writeSysUpdateLog(lm,true);
-				if (!handlerResult) {
-					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+				if (handlerResultEnum != handlerResultEnum.SUCCESS) {
+					lm.addMetaData("updateAdjustWmsInventory","mysql,end").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("handlerResult", handlerResultEnum.getDescription().toString());
+					writeSysUpdateLog(lm,true);
+					return handlerResultEnum;
 				}
+				/*if (!handlerResult) {
+					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
+				}*/
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory redis,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("wmsGoodsDeductNum", wmsGoodsDeductNum).addMetaData("goodsList", goodsList);
 				writeSysUpdateLog(lm,true);
 				//redis
@@ -359,7 +361,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					//create.setSelIds(selIds);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-					create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+					//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 					resultEnum = create.business4WmsExecute();
 				} finally{
 					dLock.unlockManual(key);
@@ -371,10 +373,11 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			}
 	
 	//异步更新mysql商品库存
-		public boolean synUpdateMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult>  selectionParam) {
+		public CreateInventoryResultEnum synUpdateMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult>  selectionParam) {
 			InventoryInitDomain create = new InventoryInitDomain();
 			//注入相关Repository
-			create.setInventoryInitAndUpdateHandle(this.inventoryInitAndUpdateHandle);
+			//create.setInventoryInitAndUpdateHandle(this.inventoryInitAndUpdateHandle);
+			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			return create.updateWmsMysqlInventory(wmsDO, wmsInventoryList,selectionParam);
 		}
 	
@@ -485,10 +488,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
 
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;

@@ -13,7 +13,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -22,8 +21,8 @@ import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
-import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
+import com.tuan.inventory.model.param.WmsInventoryParam;
 
 public class InventoryWmsCreaterDomain extends AbstractDomain {
 	private LogModel lm;
@@ -32,7 +31,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 	private WmsInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryWMSDO wmsDO;
@@ -126,7 +125,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+		//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		return create.createWmsInventory(wmsDO, selectionRelation);
 	}
 	
@@ -305,10 +304,10 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}

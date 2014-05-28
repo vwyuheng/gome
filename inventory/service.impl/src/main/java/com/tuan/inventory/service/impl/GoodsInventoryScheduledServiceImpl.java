@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import com.tuan.inventory.domain.InventoryConfirmScheduledDomain;
 import com.tuan.inventory.domain.InventoryLockedScheduledDomain;
 import com.tuan.inventory.domain.InventoryLogsScheduledDomain;
+import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.job.event.EventHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
@@ -18,6 +19,8 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 		GoodsInventoryScheduledService {
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	@Resource
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	@Resource
 	private EventHandle logsEventHandle;
 	
@@ -36,6 +39,7 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 		final InventoryConfirmScheduledDomain inventoryConfirmScheduledDomain = new InventoryConfirmScheduledDomain(clientIp, clientName, lm);
 		//注入仓储对象
 		inventoryConfirmScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryConfirmScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		//业务处理
 		inventoryConfirmScheduledDomain.businessHandler();
 
@@ -58,6 +62,7 @@ public class GoodsInventoryScheduledServiceImpl   extends AbstractInventoryServi
 		final InventoryLockedScheduledDomain inventoryLockedScheduledDomain = new InventoryLockedScheduledDomain(clientIp, clientName,param, lm);
 		//注入仓储对象
 		inventoryLockedScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryLockedScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		//业务处理
 		inventoryLockedScheduledDomain.businessHandler();
 

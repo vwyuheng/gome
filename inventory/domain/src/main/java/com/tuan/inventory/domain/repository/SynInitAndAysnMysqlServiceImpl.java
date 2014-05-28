@@ -502,7 +502,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							true);
 				}
 				public TuanCallbackResult executeCheck() {
-					if (goodsId<=0||(goodsDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
+					if (goodsDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList)&&CollectionUtils.isEmpty(wmsInventoryList)) {
 						 logger.error(this.getClass()+"_create param invalid ,param is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID

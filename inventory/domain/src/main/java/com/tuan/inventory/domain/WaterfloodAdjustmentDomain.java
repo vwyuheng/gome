@@ -17,7 +17,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -41,7 +40,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private DLockImpl dLock;//分布式锁
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
@@ -203,8 +202,23 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				//更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(inventoryDO,selectionInventory);
-				if(handlerResult) {
+				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(inventoryDO,selectionInventory);
+				
+				// 消费对列的信息
+				CallResult<GoodsSelectionDO>  callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,selectionInventory);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					message = "updateGoodsSelection_error[" + publicCodeEnum.getMessage()
+							+ "]selectionId:" + selectionInventory==null?"0":String.valueOf(selectionInventory.getId());
+					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+				} else {
+					message = "updateGoodsSelection_success[save success]selectionId:" + selectionInventory==null?"0":String.valueOf(selectionInventory.getId());
+				}
+				
+				//if(handlerResult) {
 					this.ack = this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(goodsId,selectionId, (adjustNum));
 					if(!verifyselOrsuppWf()) { //TODO maybe有问题
 						//将注水还原到调整前
@@ -214,7 +228,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						this.goodswfval = inventoryDO.getWaterfloodVal();
 						this.selOrSuppwfval = selectionInventory.getWaterfloodVal();
 					}
-				}
+				//}
 				
 				//更新选型的mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
 				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
@@ -230,8 +244,20 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				//更新mysql
-				boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(inventoryDO,suppliersInventory);
-				if(handlerResult) {
+				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(inventoryDO,suppliersInventory);
+				CallResult<GoodsSuppliersDO> callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(inventoryDO,suppliersInventory);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					message = "updateGoodsSuppliers_error[" + publicCodeEnum.getMessage()
+							+ "]suppliersId:" + suppliersInventory==null?"0":String.valueOf(suppliersInventory.getId());
+					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+				} else {
+					message = "updateGoodsSuppliers_success[save success]suppliersId:" + suppliersInventory==null?"0":String.valueOf(suppliersInventory.getId());
+				}
+				//if(handlerResult) {
 					this.ack = this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(goodsId,suppliersId, (adjustNum));
 					if(!verifyselOrsuppWf()) {  //TODO maybe有问题
 						//将注水还原到调整前
@@ -241,7 +267,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						this.goodswfval = inventoryDO.getWaterfloodVal();
 						this.selOrSuppwfval = selectionInventory.getWaterfloodVal();
 					}
-				}
+				//}
 			}
 
 		} catch (Exception e) {
@@ -332,7 +358,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					//注入相关Repository
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-					create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+					//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 					resultEnum = create.businessExecute();
 				} finally{
 					dLock.unlockManual(key);
@@ -480,10 +506,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		this.sequenceUtil = sequenceUtil;
 	}
 	
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;

@@ -15,7 +15,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -40,8 +39,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	//InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	@Resource
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//@Resource
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Resource
 	private DLockImpl dLock;//分布式锁
 	
@@ -663,7 +662,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+				//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 				resultEnum = create.businessExecute();
 			} finally{
 				dLock.unlockManual(key);
@@ -699,7 +698,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						create.setLm(lm);
 						create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 						create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-						create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+						//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 						resultEnum = create.business4WmsExecute();
 					} finally{
 						dLock.unlockManual(key);

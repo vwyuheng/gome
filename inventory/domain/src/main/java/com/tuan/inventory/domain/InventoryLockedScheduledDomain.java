@@ -16,7 +16,6 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -48,9 +47,17 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private ConcurrentHashSet<Long> inventoryRollback4Mysql;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private InventoryScheduledParam param;
 	private final int delStatus = 4;
+	private List<GoodsSelectionDO> selectionInventoryList = null;
+	private List<GoodsInventoryWMSDO> wmsList = null;
+	private List<GoodsSuppliersDO> suppliersInventoryList = null;
+	private GoodsInventoryDO inventoryInfoDO = null;
+	private long goodsId = 0;
+	
+	
+	
 	public InventoryLockedScheduledDomain(String clientIp,
 			String clientName,InventoryScheduledParam param,LogModel lm) {
 		this.clientIp = clientIp;
@@ -61,7 +68,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	/***
 	 * 业务处理前的预处理
 	 */
-	public void preHandler() {
+	public boolean preHandler() {
+		boolean preresult = true;
 		try {
 			inventorySendMsg = new ConcurrentHashSet<Long>();
 			markDelAftersendMsg = new ConcurrentHashSet<Long>();
@@ -106,37 +114,51 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				writeJobLog("[LockedTask]获取队列:("+ResultStatusEnum.LOCKED.getDescription()+"),状态为：("+ResultStatusEnum.LOCKED.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
+			preresult = false;
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg",
 							"preHandler error" + e.getMessage()),false, e);
 		}
-		
+		return preresult;
 		
 	}
 
 	// 业务处理
+	@SuppressWarnings("static-access")
 	public CreateInventoryResultEnum businessHandler() {
 		try {
-			// 业务检查前的预处理
-			this.preHandler();
+			 CreateInventoryResultEnum  updateDataEnum = null;
+				// 业务检查前的预处理
+				if(!preHandler()){
+					return CreateInventoryResultEnum.SYS_ERROR;
+				}
+				
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
 				for(long goodsId:inventorySendMsg) {
 					if(loadMessageData(goodsId)) {
-						
 						//将数据更新到mysql
 						if(this.fillParamAndUpdate()) {
-							this.sendNotify();
+							  writeJobLog("[fillParamAndUpdate,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
+								//调用数据同步
+					          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+							//this.sendNotify();
 						}
 					}
 				}
 				
 			}
-			//回滚异常库存并将相应异常队列标记删除
-			this.rollbackAndMarkDelete();
-			//已支付成功订单，消息发送后，将队列标记删除
-			this.markDeleteAfterSendMsgSuccess();
-			//回滚mysql库存
-			this.rollback4Mysql();
+			if (updateDataEnum != updateDataEnum.SUCCESS) { 
+				 writeJobLog("[fillParamAndUpdate]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+			}else {
+				//回滚异常库存并将相应异常队列标记删除
+				this.rollbackAndMarkDelete();
+				//已支付成功订单，消息发送后，将队列标记删除
+				this.markDeleteAfterSendMsgSuccess();
+				//回滚mysql库存
+				//this.rollback4Mysql();
+				 writeJobLog("[fillParamAndUpdate,end]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+			}
+			
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg",
@@ -202,51 +224,67 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	//异步更新mysql商品库存
-		public boolean asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsList) {
+		public CreateInventoryResultEnum asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsList) {
 			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
 			//create.setGoodsId(goodsId);
 			//注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-			create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-			return create.updateMysqlInventory(inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+			//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+			return create.updateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 		}
 		/**
 		 * 组装数据并更新
 		 */
 		private boolean fillParamAndUpdate() {
-			List<GoodsSelectionDO> selectionInventoryList = null;
-			List<GoodsInventoryWMSDO> wmsList = null;
-			List<GoodsSuppliersDO> suppliersInventoryList = null;
-			GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
-			long goodsId = goodsInventoryModel.getGoodsId();
-			inventoryInfoDO.setGoodsId(goodsId);
-			inventoryInfoDO.setLimitStorage(goodsInventoryModel.getLimitStorage());
-			inventoryInfoDO.setWaterfloodVal(goodsInventoryModel.getWaterfloodVal());
-			inventoryInfoDO.setTotalNumber(goodsInventoryModel.getTotalNumber());
-			inventoryInfoDO.setLeftNumber(goodsInventoryModel.getLeftNumber());
-			if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSelectionList())) {
-				selectionInventoryList = new ArrayList<GoodsSelectionDO>();
-				wmsList = new ArrayList<GoodsInventoryWMSDO>();
-				List<GoodsSelectionModel> selectionModelList = goodsInventoryModel.getGoodsSelectionList();
-				if(!CollectionUtils.isEmpty(selectionModelList)) {
-					for(GoodsSelectionModel selModel:selectionModelList) {
-						selectionInventoryList.add(ObjectUtils.toSelectionDO(selModel));
-						wmsList.add(ObjectUtils.toWmsDO(selModel));//物流更新
+			
+			try {
+				 inventoryInfoDO = new GoodsInventoryDO();
+				 goodsId = goodsInventoryModel.getGoodsId();
+				inventoryInfoDO.setGoodsId(goodsId);
+				inventoryInfoDO.setLimitStorage(goodsInventoryModel
+						.getLimitStorage());
+				inventoryInfoDO.setWaterfloodVal(goodsInventoryModel
+						.getWaterfloodVal());
+				inventoryInfoDO.setTotalNumber(goodsInventoryModel
+						.getTotalNumber());
+				inventoryInfoDO.setLeftNumber(goodsInventoryModel
+						.getLeftNumber());
+				if (!CollectionUtils.isEmpty(goodsInventoryModel
+						.getGoodsSelectionList())) {
+					selectionInventoryList = new ArrayList<GoodsSelectionDO>();
+					wmsList = new ArrayList<GoodsInventoryWMSDO>();
+					List<GoodsSelectionModel> selectionModelList = goodsInventoryModel
+							.getGoodsSelectionList();
+					if (!CollectionUtils.isEmpty(selectionModelList)) {
+						for (GoodsSelectionModel selModel : selectionModelList) {
+							selectionInventoryList.add(ObjectUtils
+									.toSelectionDO(selModel));
+							wmsList.add(ObjectUtils.toWmsDO(selModel));//物流更新
+						}
 					}
 				}
-			}
-			if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
-				 suppliersInventoryList = new ArrayList<GoodsSuppliersDO>();
-				List<GoodsSuppliersModel> suppliersModelList = goodsInventoryModel.getGoodsSuppliersList();
-				if(!CollectionUtils.isEmpty(suppliersModelList)) {
-					for(GoodsSuppliersModel supModel:suppliersModelList) {
-						suppliersInventoryList.add(ObjectUtils.toSuppliersDO(supModel));
+				if (!CollectionUtils.isEmpty(goodsInventoryModel
+						.getGoodsSuppliersList())) {
+					suppliersInventoryList = new ArrayList<GoodsSuppliersDO>();
+					List<GoodsSuppliersModel> suppliersModelList = goodsInventoryModel
+							.getGoodsSuppliersList();
+					if (!CollectionUtils.isEmpty(suppliersModelList)) {
+						for (GoodsSuppliersModel supModel : suppliersModelList) {
+							suppliersInventoryList.add(ObjectUtils
+									.toSuppliersDO(supModel));
+						}
 					}
 				}
+				//调用数据同步
+				//return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+			} catch (Exception e) {
+				this.writeBusJobErrorLog(
+						lm.addMetaData("errorMsg",
+								"fillParamAndUpdate error" + e.getMessage()),false, e);
+				return false;
 			}
-		   //调用数据同步
-			return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+			return true;
 		}
 	
 	
@@ -369,10 +407,10 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;

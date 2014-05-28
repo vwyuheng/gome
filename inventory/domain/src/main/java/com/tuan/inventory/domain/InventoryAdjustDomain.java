@@ -17,7 +17,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.job.handle.InventoryInitAndUpdateHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -40,7 +39,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private AdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	
 	private SequenceUtil sequenceUtil;
@@ -275,14 +274,30 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory);
 					writeSysUpdateLog(lm,true);
 					//更新mysql
-					boolean selhandlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsSelection(inventoryDO,
-									selectionInventory);
-					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory).addMetaData("selhandlerResult", selhandlerResult);
+					//boolean selhandlerResult = inventoryInitAndUpdateHandle
+						//	.updateGoodsSelection(inventoryDO,
+							//		selectionInventory);
+					CallResult<GoodsSelectionDO> callResult  = null;
+					// 消费对列的信息
+					callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,selectionInventory);
+					PublicCodeEnum publicCodeEnum = callResult
+							.getPublicCodeEnum();
+					
+					if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+						// 消息数据不存并且不成功
+						message = "updateGoodsSelection_error[" + publicCodeEnum.getMessage()
+								+ "]selectionId:" + selectionInventory==null?String.valueOf(0):String.valueOf(selectionInventory.getId());
+						return CreateInventoryResultEnum
+								.valueOfEnum(publicCodeEnum.getCode());
+					} else {
+						message = "updateGoodsSelection_success[save success]selectionId:" + selectionInventory==null?String.valueOf(0):String.valueOf(selectionInventory.getId());
+					}
+					
+					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory).addMetaData("message", message);
 					writeSysUpdateLog(lm,true);
-					if (selhandlerResult) {
-						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
-						writeSysUpdateLog(lm,true);
+					//if (selhandlerResult) {
+					lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
+					writeSysUpdateLog(lm,true);
 						this.resultACK = this.goodsInventoryDomainRepository
 								.adjustSelectionInventoryById(goodsId,
 										selectionId, (adjustNum));
@@ -307,7 +322,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 							this.selOrSupptotalnum = selectionInventory
 									.getTotalNumber();
 						}
-					}
+					//}
 
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
@@ -337,11 +352,25 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					lm.addMetaData("adjustInventory","adjustInventory suppliers mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory);
 					writeSysUpdateLog(lm,true);
 					//更新mysql
-					boolean handlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsSuppliers(inventoryDO,suppliersInventory);
-					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory).addMetaData("handlerResult", handlerResult);
+					//boolean handlerResult = inventoryInitAndUpdateHandle
+						//	.updateGoodsSuppliers(inventoryDO,suppliersInventory);
+					
+					CallResult<GoodsSuppliersDO> callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(inventoryDO,suppliersInventory);
+					PublicCodeEnum publicCodeEnum = callResult
+							.getPublicCodeEnum();
+					
+					if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+						// 消息数据不存并且不成功
+						message = "updateGoodsSuppliers_error[" + publicCodeEnum.getMessage()
+								+ "]suppliersId:" + suppliersInventory==null?"0":String.valueOf(suppliersInventory.getId());
+						return CreateInventoryResultEnum
+								.valueOfEnum(publicCodeEnum.getCode());
+					} else {
+						message = "updateGoodsSuppliers_success[save success]suppliersId:" + suppliersInventory==null?"0":String.valueOf(suppliersInventory.getId());
+					}
+					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory).addMetaData("message", message);
 					writeSysUpdateLog(lm,true);
-					if (handlerResult) {
+					//if (handlerResult) {
 						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
 						writeSysUpdateLog(lm,true);
 						this.resultACK = this.goodsInventoryDomainRepository
@@ -367,7 +396,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 							this.selOrSupptotalnum = suppliersInventory
 									.getTotalNumber();
 						}
-					}
+					//}
 
 				}//else SUPPLIERS
 			} finally{
@@ -464,7 +493,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+				//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 				//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
 				resultEnum = create.businessExecute();
 			}finally{
@@ -615,10 +644,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		this.sequenceUtil = sequenceUtil;
 	}
 
-	public void setInventoryInitAndUpdateHandle(
+	/*public void setInventoryInitAndUpdateHandle(
 			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
 		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
+	}*/
 	public Long getGoodsId() {
 		return goodsId;
 	}
