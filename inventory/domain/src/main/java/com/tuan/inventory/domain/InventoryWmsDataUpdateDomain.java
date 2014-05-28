@@ -350,12 +350,12 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
             }
            
 			if (inventoryInfoDO != null) {
-				inventoryInfoDO.setGoodsSelectionIds(goodsTypeIds);
+				inventoryInfoDO.setGoodsSelectionIds(StringUtils.isEmpty(goodsTypeIds)?"":goodsTypeIds);
 				inventoryInfoDO.setLeftNumber(leftNum);
 				inventoryInfoDO.setTotalNumber(totalNum);
 				inventoryInfoDO.setLimitStorage(1);  //物流商品都是限制库存商品
 				hash = new HashMap<String, String>();
-				hash.put(HashFieldEnum.goodsSelectionIds.toString(), goodsTypeIds);
+				hash.put(HashFieldEnum.goodsSelectionIds.toString(), StringUtils.isEmpty(goodsTypeIds)?"":goodsTypeIds);
 				hash.put(HashFieldEnum.wmsId.toString(), String.valueOf(wmsDO.getId()));
 				hash.put(HashFieldEnum.leftNumber.toString(), String.valueOf(leftNum));
 				hash.put(HashFieldEnum.totalNumber.toString(), String.valueOf(totalNum));

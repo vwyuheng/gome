@@ -35,12 +35,12 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 	public UpdateWmsDataDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds,LogModel lm,Message messageRoot){
 		this.packet = packet;
 		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);
-		this.goodsId = goodsId;
-		this.suppliersId = suppliersId;
-		this.wmsGoodsId = wmsGoodsId;
-		this.goodsTypeIds = goodsTypeIds;
-		this.goodsSelectionIds = goodsSelectionIds;
-		this.isBeDelivery = isBeDelivery;
+		this.goodsId = JsonStrVerificationUtils.validateStr(goodsId);
+		this.suppliersId = JsonStrVerificationUtils.validateStr(suppliersId);
+		this.wmsGoodsId = JsonStrVerificationUtils.validateStr(wmsGoodsId);
+		this.goodsTypeIds = JsonStrVerificationUtils.validateStr(goodsTypeIds);
+		this.goodsSelectionIds = JsonStrVerificationUtils.validateStr(goodsSelectionIds);
+		this.isBeDelivery = JsonStrVerificationUtils.validateStr(isBeDelivery);
 		
 		this.lm = lm;
 		this.messageRoot = messageRoot;
