@@ -76,14 +76,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	 */
 	private void wmsDataHandler() {
 		try {
-		if (!StringUtils.isEmpty(param.getTokenid())) { // if
-				this.tokenid = param.getTokenid();
-				this.idemptent = idemptent();
-				if(idemptent) {
-					return ;
-				}
-			}
-		
 		if (!StringUtils.isEmpty(wmsGoodsId)) { // if1
 			//wmsGoodsId = param.getWmsGoodsId();
 			// 再次查询物流商品库存信息[确保最新数据]
@@ -160,8 +152,13 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
-		if(idemptent) {  //幂等控制，已处理成功
-			return CreateInventoryResultEnum.SUCCESS;
+		//幂等性检查
+		if (!StringUtils.isEmpty(param.getTokenid())) { // if
+			this.tokenid = param.getTokenid();
+			this.idemptent = idemptent();
+			if(idemptent) {
+				return CreateInventoryResultEnum.SUCCESS;
+			}
 		}
 		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
 			goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());

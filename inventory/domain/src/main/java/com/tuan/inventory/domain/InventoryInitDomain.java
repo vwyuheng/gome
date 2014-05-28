@@ -162,6 +162,13 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 			}
 			
+			//当物流商品已存在，但是后台调整了其下的选型，兼容物流选型更新时的情况
+			if(!isInitWms&&!CollectionUtils.isEmpty(selWmsList4GoodsTypeId)) {
+				wmsUpate = null; //置空，以免冲突
+				// 初始化库存
+				this.isInitWms = true;
+			}
+			
 		} catch (Exception e) {
 			this.isInitWms = false;
 			this.writeBusInitErrorLog(
@@ -271,8 +278,8 @@ public class InventoryInitDomain extends AbstractDomain{
 							message = "init4Wms_error[" + publicCodeEnum.getMessage()
 									+ "]wmsGoodsId:" + wmsUpate==null?"":wmsUpate.getWmsGoodsId();
 							return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
-						} else {   //TODO 该处理也有问题
-							message = "init4Wms_success[init4Wms success]wmsGoodsId:" + wmsUpate.getWmsGoodsId();
+						} else {   
+							message = "init4Wms_success[init4Wms success]goodsId="+goodsId+",wmsUpate="+wmsUpate+",wmsInventoryRadySaveList="+wmsInventoryRadySaveList+",selWmsList4GoodsTypeId="+selWmsList4GoodsTypeId;
 							
 							
 						}
