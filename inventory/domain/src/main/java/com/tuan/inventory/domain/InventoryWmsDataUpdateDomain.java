@@ -99,13 +99,33 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			
 
 		} // if 
-		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
-			goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
-			if(goodsId!=0) {
+		//加载商品库存信息
+		if(goodsId!=0) {
 				this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 			}
 			
-		} // if 
+		
+		//处理物流配型数据
+		if(!CollectionUtils.isEmpty(goodsTypeIdList)) {
+			//根据商品id获取其下的选型
+			List<GoodsSelectionModel> result = goodsInventoryDomainRepository.queryGoodsSelectionListByGoodsId(goodsId);
+			//if(!CollectionUtils.isEmpty(tmpGoodsTypeIdsList)) {
+				selectionDOList = new ArrayList<GoodsSelectionDO>();
+				for(Long tmpGoodsTypId : goodsTypeIdList) {
+					//Long tmpGoodsTypId = Long.parseLong(id);
+					//循环过滤掉不符合条件的选型
+					if(!CollectionUtils.isEmpty(result)) {
+						for(GoodsSelectionModel selModel :result) {
+							if(selModel.getGoodTypeId()!=null&&selModel.getGoodTypeId().equals(tmpGoodsTypId)) {  //根据商品选型类型id过滤选型信息
+								selectionDOList.add(ObjectUtils.toSelectionDO(selModel));
+							}
+						}
+					}
+					
+				}
+			//}
+			
+		}
 		
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
@@ -143,7 +163,9 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}
-		
+		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
+			goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+		} // if 
 		if(!StringUtils.isEmpty(param.getGoodsTypeIds())) {
 			goodsTypeIds = param.getGoodsTypeIds();	
 		}
@@ -182,7 +204,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		//		return resultEnum;
 		//}
 		//初始化
-		CreateInventoryResultEnum resultWmsEnum = this.initWmsCheck(wmsGoodsId,isBeDelivery,goodsTypeIdList, lm);
+		CreateInventoryResultEnum resultWmsEnum = this.initWmsCheck(goodsId,wmsGoodsId,isBeDelivery,goodsTypeIdList, lm);
 		if(resultWmsEnum!=null&&!(resultWmsEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultWmsEnum;
 		}
@@ -206,33 +228,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				suppliersDO = this.goodsInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
 			}
 			
-			//将以逗号分隔的字符串处理成list形式
-			if(!CollectionUtils.isEmpty(goodsTypeIdList)) {
-				//String goodsTypeIds = param.getGoodsTypeIds();
-				/*String[] goodsTypeIdsArray = param.getGoodsTypeIds().split(",");
-				List<String> tmpGoodsTypeIdsList = null;
-				if (goodsTypeIdsArray != null && goodsTypeIdsArray.length != 0) {
-					tmpGoodsTypeIdsList =  Arrays.asList(goodsTypeIdsArray);
-				}*/
-				//根据商品id获取其下的选型
-				List<GoodsSelectionModel> result = goodsInventoryDomainRepository.queryGoodsSelectionListByGoodsId(goodsId);
-				//if(!CollectionUtils.isEmpty(tmpGoodsTypeIdsList)) {
-					selectionDOList = new ArrayList<GoodsSelectionDO>();
-					for(Long tmpGoodsTypId : goodsTypeIdList) {
-						//Long tmpGoodsTypId = Long.parseLong(id);
-						//循环过滤掉不符合条件的选型
-						if(!CollectionUtils.isEmpty(result)) {
-							for(GoodsSelectionModel selModel :result) {
-								if(selModel.getGoodTypeId()!=null&&selModel.getGoodTypeId().equals(tmpGoodsTypId)) {  //根据商品选型类型id过滤选型信息
-									selectionDOList.add(ObjectUtils.toSelectionDO(selModel));
-								}
-							}
-						}
-						
-					}
-				//}
-				
-			}
+			
 			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
@@ -276,37 +272,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				//扣减开始记录日志
 				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("goodsTypeIds", goodsTypeIds).addMetaData("start", "start update wmsdata!");
 				writeSysDeductLog(lm,true);
-			Map<String, String> hash = null;
-			if (inventoryInfoDO != null) {
-				inventoryInfoDO.setGoodsSelectionIds(goodsTypeIds);
-				hash = new HashMap<String, String>();
-				hash.put(HashFieldEnum.goodsSelectionIds.toString(), goodsTypeIds);
-				hash.put(HashFieldEnum.wmsId.toString(), String.valueOf(wmsDO.getId()));
-				if(wmsDO!=null) {
-					inventoryInfoDO.setWmsId(wmsDO.getId());
-				}
-				//先更新mysql
-				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId, hash,inventoryInfoDO);
-				//if(handlerResult) {
-				
-//					 this.goodsInventoryDomainRepository.updateFields(goodsId, hash);
-				//}
-				
-				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO);
-				PublicCodeEnum publicCodeEnum = callResult
-						.getPublicCodeEnum();
-				
-				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
-					// 消息数据不存并且不成功
-					message = "updateAndInsertWmsData>updateGoodsInventory_error[" + publicCodeEnum.getMessage()
-							+ "]goodsId:" + goodsId;
-					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
-				} else {
-					message = "updateAndInsertWmsData>updateGoodsInventory_success[save success]goodsId:" + goodsId;
-				}
-				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("hash", hash).addMetaData("inventoryInfoDO", inventoryInfoDO).addMetaData("message", message);
-				writeSysDeductLog(lm,true);
-			}
 			
 			if(suppliersDO!=null) {  //存在，更新配置关系
 				premaryKey4Suppliers = suppliersDO.getId();
@@ -342,12 +307,20 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			
 			}
 			//更新选型
-        	//boolean handlerResult = false;
+			 Map<String, String> hash = null;
+			//计算出的物流商品的剩余总库存
+			int leftNum = 0;
+			//计算出的物流商品的总库存
+			int totalNum = 0;
 			//更新配置关系
             if(!CollectionUtils.isEmpty(selectionDOList)) {
             	for(GoodsSelectionDO selDO: selectionDOList) {
-            		selDO.setSuppliersInventoryId(premaryKey4Suppliers);
-            		selDO.setSuppliersSubId(suppliersId);
+            		//selDO.setSuppliersInventoryId(premaryKey4Suppliers);
+            		//selDO.setSuppliersSubId(suppliersId);
+            		//TODO 计算总剩余库存和总库存
+            		leftNum = leftNum+selDO.getLeftNumber();
+            		totalNum = totalNum+selDO.getTotalNumber();
+            		
             	}
             	//更新选型
             	//handlerResult = inventoryInitAndUpdateHandle.updateBatchGoodsSelection(goodsId, selectionDOList);
@@ -370,9 +343,55 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
         				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("selectionDOList", selectionDOList).addMetaData("message", message);
         				writeSysDeductLog(lm,true);	
             	
+            }else {
+            	//TODO 将物流的剩余库存和总库存更新到对应的商品表
+            	if(wmsDO!=null) {
+            		leftNum = wmsDO.getLeftNumber();
+            		totalNum = wmsDO.getTotalNumber();
+            	}
+            	
             }
+           
+			if (inventoryInfoDO != null) {
+				inventoryInfoDO.setGoodsSelectionIds(goodsTypeIds);
+				inventoryInfoDO.setLeftNumber(leftNum);
+				inventoryInfoDO.setTotalNumber(totalNum);
+				inventoryInfoDO.setLimitStorage(1);  //物流商品都是限制库存商品
+				hash = new HashMap<String, String>();
+				hash.put(HashFieldEnum.goodsSelectionIds.toString(), goodsTypeIds);
+				hash.put(HashFieldEnum.wmsId.toString(), String.valueOf(wmsDO.getId()));
+				hash.put(HashFieldEnum.leftNumber.toString(), String.valueOf(leftNum));
+				hash.put(HashFieldEnum.totalNumber.toString(), String.valueOf(totalNum));
+				hash.put(HashFieldEnum.limitStorage.toString(), String.valueOf(1));
+				if(wmsDO!=null) {
+					inventoryInfoDO.setWmsId(wmsDO.getId());
+				}
+				//先更新mysql
+				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId, hash,inventoryInfoDO);
+				//if(handlerResult) {
+				
+//					 this.goodsInventoryDomainRepository.updateFields(goodsId, hash);
+				//}
+				
+				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO);
+				PublicCodeEnum publicCodeEnum = callResult
+						.getPublicCodeEnum();
+				
+				if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+					// 消息数据不存并且不成功
+					message = "updateAndInsertWmsData>updateGoodsInventory_error[" + publicCodeEnum.getMessage()
+							+ "]goodsId:" + goodsId;
+					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+				} else {
+					message = "updateAndInsertWmsData>updateGoodsInventory_success[save success]goodsId:" + goodsId;
+				}
+				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsId", goodsId).addMetaData("hash", hash).addMetaData("inventoryInfoDO", inventoryInfoDO).addMetaData("message", message);
+				writeSysDeductLog(lm,true);
+			}
+			
 				lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("deduct,end", "end deduct inventory!");
 				writeSysDeductLog(lm,true);
+				
 
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
@@ -428,7 +447,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	
 	 //初始化物流库存库存
 	@SuppressWarnings("unchecked")
-	public CreateInventoryResultEnum initWmsCheck(String wmsGoodsId,String isBeDelivery,List<Long> goodsTypeIdList,LogModel lm) {
+	public CreateInventoryResultEnum initWmsCheck(Long goodsId,String wmsGoodsId,String isBeDelivery,List<Long> goodsTypeIdList,LogModel lm) {
 			
 				//初始化加分布式锁
 				lm.addMetaData("InventoryWmsDataUpdateDomain initWmsCheck","initWmsCheck,start").addMetaData("initWmsCheck[" + (wmsGoodsId) + "]", wmsGoodsId);
@@ -450,6 +469,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 					create.setWmsGoodsId(wmsGoodsId);
 					create.setIsBeDelivery(isBeDelivery);
 					create.setGoodsTypeIdList(goodsTypeIdList);
+					create.setGoodsId(goodsId);
 					create.setLm(lm);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);

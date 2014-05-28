@@ -101,6 +101,26 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 	
 	}
+	public void saveBatchGoodsWms(long goodsId,List<GoodsSelectionDO> selectionDOList) throws Exception {
+		
+		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
+			for (GoodsSelectionDO srDO : selectionDOList) { // for
+				if (srDO.getId() > 0) { // if选型
+					//将商品id set到选型中
+					srDO.setGoodsId(goodsId);
+					this.saveGoodsSelection(srDO);
+				}
+				
+			}//for
+		}//if1
+		
+		
+	}
+	/**
+	 * openapi 调的就不需要商品id，因为还不知道该选型属于哪个商品
+	 * @param selectionDOList
+	 * @throws Exception
+	 */
 	public void saveBatchGoodsWms(List<GoodsSelectionDO> selectionDOList) throws Exception {
 		
 		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1

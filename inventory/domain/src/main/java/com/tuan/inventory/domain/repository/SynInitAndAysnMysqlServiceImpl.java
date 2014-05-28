@@ -53,6 +53,92 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 							}
 							if(wmsDO!=null) {
+								//synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+								String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
+								if(StringUtils.isEmpty(retAck)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory to redis error occured!",
+											new Exception());
+								}
+							}
+							if (!CollectionUtils.isEmpty(selectionList)) { // if1
+								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+								String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);
+								if(StringUtils.isEmpty(retselAck)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retselAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
+							}
+							
+							
+						} catch (Exception e) {
+							
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+										"Duplicate entry '" + wmsDO.getWmsGoodsId()
+										+ "' for key 'wmsGoodsId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (wmsDO == null&&CollectionUtils.isEmpty(selectionList)) {
+							logger.error(this.getClass()+"_create param invalid ,param is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
+	@Override
+	public CallResult<Boolean> saveGoodsWmsInventory(final long goodsId,final GoodsInventoryWMSDO wmsDO,
+			final List<GoodsSelectionDO> selectionList) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							if(wmsDO!=null) {
+								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
+							}
+							if (!CollectionUtils.isEmpty(selectionList)) { // if1
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(goodsId,selectionList);
+							}
+							if(wmsDO!=null) {
 								 //synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
 								 String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
 								 if(StringUtils.isEmpty(retAck)) {
@@ -70,7 +156,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							if (!CollectionUtils.isEmpty(selectionList)) { // if1
 								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
-								String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);
+								String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(goodsId,selectionList);
 								if(StringUtils.isEmpty(retselAck)) {
 									throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
@@ -1420,7 +1506,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 }
 	@Override
-	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,
+	public CallResult<Boolean> saveGoodsWmsInventory(final long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,
 			final List<GoodsSelectionDO> selectionList) throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
@@ -1435,7 +1521,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							if(!CollectionUtils.isEmpty(selectionList)) {
 								//mysql的有事务
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(goodsId,selectionList);
 							}
 							if(wmsDO!=null) {
 								// synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
@@ -1472,7 +1558,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(!CollectionUtils.isEmpty(selectionList)) {
 								//mysql的有事务
 								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
-								String retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);	
+								String retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(goodsId,selectionList);	
 								if(StringUtils.isEmpty(retselWms)) {
 									throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
