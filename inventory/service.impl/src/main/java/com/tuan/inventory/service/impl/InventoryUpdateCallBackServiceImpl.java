@@ -4,6 +4,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
@@ -19,22 +22,23 @@ import com.tuan.notifyserver.core.connect.net.pojo.Message;
 public class InventoryUpdateCallBackServiceImpl extends AbstractService implements ConsumerReceiver {
 	@Resource
 	private GoodUpdateNumberDomainRepository goodUpdateNumberDomainRepository;
-	
+	private final Log log=LogFactory.getLog("COMPENSATION.NOTIFY.LOG");
+	private final String method = "InventoryUpdateCallBackServiceImpl.receive";
 	@Override
 	public boolean receive(Message message) {
-		String method = "InventoryUpdateCallBackServiceImpl.receive";
 		final LogModel lm = LogModel.newLogModel();
 		if(null == message){
-			writeSysLog(lm.setMethod(method).addMetaData("resultCode", "参数无效").toJson());
+			log.info(lm.setMethod(method).addMetaData("resultCode", "参数无效").toJson());
 			return false;
 		}
+		log.info(lm.setMethod(method).addMetaData("message", message.getContent()).toJson());
 		InventoryNotifyMessageParam inventoryNotifyMessageParam=null;
 		try {
 			Type paramType = new TypeToken<InventoryNotifyMessageParam>(){}.getType();
 			inventoryNotifyMessageParam = new Gson().fromJson(message.getContent(),
 					paramType);
 		} catch (JsonSyntaxException e) {
-			writeSysLog(lm.setMethod(method).addMetaData("resultCode", "数据格式错误").toJson());
+			log.info(lm.setMethod(method).addMetaData("resultCode", "数据格式错误").toJson());
 			return false;
 		}
 		//库存调整
@@ -44,9 +48,12 @@ public class InventoryUpdateCallBackServiceImpl extends AbstractService implemen
 		goodsUpdateNumberDO.setLeftNum(leftNumber);
 		goodsUpdateNumberDO.setTotalNum(totalNumber);
 		goodsUpdateNumberDO.setId(inventoryNotifyMessageParam.getGoodsId());
+		log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
 		goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
 		List<SelectionNotifyMessageParam> selectionRelation =inventoryNotifyMessageParam.getSelectionRelation();
 		if(null!=selectionRelation){
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "SelectionRelation")
+					.addMetaData("size",selectionRelation.size()).toJson());
 			for (SelectionNotifyMessageParam selectionNotifyMessageParam : selectionRelation) {
 				goodsUpdateNumberDO.setLeftNum(selectionNotifyMessageParam.getLeftNumber());
 				goodsUpdateNumberDO.setTotalNum(selectionNotifyMessageParam.getTotalNumber());
@@ -64,6 +71,8 @@ public class InventoryUpdateCallBackServiceImpl extends AbstractService implemen
 		}
 		List<SuppliersNotifyMessageParam> suppliersRelation =inventoryNotifyMessageParam.getSuppliersRelation();
 		if(null!=suppliersRelation){
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "Suppliers")
+					.addMetaData("size",suppliersRelation.size()).toJson());
 			for (SuppliersNotifyMessageParam suppliersNotifyMessageParam : suppliersRelation) {
 				goodsUpdateNumberDO.setLeftNum(suppliersNotifyMessageParam.getLeftNumber());
 				goodsUpdateNumberDO.setTotalNum(suppliersNotifyMessageParam.getTotalNumber());

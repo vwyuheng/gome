@@ -5,6 +5,8 @@ import java.util.HashMap;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -30,6 +32,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 	@Resource
 	private GoodTypeDomainRepository goodTypeDomainRepository;
 	
+	private final Log log=LogFactory.getLog("COMPENSATION.NOTIFY.LOG");
+	private final String method = "MessageNotifyCallBackServiceImpl.receive";
 	
 	
 	private final String clientIp="0.0.0.0";
@@ -42,6 +46,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			writeSysLog(lm.setMethod(method).addMetaData("resultCode", "参数无效").toJson());
 			return false;
 		}
+		log.info(lm.setMethod(method).addMetaData("message", message.getContent()).toJson());
 		InventoryRecordParam inventoryRecordParam=null;
 		try {
 			Type paramType = new TypeToken<InventoryRecordParam>(){}.getType();
@@ -54,7 +59,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		String goodsId = inventoryRecordParam.getGoods_id();
 		String action=inventoryRecordParam.getActions();
 		HashMap<String, String> data=inventoryRecordParam.getData();
-		updateInventory(tokenId,goodsId,action,data);
+		updateInventory(tokenId,goodsId,action,data,lm);
 		return true;
 	}
 	
@@ -66,11 +71,12 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 	 * @param action  操作类型
 	 * @param data  元数据
 	 */
-	public  void updateInventory(String tokenId, String goodsId,String action,HashMap<String, String> data){
+	public  void updateInventory(String tokenId, String goodsId,String action,HashMap<String, String> data,LogModel lm){
 		if("createstock".equals(action)){
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "createstock").toJson());
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
 					DLockConstants.CREATE_INVENTORY,
-					DLockConstants.CREATE_INVENTORY_SUCCESS);
+					DLockConstants.CREATE_INVENTORY_SUCCESS,lm);
 			if (needUpdate) {
 				CreaterInventoryParam param= new CreaterInventoryParam();
 				param.setGoodsId(goodsId);
@@ -85,9 +91,11 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		}
 		//修改物流单的关系
 		if("upwmsdata".equals(action)){
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "upwmsdata").toJson());
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
 					DLockConstants.UPDATE_WMS_DATA,
-					DLockConstants.UPDATE_WMS_DATA_SUCCESS);
+					DLockConstants.UPDATE_WMS_DATA_SUCCESS,lm);
+			log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).toJson());
 			if (needUpdate) {
 				UpdateWmsDataParam param= new UpdateWmsDataParam();
 				param.setGoodsId(goodsId);
@@ -100,9 +108,11 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		}
 		//修改库存
 		if("oradjusti".equals(action)){
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "oradjusti").toJson());
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
 					DLockConstants.OVERRIDE_ADJUST_INVENTORY,
-					DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS);
+					DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS,lm);
+			log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).toJson());
 			if (needUpdate) {
 				OverrideAdjustInventoryParam param= new OverrideAdjustInventoryParam();
 				param.setGoodsId(goodsId);
@@ -115,6 +125,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		}
 		//注水
 		if("addsales".equals(action)){
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 			AdjustWaterfloodParam adjustWaterfloodParam= new AdjustWaterfloodParam();
 			adjustWaterfloodParam.setGoodsId(goodsId);
 			adjustWaterfloodParam.setNum(Integer.getInteger(data.get("add_sales")));
@@ -131,9 +142,10 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 	 * @return
 	 */
 	public boolean comparisonTokenid(String tokenid, String goodsId,
-			String tokenKey, String successTokenKey) {
+			String tokenKey, String successTokenKey,LogModel lm) {
 		String redis_tokenid = goodsInventoryDomainRepository
 				.queryToken(tokenKey + "_" + String.valueOf(goodsId));
+		log.info(lm.setMethod(method).addMetaData("redis_tokenid", redis_tokenid).toJson());
 		if (null == redis_tokenid) {
 			return true;
 		} else {
