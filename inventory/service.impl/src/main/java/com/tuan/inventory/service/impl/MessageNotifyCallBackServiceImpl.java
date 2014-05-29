@@ -13,7 +13,6 @@ import com.tuan.inventory.domain.repository.GoodTypeDomainRepository;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryRecordParam;
