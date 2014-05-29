@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.InventoryLockedScheduledDomain;
+import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
@@ -16,6 +17,8 @@ public class LockedQueueConsumeJob extends AbstractJobRunnable {
 	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	@Resource
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;	
 	//默认间隔时长,与当前时间相比  单位:分种
 	private static final int DEFAULTPERIOD = 5;
 	private int period = 0;
@@ -38,6 +41,7 @@ public class LockedQueueConsumeJob extends AbstractJobRunnable {
 		final InventoryLockedScheduledDomain inventoryLockedScheduledDomain = new InventoryLockedScheduledDomain("127.0.0.1", "jobCenter:ConfirmQueueConsumeJob",param, lm);
 		//注入仓储对象
 		inventoryLockedScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryLockedScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		//业务处理
 		inventoryLockedScheduledDomain.businessHandler();
 		long endTime = System.currentTimeMillis();

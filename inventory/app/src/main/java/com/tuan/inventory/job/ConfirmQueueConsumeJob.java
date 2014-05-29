@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.InventoryConfirmScheduledDomain;
+import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.job.util.AbstractJobRunnable;
@@ -15,7 +16,8 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	
+	@Resource
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;	
 	@Override
 	public void run() {
 	
@@ -35,6 +37,7 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 		// 注入仓储对象
 		inventoryConfirmScheduledDomain
 				.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryConfirmScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		// 业务处理
 		inventoryConfirmScheduledDomain.businessHandler();
 		long endTime = System.currentTimeMillis();
