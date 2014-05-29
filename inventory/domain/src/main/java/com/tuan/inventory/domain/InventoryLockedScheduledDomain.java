@@ -39,9 +39,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
 	//库存需发更新消息的
-	private ConcurrentHashSet<Long> inventorySendMsg;
+	private ConcurrentHashSet<GoodsInventoryQueueModel> inventorySendMsg;
 	//缓存订单支付成功的队列id，以便处理完后将队列标记删除
-	private ConcurrentHashSet<Long> markDelAftersendMsg;
+	//private ConcurrentHashSet<Long> markDelAftersendMsg;
 	//缓存回滚库存的队列id，供redis库存回滚用
 	private ConcurrentHashSet<GoodsInventoryQueueModel> inventoryRollback;
 	//缓存需回滚的商品id，供mysql回滚库存用
@@ -78,9 +78,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		boolean preresult = true;
 		try {
 			//用于归集缓存商品id
-			inventorySendMsg = new ConcurrentHashSet<Long>();
+			inventorySendMsg = new ConcurrentHashSet<GoodsInventoryQueueModel>();
 			//用于缓存队列id:正常的
-			markDelAftersendMsg = new ConcurrentHashSet<Long>();
+			//markDelAftersendMsg = new ConcurrentHashSet<Long>();
 			//用于订单支付未成功时，缓存队列id
 			inventoryRollback = new ConcurrentHashSet<GoodsInventoryQueueModel>();
 			//inventoryRollback4Mysql = new ConcurrentHashSet<Long>();
@@ -103,9 +103,10 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
 								if (verifyId(model.getGoodsId())) {
-									this.inventorySendMsg.add(model.getGoodsId());
+									this.inventorySendMsg.add(model);
+									//this.inventorySendMsg.add(model.getGoodsId());
 									//缓存订单支付成功的队列id，以便处理完后将队列标记删除
-									this.markDelAftersendMsg.add(model.getId());
+									//this.markDelAftersendMsg.add(model.getId());
 								}
 								   
 							}else {
@@ -144,7 +145,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 				
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
-				for(long goodsId:inventorySendMsg) {
+				for(GoodsInventoryQueueModel queueModel:inventorySendMsg) {
+					long goodsId = queueModel.getGoodsId();
+					long queueId = queueModel.getId();
 					if(loadMessageData(goodsId)) {
 						//将数据更新到mysql
 						if(this.fillParamAndUpdate()) {
@@ -157,12 +160,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 									//发送消息
 									this.sendNotify();
 									//已支付成功订单，消息发送后，将队列标记删除
-									this.markDeleteAfterSendMsgSuccess(markDelAftersendMsg);
+									this.markDeleteAfterSendMsgSuccess(queueId);
 									 writeJobLog("[fillParamAndUpdate,end]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 								}
-					      	//回滚异常库存并将相应异常队列标记删除
-								//this.rollbackAndMarkDelete();
-					          //this.sendNotify();
 						}
 					}
 				}
@@ -333,29 +333,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 		return notifyParam;
 	}
-	//发送消息成功后将队列标记删除:逻辑删除
-	public void markDeleteAfterSendMsgSuccess(ConcurrentHashSet<Long> markDelAftersendMsg) {
-		try {
-			if (!CollectionUtils.isEmpty(markDelAftersendMsg)) {
-				for(long queueId:markDelAftersendMsg) {
-					if(verifyId(queueId)) {
-						String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
-						if(!StringUtils.isEmpty(member)) {
-							//标记删除【队列】,同时将缓存的队列删除
-							this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
-						}
-						
-					}
-					
-				}
-			}
-			
-		} catch (Exception e) {
-			this.writeBusJobErrorLog(lm
-					.addMetaData("errMsg", "markDeleteAfterSendMsgSuccess error"+e.getMessage()),false, e);
-			
-		}
-	}
+	
 	//发送消息成功后将队列标记删除:逻辑删除
 	public void markDeleteAfterSendMsgSuccess(long queueId) {
 		try {

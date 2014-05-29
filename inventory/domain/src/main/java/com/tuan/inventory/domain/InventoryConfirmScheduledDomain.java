@@ -28,8 +28,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
 	//缓存商品id，并排重，以便归并相同商品的消息发送次数
-	private ConcurrentHashSet<Long> listGoodsIdSends;
-	private ConcurrentHashSet<Long> listQueueIdMarkDelete;
+	private ConcurrentHashSet<GoodsInventoryQueueModel> listGoodsIdSends;
+	//private ConcurrentHashSet<Long> listQueueIdMarkDelete;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
@@ -53,8 +53,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	public boolean preHandler() {
 		boolean preresult = true;
 		try {
-			listGoodsIdSends = new ConcurrentHashSet<Long>();
-			listQueueIdMarkDelete = new ConcurrentHashSet<Long>();
+			listGoodsIdSends = new ConcurrentHashSet<GoodsInventoryQueueModel>();
+			//listQueueIdMarkDelete = new ConcurrentHashSet<Long>();
 			// 商品库存是否存在
 			//取初始状态队列信息
 			List<GoodsInventoryQueueModel> queueList = goodsInventoryDomainRepository
@@ -64,10 +64,11 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 				for (GoodsInventoryQueueModel model : queueList) {
 					//队列数据数据按商品id 归集后 发送消息更新数据准备
 					if (verifyId(model.getGoodsId()))
-						listGoodsIdSends.add(model.getGoodsId());
+						listGoodsIdSends.add(model);
+					//listGoodsIdSends.add(model.getGoodsId());
 					//队列数据消费完标记删除数据准备
-					if (verifyId(model.getId()))
-						listQueueIdMarkDelete.add(model.getId());
+					//if (verifyId(model.getId()))
+						//listQueueIdMarkDelete.add(model.getId());
 				}
 			}else {
 				writeJobLog("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
@@ -94,11 +95,12 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 			
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
-				for (long goodsId : listGoodsIdSends) {
-					if (loadMessageData(goodsId)) {
-						// updateDataSuccess = this.fillParamAndUpdate();
-						// 将已更新的数据更新到mysql
-						if (fillParamAndUpdate()) { // 数据同步成功后再发消息
+				for (GoodsInventoryQueueModel queueModel : listGoodsIdSends) {
+					long goodsId = queueModel.getGoodsId();
+					long queueId = queueModel.getId();
+					if (loadMessageData(goodsId)) {  //更加商品id加载数据
+						
+						if (fillParamAndUpdate()) { // 组织数据
 
 							writeJobLog("[fillParamAndUpdate,start]更新goodsId:("
 									+ goodsId + "),inventoryInfoDO：("
@@ -125,8 +127,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 								// 发消息
 								this.sendNotify();
 								// 消息发送完成后将取出的队列标记删除状态
-								this.markDelete();
-
+								if(this.verifyId(queueId)) {
+									this.markDelete(queueId);
+								}
 								writeJobLog("[fillParamAndUpdate,end]更新goodsId:("
 										+ goodsId
 										+ "),inventoryInfoDO：("
@@ -276,17 +279,17 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	}
 
 	// 将队列标记删除：逻辑删除[队列]\物理删除缓存的member
-	public void markDelete() {
+	public void markDelete(long queueId) {
 		
 		try {
-			if (!CollectionUtils.isEmpty(listQueueIdMarkDelete)) {
-				for(long queueId:listQueueIdMarkDelete) {
+			//if (!CollectionUtils.isEmpty(listQueueIdMarkDelete)) {
+				//for(long queueId:listQueueIdMarkDelete) {
 					String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
 					if(!StringUtils.isEmpty(member)) {
 						this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
 					}
-				}
-			}
+				//}
+			//}
 			
 		} catch (Exception e) {
 			
