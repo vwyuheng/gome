@@ -255,6 +255,17 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                     
+	<!-- 补偿调度过程记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="COMPENSATION-NOTIFY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/notifymessage/notify-compensation-inventory.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/notifymessage/notify-compensation-inventory.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
 	<!-- ===================================================================== -->
 	<!-- Loggers                                                               -->
 	<!-- ===================================================================== -->
@@ -305,7 +316,11 @@
 		<appender-ref ref="UCORE-BUSINESS-RESULT-APPENDER"/>
 	</logger>
 	
-		
+		<!-- 补偿调度日志 -->
+	<logger name="COMPENSATION.NOTIFY.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="COMPENSATION-NOTIFY-APPENDER"/>
+	</logger>
 	<!-- <logger name="com.wowotrace.trace.model" additivity="false">
 			<level value="INFO"/>
 			<appender-ref ref="TRACE-APPENDER"/>
