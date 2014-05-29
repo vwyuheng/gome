@@ -1,6 +1,5 @@
 package com.tuan.inventory.service.impl;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import javax.annotation.Resource;
@@ -8,7 +7,6 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -17,6 +15,7 @@ import com.tuan.inventory.domain.repository.GoodTypeDomainRepository;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryRecordParam;
@@ -130,7 +129,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 			AdjustWaterfloodParam adjustWaterfloodParam= new AdjustWaterfloodParam();
 			adjustWaterfloodParam.setGoodsId(goodsId);
-			String num= data.get("add_sales");;
+			adjustWaterfloodParam.setType(ResultStatusEnum.GOODS_SELF.getCode());
+			String num= data.get("add_sales");
 			adjustWaterfloodParam.setNum(Integer.parseInt(num));
 			goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
 		}
