@@ -254,7 +254,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-			return create.updateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+			return create.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 		}
 		/**
 		 * 组装数据并更新

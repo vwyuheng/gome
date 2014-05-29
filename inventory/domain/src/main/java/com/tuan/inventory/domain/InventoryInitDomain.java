@@ -454,7 +454,7 @@ public class InventoryInitDomain extends AbstractDomain{
 	 * @param selectionInventoryList
 	 * @param suppliersInventoryList
 	 */
-	public CreateInventoryResultEnum updateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
+	public CreateInventoryResultEnum asynUpdateMysqlInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
 	
 		CallResult<Boolean> callResult  = null;
 		String message = StringUtils.EMPTY;
@@ -478,8 +478,8 @@ public class InventoryInitDomain extends AbstractDomain{
 				//} 
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"updateMysqlInventory error" + e.getMessage()),false,  e);
+					lm.addMetaData("errorMsg:"+message,
+							"updateMysqlInventory error " + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
 			log.info(lm.addMetaData("goodsId",goodsId)
