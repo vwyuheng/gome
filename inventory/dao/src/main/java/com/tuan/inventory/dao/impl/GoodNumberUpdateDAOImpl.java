@@ -30,7 +30,7 @@ public class GoodNumberUpdateDAOImpl extends SqlMapClientDaoSupport implements G
 	public void updateSuppliersInventoryNumber(
 			GoodsUpdateNumberDO goodsUpdateNumberDO) {
 		getSqlMapClientTemplate().update("set_sql_model_user");
-		getSqlMapClientTemplate().update("updateSuppliersInventoryLeftNumberBySiID", goodsUpdateNumberDO);	
+		getSqlMapClientTemplate().update("updateSuppliersInventoryNumberBySiID", goodsUpdateNumberDO);	
 		getSqlMapClientTemplate().update("set_sql_model_sys");
 	}	
 
