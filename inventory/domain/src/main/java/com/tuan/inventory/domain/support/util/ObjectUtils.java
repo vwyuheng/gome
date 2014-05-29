@@ -55,7 +55,31 @@ public class ObjectUtils {
 			}
 		return result;
 	}
+	public static List<GoodsSelectionAndSuppliersResult> toGoodsSelectionAndSuppliersList(List<GoodsSelectionAndSuppliersModel> list) {
+		List<GoodsSelectionAndSuppliersResult> result = null;
+		if(!CollectionUtils.isEmpty(list)){
+			result =  new ArrayList<GoodsSelectionAndSuppliersResult>();
+			for(GoodsSelectionAndSuppliersModel element:list) {
+				result.add(toGoodsSelectionAndSuppliersResult(element));
+			}
+			
+		}
+		return result;
+	}
 	
+	
+	
+	public static GoodsSelectionAndSuppliersResult toGoodsSelectionAndSuppliersResult(GoodsSelectionAndSuppliersModel selAndSupModel) {
+		GoodsSelectionAndSuppliersResult result = null;
+		if(selAndSupModel!=null) {
+			result = new GoodsSelectionAndSuppliersResult();
+			result.setId(selAndSupModel.getId());
+			result.setGoodsInventory(selAndSupModel.getGoodsInventory());
+			result.setOriginalGoodsInventory(selAndSupModel.getOriginalGoodsInventory());
+			result.setWmsGoodsId(selAndSupModel.getWmsGoodsId());
+		}
+		return result;
+	}
 	
 	public static SelectionNotifyMessageParam toSelectionNotifyMessage(GoodsSelectionModel selModel) {
 		SelectionNotifyMessageParam result = null;
