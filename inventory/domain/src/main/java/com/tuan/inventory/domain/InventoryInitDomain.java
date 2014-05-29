@@ -477,7 +477,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					}
 				//} 
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg:"+message,
 							"updateMysqlInventory error " + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
