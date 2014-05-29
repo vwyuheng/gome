@@ -1,12 +1,14 @@
 package com.tuan.inventory.service.impl;
 import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.stylesheets.LinkStyle;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -58,7 +60,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		String tokenId = inventoryRecordParam.getTokenid();
 		String goodsId = inventoryRecordParam.getGoods_id();
 		String action=inventoryRecordParam.getActions();
-		HashMap<String, String> data=inventoryRecordParam.getData();
+		LinkedHashMap<String, String> data=inventoryRecordParam.getData();
 		updateInventory(tokenId,goodsId,action,data,lm);
 		return true;
 	}
@@ -71,7 +73,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 	 * @param action  操作类型
 	 * @param data  元数据
 	 */
-	public  void updateInventory(String tokenId, String goodsId,String action,HashMap<String, String> data,LogModel lm){
+	public  void updateInventory(String tokenId, String goodsId,String action,LinkedHashMap<String, String> data,LogModel lm){
 		if("createstock".equals(action)){
 			log.info(lm.setMethod(method).addMetaData("updatetraget", "createstock").toJson());
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
@@ -128,7 +130,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 			AdjustWaterfloodParam adjustWaterfloodParam= new AdjustWaterfloodParam();
 			adjustWaterfloodParam.setGoodsId(goodsId);
-			adjustWaterfloodParam.setNum(Integer.getInteger(data.get("add_sales")));
+			String num= data.get("add_sales");;
+			adjustWaterfloodParam.setNum(Integer.parseInt(num));
 			goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
 		}
 		
