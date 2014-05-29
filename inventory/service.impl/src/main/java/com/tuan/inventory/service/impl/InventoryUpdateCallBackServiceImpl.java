@@ -48,12 +48,10 @@ public class InventoryUpdateCallBackServiceImpl extends AbstractService implemen
 		goodsUpdateNumberDO.setLeftNum(leftNumber);
 		goodsUpdateNumberDO.setTotalNum(totalNumber);
 		goodsUpdateNumberDO.setId(inventoryNotifyMessageParam.getGoodsId());
-		log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
 		goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
+		log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
 		List<SelectionNotifyMessageParam> selectionRelation =inventoryNotifyMessageParam.getSelectionRelation();
 		if(null!=selectionRelation){
-			log.info(lm.setMethod(method).addMetaData("updatetraget", "SelectionRelation")
-					.addMetaData("size",selectionRelation.size()).toJson());
 			for (SelectionNotifyMessageParam selectionNotifyMessageParam : selectionRelation) {
 				goodsUpdateNumberDO.setLeftNum(selectionNotifyMessageParam.getLeftNumber());
 				goodsUpdateNumberDO.setTotalNum(selectionNotifyMessageParam.getTotalNumber());
@@ -68,17 +66,19 @@ public class InventoryUpdateCallBackServiceImpl extends AbstractService implemen
 					}
 				}
 			}
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "SelectionRelation")
+					.addMetaData("size",selectionRelation.size()).toJson());
 		}
 		List<SuppliersNotifyMessageParam> suppliersRelation =inventoryNotifyMessageParam.getSuppliersRelation();
 		if(null!=suppliersRelation){
-			log.info(lm.setMethod(method).addMetaData("updatetraget", "Suppliers")
-					.addMetaData("size",suppliersRelation.size()).toJson());
 			for (SuppliersNotifyMessageParam suppliersNotifyMessageParam : suppliersRelation) {
 				goodsUpdateNumberDO.setLeftNum(suppliersNotifyMessageParam.getLeftNumber());
 				goodsUpdateNumberDO.setTotalNum(suppliersNotifyMessageParam.getTotalNumber());
 				goodsUpdateNumberDO.setId(suppliersNotifyMessageParam.getId());
 				goodUpdateNumberDomainRepository.updateSuppliersInventoryNumber(goodsUpdateNumberDO);
 			}
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "Suppliers")
+					.addMetaData("size",suppliersRelation.size()).toJson());
 		}
 		return true;
 	}
