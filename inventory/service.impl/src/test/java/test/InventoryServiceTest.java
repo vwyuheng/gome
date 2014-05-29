@@ -359,8 +359,9 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void testAdjustmentWaterflood() {
 		AdjustWaterfloodParam param = new AdjustWaterfloodParam();
-		param.setId("1");
-		param.setNum(-1);
+		param.setGoodsId("554753");
+		//param.setId("1");
+		param.setNum(100);
 		param.setType(ResultStatusEnum.GOODS_SELF.getCode());
 		RequestPacket packet = new RequestPacket();
 		packet.setTraceId(UUID.randomUUID().toString());
