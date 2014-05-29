@@ -74,7 +74,6 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 	 */
 	public  void updateInventory(String tokenId, String goodsId,String action,LinkedHashMap<String, String> data,LogModel lm){
 		if("createstock".equals(action)){
-			log.info(lm.setMethod(method).addMetaData("updatetraget", "createstock").toJson());
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
 					DLockConstants.CREATE_INVENTORY,
 					DLockConstants.CREATE_INVENTORY_SUCCESS,lm);
@@ -88,11 +87,11 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setUserId(data.get("userId"));
 				param.setWaterfloodVal(Integer.parseInt(data.get("waterfloodVal")));
 				goodsInventoryUpdateService.createInventory(clientIp,clientName,param,null);
+				log.info(lm.setMethod(method).addMetaData("updatetraget", "createstock").toJson());
 			}
 		}
 		//修改物流单的关系
 		if("upwmsdata".equals(action)){
-			log.info(lm.setMethod(method).addMetaData("updatetraget", "upwmsdata").toJson());
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
 					DLockConstants.UPDATE_WMS_DATA,
 					DLockConstants.UPDATE_WMS_DATA_SUCCESS,lm);
@@ -105,6 +104,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setTokenid(tokenId);
 				param.setWmsGoodsId(data.get("wmsGoodsId"));
 				goodsInventoryUpdateService.updateWmsData(clientIp,clientName,param,null);
+				log.info(lm.setMethod(method).addMetaData("updatetraget", "upwmsdata").toJson());
 			}
 		}
 		//修改库存
@@ -113,7 +113,6 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			boolean needUpdate = comparisonTokenid(tokenId, goodsId,
 					DLockConstants.OVERRIDE_ADJUST_INVENTORY,
 					DLockConstants.OVERRIDE_ADJUST_INVENTORY_SUCCESS,lm);
-			log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).toJson());
 			if (needUpdate) {
 				OverrideAdjustInventoryParam param= new OverrideAdjustInventoryParam();
 				param.setGoodsId(goodsId);
@@ -122,17 +121,18 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setTotalnum(Integer.parseInt(data.get("totalnum")));
 				param.setType(data.get("type"));
 				goodsInventoryUpdateService.overrideAdjustInventory(clientIp,clientName,param,null);
+				log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).toJson());
 			}
 		}
 		//注水
 		if("addsales".equals(action)){
-			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 			AdjustWaterfloodParam adjustWaterfloodParam= new AdjustWaterfloodParam();
 			adjustWaterfloodParam.setGoodsId(goodsId);
 			adjustWaterfloodParam.setType(ResultStatusEnum.GOODS_SELF.getCode());
 			String num= data.get("add_sales");
 			adjustWaterfloodParam.setNum(Integer.parseInt(num));
 			goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 		}
 		
 	}
