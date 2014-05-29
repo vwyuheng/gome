@@ -255,6 +255,16 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                     
+    <appender name="INVENTORY-JOB-ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/job/job-inventory-schedule-error.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/job/job-inventory-schedule-error.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
 	<!-- 补偿调度过程记录 -->                                                                                                                                                                                                                                                                                                    
     <appender name="COMPENSATION-NOTIFY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/notifymessage/notify-compensation-inventory.log</file>
@@ -329,6 +339,10 @@
 	<logger name="INVENTORY.JOB.LOG" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="INVENTORY-JOB-APPENDER"/>
+	</logger>
+	<logger name="INVENTORY.JOB.ERROR.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="INVENTORY-JOB-ERROR-APPENDER"/>
 	</logger>
 	<!-- 库存扣减过程记录 -->
 	<logger name="INVENTORY.DEDUCT.LOG" additivity="false">
