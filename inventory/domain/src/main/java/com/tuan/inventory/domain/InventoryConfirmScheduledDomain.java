@@ -94,31 +94,53 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 			
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
-				for(long goodsId:listGoodsIdSends) {
-					if(loadMessageData(goodsId)) {
-						//updateDataSuccess = this.fillParamAndUpdate();
-						//将已更新的数据更新到mysql
-						if(fillParamAndUpdate()) {  //数据同步成功后再发消息
-							
-			          writeJobLog("[fillParamAndUpdate,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsInventoryList:("+wmsInventoryList+")");
-						//调用数据同步
-			          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsInventoryList);
+				for (long goodsId : listGoodsIdSends) {
+					if (loadMessageData(goodsId)) {
+						// updateDataSuccess = this.fillParamAndUpdate();
+						// 将已更新的数据更新到mysql
+						if (fillParamAndUpdate()) { // 数据同步成功后再发消息
+
+							writeJobLog("[fillParamAndUpdate,start]更新goodsId:("
+									+ goodsId + "),inventoryInfoDO：("
+									+ inventoryInfoDO
+									+ "),selectionInventoryList:("
+									+ selectionInventoryList
+									+ "),wmsInventoryList:(" + wmsInventoryList
+									+ ")");
+							// 调用数据同步
+							updateDataEnum = this.asynUpdateMysqlInventory(
+									goodsId, inventoryInfoDO,
+									selectionInventoryList,
+									suppliersInventoryList, wmsInventoryList);
+							if (updateDataEnum != updateDataEnum.SUCCESS) {
+								writeJobLog("[fillParamAndUpdate]更新goodsId:("
+										+ goodsId + "),inventoryInfoDO：("
+										+ inventoryInfoDO
+										+ "),selectionInventoryList:("
+										+ selectionInventoryList
+										+ "),wmsInventoryList:("
+										+ wmsInventoryList + "),message("
+										+ updateDataEnum.getDescription() + ")");
+							} else {
+								// 发消息
+								this.sendNotify();
+								// 消息发送完成后将取出的队列标记删除状态
+								this.markDelete();
+
+								writeJobLog("[fillParamAndUpdate,end]更新goodsId:("
+										+ goodsId
+										+ "),inventoryInfoDO：("
+										+ inventoryInfoDO
+										+ "),selectionInventoryList:("
+										+ selectionInventoryList
+										+ "),wmsInventoryList:("
+										+ wmsInventoryList + ")");
+							}
 						}
-					}//if1
+					}// if1
 				}
-				
-			}//if2
-			if (updateDataEnum != updateDataEnum.SUCCESS) { 
-				 writeJobLog("[fillParamAndUpdate]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsInventoryList:("+wmsInventoryList+"),message("+updateDataEnum.getDescription()+")");
-			}else {
-				//发消息
-				this.sendNotify(); 
-				//消息发送完成后将取出的队列标记删除状态
-				this.markDelete();
-				
-				 writeJobLog("[fillParamAndUpdate,end]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsInventoryList:("+wmsInventoryList+")");
-			}
-			
+
+			}// if2
 				
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(

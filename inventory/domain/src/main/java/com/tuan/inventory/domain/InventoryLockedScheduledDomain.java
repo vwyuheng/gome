@@ -87,7 +87,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 								.getObject(OrderQueryService.class,
 										InventoryConfig.QUERY_URL);
-						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
+						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
 						if(statEnum!=null) {
 							//1.当订单状态为已付款时
@@ -141,23 +141,25 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							  writeJobLog("[fillParamAndUpdate,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
 								//调用数据同步
 					          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
-							//this.sendNotify();
+					          if (updateDataEnum != updateDataEnum.SUCCESS) { 
+									 writeJobLog("[fillParamAndUpdate]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+								}else {
+									//回滚异常库存并将相应异常队列标记删除
+									this.rollbackAndMarkDelete();
+									//已支付成功订单，消息发送后，将队列标记删除
+									this.markDeleteAfterSendMsgSuccess();
+									//回滚mysql库存
+									//this.rollback4Mysql();
+									 writeJobLog("[fillParamAndUpdate,end]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+								}
+					          
+					          //this.sendNotify();
 						}
 					}
 				}
 				
 			}
-			if (updateDataEnum != updateDataEnum.SUCCESS) { 
-				 writeJobLog("[fillParamAndUpdate]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
-			}else {
-				//回滚异常库存并将相应异常队列标记删除
-				this.rollbackAndMarkDelete();
-				//已支付成功订单，消息发送后，将队列标记删除
-				this.markDeleteAfterSendMsgSuccess();
-				//回滚mysql库存
-				//this.rollback4Mysql();
-				 writeJobLog("[fillParamAndUpdate,end]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
-			}
+			
 			
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(
