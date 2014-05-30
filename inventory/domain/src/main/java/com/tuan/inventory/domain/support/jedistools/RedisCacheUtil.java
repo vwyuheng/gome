@@ -1099,4 +1099,35 @@ public class RedisCacheUtil {
 		});
 		
 	}
+	/**
+	 * 移除集合 key 中的一个或多个 member 元素，
+	 * 不存在的 member 元素会被忽略。
+	 * 当 key 不是集合类型，返回一个错误。
+	 * @param key
+	 * @param member
+	 * @return
+	 */
+	public Long srem(final String key, final String... member) {
+		return jedisFactory.withJedisDo(new JWork<Long>() {
+			@Override
+			public Long work(Jedis j) throws Exception {
+		
+				if (j == null)
+					return null;
+				try {
+					return j.srem(key,member);
+					
+				} catch (Exception e) {
+				//异常发生时记录日志
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.srem");
+				log.error(lm.addMetaData("key", key)
+						    .addMetaData("member", member)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.srem("+key+","+member+") error!",e);
+				}
+				
+			}
+		});
+
+	}
 }

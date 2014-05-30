@@ -1,5 +1,7 @@
 package com.tuan.inventory.domain.repository;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -324,7 +326,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							if(inventoryInfoDO!=null) {
-								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+								//先检查mysql库中是否存在
+								GoodsInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(goodsId);
+								if(tmpDo==null) {
+									synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+								}
+								
 							}
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
 								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
@@ -729,7 +736,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 		
 	}
 	@Override
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,final String goodsSelectionIds,
 			final GoodsInventoryDO inventoryInfoDO) throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
@@ -749,6 +756,56 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										QueueConstant.SERVICE_REDIS_FALIURE,
 										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
 										new Exception());
+							}else {  //清除选型关系
+								
+								//if(inventoryInfoDO!=null) {
+									if(!StringUtils.isEmpty(goodsSelectionIds)) {
+										List<Long> goodsTypeIdList = new ArrayList<Long> ();
+										String[] goodsTypeIdsArray = goodsSelectionIds.split(",");
+										List<String> tmpGoodsTypeIdsList = null;
+										if (goodsTypeIdsArray != null && goodsTypeIdsArray.length != 0) {
+											tmpGoodsTypeIdsList =  Arrays.asList(goodsTypeIdsArray);
+											for(String id : tmpGoodsTypeIdsList) {
+												goodsTypeIdList.add(Long.parseLong(id));
+											}
+											
+										}
+										//清除关系逻辑
+										List<GoodsSelectionDO> selList = initCacheDomainRepository.selectSelectionByGoodsTypeIds(goodsTypeIdList);
+										if(!CollectionUtils.isEmpty(selList)) {
+											for(GoodsSelectionDO selDO:selList) {
+												if(selDO.getId()!=null&&selDO.getId()>0) {
+													//Long ack =
+													goodsInventoryDomainRepository.clearWmsSelRelation(goodsId,
+															String.valueOf(selDO.getId()));
+												}
+												
+												//sb.append(selDO.getId());
+												//sb.append(",");
+											}
+											
+										}
+										/*if(sb!=null) {
+											String tmember = sb.toString();
+											if(!StringUtils.isEmpty(tmember)) {
+												tmember = tmember.substring(0, tmember.length()-1);
+												String[] member = tmember.split(",");
+												if(member!=null&&member.length!=0) {
+													
+												}
+												
+												if(ack>=0) {
+													
+												}
+											}
+										}*/
+										
+										
+										
+									}
+									
+								//}
+								
 							}
 						} catch (Exception e) {
 							logger.error(

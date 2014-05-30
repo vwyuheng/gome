@@ -476,6 +476,14 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		return  this.redisCacheUtil.get(key);
 	}
 
+	@Override
+	public Long clearWmsSelRelation(Long goodsId, String... member) {
+		//redisCacheUtil.srem("1", "1","2");
+		return this.redisCacheUtil.srem(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId), member);
+
+	}
+
 	
 	
 }

@@ -52,6 +52,8 @@ public interface BaseDAOService {
 	 * @param inventoryInfoDO
 	 */
 	public String saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO);
+	//清除物流关系
+	public Long clearWmsSelRelation(Long goodsId,  String... member);
 	/**
 	 * 保存商品选型库存
 	 * @param goodsId

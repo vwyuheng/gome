@@ -76,7 +76,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private Long goodsId;
 	private long selectionId;
 	private long suppliersId;
-	
+	private String goodsSelectionIds = "";
 	boolean idemptent = false;
 	
 	public InventoryOverrideAdjustDomain(String clientIp, String clientName,
@@ -98,6 +98,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			}
 			//初始化检查
 			resultEnum = this.initCheck();
+			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+				return resultEnum;
+			}
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
@@ -137,9 +140,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-			return resultEnum;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 	//接口幂等处理
@@ -198,11 +199,11 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				}
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					if (inventoryDO != null) {
-						
+						goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
 						//调整的总量
-						int adjustnum =  afttotalnum - pretotalnum;
+						//int adjustnum =  afttotalnum - pretotalnum;
 						//计算剩余库存调整后的数量量
-						aftleftnum = adjustnum+preleftnum;
+						aftleftnum = afttotalnum;
 						//此时调整后数量检查
 						if(aftleftnum<0) {
 							aftleftnum = 0;
@@ -214,7 +215,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						inventoryDO.setLeftNumber(aftleftnum);
 						// 调整商品总库存数量
 						inventoryDO.setTotalNumber(afttotalnum);
-
+						//清楚选型关系
+						inventoryDO.setGoodsSelectionIds("");
 						if (inventoryDO.getLimitStorage() == 0&&inventoryDO.getTotalNumber() != 0) {
 							inventoryDO.setLimitStorage(1); // 更新数据库用
 							//return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
@@ -235,7 +237,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						lm.addMetaData("adjustInventory","adjustInventory start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString());
 						writeSysUpdateLog(lm,true);
 						// 消费对列的信息
-						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,inventoryDO);
+						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsSelectionIds,inventoryDO);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
 						
@@ -262,31 +264,25 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					
 					if (selectionInventory != null) {
 						//调整的总量
-						int adjustnum = aftSelOrSupptotalnum - preselOrSupptotalnum;
+						//int adjustnum = aftSelOrSupptotalnum - preselOrSupptotalnum;
 						//计算剩余库存调整后的数量量
-						aftSelOrSuppleftnum = adjustnum + preselOrSuppleftnum;
+						//aftSelOrSuppleftnum = adjustnum + preselOrSuppleftnum;
 						//此时调整后数量检查
 						if(aftSelOrSuppleftnum<0) {
 							aftSelOrSuppleftnum = 0;
 						}
 						//计算剩余库存调整后的数量量
-						aftleftnum = adjustnum+preleftnum;
-						//此时调整后数量检查
-						if(aftleftnum<0) {
-							aftleftnum = 0;
-						}
+						//aftleftnum = adjustnum+preleftnum;
+					
 						//调整剩余库存数量
-						selectionInventory.setLeftNumber(aftSelOrSuppleftnum);
+						selectionInventory.setLeftNumber(afttotalnum);
 						//调整商品选型总库存数量
 						selectionInventory.setTotalNumber(afttotalnum);
 						//计算总的
-						afttotalnum =  pretotalnum + adjustnum;
+						//afttotalnum =  pretotalnum + adjustnum;
 						//计算剩余库存调整后的数量量
-						aftleftnum = adjustnum+preleftnum;
-						//此时调整后数量检查
-						if(aftleftnum<0) {
-							aftleftnum = 0;
-						}
+						//aftleftnum = adjustnum+preleftnum;
+						
 						if(afttotalnum<=0) {
 							afttotalnum = 0;
 							inventoryDO.setLimitStorage(0);
@@ -691,12 +687,12 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		if (param.getType().equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())&&StringUtils.isEmpty(param.getId())) {
 				return CreateInventoryResultEnum.INVALID_SUPPLIERSID;
 			}
-		//构建校验领域
-		GoodsVerificationDomain vfDomain = new GoodsVerificationDomain(Long.valueOf(param.getGoodsId()),param.getType(),param.getId());
+		//构建校验领域:TODO 根据cms后台的要求，目前暂时注掉该校验逻辑，增加将修改库存时，清除下物流关系处理
+		//GoodsVerificationDomain vfDomain = new GoodsVerificationDomain(Long.valueOf(param.getGoodsId()),param.getType(),param.getId());
 		//注入仓储对象
-		vfDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		return vfDomain.checkSelOrSupp();
-		//return CreateInventoryResultEnum.SUCCESS;
+		//vfDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		//return vfDomain.checkSelOrSupp();
+		return CreateInventoryResultEnum.SUCCESS;
 	}
 
 	public void setdLock(DLockImpl dLock) {

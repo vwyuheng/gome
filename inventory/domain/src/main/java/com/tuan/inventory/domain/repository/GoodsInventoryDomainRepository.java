@@ -41,6 +41,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void sendNotifyServerMessage(JSONObject jsonObj) {
 		this.notifyServerSendMessage.sendNotifyServerMessage(jsonObj);
 	}
+	public Long clearWmsSelRelation(Long goodsId,  String member) {
+		return this.baseDAOService.clearWmsSelRelation(goodsId, member);
+	}
 	//保存商品库存
 	public String saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
 		inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());

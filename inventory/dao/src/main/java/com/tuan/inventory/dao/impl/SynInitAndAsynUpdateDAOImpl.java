@@ -77,5 +77,25 @@ public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implem
 		super.getSqlMapClientTemplate().update("adjustGoodsWmsSelection", selection);
 	}
 
+	@Override
+	public GoodsInventoryDO selectGoodsInventoryDO(long goodsId) {
+		return (GoodsInventoryDO) super.getSqlMapClientTemplate().queryForObject("selectInventoryAttributeBygoodsId", goodsId);
+	}
+
+	@Override
+	public GoodsSelectionDO selectGoodsSelectionDO(long selectionId) {
+		return (GoodsSelectionDO) super.getSqlMapClientTemplate().queryForObject("selectSelectionInventoryBySelId", selectionId);
+	}
+
+	@Override
+	public GoodsSuppliersDO selectGoodsSuppliersDO(long suppliersId) {
+		return (GoodsSuppliersDO) super.getSqlMapClientTemplate().queryForObject("selectSuppliersInventoryBySuppId", suppliersId);
+	}
+
+	@Override
+	public GoodsInventoryWMSDO selectGoodsInventoryWMSDO(String wmsGoodsId) {
+		return (GoodsInventoryWMSDO) super.getSqlMapClientTemplate().queryForObject("selectWmsInventoryByWmsGoodsId", wmsGoodsId);
+	}
+
 
 }

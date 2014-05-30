@@ -11,19 +11,23 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
  * @date 2014/3/6
  */
 public interface  SynInitAndAsynUpdateDAO {
-
+	
+	public GoodsInventoryDO selectGoodsInventoryDO(long goodsId);
 	void insertGoodsInventoryDO(GoodsInventoryDO goodsDO);
 	void updateGoodsInventoryDO(GoodsInventoryDO goodsDO);
 	int deleteGoodsInventoryDO(long goodsId);
 	
+	public GoodsSelectionDO selectGoodsSelectionDO(long selectionId);
 	void insertGoodsSelectionDO(GoodsSelectionDO selectionDO);
 	void updateGoodsSelectionDO(GoodsSelectionDO selectionDO);
 	int deleteGoodsSelectionDO(long selectionId);
 	 
+	public GoodsSuppliersDO selectGoodsSuppliersDO(long suppliersId);
 	void insertGoodsSuppliersDO(GoodsSuppliersDO suppliersDO);
 	void updateGoodsSuppliersDO(GoodsSuppliersDO suppliersDO);
 	int deleteGoodsSuppliersDO(long suppliersId);
 	 
+	public GoodsInventoryWMSDO selectGoodsInventoryWMSDO(String wmsGoodsId);
 	void insertGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO);
 	void updateGoodsInventoryWMSDO(GoodsInventoryWMSDO wmsDO);
 	void updateGoodsSelectionWmsDO(GoodsWmsSelectionResult selection);

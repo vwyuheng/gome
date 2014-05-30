@@ -28,7 +28,7 @@
 	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
-	     <result column="waterfloodVal" property="waterfloodVal" jdbcType="INTEGER" />
+	     <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
 	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
 	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   
@@ -76,6 +76,74 @@
 	    <result column="client_ip" property="clientIp" jdbcType="VARCHAR" />
 	    <result column="remark" property="remark" jdbcType="VARCHAR" />
 	 </resultMap>
+	 
+	 
+	 <!-- 根据物流编码获取商品物流库存信息  -->	
+	<select id="selectWmsInventoryByWmsGoodsId" resultMap="GoodsInventoryWMSResult"  parameterClass="java.lang.String">
+	SELECT 
+	wms.id,
+	wms.goods_id,
+	wms.wms_goods_id,
+	wms.goods_supplier,
+	wms.goods_sname,
+	wms.total_num,
+	wms.left_num,
+	wms.is_be_delivery
+	FROM 
+	jeehe_inventory_wms wms WHERE wms.wms_goods_id =#wmsGoodsId:VARCHAR#
+	</select>
+	 <!-- 根据分店id获取商品分店库存信息  -->	
+	<select id="selectSuppliersInventoryBySuppId" resultMap="GoodsSuppliersResult"  parameterClass="java.lang.Integer">
+	SELECT 
+	supp.id,
+	supp.goods_id,
+	supp.suppliers_id,
+	supp.total_num,
+	supp.left_num,
+	supp.limit_storage,
+	supp.waterflood_val
+	
+	FROM jeehe_inventory_suppliers supp
+	WHERE
+	supp.suppliers_id = #suppliersId:INTEGER#
+	</select>
+	 <!-- 根据选型id获取商品选型库存信息  -->	
+	<select id="selectSelectionInventoryBySelId" resultMap="GoodsSelectionResult"  parameterClass="java.lang.Long">
+	SELECT
+	sel.id,
+	sel.goods_id,
+	sel.suppliers_id,
+	sel.good_type_id,
+	sel.total_num,
+	sel.left_num,
+	sel.suppliers_sub_id,
+	sel.suppliers_inventory_id,
+	sel.limit_storage,
+	sel.waterflood_val,
+	sel.wms_goods_id
+	FROM jeehe_inventory_selection sel
+	where
+	sel.id = #selectionId:BIGINT#
+	</select>
+	 <!-- 根据商品id获取商品库存信息  -->	
+	<select id="selectInventoryAttributeBygoodsId" resultMap="GoodsInventoryResult"  parameterClass="java.lang.Long">
+
+	SELECT
+	ga.goods_id,
+	ga.goods_wms_id,
+	ga.good_selection_ids,
+	ga.add_goods_selection,
+	ga.direct_consumption,
+	ga.total_num,
+	ga.left_num,
+	ga.limit_storage,
+	ga.waterflood_val
+	FROM
+	jeehe_inventory_attribute ga 
+	where
+	ga.goods_id = #goodsId:BIGINT#
+	
+	</select>
 	
 	 <!-- 根据物流码查询发货仓库信息  -->	
 	<select id="selectWmsIsBeDeliveryResult" resultMap="WmsIsBeDeliveryResult"  parameterClass="java.lang.String">

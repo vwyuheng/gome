@@ -24,6 +24,20 @@ public class SynInitAndAsynUpdateDomainRepository {
 	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
 	//@Resource
 	//private SequenceUtil sequenceUtil;
+	
+	public GoodsInventoryDO selectGoodsInventoryDO(long goodsId) {
+		return this.synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);
+	}
+	public GoodsSelectionDO selectGoodsSelectionDO(long selectionId) {
+		return this.synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
+	}
+	public GoodsSuppliersDO selectGoodsSuppliersDO(long suppliersId) {
+		return this.synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(suppliersId);
+	}
+	public GoodsInventoryWMSDO selectGoodsInventoryWMSDO(String wmsGoodsId) {
+		return this.synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
+	}
+	
 	/**
 	 * 保存插入商品库存
 	 * @param goodsDO
@@ -39,9 +53,14 @@ public class SynInitAndAsynUpdateDomainRepository {
 
 		if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
 			for (GoodsInventoryDO goodsDO : wmsInventoryList) { // for
-				if (goodsDO.getGoodsId() > 0) { // if选型
-					//将商品id set到选型中
-					this.saveGoodsInventory(goodsDO);
+				long goodsId = goodsDO.getGoodsId();
+				if (goodsId > 0) { // if选型
+					GoodsInventoryDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);
+					if(tmpDO==null) {
+						//
+						this.saveGoodsInventory(goodsDO);
+					}
+					
 				}
 				
 			}//for
@@ -89,11 +108,17 @@ public class SynInitAndAsynUpdateDomainRepository {
 		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
 			for (GoodsSelectionDO srDO : selectionDOList) { // for
 				if (srDO.getId() > 0) { // if选型
-					//将商品id set到选型中
-					srDO.setGoodsId(goodsId);
-					srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-					srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
-					this.saveGoodsSelection(srDO);
+					long selectionId = srDO.getId();
+					//保存前检查下是否存在？
+					GoodsSelectionDO tmpDo = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
+					if(tmpDo==null) {
+						//将商品id set到选型中
+						srDO.setGoodsId(goodsId);
+						srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+						srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
+						this.saveGoodsSelection(srDO);
+					}
+					
 				}
 				
 			}//for
@@ -105,10 +130,15 @@ public class SynInitAndAsynUpdateDomainRepository {
 		
 		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
 			for (GoodsSelectionDO srDO : selectionDOList) { // for
-				if (srDO.getId() > 0) { // if选型
+				long selectionId = srDO.getId();
+				if (selectionId > 0) { // if选型
 					//将商品id set到选型中
-					srDO.setGoodsId(goodsId);
-					this.saveGoodsSelection(srDO);
+					GoodsSelectionDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
+					if(tmpDO==null) {
+						srDO.setGoodsId(goodsId);
+						this.saveGoodsSelection(srDO);
+					}
+					
 				}
 				
 			}//for
@@ -255,11 +285,16 @@ public class SynInitAndAsynUpdateDomainRepository {
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
 				
 				if (sDO.getSuppliersId() > 0) { // if分店
-					//sDO.setId(sequenceUtil.getSequence(SEQNAME.seq_suppliers));
-					sDO.setGoodsId(goodsId);
-					sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
-					sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
-					this.saveGoodsSuppliers(sDO);
+					//sDO.setId(sequenceUtil.getSequence(SEQNAME.seq_suppliers)); 
+					long suppliersId = sDO.getSuppliersId();
+					GoodsSuppliersDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(suppliersId);
+					if(tmpDO==null) {
+						sDO.setGoodsId(goodsId);
+						sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
+						sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
+						this.saveGoodsSuppliers(sDO);
+					}
+					
 				}
 				
 			}//for
@@ -276,8 +311,14 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public void saveGoodsWms(GoodsInventoryWMSDO wmsInventory) throws Exception{
 		if (wmsInventory!=null) { // if1
 			//for (GoodsInventoryWMSDO wmsDO : wmsInventoryList) { // for
-				if (!StringUtils.isEmpty(wmsInventory.getWmsGoodsId())) { // if分店
-					this.saveGoodsInventoryWMS(wmsInventory);
+			String wmsGoodsId = wmsInventory.getWmsGoodsId();
+			
+				if (!StringUtils.isEmpty(wmsGoodsId)) { // if分店
+					GoodsInventoryWMSDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
+					if(tmpDO==null) {
+						this.saveGoodsInventoryWMS(wmsInventory);
+					}
+					
 				}
 				
 			//}//for
