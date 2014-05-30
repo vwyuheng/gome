@@ -90,6 +90,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		CreateInventoryResultEnum resultEnum = null;
 		try {
+			
 			// 初始化检查
 			resultEnum = this.initCheck();
 			if(goodsId!=null&&goodsId>0) {
@@ -118,9 +119,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if (selectionInventory != null) {
 					this.oriselOrSuppwfval = selectionInventory
 							.getWaterfloodVal();
-				} else {
+				} /*else {
 					return CreateInventoryResultEnum.IS_EXISTED;
-				}
+				}*/
 			} else if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
 					.getCode())) {
 				this.suppliersId = Long.valueOf(id);
@@ -132,9 +133,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if (suppliersInventory != null) {
 					this.oriselOrSuppwfval = suppliersInventory
 							.getWaterfloodVal();
-				} else {
+				} /*else {
 					return CreateInventoryResultEnum.IS_EXISTED;
-				}
+				}*/
 			}
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
