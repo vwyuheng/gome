@@ -97,9 +97,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if (inventoryDO != null) {
 					this.originalgoodswfVal = inventoryDO.getWaterfloodVal();
-				} else {
+				} /*else {
 					return CreateInventoryResultEnum.IS_EXISTED;
-				}
+				}*/
 			}
 			
 			// 真正的业务检查处理
