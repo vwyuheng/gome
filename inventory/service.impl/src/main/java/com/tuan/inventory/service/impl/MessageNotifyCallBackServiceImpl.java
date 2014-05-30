@@ -131,7 +131,9 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			adjustWaterfloodParam.setType(ResultStatusEnum.GOODS_SELF.getCode());
 			String num= data.get("add_sales");
 			adjustWaterfloodParam.setNum(Integer.parseInt(num));
+			log.info("addsales start");
 			goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
+			log.info("addsales end");
 			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 		}
 		
