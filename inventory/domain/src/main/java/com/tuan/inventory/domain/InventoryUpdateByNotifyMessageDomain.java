@@ -2,6 +2,8 @@ package com.tuan.inventory.domain;
 
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -9,7 +11,6 @@ import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.dao.data.GoodsUpdateNumberDO;
 import com.tuan.inventory.domain.repository.GoodUpdateNumberDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
-import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
 import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
@@ -45,14 +46,14 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 				goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
 				log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
 				List<SelectionNotifyMessageParam> selectionRelation =param.getSelectionRelation();
-				if(null!=selectionRelation){
+				if(!CollectionUtils.isEmpty(selectionRelation)){
 					for (SelectionNotifyMessageParam selectionNotifyMessageParam : selectionRelation) {
 						goodsUpdateNumberDO.setLeftNum(selectionNotifyMessageParam.getLeftNumber());
 						goodsUpdateNumberDO.setTotalNum(selectionNotifyMessageParam.getTotalNumber());
 						goodsUpdateNumberDO.setId(selectionNotifyMessageParam.getId());
 						goodUpdateNumberDomainRepository.updateSelectionRelationNumber(goodsUpdateNumberDO);
 						String wmsGoodsId=selectionNotifyMessageParam.getWmsGoodsId();
-						if(null!=wmsGoodsId){
+						if(!StringUtils.isEmpty(wmsGoodsId)){
 							Long wmsId=Long.parseLong(wmsGoodsId);
 							if(wmsId>0){
 							goodsUpdateNumberDO.setId(wmsId);
@@ -64,7 +65,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 							.addMetaData("size",selectionRelation.size()).toJson());
 				}
 				List<SuppliersNotifyMessageParam> suppliersRelation =param.getSuppliersRelation();
-				if(null!=suppliersRelation){
+				if(!CollectionUtils.isEmpty(suppliersRelation)){
 					for (SuppliersNotifyMessageParam suppliersNotifyMessageParam : suppliersRelation) {
 						goodsUpdateNumberDO.setLeftNum(suppliersNotifyMessageParam.getLeftNumber());
 						goodsUpdateNumberDO.setTotalNum(suppliersNotifyMessageParam.getTotalNumber());

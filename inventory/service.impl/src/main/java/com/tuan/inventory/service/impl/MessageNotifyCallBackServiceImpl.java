@@ -152,7 +152,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		String redis_tokenid = goodsInventoryDomainRepository
 				.queryToken(tokenKey + "_" + String.valueOf(goodsId));
 		log.info(lm.setMethod(method).addMetaData("redis_tokenid", redis_tokenid).toJson());
-		if (null == redis_tokenid) {
+		if (StringUtils.isEmpty(redis_tokenid)) {
 			return true;
 		} else {
 			if (Integer.valueOf(redis_tokenid) < Integer.valueOf(tokenid)) {
