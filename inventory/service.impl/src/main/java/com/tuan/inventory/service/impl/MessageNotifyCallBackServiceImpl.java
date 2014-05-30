@@ -21,6 +21,7 @@ import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryRecordParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
+import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
 import com.tuan.notifyserver.core.cclient.ConsumerReceiver;
 import com.tuan.notifyserver.core.connect.net.pojo.Message;
@@ -132,8 +133,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			String num= data.get("add_sales");
 			adjustWaterfloodParam.setNum(Integer.parseInt(num));
 			log.info("addsales start");
-			goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
-			log.info("addsales end");
+			InventoryCallResult inventoryCallResult= goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
+			log.info("addsales end inventoryCallResult="+inventoryCallResult.getCode());
 			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
 		}
 		
