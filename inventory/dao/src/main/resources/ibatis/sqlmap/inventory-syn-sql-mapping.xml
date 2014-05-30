@@ -93,7 +93,7 @@
 	jeehe_inventory_wms wms WHERE wms.wms_goods_id =#wmsGoodsId:VARCHAR#
 	</select>
 	 <!-- 根据分店id获取商品分店库存信息  -->	
-	<select id="selectSuppliersInventoryBySuppId" resultMap="GoodsSuppliersResult"  parameterClass="java.lang.Integer">
+	<select id="selectSuppliersInventoryBySuppId" resultMap="GoodsSuppliersResult"  parameterClass="java.lang.Long">
 	SELECT 
 	supp.id,
 	supp.goods_id,
