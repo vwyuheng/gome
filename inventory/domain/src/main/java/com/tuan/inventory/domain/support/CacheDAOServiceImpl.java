@@ -194,12 +194,12 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 				//Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
 				//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
 				//jsonMember);
-		boolean success = false;
+		//boolean success = false;
 		String queueKeyId = String.valueOf(queueDO.getId());
-		if(StringUtils.isNotEmpty(queueKeyId)) {
-			success = this.redisCacheUtil.setexAndzadd(QueueConstant.QUEUE_KEY_MEMBER + ":"+ queueKeyId, 
+		//if(StringUtils.isNotEmpty(queueKeyId)) {
+			boolean	success = this.redisCacheUtil.setexAndzadd(QueueConstant.QUEUE_KEY_MEMBER + ":"+ queueKeyId, 
 					QueueConstant.QUEUE_SEND_MESSAGE, queueDO);
-		}
+		//}
 		if(success) {
 			return queueKeyId;
 		}else {
