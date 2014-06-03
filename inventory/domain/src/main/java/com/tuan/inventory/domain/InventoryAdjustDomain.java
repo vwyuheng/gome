@@ -408,7 +408,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"adjustInventory error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
