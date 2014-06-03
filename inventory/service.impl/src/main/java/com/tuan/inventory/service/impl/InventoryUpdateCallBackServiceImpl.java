@@ -64,6 +64,7 @@ public class InventoryUpdateCallBackServiceImpl extends TuanServiceTemplateImpl
 					}
 				}, null);
 		final int resultCode = callBackResult.getResultCode();
+		log.info(lm.setMethod(method).addMetaData("resultCode", resultCode).toJson());
 		if (resultCode == 0) {
 			return true;
 		}

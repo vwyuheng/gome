@@ -87,8 +87,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setTotalNumber(Integer.parseInt(data.get("totalNumber")));
 				param.setUserId(data.get("userId"));
 				param.setWaterfloodVal(Integer.parseInt(data.get("waterfloodVal")));
-				goodsInventoryUpdateService.createInventory(clientIp,clientName,param,null);
-				log.info(lm.setMethod(method).addMetaData("updatetraget", "createstock").toJson());
+				InventoryCallResult inventoryCallResult = goodsInventoryUpdateService.createInventory(clientIp,clientName,param,null);
+				log.info(lm.setMethod(method).addMetaData("updatetraget", "createstock").addMetaData("resultCode", inventoryCallResult.getCode()).toJson());
 			}
 		}
 		//修改物流单的关系
@@ -104,8 +104,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setIsBeDelivery(data.get("isBeDelivery"));
 				param.setTokenid(tokenId);
 				param.setWmsGoodsId(data.get("wmsGoodsId"));
-				goodsInventoryUpdateService.updateWmsData(clientIp,clientName,param,null);
-				log.info(lm.setMethod(method).addMetaData("updatetraget", "upwmsdata").toJson());
+				InventoryCallResult inventoryCallResult=goodsInventoryUpdateService.updateWmsData(clientIp,clientName,param,null);
+				log.info(lm.setMethod(method).addMetaData("updatetraget", "upwmsdata").addMetaData("resultCode", inventoryCallResult.getCode()).toJson());
 			}
 		}
 		//修改库存
@@ -121,8 +121,8 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setTokenid(tokenId);
 				param.setTotalnum(Integer.parseInt(data.get("totalnum")));
 				param.setType(data.get("type"));
-				goodsInventoryUpdateService.overrideAdjustInventory(clientIp,clientName,param,null);
-				log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).toJson());
+				InventoryCallResult inventoryCallResult=goodsInventoryUpdateService.overrideAdjustInventory(clientIp,clientName,param,null);
+				log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).addMetaData("resultCode", inventoryCallResult.getCode()).toJson());
 			}
 		}
 		//注水
@@ -134,8 +134,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 			adjustWaterfloodParam.setNum(Integer.parseInt(num));
 			log.info("addsales start");
 			InventoryCallResult inventoryCallResult= goodsInventoryUpdateService.adjustmentWaterflood(clientIp,clientName,adjustWaterfloodParam,null);
-			log.info("addsales end inventoryCallResult="+inventoryCallResult.getCode());
-			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").toJson());
+			log.info(lm.setMethod(method).addMetaData("updatetraget", "addsales").addMetaData("resultCode", inventoryCallResult.getCode()).toJson());
 		}
 		
 	}
