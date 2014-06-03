@@ -39,7 +39,7 @@ public class InitCacheDomainRepository {
 		try {
 			srDo = goodTypeDomainRepository.selectSelectionRelationBySrId(id);
 		} catch (Exception e) {
-			log.error("NullCacheLoadService:goodTypeDomainRepository.selectSelectionRelationBySrId invoke error [SelectionRelationId="
+			log.error("InitCacheDomainRepository.getCacheSelectionRelationInfoById invoke error [SelectionRelationId="
 					+ id + "]", e);
 		}
 		if (srDo == null) {
@@ -115,7 +115,7 @@ public class InitCacheDomainRepository {
 		try {
 			srDo = goodTypeDomainRepository.selectSelectionRelationBySrId(id);
 		} catch (Exception e) {
-			log.error("NullCacheLoadService:goodTypeDomainRepository.selectSelectionRelationBySrId invoke error [SelectionRelationId="
+			log.error("InitCacheDomainRepository.getSelectionRelationDOById invoke error [SelectionRelationId="
 					+ id + "]", e);
 		}
 		if (srDo == null) {
