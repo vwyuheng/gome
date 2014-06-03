@@ -3,14 +3,12 @@ package com.tuan.inventory.domain.support.jedistools;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisSentinelPool;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
 import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
+import com.tuan.inventory.domain.support.logs.LocalLogger;
 
 /**
  * redis组件:模板方法,统一管理redis连接资源的申请与释放
@@ -19,8 +17,8 @@ import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
  */
 public class JedisFactory extends RedisBaseObject
 {
-	//protected static Logger m_logger = Logger.getLogger(JedisFactory.class.getName());
-	protected static Log m_logger = LogFactory.getLog(JedisFactory.class.getName());
+	private final static LocalLogger m_logger = LocalLogger.getLog("CACHE.ERROR");
+	//protected static Log m_logger = LogFactory.getLog(JedisFactory.class.getName());
 	/**
 	 * spring 注入的 The connection pool.
 	 */
