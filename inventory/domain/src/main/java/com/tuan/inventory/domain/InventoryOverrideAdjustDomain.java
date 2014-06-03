@@ -200,10 +200,16 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					if (inventoryDO != null) {
 						goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
-						//调整的剩余库存量
-						int adjustnum =  afttotalnum - preleftnum;
-						//计算剩余库存调整后的数量量
-						aftleftnum = preleftnum+adjustnum;
+						
+						if(afttotalnum>preleftnum) {  //计算剩余库存
+							//调整的剩余库存量
+							int adjustnum =  afttotalnum - preleftnum;
+							//计算剩余库存调整后的数量量
+							aftleftnum = preleftnum+adjustnum;
+						}else {
+							aftleftnum = afttotalnum;
+						}
+						
 						//此时调整后数量检查
 						if(aftleftnum<0) {
 							aftleftnum = 0;
