@@ -221,7 +221,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						inventoryDO.setLeftNumber(aftleftnum);
 						// 调整商品总库存数量
 						inventoryDO.setTotalNumber(afttotalnum);
-						//清楚选型关系
+						//清除选型关系
+						inventoryDO.setWmsId(0l);
 						inventoryDO.setGoodsSelectionIds("");
 						if (inventoryDO.getLimitStorage() == 0&&inventoryDO.getTotalNumber() != 0) {
 							inventoryDO.setLimitStorage(1); // 更新数据库用
