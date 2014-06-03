@@ -115,28 +115,32 @@ public class JedisFactory extends RedisBaseObject
     {
     	// catch exception and gracefully fall back.  
     	Jedis j = null;
+    	T ret = null;
     	try 
     	{
     		j = getRes();
-    		T ret = work.work(j);
-    		returnRes(j);
-    		return ret;
+    		ret = work.work(j);
+    		//returnRes(j);
+    		//return ret;
     	}catch (CacheRunTimeException ce) {  //捕获自定义运行时异常
     		returnBrokenRes(j);
     		j = null;
+    		ret = null;
     		m_logger.error("jedisFactory.withJedisDo invoke error", ce);
-    		return null;
+    		//return null;
     	}
     	catch (Exception e)  //其他异常
     	{
     		returnBrokenRes(j);
     		j = null;
+    		ret = null;
     		m_logger.error("jedisFactory.withJedisDo invoke error", e);
-    		return null;
-    	}/*finally {
+    		//return null;
+    	}finally {
     		if(j!=null) 
     			returnRes(j);
-    	}*/
+    	}
+    	return ret; 
     }        
     
     public interface Work<Return,Param>
