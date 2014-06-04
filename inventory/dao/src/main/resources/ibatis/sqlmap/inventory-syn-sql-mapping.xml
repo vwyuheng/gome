@@ -28,7 +28,7 @@
 	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
-	     <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
+	     <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
 	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
 	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   
@@ -45,7 +45,7 @@
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
 	    <result column="add_goods_selection" property="isAddGoodsSelection" jdbcType="INTEGER" />
 	    <result column="direct_consumption" property="isDirectConsumption" jdbcType="INTEGER" />
-	     <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
+	     <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	 
 	 <!-- 分店库存信息-->	
@@ -57,7 +57,7 @@
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
-	    <result column="waterflood_val" property="waterfloodVal" jdbcType="INTEGER" />
+	    <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	  <!-- 记录库存日志流水信息-->	
 	<resultMap id="GoodsInventoryActionResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO">
@@ -101,7 +101,7 @@
 	supp.total_num,
 	supp.left_num,
 	supp.limit_storage,
-	supp.waterflood_val
+	supp.attach_sale
 	
 	FROM jeehe_inventory_suppliers supp
 	WHERE
@@ -119,7 +119,7 @@
 	sel.suppliers_sub_id,
 	sel.suppliers_inventory_id,
 	sel.limit_storage,
-	sel.waterflood_val,
+	sel.attach_sale,
 	sel.wms_goods_id
 	FROM jeehe_inventory_selection sel
 	where
@@ -137,7 +137,7 @@
 	ga.total_num,
 	ga.left_num,
 	ga.limit_storage,
-	ga.waterflood_val
+	ga.attach_sale
 	FROM
 	jeehe_inventory_attribute ga 
 	where
@@ -177,7 +177,7 @@
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
 		<isNotNull prepend="," property="waterfloodVal">
-			waterflood_val = #waterfloodVal:INTEGER#
+			attach_sale = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>
       where good_type_id = #goodTypeId:BIGINT#
@@ -299,7 +299,7 @@
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
 		<isNotNull prepend="," property="waterfloodVal">
-			waterflood_val = #waterfloodVal:INTEGER#
+			attach_sale = #waterfloodVal:INTEGER#
 		</isNotNull>
       </dynamic>
       where suppliers_id = #suppliersId:INTEGER#
@@ -314,7 +314,7 @@
     total_num, 
     left_num, 
     limit_storage, 
-    waterflood_val
+    attach_sale
    
    )
     values (
@@ -352,7 +352,7 @@
 			left_num = #leftNumber:INTEGER#
 		</isNotNull>
 		<isNotNull prepend="," property="waterfloodVal">
-			waterflood_val = #waterfloodVal:INTEGER#
+			attach_sale = #waterfloodVal:INTEGER#
 		</isNotNull>
 		<isNotNull prepend="," property="suppliersSubId">
 			suppliers_sub_id = #suppliersSubId:INTEGER#
@@ -377,7 +377,7 @@
     total_num, 
     left_num, 
     limit_storage, 
-    waterflood_val,
+    attach_sale,
     suppliers_sub_id,
     suppliers_inventory_id,
     wms_goods_id
@@ -421,7 +421,7 @@
 			goods_wms_id = #wmsId:BIGINT#
 		</isNotNull>
 		<isNotNull prepend="," property="waterfloodVal">
-			waterflood_val = #waterfloodVal:INTEGER#
+			attach_sale = #waterfloodVal:INTEGER#
 		</isNotNull>
 		<isNotNull prepend="," property="limitStorage">
 			limit_storage = #limitStorage:INTEGER#
@@ -448,7 +448,7 @@
     limit_storage, 
     add_goods_selection,
     direct_consumption,
-    waterflood_val
+    attach_sale
    )
     values (
             #goodsId:BIGINT#,
