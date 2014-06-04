@@ -477,7 +477,7 @@
     goods_id, 
     order_id, 
     user_id, 
-    type, 
+    business_type, 
     item,
     create_time,
     inventory_vara,
