@@ -18,10 +18,7 @@ public class UpdateInventoryRestParam extends TuanBaseDO {
 	private String goodsSelection;
 	//分店
 	private String goodsSuppliers;
-//	//选型
-//	private List<GoodsSelectionRestParam> goodsSelection;
-//	//分店
-//	private List<GoodsSuppliersRestParam> goodsSuppliers;
+
 	public String getUserId() {
 		return userId;
 	}
