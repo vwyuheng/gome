@@ -799,7 +799,7 @@ public class RedisCacheUtil {
 	 * @param value
 	 * @return
 	 */
-	public List<Long> hincrByAndhincrBy(final String key, final String field1,final String field2,final String field3, final long value1,final long value2) {
+	public List<Long> hincrByAndhincrBy(final String key,final String key2, final String field1,final String field2,final String field3, final String field4, final long value1,final long value2) {
 		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
 			@Override
 			public List<Long> work(Jedis j) throws Exception {
@@ -818,6 +818,9 @@ public class RedisCacheUtil {
 					p.hincrBy(key, field2, value1);
 					//调整是否限制库存标识
 					p.hincrBy(key, field3, value2);
+					
+					//库存基表库存总量
+					p.hincrBy(key2, field4, value1);
 					//return j.hincrBy(key,field,value);
 					// 执行事务
 					//ts.exec();
@@ -1130,4 +1133,68 @@ public class RedisCacheUtil {
 		});
 
 	}
+	
+	
+	public List<Long> hincrBy2Key(final String inventoryKey, final String baseKey,
+			final String itField1,final String itField2,final String bField1,
+			final long itValue1,final long itValue2,
+			final long bValue1) {
+		return jedisFactory.withJedisDo(new JWork<List<Long>>() {
+			@Override
+			public List<Long> work(Jedis j) throws Exception {
+				if (j == null)
+					return null;
+				List<Long> result = new ArrayList<Long>();
+				//Transaction ts = null;
+				Pipeline  p = null;
+				try {
+					//开启事务
+					//ts = j.multi(); 
+					 p = j.pipelined();		
+					//剩余库存更新
+					p.hincrBy(inventoryKey, itField1, itValue1);
+					//销量更新
+					p.hincrBy(inventoryKey, itField2, itValue2);
+					//库存基本表销量更新
+					p.hincrBy(baseKey, bField1, bValue1);
+					//库存基本表总量更新
+					// 执行事务
+					//ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
+					for(Object resp : resultlist){  
+						long rest = (Long) resp;
+						result.add(rest);
+			        }  
+				} catch (Exception e) {
+					result = null;
+					// 销毁管道
+					if (p != null)
+						p.discard();
+					// 销毁事务
+					//if (ts != null)
+						//ts.discard();
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.hincrByAndhincrBy");
+					log.error(lm.addMetaData("inventoryKey", inventoryKey)
+							.addMetaData("itField1", itField1)
+							.addMetaData("itField2", itField2)
+							.addMetaData("itValue1", itValue1)
+							.addMetaData("itValue2", itValue2)
+							.addMetaData("baseKey", baseKey)
+					        .addMetaData("bField1", bField1)
+							.addMetaData("bValue1", bValue1)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.hincrByAndhincrBy("+inventoryKey+","+itField1+","+itValue1+","+itField2+","+itValue2+","+baseKey+","+bField1+","+bValue1+") error!",e);
+				}
+				return result;
+			}
+		});
+		
+	}
+	
+	
+	
 }

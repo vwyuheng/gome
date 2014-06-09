@@ -368,6 +368,12 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				
 //					 this.goodsInventoryDomainRepository.updateFields(goodsId, hash);
 				//}
+				String goodsBaseId = param.getGoodsBaseId();
+				if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
+					inventoryInfoDO.setGoodsBaseId(Long.valueOf(goodsBaseId));
+				}else{
+					writeSysDeductLog(lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsBaseId error", goodsBaseId), true);
+				}
 				
 				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO);
 				PublicCodeEnum publicCodeEnum = callResult
@@ -498,6 +504,10 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("更新物流相关数据");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+			String goodsBaseId = param.getGoodsBaseId();
+			if(!StringUtils.isEmpty(goodsBaseId)&&StringUtils.isNumeric(goodsBaseId)){
+				updateActionDO.setGoodsBaseId(Long.valueOf(goodsBaseId));
+			}
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
 			this.updateActionDO = null;

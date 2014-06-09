@@ -31,8 +31,9 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private UpdateWmsDataParam param;
 	private UpdateRequestPacket packet;
+	private String goodsBaseId;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
-	public UpdateWmsDataDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds,LogModel lm,Message messageRoot){
+	public UpdateWmsDataDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);
 		this.goodsId = JsonStrVerificationUtils.validateStr(goodsId);
@@ -41,7 +42,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 		this.goodsTypeIds = JsonStrVerificationUtils.validateStr(goodsTypeIds);
 		this.goodsSelectionIds = JsonStrVerificationUtils.validateStr(goodsSelectionIds);
 		this.isBeDelivery = JsonStrVerificationUtils.validateStr(isBeDelivery);
-		
+		this.goodsBaseId =goodsBaseId;
 		this.lm = lm;
 		this.messageRoot = messageRoot;
 		makeParameterMap(this.parameterMap);
@@ -58,6 +59,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 		param.setIsBeDelivery(JsonStrVerificationUtils.validateStr(isBeDelivery));
 		param.setGoodsTypeIds(goodsTypeIds);
 		param.setGoodsSelectionIds(goodsSelectionIds);
+		param.setGoodsBaseId(goodsBaseId);
 		return param;
 	}
 	@Override
@@ -126,6 +128,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("isBeDelivery", isBeDelivery);
 		parameterMap.put("goodsTypeIds", goodsTypeIds);
 		parameterMap.put("goodsSelectionIds", goodsSelectionIds);
+		parameterMap.put("goodsBaseId", goodsBaseId);
 		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}

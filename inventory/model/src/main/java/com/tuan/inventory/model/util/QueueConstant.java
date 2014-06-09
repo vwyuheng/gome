@@ -12,6 +12,7 @@ public class QueueConstant {
 	public final static String QUEUE_LOGS_MESSAGE="queue:jobs.logs";//异步触发记录日志流水的队列名称
 	
 	//库存在redis中存储类型，关联key的前缀表示
+	public final static String GOODS_BASE_INVENTORY_PREFIX="hash_goods_base.inventory";//商品总库存基本信息前缀
 	public final static String GOODS_INVENTORY_PREFIX="hash_goods.inventory";//商品总库存前缀
 	public final static String GOODS_SELECTION_RELATIONSHIP_PREFIX="set_goods_selection.relation";//商品id与选型id关联关系前缀
 	public final static String GOODS_SUPPLIERS_RELATIONSHIP_PREFIX="set_goods_suppliers.relation";//商品id与分店id关联关系前缀

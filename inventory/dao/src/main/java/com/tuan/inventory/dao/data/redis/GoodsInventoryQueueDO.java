@@ -16,6 +16,7 @@ public class GoodsInventoryQueueDO extends TuanBaseDO {
 	private Long goodsId;// 商品ID(FK)
 	private Long orderId;// 订单id
 	private Long userId ;//用户id
+	private Long goodsBaseId;
 	//需扣减的商品库存量
 	private int deductNum  = 0;
 	//原库存
@@ -83,6 +84,12 @@ public class GoodsInventoryQueueDO extends TuanBaseDO {
 	public void setSuppliersParam(
 			List<GoodsSelectionAndSuppliersResult> suppliersParam) {
 		this.suppliersParam = suppliersParam;
+	}
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 
 	

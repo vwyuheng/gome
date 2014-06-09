@@ -21,6 +21,7 @@ public class UpdateInventoryParam extends TuanBaseDO {
 	private Integer leftNumber;// 当前剩余数库存默认值:0
 	private Integer waterfloodVal;  //注水值
 	private int num;
+	private String goodsBaseId;// 商品库存基本信息ID
 	//选型
 	private List<GoodsSelectionModel> goodsSelection;
 	//分店
@@ -84,6 +85,12 @@ public class UpdateInventoryParam extends TuanBaseDO {
 	}
 	public void setGoodsSuppliers(List<GoodsSuppliersModel> goodsSuppliers) {
 		this.goodsSuppliers = goodsSuppliers;
+	}
+	public String getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(String goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

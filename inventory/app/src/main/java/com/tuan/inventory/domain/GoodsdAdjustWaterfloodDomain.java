@@ -34,9 +34,10 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private AdjustWaterfloodParam param;
 	private UpdateRequestPacket packet;
+	private String goodsBaseId;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
 	
-	public GoodsdAdjustWaterfloodDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot){
+	public GoodsdAdjustWaterfloodDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.goodsId = goodsId;
 		this.id = id;
@@ -44,6 +45,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 		this.type = type;
 		this.num = StringUtils.isEmpty(num)?0:Integer.valueOf(num);
 		this.lm = lm;
+		this.goodsBaseId = goodsBaseId;
 		this.messageRoot = messageRoot;
 		makeParameterMap(this.parameterMap);
 		this.param = this.fillAdjustWParam();
@@ -57,6 +59,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 		param.setUserId(userId);
 		param.setType(type);
 		param.setNum(num);
+		param.setGoodsBaseId(goodsBaseId);
 		return param;
 	}
 	@Override
@@ -121,6 +124,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("userId", userId);
 		parameterMap.put("type", type);
 		parameterMap.put("num", String.valueOf(num));
+		parameterMap.put("goodsBaseId", goodsBaseId);
 		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}

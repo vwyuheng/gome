@@ -1,6 +1,7 @@
 package com.tuan.inventory.dao;
 
 import com.tuan.inventory.dao.data.GoodsUpdateNumberDO;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 
 
 /**
@@ -34,4 +35,23 @@ public interface GoodNumUpdateDAO {
 	 */
 	public void updataGoodsWmsNumByID(GoodsUpdateNumberDO goodsUpdateNumberDO);
 	
+	/**
+	 * @Title: updataGoodsBaseNumByID
+	 * @Description: 更新商品基本信息的总销量和库存信息
+	 * @param GoodsUpdateNumberDO void
+	 */
+	public void updataGoodsBaseNumByID(GoodsUpdateNumberDO goodsUpdateNumberDO);
+	/**
+	 * @Title: selectGoodBaseBygoodsId
+	 * @Description: 通过goodsBaseId查询商品的基本信息的总销量和库存信息
+	 * @param goodsBaseId return GoodsBaseInventoryDO
+	 */
+	public GoodsBaseInventoryDO selectGoodBaseBygoodsId(long goodsBaseId);
+	
+	/**
+	 * @Title: updataGoodsNumByID
+	 * @Description: 通过goodsBaseId修改商品销量
+	 * @param goodsUpdateNumberDO void 
+	 */
+	public void updataGoodsNumByID(GoodsUpdateNumberDO goodsUpdateNumberDO);
 }

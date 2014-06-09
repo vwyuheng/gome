@@ -13,14 +13,15 @@
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
 	    <result column="add_goods_selection" property="isAddGoodsSelection" jdbcType="INTEGER" />
 	    <result column="direct_consumption" property="isDirectConsumption" jdbcType="INTEGER" />
-	     <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
+	    <result column="goods_base_id" property="goodsBaseId" jdbcType="BIGINT" />
+	    <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
 	 </resultMap>
 	
 	<!-- 通过商品ID查询非选型实物商品的库存  -->	
 	<select id="selectRedisInventoryByGoodsId" resultMap="GoodsInventoryResult"  parameterClass="java.lang.Long">
-	select goods_id,goods_wms_id,good_selection_ids,0 AS user_id,total_num,left_num,limit_storage,add_goods_selection,direct_consumption,0 AS attach_sale
-	from (select ga.goods_id,ga.goods_wms_id,ga.good_type_ids AS good_selection_ids,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption
-		from jeehe_goods_attribute ga  where ga.goods_id = #goodsId:BIGINT#) AS tmp
+	SELECT goods_id,goods_base_id,goods_wms_id,good_selection_ids,0 AS user_id,total_num,left_num,limit_storage,add_goods_selection,direct_consumption,0 AS waterflood_val
+	FROM (SELECT ga.goods_id,gd.goods_base_id,ga.goods_wms_id,ga.good_type_ids AS good_selection_ids,ga.total_num,ga.left_num,ga.limit_storage ,ga.add_goods_selection,ga.direct_consumption
+	FROM jeehe_goods_attribute ga ,jeehe_goods gd WHERE ga.goods_id=gd.goods_id AND ga.goods_id = #goodsId:BIGINT#) AS tmp
 	</select>
 	
 	<!-- 更加物流编码查询商品库存信息 -->

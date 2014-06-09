@@ -12,6 +12,7 @@ public class UpdateInventoryRestParam extends TuanBaseDO {
 	private String userId;
 	private String goodsId;// 商品ID(FK)
 	private String orderId; //订单id [记录日志用,便于查找属于哪个订单]
+	private String goodsBaseId;
 	private int num;// 扣减的库存
 	//选型
 	private String goodsSelection;
@@ -57,6 +58,12 @@ public class UpdateInventoryRestParam extends TuanBaseDO {
 	}
 	public void setGoodsSuppliers(String goodsSuppliers) {
 		this.goodsSuppliers = goodsSuppliers;
+	}
+	public String getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(String goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

@@ -5,7 +5,7 @@ package com.tuan.inventory.domain.support.enu;
  * @date 2014/3/13
  */
 public enum HashFieldEnum {
-	totalNumber,leftNumber,limitStorage,isAddGoodsSelection,wmsGoodsId,
+	totalNumber,leftNumber,limitStorage,isAddGoodsSelection,wmsGoodsId,goodsSaleCount,
 	isDirectConsumption,waterfloodVal,isBeDelivery,goodsSelectionIds,wmsId,suppliersSubId,suppliersInventoryId;
 	
 	public static void main(String[] args) {

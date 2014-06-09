@@ -26,13 +26,13 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Test
 	public void testUpdateGoodsInventory(){
-		GoodsInventoryDO goodsDO = new GoodsInventoryDO();
-		goodsDO.setGoodsId(1l);
-		goodsDO.setLeftNumber(99);
-		goodsDO.setLimitStorage(1);
-		goodsDO.setTotalNumber(100);
-		goodsDO.setWaterfloodVal(10);
-		synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+//		GoodsInventoryDO goodsDO = new GoodsInventoryDO();
+//		goodsDO.setGoodsId(1l);
+//		goodsDO.setLeftNumber(99);
+//		goodsDO.setLimitStorage(1);
+//		goodsDO.setTotalNumber(100);
+//		goodsDO.setWaterfloodVal(10);
+//		synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
 	}
 	
 	

@@ -25,9 +25,9 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<Boolean> saveGoodsSuppliers(long goodsId,GoodsSuppliersDO suppliersDO) throws Exception ;
 	
 	public CallResult<Boolean> updateGoodsInventory(long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) throws Exception;
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(Long goodsId, int adjustNum,int limitStorage,GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(Long goodsId, final Long goodBaseId,int adjustNum,int limitStorage,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(GoodsInventoryDO goodsDO) throws Exception;
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,String goodsSelectionIds,GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,final long goodBaseId,String goodsSelectionIds,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,int adjustNum,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,GoodsSelectionDO selectionDO) throws Exception;
@@ -46,6 +46,8 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<GoodsInventoryWMSDO> selectIsOrNotGoodsWMSByGoodsId(long goodsId);
 	public CallResult<WmsIsBeDeliveryDO> selectWmsIsBeDeliveryResult(String wmsGoodsId);
 	public CallResult<List<GoodsInventoryDO>> selectInventoryList4Wms(String wmsGoodsId);
+	
+	
 	//删除
 	public CallResult<Integer> deleteGoodsInventory(long goodsId) throws Exception;
 	public CallResult<List<GoodsSelectionDO>> deleteBatchGoodsSelection(List<GoodsSelectionDO> selectionDOList) throws Exception;

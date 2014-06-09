@@ -28,14 +28,14 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 	//2:商品调整，4.选型库存调整 6.分店库存调整
 	private String type;
 	private int num;
-
+    private String goodsBaseId;
 	private LogModel lm;
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private AdjustInventoryParam param;
 	private UpdateRequestPacket packet;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
-	public GoodsdAdjustInventoryDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot){
+	public GoodsdAdjustInventoryDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.goodsId = goodsId;
 		this.id = id;
@@ -44,6 +44,7 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 		this.num = StringUtils.isEmpty(num)?0:Integer.valueOf(num);
 		this.lm = lm;
 		this.messageRoot = messageRoot;
+		this.goodsBaseId =goodsBaseId;
 		makeParameterMap(this.parameterMap);
 		this.param = this.fillAdjustIParam();
 		
@@ -56,6 +57,7 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 		param.setUserId(userId);
 		param.setType(type);
 		param.setNum(num);
+		param.setGoodsBaseId(goodsBaseId);
 		return param;
 	}
 	@Override
@@ -119,6 +121,7 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("id", id);
 		parameterMap.put("userId", userId);
 		parameterMap.put("type", type);
+		parameterMap.put("goodsBaseId", goodsBaseId);
 		parameterMap.put("num", String.valueOf(num));
 		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);

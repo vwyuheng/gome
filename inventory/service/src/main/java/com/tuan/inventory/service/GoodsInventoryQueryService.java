@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.tuan.core.common.annotation.product.ProductCode;
 import com.tuan.core.common.annotation.product.ProductLogLevelEnum;
+import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
@@ -99,4 +100,15 @@ public interface GoodsInventoryQueryService {
 	@ProductCode(code = "00008", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	CallResult<WmsIsBeDeliveryModel> findWmsIsBeDeliveryByWmsGoodsId(final String clientIp, final String clientName, 
 			final String wmsGoodsId,final String isBeDelivery);
+	
+	/**
+	 * 根据商品基本id获取销量信息
+	 * @param clientIp
+	 * @param clientName
+	 * @param goodsBaseId
+	 * @return
+	 */
+	@ProductCode(code = "00009", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
+	CallResult<GoodsBaseModel> findSalesCountByGoodsBaseId(final String clientIp, final String clientName, 
+			final String goodsBaseId);
 }

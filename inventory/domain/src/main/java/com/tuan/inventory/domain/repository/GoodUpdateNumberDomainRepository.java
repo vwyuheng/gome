@@ -2,6 +2,7 @@ package com.tuan.inventory.domain.repository;
 
 import com.tuan.inventory.dao.GoodNumUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsUpdateNumberDO;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 
 /**
  * @author zhangbo
@@ -26,6 +27,22 @@ public class GoodUpdateNumberDomainRepository {
 
 		getGoodNumUpdateDAO().updateSuppliersInventoryNumber(goodsUpdateNumberDO);
 	}
+	
+	public void updataGoodsBaseNumber(GoodsUpdateNumberDO goodsUpdateNumberDO) {
+
+		getGoodNumUpdateDAO().updataGoodsBaseNumByID(goodsUpdateNumberDO);
+	}
+	
+	public GoodsBaseInventoryDO getGoodBaseBygoodsId(long goodsBaseId) {
+
+		return getGoodNumUpdateDAO().selectGoodBaseBygoodsId(goodsBaseId);
+	}
+	
+	public void updataGoodsNum(GoodsUpdateNumberDO goodsUpdateNumberDO) {
+
+		getGoodNumUpdateDAO().updataGoodsNumByID(goodsUpdateNumberDO);
+	}
+	
 	/**
 	 * 更新物流商品表库存
 	 * 
@@ -43,7 +60,5 @@ public class GoodUpdateNumberDomainRepository {
 	public void setGoodNumUpdateDAO(GoodNumUpdateDAO goodNumUpdateDAO) {
 		this.goodNumUpdateDAO = goodNumUpdateDAO;
 	}
-	
-
 	
 }

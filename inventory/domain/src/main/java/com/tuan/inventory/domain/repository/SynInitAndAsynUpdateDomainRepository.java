@@ -9,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -419,6 +420,15 @@ public class SynInitAndAsynUpdateDomainRepository {
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryWMSDO(wmsDO);
 	}
 	
+	
+	/**
+	 * 保存商品库存基表
+	 * @param wmsDO
+	 */
+	public void saveGoodsBaseInventoryDO(GoodsBaseInventoryDO baseInventoryDO) throws Exception{
+		this.synInitAndAsynUpdateDAO.insertGoodsBaseInventoryDO(baseInventoryDO);
+	}
+	
 	public void batchUpdateGoodsInventoryWMS(List<GoodsInventoryWMSDO> wmsList) throws Exception{
 		
 		if (!CollectionUtils.isEmpty(wmsList)) { // if1
@@ -441,5 +451,15 @@ public class SynInitAndAsynUpdateDomainRepository {
 		this.synInitAndAsynUpdateDAO.updateGoodsInventoryWMSDO(wmsDO);
 	}
 
+	/**
+	 * 更新商品库存基表
+	 * @param wmsDO
+	 */
+	public void updateGoodsBaseInventoryDO(GoodsBaseInventoryDO baseInventoryDO) throws Exception{
+		this.synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(baseInventoryDO);
+	}
 	
+	public GoodsBaseInventoryDO getGoodBaseBygoodsId(long goodsBaseId) {
+		return synInitAndAsynUpdateDAO.selectGoodBaseBygoodsId(goodsBaseId);
+	}
 }

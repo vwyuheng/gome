@@ -29,17 +29,18 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	//2:商品调整，4.选型库存调整 6.分店库存调整
 	private String type;
 	private int totalnum;
-
+	private String goodsBaseId;
 	private LogModel lm;
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private OverrideAdjustInventoryParam param;
 	private UpdateRequestPacket packet;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
-	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String id,String userId,String type,String totalnum,LogModel lm,Message messageRoot){
+	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String id,String userId,String type,String totalnum,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);
 		this.goodsId = goodsId;
+		this.goodsBaseId = goodsBaseId;
 		this.id = id;
 		this.userId = userId;
 		this.type = type;
@@ -59,6 +60,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		param.setUserId(userId);
 		param.setType(type);
 		param.setTotalnum(totalnum);
+		param.setGoodsBaseId(goodsBaseId);
 		return param;
 	}
 	@Override
@@ -123,6 +125,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		parameterMap.put("id", id);
 		parameterMap.put("userId", userId);
 		parameterMap.put("type", type);
+		parameterMap.put("goodsBaseId", goodsBaseId);
 		parameterMap.put("totalnum", String.valueOf(totalnum));
 		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);

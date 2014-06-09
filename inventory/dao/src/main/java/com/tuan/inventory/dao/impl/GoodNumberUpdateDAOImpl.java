@@ -4,6 +4,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.GoodNumUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsUpdateNumberDO;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 
 
 /**
@@ -14,30 +15,33 @@ import com.tuan.inventory.dao.data.GoodsUpdateNumberDO;
 public class GoodNumberUpdateDAOImpl extends SqlMapClientDaoSupport implements GoodNumUpdateDAO {
 	@Override
 	public void updateGoodsAttributesNumber(GoodsUpdateNumberDO goodsUpdateNumberDO) {
-//		getSqlMapClientTemplate().update("set_sql_model_user");
 		getSqlMapClientTemplate().update("updateGoodsAttributesNumberByGID", goodsUpdateNumberDO);
-//		getSqlMapClientTemplate().update("set_sql_model_sys");
 		
 	}
 	@Override
 	public void updateSelectionRelationNumber(
 			GoodsUpdateNumberDO goodsUpdateNumberDO) {
-//			getSqlMapClientTemplate().update("set_sql_model_user");
 			getSqlMapClientTemplate().update("updateSelectionRelationNumberBySID", goodsUpdateNumberDO);
-//			getSqlMapClientTemplate().update("set_sql_model_sys");
 	}
 	@Override
 	public void updateSuppliersInventoryNumber(
 			GoodsUpdateNumberDO goodsUpdateNumberDO) {
-//		getSqlMapClientTemplate().update("set_sql_model_user");
 		getSqlMapClientTemplate().update("updateSuppliersInventoryNumberBySiID", goodsUpdateNumberDO);	
-//		getSqlMapClientTemplate().update("set_sql_model_sys");
 	}	
 
 	public void updataGoodsWmsNumByID(GoodsUpdateNumberDO goodsUpdateNumberDO) {
-//		getSqlMapClientTemplate().update("set_sql_model_user");
 		getSqlMapClientTemplate().update("updataGoodsWmsNumByID", goodsUpdateNumberDO);
-//		getSqlMapClientTemplate().update("set_sql_model_sys");
 	}
 	
+	public void updataGoodsBaseNumByID(GoodsUpdateNumberDO goodsUpdateNumberDO) {
+		getSqlMapClientTemplate().update("updataGoodsBaseNumByID", goodsUpdateNumberDO);
+	}
+	
+	public GoodsBaseInventoryDO selectGoodBaseBygoodsId(long goodsBaseId) {
+		return (GoodsBaseInventoryDO) getSqlMapClientTemplate().queryForObject("selectGoodBaseBygoodsId", goodsBaseId);
+	}
+	
+	public void updataGoodsNumByID(GoodsUpdateNumberDO goodsUpdateNumberDO) {
+		getSqlMapClientTemplate().update("updataGoodsNumByID", goodsUpdateNumberDO);
+	}
 }

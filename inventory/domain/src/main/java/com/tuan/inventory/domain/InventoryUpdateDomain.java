@@ -49,6 +49,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSuppliersModel> suppliersList;
 	
 	private Long goodsId;
+	private Long goodsBaseId;
 	//private String wmsGoodsId;
 	private Long userId;
 	private boolean isEnough;
@@ -68,7 +69,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
 	// 当前库存
-	private Long resultACK;
+	private List<Long> resultACK;
 	private SequenceUtil sequenceUtil;
 
 	public InventoryUpdateDomain(String clientIp, String clientName,
@@ -243,7 +244,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}*/
 	
 	private boolean verifyInventory() {
-		if (resultACK >= 0) {
+		if (!CollectionUtils.isEmpty(resultACK)) {
 			return true;
 		} else {
 			return false;
@@ -306,8 +307,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("goodsDeductNum", goodsDeductNum).addMetaData("start", "start deduct inventory!");
 				writeSysDeductLog(lm,true);
 				// 扣减库存
+				
+				if(StringUtils.isEmpty(param.getGoodsBaseId())||!StringUtils.isNumeric(param.getGoodsBaseId())){
+					goodsBaseId=Long.valueOf(param.getGoodsBaseId());
+				}
 				resultACK = this.goodsInventoryDomainRepository
-						.updateGoodsInventory(goodsId, (-goodsDeductNum));
+						.updateGoodsInventory(goodsId,goodsBaseId, (-goodsDeductNum));
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("goodsDeductNum", goodsDeductNum).addMetaData("resultACK", resultACK).addMetaData("deduct,end", "end deduct inventory!");
 				writeSysDeductLog(lm,true);
 				// 校验库存
@@ -315,8 +320,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("rollback,start", "start rollback inventory!");
 					writeSysDeductLog(lm,true);
 					// 回滚库存
-					Long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
-							goodsId, (goodsDeductNum));
+					List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+							goodsId,goodsBaseId, (goodsDeductNum));
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("robackNum", goodsDeductNum).addMetaData("rollbackAck", rollbackAck).addMetaData("rollback,end", "end rollback inventory!");
 					writeSysDeductLog(lm,true);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
@@ -343,8 +348,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("rollback,start", "start rollback selection inventory!");
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚选型的
-						Long rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
-								goodsId, (goodsDeductNum));
+						List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
+								goodsId,goodsBaseId, (goodsDeductNum));
 						boolean rbackACK = this.goodsInventoryDomainRepository
 								.rollbackSelectionInventory(selectionParam);
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("resultAck", rollbackAck+",selectionRollback:"+rbackACK).addMetaData("rollback,end", "start rollback selection inventory!");
@@ -374,8 +379,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("rollback,start", "start rollback suppliers inventory!");
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚分店的
-						Long rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
-								goodsId, (goodsDeductNum));
+						List<Long> rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
+								goodsId,goodsBaseId, (goodsDeductNum));
 						boolean rbackACK4Supp = this.goodsInventoryDomainRepository
 								.rollbackSuppliersInventory(suppliersParam);
 						
@@ -492,6 +497,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			if(!StringUtils.isEmpty(param.getUserId())) {
 				this.userId = (Long.valueOf(param.getUserId()));
 			}
+			if(!StringUtils.isEmpty(param.getGoodsBaseId())) {
+				this.goodsBaseId = (Long.valueOf(param.getGoodsBaseId()));
+			}
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setUserId(userId);
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
@@ -520,6 +529,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		try {
 			queueDO.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
 			queueDO.setGoodsId(goodsId);
+			if(!StringUtils.isEmpty(param.getGoodsBaseId())){
+				queueDO.setGoodsBaseId(goodsBaseId);
+			}
 			if(!StringUtils.isEmpty(param.getOrderId())) {
 				queueDO.setOrderId(Long.valueOf(param.getOrderId()));
 			}

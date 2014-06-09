@@ -17,7 +17,7 @@ public class UpdateWmsDataParam extends TuanBaseDO {
 	private String goodsSelectionIds;  //共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2
 	private String isBeDelivery;  //物流仓库类型 0:wowo   1:shangjia
 	private int isAddGoodsSelection; // 商品是否添加配型 0：不添加；1：添加
-	
+	private String goodsBaseId;// 商品库存基本信息ID
 	
 	public String getGoodsId() {
 		return goodsId;
@@ -67,6 +67,12 @@ public class UpdateWmsDataParam extends TuanBaseDO {
 	}
 	public void setTokenid(String tokenid) {
 		this.tokenid = tokenid;
+	}
+	public String getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(String goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

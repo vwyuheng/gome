@@ -43,6 +43,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	private List<GoodsSelectionAndSuppliersResult> selectionParam;
 	private List<GoodsSelectionAndSuppliersResult> suppliersParam;
 	private Long goodsId;
+	private Long goodsBaseId;
 	private SequenceUtil sequenceUtil;
 	private boolean isConfirm;
 	private boolean isRollback;
@@ -92,6 +93,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 						.queryInventoryQueueDO(key);
 				if (this.queueDO != null) {
 					this.goodsId = queueDO.getGoodsId();
+					this.goodsBaseId = queueDO.getGoodsBaseId();
 					this.deductNum = queueDO.getDeductNum();
 					this.originalGoodsInventory = queueDO
 							.getOriginalGoodsInventory();
@@ -154,8 +156,8 @@ public class InventoryCallbackDomain extends AbstractDomain {
 					if (goodsId != null && goodsId > 0) {
 						lm.addMetaData("isRollback goods[" + (isRollback+":"+goodsId) + "]", goodsId+",deductNum:"+deductNum);
 						writeSysDeductLog(lm,true);
-						Long rollbackAftNum = this.goodsInventoryDomainRepository
-								.updateGoodsInventory(goodsId, (deductNum));
+						List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
+								.updateGoodsInventory(goodsId,goodsBaseId, (deductNum));
 					lm.addMetaData("isRollback after[" + (isRollback+":"+goodsId) + "]", goodsId+",rollbackAftNum:"+rollbackAftNum);
 					writeSysDeductLog(lm,true);
 					}
@@ -216,6 +218,10 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			if(goodsId!=null&&goodsId!=0) {
 				updateActionDO.setGoodsId(goodsId);
 			}
+			if(goodsBaseId!=null&&goodsBaseId!=0) {
+				updateActionDO.setGoodsBaseId(goodsBaseId);
+			}
+			
 			updateActionDO.setBusinessType("");
 			updateActionDO.setOriginalInventory(String
 					.valueOf(originalGoodsInventory));

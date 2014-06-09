@@ -15,6 +15,7 @@ public class CreaterInventoryRestParam extends TuanBaseDO {
 	private Integer totalNumber;// 当前总库存999999：无限制
 	private Integer leftNumber;// 当前剩余数库存默认值:0
 	private int limitStorage; // 0:库存无限制；1：限制库存
+	private String goodsBaseId;
 	private Integer waterfloodVal;  //注水值
 	//选型:这是一个json串 如：[{"limit":0,"id":2},{"limit":0,"id":1}] [List<CreaterGoodsSelectionParam>]
 	private String goodsSelection;
@@ -75,7 +76,11 @@ public class CreaterInventoryRestParam extends TuanBaseDO {
 	public void setTokenid(String tokenid) {
 		this.tokenid = tokenid;
 	}
-	
-	
+	public String getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(String goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
+	}
 	
 }

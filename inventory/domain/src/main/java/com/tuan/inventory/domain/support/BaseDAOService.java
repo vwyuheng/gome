@@ -4,12 +4,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.model.GoodsBaseModel;
 
 public interface BaseDAOService {
 	/**
@@ -52,6 +54,11 @@ public interface BaseDAOService {
 	 * @param inventoryInfoDO
 	 */
 	public String saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO);
+	/**
+	 * 保存商品库存基本信息
+	 * @param inventoryInfoDO
+	 */
+	public String saveGoodsBaseInventory(Long goodsBaseId,GoodsBaseInventoryDO goodsBaseInventoryDO);
 	//清除物流关系
 	public Long clearWmsSelRelation(Long goodsId,  String... member);
 	/**
@@ -99,8 +106,8 @@ public interface BaseDAOService {
 	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId);
 	public List<Long> updateGoodsWms(String wmsGoodsId,int num);
 	public List<Long> updateInventory(Long goodsId,int num);
-	public Long updateGoodsInventory(Long goodsId,int num);
-	public List<Long> adjustGoodsInventory(Long goodsId,int num,int limitStorage);
+	public List<Long> updateGoodsInventory(Long goodsId, Long goodBaseId,int num);
+	public List<Long> adjustGoodsInventory(Long goodsId, Long goodBaseId,int num,int limitStorage);
 	public List<Long> updateSelectionInventory(Long selectionId,int num);
 	public List<Long> updateSelectionInventory(Long selectionId,String wmsGoodsId,int num);
 	public List<Long> adjustSelectionInventory(Long goodsId,Long selectionId,int num);
@@ -142,4 +149,8 @@ public interface BaseDAOService {
 	public String updateSelectionFileds(Long selectionId,Map<String, String> hash);
 	
 	public String queryToken(String key);
+	
+	public List<Long> updateGoodsBaseInventory(Long goodBaseId, int saleCount, int totalCount);
+	
+	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId);
 }

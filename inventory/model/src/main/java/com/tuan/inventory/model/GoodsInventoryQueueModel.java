@@ -13,6 +13,7 @@ public class GoodsInventoryQueueModel extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	private Long id;  //队列主键
 	private Long goodsId;// 商品ID(FK)
+	private Long goodsBaseId;// 商品ID(FK)
 	private Long orderId;// 订单id
 	private Long userId ;//用户id
 	//需扣减的商品库存量
@@ -81,6 +82,12 @@ public class GoodsInventoryQueueModel extends TuanBaseDO {
 	public void setSuppliersParam(
 			List<GoodsSelectionAndSuppliersModel> suppliersParam) {
 		this.suppliersParam = suppliersParam;
+	}
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 }

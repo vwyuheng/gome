@@ -16,6 +16,7 @@ public class CreaterInventoryParam extends TuanBaseDO {
 	private String tokenid;  //redis序列,解决接口幂等问题
 	private String userId;
 	private String goodsId;// 商品ID(FK)
+	private Long goodsBaseId;// 商品库存基本信息ID
 	private Integer totalNumber;// 当前总库存999999：无限制
 	private Integer leftNumber;// 当前剩余数库存默认值:0
 	private int limitStorage; // 0:库存无限制；1：限制库存
@@ -78,6 +79,12 @@ public class CreaterInventoryParam extends TuanBaseDO {
 	}
 	public void setTokenid(String tokenid) {
 		this.tokenid = tokenid;
+	}
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

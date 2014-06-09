@@ -176,11 +176,12 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					if (rollbackModel != null) {
 						long queueId = rollbackModel.getId();
 						long goodsId = rollbackModel.getGoodsId();
+						long goodsBaseId = rollbackModel.getGoodsBaseId();
 						int  deductNum = rollbackModel.getDeductNum();
 						List<GoodsSelectionAndSuppliersResult> selectionParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSelectionParam());
 						List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList( rollbackModel.getSuppliersParam());
 						//先回滚redis库存，
-						if(this.rollback(goodsId, deductNum, selectionParamResult, suppliersParamResult)){
+						if(this.rollback(goodsId, goodsBaseId,deductNum, selectionParamResult, suppliersParamResult)){
 							if(loadMessageData(goodsId)) {
 								if(this.fillParamAndUpdate()) {
 									 writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
@@ -354,15 +355,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 	}
 	
-	public boolean rollback(long goodsId,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
+	public boolean rollback(long goodsId,long goodsBaseId,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
 		boolean success = true;
 		try {
 			// 回滚库存
 			if (goodsId > 0) {
 				writeJobLog("rollback goodsId=" + (goodsId) + "],"
 						+ "deductNum=" + deductNum);
-				Long rollbackAftNum = this.goodsInventoryDomainRepository
-						.updateGoodsInventory(goodsId, (deductNum));
+				List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
+						.updateGoodsInventory(goodsId,goodsBaseId, (deductNum));
 
 				writeJobLog("isRollback after[" + goodsId + "]"
 						+ ",rollbackAftNum:" + rollbackAftNum);
@@ -402,8 +403,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				if (goodsId > 0) {
 					writeJobLog("rollback goodsId=" + (goodsId) + "],"
 							+ "deductNum=" + queueDO.getDeductNum());
-					Long rollbackAftNum =		this.goodsInventoryDomainRepository.updateGoodsInventory(
-							queueDO.getGoodsId(), (queueDO.getDeductNum()));
+					List<Long> rollbackAftNum =		this.goodsInventoryDomainRepository.updateGoodsInventory(
+							queueDO.getGoodsId(),queueDO.getGoodsBaseId(), (queueDO.getDeductNum()));
 					writeJobLog("isRollback after[" + goodsId + "]"
 							+ ",rollbackAftNum:" + rollbackAftNum);
 				}

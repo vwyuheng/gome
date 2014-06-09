@@ -74,6 +74,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	// 调整后总库存
 	private int aftSelOrSupptotalnum = 0;
 	private Long goodsId;
+	private Long goodsBaseId;
 	private long selectionId;
 	private long suppliersId;
 	private String goodsSelectionIds = "";
@@ -244,7 +245,10 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						lm.addMetaData("adjustInventory","adjustInventory start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString());
 						writeSysUpdateLog(lm,true);
 						// 消费对列的信息
-						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsSelectionIds,inventoryDO);
+						if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
+							goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+						}
+						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsBaseId,goodsSelectionIds,inventoryDO);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
 						
@@ -531,6 +535,11 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					int sales = (this.afttotalnum-this.aftleftnum);
 					//销量
 					notifyParam.setSales(String.valueOf(sales));
+					
+					//发送库存基表信息
+					notifyParam.setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
+					notifyParam.setBaseTotalCount(afttotalnum);
+					notifyParam.setBaseSaleCount(sales);
 				}
 				if(!CollectionUtils.isEmpty(selectionMsg)){
 					this.fillSelectionMsg();
@@ -617,6 +626,10 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+			if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
+				goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+			}
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
 			this.updateActionDO = null;

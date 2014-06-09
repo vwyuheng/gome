@@ -15,6 +15,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
@@ -25,6 +26,7 @@ import com.tuan.inventory.domain.support.BaseDAOService;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
+import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
@@ -50,6 +52,15 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 		return this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
+	
+	//保存商品库存基本信息
+		public String saveGoodsBaseInventory(Long goodsBaseId, GoodsBaseInventoryDO goodsBaseInventoryDO) {
+			return this.baseDAOService.saveGoodsBaseInventory(goodsBaseId, goodsBaseInventoryDO);
+		}
+	//更新商品库存基本信息
+		public List<Long> updateGoodsBaseInventory(Long goodsBaseId, int saleCount,int totalCount) {
+					return this.baseDAOService.updateGoodsBaseInventory(goodsBaseId, saleCount,totalCount);
+				}
 	public String saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO inventoryInfoDO:goodsIds) {
@@ -259,8 +270,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.querySuppliersInventoryById(suppliersId);
 	}
 	
-	public Long updateGoodsInventory(Long goodsId, int num) {
-		return this.baseDAOService.updateGoodsInventory(goodsId, num);
+	public List<Long> updateGoodsInventory(Long goodsId, Long goodsBaseId,int num) {
+		return this.baseDAOService.updateGoodsInventory(goodsId,goodsBaseId, num);
 	}
 	//to
 	public boolean updateBatchGoodsInventory(List<GoodsInventoryDO> goodsIds, int num) {
@@ -275,8 +286,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return success;
 	}
 	
-	public List<Long> adjustGoodsInventory(Long goodsId, int num,int limitStorage) {
-		return this.baseDAOService.adjustGoodsInventory(goodsId, num,limitStorage);
+	public List<Long> adjustGoodsInventory(Long goodsId, Long goodBaseId,int num,int limitStorage) {
+		return this.baseDAOService.adjustGoodsInventory(goodsId,goodBaseId, num,limitStorage);
 	}
 	
 	public List<Long> updateSelectionInventoryById(Long selectionId, int num) {
@@ -669,5 +680,10 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 			return null;
 		}
 		return success;
+	}
+	
+	
+	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId){
+		return baseDAOService.queryGoodsBaseById(goodsBaseId);
 	}
 }

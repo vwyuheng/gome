@@ -46,6 +46,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	
 	private String tokenid;  //redis序列,解决接口幂等问题
 	private Long goodsId;
+	private Long goodsBaseId;
 	private Long userId;
 	// 商品库存是否存在
 	boolean isExists = false;
@@ -110,6 +111,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		try {
 			this.goodsId = Long.valueOf(param.getGoodsId());
+			this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
 			this.tokenid = param.getTokenid();
 			 //幂等控制，已处理成功
 			if (!StringUtils.isEmpty(tokenid)) { // if
@@ -202,9 +204,15 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		notifyParam.setTotalNumber(param.getTotalNumber());
 		notifyParam.setLeftNumber(param.getLeftNumber());
 		//库存总数 减 库存剩余
-		int sales = param.getTotalNumber()-param.getLeftNumber();
+		int sales = 0;
+		//TODO
+//		查询redis
 		//销量
 		notifyParam.setSales(String.valueOf(sales));
+		//库存基本信息
+		notifyParam.setGoodsBaseId(inventoryInfoDO.getGoodsBaseId());
+		notifyParam.setBaseSaleCount(sales);
+		notifyParam.setBaseTotalCount(param.getTotalNumber());
 		
 		if (!CollectionUtils.isEmpty(selectionList)) {
 			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
@@ -227,11 +235,11 @@ public class InventoryCreatorDomain extends AbstractDomain {
 				updateActionDO
 						.setOriginalInventory(param.getLimitStorage() == 1 ? String
 								.valueOf(param.getLeftNumber()) : String
-								.valueOf(Integer.MAX_VALUE));
+								.valueOf(0));
 				updateActionDO
 						.setInventoryChange(param.getLimitStorage() == 1 ? String
 								.valueOf(param.getLeftNumber()) : String
-								.valueOf(Integer.MAX_VALUE));
+								.valueOf(0));
 			}
 			if (addSelection && !CollectionUtils.isEmpty(selectionList)) {
 				updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SELECTION
@@ -261,6 +269,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("新增库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+				goodsBaseId =param.getGoodsBaseId();
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
 			this.updateActionDO = null;
@@ -355,11 +365,15 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
 		try {
 			inventoryInfoDO.setGoodsId(goodsId);
+		    inventoryInfoDO.setGoodsBaseId(param.getGoodsBaseId());
 			inventoryInfoDO.setLeftNumber(param.getLeftNumber());
 			inventoryInfoDO.setTotalNumber(param.getTotalNumber());
 			inventoryInfoDO.setLimitStorage(param.getLimitStorage());
 			inventoryInfoDO.setUserId(userId);
 			inventoryInfoDO.setWaterfloodVal(param.getWaterfloodVal());
+			int sales = param.getTotalNumber()-param.getLeftNumber();
+			//商品库存销量
+			inventoryInfoDO.setGoodsSaleCount(sales);
 
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillRedisInventoryDO error"+e.getMessage()),false, e);

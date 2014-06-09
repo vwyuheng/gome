@@ -25,7 +25,7 @@ public class GoodsInventoryActionDO extends TuanBaseDO {
 	private String clientIp; // 来源ip
 	//private String exception;  //是否异常信息
 	private String remark;  //备注
-	
+	private Long goodsBaseId;  //库存基表ID
 //	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
 //	private java.lang.Integer limitStorage; // 0:库存无限制；1：限制库存
 //	private int isAddGoodsSelection;  //商品是否添加配型 0：不添加；1：添加
@@ -129,6 +129,11 @@ public class GoodsInventoryActionDO extends TuanBaseDO {
 	public void setActionType(String actionType) {
 		this.actionType = actionType;
 	}
-	
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
+	}
 	
 }

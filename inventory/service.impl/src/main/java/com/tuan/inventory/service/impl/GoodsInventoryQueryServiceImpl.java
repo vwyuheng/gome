@@ -11,6 +11,7 @@ import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.core.common.service.TuanCallbackResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
@@ -18,6 +19,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
+import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
@@ -708,6 +710,79 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					writeBusInitLog(lm,false);
 					return resultEnum;
 				}
-		
 
+		@Override
+		public CallResult<GoodsBaseModel> findSalesCountByGoodsBaseId(
+				String clientIp, String clientName, final String goodsBaseIdStr) {
+			final LogModel lm = LogModel
+					.newLogModel("GoodsInventoryQueryService.findGoodsInventoryByGoodsId");
+			lm.addMetaData("clientIp", clientIp)
+			  .addMetaData("clientName", clientName)
+			  .addMetaData("goodsBaseId", goodsBaseIdStr)
+			  .addMetaData("start", "start");
+			writeSysBusLog(lm,false);
+			final long goodsBaseId = Long.valueOf(goodsBaseIdStr);
+			TuanCallbackResult result = this.inventoryServiceTemplate
+					.execute(new InventoryQueryServiceCallback() {
+						@Override
+						public TuanCallbackResult preHandler() {
+							
+							InventoryQueryEnum enumRes = null;
+							
+							// 初始化检查
+							CreateInventoryResultEnum resultEnum =null;
+//						//初始化检查	=  initCheck(goodsBaseId,lm);
+							
+							if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+								return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							}
+							if (goodsBaseId <= 0) {
+								enumRes = InventoryQueryEnum.INVALID_GOODSBASEID;
+							}
+							// 检查出现错误
+							if (enumRes != null) {
+								return TuanCallbackResult.failure(
+										enumRes.getCode(), null,
+										new InventoryQueryResult(enumRes, null));
+							}
+							return TuanCallbackResult.success();
+						}
+
+						@Override
+						public TuanCallbackResult doWork() {
+							InventoryQueryResult res = null;
+							GoodsBaseInventoryDO gsModel = goodsInventoryDomainRepository
+									.queryGoodsBaseById(goodsBaseId);
+							if (gsModel != null) {
+								res = new InventoryQueryResult(
+										InventoryQueryEnum.SUCCESS, gsModel);
+								return TuanCallbackResult.success(res.getResult()
+										.getCode(), res);
+							} else {
+								res = new InventoryQueryResult(
+										InventoryQueryEnum.SYS_ERROR, null);
+								return TuanCallbackResult.failure(res.getResult()
+										.getCode(), null, res);
+							}
+
+						}
+
+					}
+
+					);
+			final int resultCode = result.getResultCode();
+			final InventoryQueryResult qresult = (InventoryQueryResult) result.getBusinessObject();
+			writeSysBusLog(lm.addMetaData("result", result.isSuccess())
+					.addMetaData("resultCode", result.getResultCode())
+					.addMetaData("qresult", qresult.getResultObject())
+					.addMetaData("end", "end")
+					,false);
+			writeSysLog(lm.toJson());
+			
+//			return new CallResult<GoodsBaseModel>(result.isSuccess(),
+//					PublicCodeEnum.valuesOf(resultCode),
+//					(GoodsInventoryModel) qresult.getResultObject(),
+//					result.getThrowable());
+			return null;
+		}
 }

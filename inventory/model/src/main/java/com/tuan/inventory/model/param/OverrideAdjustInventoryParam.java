@@ -21,7 +21,7 @@ public class OverrideAdjustInventoryParam extends TuanBaseDO {
 	private int limitStorage;
 	//2:商品调整[也就是没有选型和分店的商品]，4.选型库存调整 6.分店库存调整
 	private String type;
-	
+	private String goodsBaseId;// 商品库存基本信息ID
 	
 	public String getId() {
 		return id;
@@ -66,6 +66,12 @@ public class OverrideAdjustInventoryParam extends TuanBaseDO {
 	}
 	public void setTokenid(String tokenid) {
 		this.tokenid = tokenid;
+	}
+	public String getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(String goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

@@ -65,6 +65,7 @@ public enum ResultEnum {
 	INVALID_GOODS_TYPE_ID			("1040", 	"无效的选型类型id."),
 	NO_WMS_DATA			("1041", 	"物流信息不存在."),
 	INVALID_SELECTION_GOODSTYPEID         ("1042", "非法的商品选型类型id"),
+	INVALID_GOODSBASEID         ("1043", "商品基本id无效"),
 	NO_DATA("0","没有可用的数据"),
 	
 	//ERROR_2000	("2000",	"程序运行时错误"),

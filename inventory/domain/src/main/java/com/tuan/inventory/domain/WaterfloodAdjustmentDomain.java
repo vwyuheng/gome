@@ -69,6 +69,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private Long goodsId;
 	private Long selectionId;
 	private Long suppliersId;
+	private Long goodsBaseId;
 	//调整后库存
 	private long resultACK;
 	private List<Long> ack;
@@ -321,6 +322,11 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						int sales = (inventoryDO.getTotalNumber())-inventoryDO.getLeftNumber();
 						//销量
 						notifyParam.setSales(String.valueOf(sales));
+						//发送库存基表信息
+						notifyParam.setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
+						notifyParam.setBaseSaleCount(sales);
+						notifyParam.setBaseTotalCount(inventoryDO.getTotalNumber());
+						
 					}
 					if(!CollectionUtils.isEmpty(selectionMsg)){
 						this.fillSelectionMsg();
@@ -395,6 +401,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("注水调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+			if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId()))
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm
 					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);

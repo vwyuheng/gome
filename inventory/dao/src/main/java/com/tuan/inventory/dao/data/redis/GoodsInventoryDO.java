@@ -13,6 +13,7 @@ public class GoodsInventoryDO extends TuanBaseDO {
 	private Long goodsId;// 商品ID(FK)
 	private Long userId;// 商品ID(FK)
 	private Long wmsId;// 商品物流ID(FK)
+	private Long goodsBaseId;// 
 	private String goodsSelectionIds;//共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2
 	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
 	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
@@ -20,6 +21,8 @@ public class GoodsInventoryDO extends TuanBaseDO {
 	private java.lang.Integer isAddGoodsSelection; // 商品是否添加配型 0：不添加；1：添加
 	private java.lang.Integer isDirectConsumption; // 商品销售是否需要指定分店 0：不指定；1：指定
 	private java.lang.Integer waterfloodVal;  //注水值
+	private java.lang.Integer goodsSaleCount; //商品销量
+
 	public Long getGoodsId() {
 		return goodsId;
 	}
@@ -80,10 +83,18 @@ public class GoodsInventoryDO extends TuanBaseDO {
 	public void setIsDirectConsumption(java.lang.Integer isDirectConsumption) {
 		this.isDirectConsumption = isDirectConsumption;
 	}
-	
-	
-	
-	
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
+	}
+	public java.lang.Integer getGoodsSaleCount() {
+		return goodsSaleCount;
+	}
+	public void setGoodsSaleCount(java.lang.Integer goodsSaleCount) {
+		this.goodsSaleCount = goodsSaleCount;
+	}
 	
 }
 

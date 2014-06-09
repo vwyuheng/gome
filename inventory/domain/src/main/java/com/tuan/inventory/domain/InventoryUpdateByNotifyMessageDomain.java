@@ -39,11 +39,17 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 		        //库存调整
 				int totalNumber = param.getTotalNumber();
 				int leftNumber = param.getLeftNumber();
+				long goodsBaseId = param.getGoodsBaseId();
+				int saleCount = param.getBaseSaleCount();
 				GoodsUpdateNumberDO goodsUpdateNumberDO=new GoodsUpdateNumberDO();
 				goodsUpdateNumberDO.setLeftNum(leftNumber);
 				goodsUpdateNumberDO.setTotalNum(totalNumber);
 				goodsUpdateNumberDO.setId(param.getGoodsId());
 				goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
+				goodsUpdateNumberDO.setId(goodsBaseId);
+				goodsUpdateNumberDO.setSaleCount(saleCount);
+				goodUpdateNumberDomainRepository.updataGoodsNum(goodsUpdateNumberDO);
+				
 				log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
 				List<SelectionNotifyMessageParam> selectionRelation =param.getSelectionRelation();
 				if(!CollectionUtils.isEmpty(selectionRelation)){

@@ -11,16 +11,19 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.domain.support.enu.GoodBaseHashFieldEnum;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
+import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class CacheDAOServiceImpl implements BaseDAOService {
@@ -44,10 +47,10 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public String saveInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
-
+	public String saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO) {
 		return this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
-				+ String.valueOf(goodsId), ObjectUtils.toHashMap(inventoryInfoDO));
+				+ String.valueOf(goodsId),
+				ObjectUtils.toHashMap(inventoryInfoDO));
 
 	}
 
@@ -144,11 +147,14 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public Long updateGoodsInventory(Long goodsId, int num) {
-		return this.redisCacheUtil.hincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
-				+ String.valueOf(goodsId),
-				//HashFieldEnum.totalNumber.toString(),
-				HashFieldEnum.leftNumber.toString(), (num));
+	public List<Long> updateGoodsInventory(Long goodsId, Long goodBaseId,int num) {
+		return this.redisCacheUtil.hincrBy2Key(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+						+ String.valueOf(goodBaseId), 
+				HashFieldEnum.leftNumber.toString(),
+				HashFieldEnum.goodsSaleCount.toString(),
+				GoodBaseHashFieldEnum.baseSaleCount.toString(),
+				(num),(-num),(-num));
 	}
 
 	@Override
@@ -344,13 +350,16 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	 * 商品库存调整
 	 */
 	@Override
-	public List<Long> adjustGoodsInventory(Long goodsId, int num,int limitStorage) {
+	public List<Long> adjustGoodsInventory(Long goodsId, Long goodBaseId,int num,int limitStorage) {
 
 		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 				+ String.valueOf(goodsId),
+				QueueConstant.GOODS_BASE_INVENTORY_PREFIX+ ":"
+						+ String.valueOf(goodBaseId),
 				HashFieldEnum.totalNumber.toString(),
 				HashFieldEnum.leftNumber.toString(), 
 				HashFieldEnum.limitStorage.toString(),
+				GoodBaseHashFieldEnum.baseTotalCount.toString(),
 				(num),(limitStorage));
 	
 	}
@@ -487,6 +496,31 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	}
 
+	@Override
+	public String saveGoodsBaseInventory(Long goodsBaseId,
+			GoodsBaseInventoryDO goodsBaseInventoryDO) {
+		return this.redisCacheUtil.hmset(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsBaseId), ObjectUtils.toHashMap(goodsBaseInventoryDO));
+	}
+
+	@Override
+	public List<Long> updateGoodsBaseInventory(Long goodsBaseId, int saleCount, int totalCount) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsBaseId), 
+				GoodBaseHashFieldEnum.baseSaleCount.toString(),
+				GoodBaseHashFieldEnum.baseTotalCount.toString(), (saleCount), (totalCount));
+	}
 	
-	
+	@Override
+	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId) {
+		Map<String, String> objMap = this.redisCacheUtil
+				.hgetAll(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+						+ String.valueOf(goodsBaseId));
+		if (!CollectionUtils.isEmpty(objMap)) {
+			return JsonUtils.convertStringToObject(
+					JsonUtils.convertObjectToString(objMap),
+					GoodsBaseInventoryDO.class);
+		}
+		return null;
+	}
 }

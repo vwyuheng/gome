@@ -74,6 +74,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	// 调整后总库存
 	private int selOrSupptotalnum = 0;
 	private Long goodsId;
+	private Long goodsBaseId;
 	private long selectionId;
 	private long suppliersId;
 	//调整后库存
@@ -195,8 +196,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						} else if (inventoryDO.getTotalNumber() == 0
 								&& inventoryDO.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
 							inventoryDO.setLimitStorage(0); // 更新数据库用
-							inventoryDO.setLeftNumber(Integer.MAX_VALUE);
-							inventoryDO.setTotalNumber(Integer.MAX_VALUE);
+							inventoryDO.setLeftNumber(0);
+							inventoryDO.setTotalNumber(0);
 
 							limitStorage = -1; // 这个是更新redis用
 							// 这个是更新redis用
@@ -208,9 +209,15 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage);
 						writeSysUpdateLog(lm,true);
 						 // 消费对列的信息
-						CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,(adjustNum),limitStorage,inventoryDO);
+						String goodsBaseId =param.getGoodsBaseId();
+						if(!StringUtils.isEmpty(goodsBaseId)&&StringUtils.isNumeric(goodsBaseId)){
+							this.goodsBaseId=Long.valueOf(goodsBaseId);
+						}
+						CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,this.goodsBaseId,(adjustNum),limitStorage,inventoryDO);
 						PublicCodeEnum publicCodeEnum = callResult.getPublicCodeEnum();
-
+                        if(publicCodeEnum == PublicCodeEnum.SUCCESS){
+                        	
+                        }
 						if (publicCodeEnum != PublicCodeEnum.SUCCESS) { //
 							// 消息数据不存并且不成功
 							message = "updateGoodsInventory_error["
@@ -453,13 +460,17 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					int sales = (this.goodstotalnum-this.goodsleftnum);
 					//销量
 					notifyParam.setSales(String.valueOf(sales));
+					//库存基表信息发送
+					notifyParam.setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
+					notifyParam.setBaseTotalCount(this.goodstotalnum);
+					notifyParam.setBaseSaleCount(sales);
 				}
+				this.fillSelectionMsg();
 				if(!CollectionUtils.isEmpty(selectionMsg)){
-					this.fillSelectionMsg();
 					notifyParam.setSelectionRelation(selectionMsg);
 				}
+				this.fillSuppliersMsg();
 				if(!CollectionUtils.isEmpty(suppliersMsg)){
-					this.fillSuppliersMsg();
 					notifyParam.setSuppliersRelation(suppliersMsg);
 				}
 			} catch (Exception e) {
@@ -528,6 +539,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
 			this.updateActionDO = null;

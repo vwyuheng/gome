@@ -165,7 +165,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/adjusti", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentInventory(@ModelAttribute UpdateRequestPacket packet,
-			String goodsId,String id, String userId,String type, String num, HttpServletRequest request) {
+			String goodsId,String id, String userId,String type, String num, String goodsBaseId, HttpServletRequest request) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -178,9 +178,10 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("id", id)
 		.addMetaData("userId", userId)
 		.addMetaData("type", type)
+		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("num", num);
 		GoodsdAdjustInventoryDomain adjustInventoryDomain = new GoodsdAdjustInventoryDomain(
-				packet,goodsId, id,userId,type,num, lm, messageRoot);
+				packet,goodsId, id,userId,type,num, lm, messageRoot,goodsBaseId);
 		adjustInventoryDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验
@@ -206,7 +207,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/adjustw", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentWaterflood(@ModelAttribute UpdateRequestPacket packet,
-			String goodsId,String id, String userId,String type, String num, HttpServletRequest request) {
+			String goodsId,String id, String userId,String type, String num, HttpServletRequest request,String goodsBaseId) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -219,9 +220,10 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("id", id)
 		.addMetaData("userId", userId)
 		.addMetaData("type", type)
+		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("num", num);
 		GoodsdAdjustWaterfloodDomain adjustWaterfloodDomain = new GoodsdAdjustWaterfloodDomain(
-				packet,goodsId,id,userId,type,num, lm, messageRoot);
+				packet,goodsId,id,userId,type,num, lm, messageRoot,goodsBaseId);
 		adjustWaterfloodDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验
@@ -318,7 +320,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/oradjusti", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp overrideAdjustInventory(@ModelAttribute UpdateRequestPacket packet,
-			String tokenid,String goodsId,String id, String userId,String type, String totalnum, HttpServletRequest request) {
+			String tokenid,String goodsId,String id, String userId,String type, String totalnum, HttpServletRequest request,String goodsBaseId) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -332,9 +334,10 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("id", id)
 		.addMetaData("userId", userId)
 		.addMetaData("type", type)
+		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("totalnum", totalnum);
 		GoodsdOverrideAdjustInventoryDomain adjustInventoryDomain = new GoodsdOverrideAdjustInventoryDomain(
-				packet,tokenid,goodsId, id,userId,type,totalnum, lm, messageRoot);
+				packet,tokenid,goodsId, id,userId,type,totalnum, lm, messageRoot,goodsBaseId);
 		adjustInventoryDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验
@@ -361,7 +364,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/upwmsdata", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp updateWmsData(@ModelAttribute UpdateRequestPacket packet,
-			String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds, HttpServletRequest request) {
+			String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds, String goodsBaseId, HttpServletRequest request) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -375,9 +378,10 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("suppliersId", suppliersId)
 		.addMetaData("wmsGoodsId", wmsGoodsId)
 		.addMetaData("goodsTypeIds", goodsTypeIds)
-		.addMetaData("goodsSelectionIds", goodsSelectionIds);
+		.addMetaData("goodsSelectionIds", goodsSelectionIds)
+		.addMetaData("goodBaseId", goodsBaseId);
 		UpdateWmsDataDomain upWmsDataDomain = new UpdateWmsDataDomain(
-				packet,tokenid,goodsId, suppliersId,wmsGoodsId,isBeDelivery,goodsTypeIds,goodsSelectionIds, lm, messageRoot);
+				packet,tokenid,goodsId, suppliersId,wmsGoodsId,isBeDelivery,goodsTypeIds,goodsSelectionIds, lm, messageRoot,goodsBaseId);
 		upWmsDataDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验

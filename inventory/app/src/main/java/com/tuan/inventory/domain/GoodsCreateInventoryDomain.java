@@ -42,6 +42,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private Integer leftNumber;// 当前剩余数库存默认值:0
 	private int limitStorage; // 0:库存无限制；1：限制库存
 	private Integer waterfloodVal;  //注水值
+	private String goodsBaseId;
 	//选型
 	private List<GoodsSelectionModel> goodsSelection;
 	//分店
@@ -76,6 +77,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 			this.leftNumber = reqparam.getLeftNumber();
 			this.limitStorage = reqparam.getLimitStorage();
 			this.waterfloodVal = reqparam.getWaterfloodVal();
+			this.goodsBaseId = reqparam.getGoodsBaseId();
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
 			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
 			
@@ -104,6 +106,9 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 		param.setLeftNumber(leftNumber);
 		param.setTotalNumber(totalNumber);
 		param.setLimitStorage(limitStorage);
+		if(!StringUtils.isEmpty(goodsBaseId)&&StringUtils.isNumeric(goodsBaseId)){
+			param.setGoodsBaseId(Long.valueOf(goodsBaseId));
+		}
 		
 		if(!CollectionUtils.isEmpty(reqGoodsSelection)) {
 			goodsSelection = new ArrayList<GoodsSelectionModel> ();
@@ -341,6 +346,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("userId", userId);
 		parameterMap.put("goodsId", goodsId);
+		parameterMap.put("goodsBaseId", goodsBaseId);
 		parameterMap.put("totalNumber", String.valueOf(totalNumber));
 		parameterMap.put("leftNumber",  String.valueOf(leftNumber));
 	    parameterMap.put("limitStorage",  String.valueOf(limitStorage));

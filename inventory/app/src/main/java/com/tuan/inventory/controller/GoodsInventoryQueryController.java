@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.tuan.inventory.domain.GoodsBaseQueryDomain;
 import com.tuan.inventory.domain.GoodsQueryDomain;
 import com.tuan.inventory.domain.GoodsSelectionListQueryBySelIdListDomain;
 import com.tuan.inventory.domain.GoodsSelectionListQueryDomain;
@@ -16,6 +17,7 @@ import com.tuan.inventory.domain.GoodsSupplierQueryDomain;
 import com.tuan.inventory.domain.GoodsSuppliersListQueryDomain;
 import com.tuan.inventory.domain.IsBeDeliveryQueryDomain;
 import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.resp.inner.GoodsBaseQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSelectionListQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
@@ -313,5 +315,51 @@ public class GoodsInventoryQueryController {
 		resEnum = queryDomain.doBusiness();
 		//返回结果
 		return (IsBeDeliveryQueryInnerResp) queryDomain.makeResult(resEnum);
+	}
+	
+	
+	/***
+	 * http://localhost:882/rest/j/query/gselection?&ip==127.0.0.1&client=ordercenter&t=123456789&goodsId=2499&selectionId=28&traceId=123&traceRootId=456
+	 * 根据选型id查询选型库存信息
+	 * 
+	 * @param packet
+	 * @param goodsId
+	 * @param selectionId 
+	 * @param request 
+	 * @return
+	 */
+	@RequestMapping(value = "/salescnt", method = RequestMethod.POST)
+	public @ModelAttribute("resp")GoodsBaseQueryInnerResp goodsBaseQuery(
+			@ModelAttribute("inputPacket") RequestPacket packet,
+			String goodsBaseId, HttpServletRequest request) {
+		Message	traceMessage = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.OUTS,
+					"Inventory-app", "GoodsInventoryQueryController",
+					"gsbaseinfo");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/salescnt")
+		.addMetaData("goodsBaseId", goodsBaseId)
+		.addMetaData("RequestPacket", packet);
+		GoodsBaseQueryDomain queryDomain = 		GoodsBaseQueryDomain
+				.makeGoodsBaseQueryDomain(packet,  goodsBaseId,
+						lm, traceMessage);
+		if (queryDomain == null) {
+			GoodsBaseQueryInnerResp resp = new GoodsBaseQueryInnerResp();
+			resp.setResult(ResultEnum.NO_PARAMETER.getCode(),
+					ResultEnum.NO_PARAMETER.getDescription());
+			return resp;
+		}
+		queryDomain.setGoodsInventoryQueryService(goodsInventoryQueryService);
+		// 接口参数校验
+		ResultEnum resEnum = queryDomain.checkParameter();
+		// 参数检查未通过时
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return (GoodsBaseQueryInnerResp) queryDomain
+					.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = queryDomain.doBusiness();
+		// 返回结果
+		return (GoodsBaseQueryInnerResp) queryDomain.makeResult(resEnum);
 	}
 }

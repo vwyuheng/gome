@@ -4,6 +4,7 @@ import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -97,5 +98,19 @@ public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implem
 		return (GoodsInventoryWMSDO) super.getSqlMapClientTemplate().queryForObject("selectWmsInventoryByWmsGoodsId", wmsGoodsId);
 	}
 
-
+	@Override
+	public void insertGoodsBaseInventoryDO(GoodsBaseInventoryDO baseInventoryDO) {
+		 super.getSqlMapClientTemplate().insert("insertGoodsBaseInventory", baseInventoryDO);
+	}
+	
+	@Override
+	public void updateGoodsBaseInventoryDO(GoodsBaseInventoryDO baseInventoryDO) {
+		 super.getSqlMapClientTemplate().update("updataGoodsBaseNumByID", baseInventoryDO);
+	}
+	
+	@Override
+	public GoodsBaseInventoryDO selectGoodBaseBygoodsId(long goodsBaseId) {
+		return (GoodsBaseInventoryDO) getSqlMapClientTemplate().queryForObject("selectGoodBaseBygoodsId", goodsBaseId);
+	}
+	
 }

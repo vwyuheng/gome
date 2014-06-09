@@ -40,6 +40,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private String goodsId;// 商品ID(FK)
 	private String orderId; //订单id
 	private String queueKeyId; //回传给调用方，库存系统生成的队列id
+	private String goodsBaseId;
 	private int num;// 扣减的库存
 	//选型
 	private List<GoodsSelectionRestParam> reqGoodsSelection;
@@ -63,6 +64,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 			this.userId = reqparam.getUserId();
 			this.goodsId = reqparam.getGoodsId();
 			this.orderId = reqparam.getOrderId();
+			this.goodsBaseId = reqparam.getGoodsBaseId();
 			this.num = reqparam.getNum();
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
 			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
@@ -88,7 +90,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		param.setUserId(userId);
 		param.setNum(num);
 		param.setOrderId(orderId);
-		
+		param.setGoodsBaseId(goodsBaseId);
 		if(!CollectionUtils.isEmpty(reqGoodsSelection)) {
 			goodsSelection = new ArrayList<GoodsSelectionModel> ();
 			for(GoodsSelectionRestParam rparam:reqGoodsSelection) {
@@ -182,7 +184,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		if(!StringUtils.isEmpty(orderId))
 		parameterMap.put("orderId", orderId);
 		parameterMap.put("num",  String.valueOf(num));
-		
+		parameterMap.put("goodsBaseId", goodsBaseId);
 		parameterMap.put("reqGoodsSuppliers", CollectionUtils.isEmpty(reqGoodsSuppliers)?"":LogUtil.formatListLog(reqGoodsSuppliers));
 		parameterMap.put("reqGoodsSelection", CollectionUtils.isEmpty(reqGoodsSelection)?"":LogUtil.formatListLog(reqGoodsSelection));
 		super.init(packet.getClient(), packet.getIp());
