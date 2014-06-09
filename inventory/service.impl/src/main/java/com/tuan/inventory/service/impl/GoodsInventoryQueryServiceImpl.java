@@ -66,6 +66,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSelectionBySelectionId]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
+						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
 						}
@@ -136,6 +139,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSuppliersBySuppliersId]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -208,6 +214,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsInventoryByGoodsId]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
+						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
 						}
@@ -279,6 +288,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSelectionListByGoodsId]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
+						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
 						}
@@ -349,6 +361,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSuppliersListByGoodsId]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -422,6 +437,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSelectionListBySelectionIdList]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -499,6 +517,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
+						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSuppliersListBySuppliersIdList]", goodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
+						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
 						}
@@ -569,6 +590,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initWmsCheck(wmsGoodsId,isBeDelivery,lm);
+						
+						lm.addMetaData("init","init,after").addMetaData("init[findWmsIsBeDeliveryByWmsGoodsId]", wmsGoodsId).addMetaData("message", resultEnum.getDescription());
+						writeBusInitLog(lm,true);
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
