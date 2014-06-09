@@ -158,7 +158,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 						writeSysDeductLog(lm,true);
 						List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
 								.updateGoodsInventory(goodsId,goodsBaseId, (deductNum));
-					lm.addMetaData("isRollback after[" + (isRollback+":"+goodsId) + "]", goodsId+",rollbackAftNum:"+rollbackAftNum);
+					lm.addMetaData("isRollback after[" + (isRollback+":"+goodsId) + "]", goodsId+",rollbackAftNum:"+rollbackAftNum+",goodsBaseId:"+goodsBaseId);
 					writeSysDeductLog(lm,true);
 					}
 					if (!CollectionUtils.isEmpty(selectionParam)) {
