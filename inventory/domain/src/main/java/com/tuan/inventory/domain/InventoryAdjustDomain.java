@@ -95,17 +95,24 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		try {
 			//初始化检查
 			resultEnum = this.initCheck();
+			
+			lm.addMetaData("init","init,after").addMetaData("init[InventoryAdjustDomain," + (goodsId) + "]", goodsId).addMetaData("message", resultEnum.getDescription());
+			writeBusInitLog(lm,true);
+			
+			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+				return resultEnum;
+			}
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				if(inventoryDO!=null) {
+				if(inventoryDO!=null&&inventoryDO.getLimitStorage()==1) {
 					this.origoodsleftnum = inventoryDO.getLeftNumber();
 					this.origoodstotalnum = inventoryDO.getTotalNumber();
 					//此时调整后数量检查
-					if(origoodsleftnum+(adjustNum)<0||origoodstotalnum+(adjustNum)<0) {
+					/*if(origoodsleftnum+(adjustNum)<0||origoodstotalnum+(adjustNum)<0) {
 						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
-					}
+					}*/
 				}
 			}
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
@@ -117,14 +124,14 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				
 				//查询商品选型库存
 				this.selectionInventory = this.goodsInventoryDomainRepository.querySelectionRelationById(selectionId);
-				if(selectionInventory!=null) {
+				if(selectionInventory!=null&&selectionInventory.getLimitStorage()==1) {
 					this.oriselOrSuppleftnum = selectionInventory.getLeftNumber();
 					this.oriselOrSupptotalnum = selectionInventory.getTotalNumber();
 					
 					//此时调整后数量检查
-					if(oriselOrSuppleftnum+(adjustNum)<0||oriselOrSupptotalnum+(adjustNum)<0) {
+					/*if(oriselOrSuppleftnum+(adjustNum)<0||oriselOrSupptotalnum+(adjustNum)<0) {
 						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
-					}
+					}*/
 				}
 				
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
@@ -132,14 +139,14 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				this.businessType = ResultStatusEnum.GOODS_SUPPLIERS.getDescription();
 				//查询商品分店库存
 				this.suppliersInventory = this.goodsInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
-				if(suppliersInventory!=null) {
+				if(suppliersInventory!=null&&suppliersInventory.getLimitStorage()==1) {
 					this.oriselOrSuppleftnum = suppliersInventory.getLeftNumber();
 					this.oriselOrSupptotalnum = suppliersInventory.getTotalNumber();
 					
 					//此时调整后数量检查
-					if(oriselOrSuppleftnum+(adjustNum)<0||oriselOrSupptotalnum+(adjustNum)<0) {
+					/*if(oriselOrSuppleftnum+(adjustNum)<0||oriselOrSupptotalnum+(adjustNum)<0) {
 						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
-					}
+					}*/
 				}
 			}
 		} catch (Exception e) {
@@ -147,11 +154,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					lm.setMethod("busiCheck").addMetaData("errorMsg",
 							"DB error" + e.getMessage()),false, e);
 			
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-			return resultEnum;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -522,6 +527,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setGoodsId(goodsId);
 			updateActionDO.setBusinessType(businessType);
 			updateActionDO.setItem(id);
@@ -539,7 +545,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-			updateActionDO.setGoodsBaseId(goodsBaseId);
+			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
 			this.updateActionDO = null;

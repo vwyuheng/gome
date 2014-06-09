@@ -223,22 +223,19 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}else {
 			this.goodsDeductNum = (deductNum);
 		}
-		//是否需要校验下？
-		
 		// 扣减库存并返回扣减标识,计算库存并
 		if (inventoryInfoDO.getLimitStorage()==1&&(originalGoodsInventory-goodsDeductNum) >= 0) { //限制库存商品
 			this.isEnough = true;
-			// 更新inventoryInfoDO对象的库存属性值 TODO 更新全局变量尤其要小心谨慎
-			//this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); //这个值不是扣减更新依据，是记录日志什么的用
-			//this.inventoryInfoDO.setTotalNumber(totalNumber);
+			// 商品库存扣减后的量
+			this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); 
+			inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
 		}else if(inventoryInfoDO.getLimitStorage()==0) { //非限制库存商品
 			this.isEnough = true;
+			//此时要更新leftnum扣减量，以便累加销量
+			inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
 		}
 	}
 
-	/*private boolean verifyInventory() {
-		return DataUtil.verifyInventory(resultACK);
-	}*/
 	
 	private boolean verifyInventory() {
 		if (!CollectionUtils.isEmpty(resultACK)) {
@@ -252,6 +249,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
 		
+		lm.addMetaData("init","init,after").addMetaData("init[" + (goodsId) + "]", goodsId).addMetaData("message", resultEnum.getDescription());
+		writeBusInitLog(lm,true);
+		
+		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+			return resultEnum;
+		}
 		// 真正的库存更新业务处理
 		try {
 			// 商品选型处理
@@ -268,9 +271,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 							"busiCheck error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-			return resultEnum;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -304,10 +305,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("goodsDeductNum", goodsDeductNum).addMetaData("start", "start deduct inventory!");
 				writeSysDeductLog(lm,true);
 				// 扣减库存
-				
-				if(StringUtils.isEmpty(param.getGoodsBaseId())||!StringUtils.isNumeric(param.getGoodsBaseId())){
-					goodsBaseId=Long.valueOf(param.getGoodsBaseId());
-				}
 				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId,goodsBaseId, (-goodsDeductNum));
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("goodsDeductNum", goodsDeductNum).addMetaData("resultACK", resultACK).addMetaData("deduct,end", "end deduct inventory!");
@@ -421,7 +418,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 		this.goodsId = Long.valueOf(param.getGoodsId());
-		//this.wmsGoodsId = param
+		this.goodsBaseId = Long.valueOf(StringUtils.isEmpty(param.getGoodsBaseId())?"0":param.getGoodsBaseId());
 		// 初始化加分布式锁
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
@@ -461,6 +458,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
 			updateActionDO.setGoodsId(goodsId);
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			if (inventoryInfoDO != null) {
 				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SELF
 						.getDescription());
@@ -494,10 +492,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			if(!StringUtils.isEmpty(param.getUserId())) {
 				this.userId = (Long.valueOf(param.getUserId()));
 			}
-			if(!StringUtils.isEmpty(param.getGoodsBaseId())) {
-				this.goodsBaseId = (Long.valueOf(param.getGoodsBaseId()));
-			}
-			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setUserId(userId);
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
@@ -526,9 +520,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		try {
 			queueDO.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
 			queueDO.setGoodsId(goodsId);
-			if(!StringUtils.isEmpty(param.getGoodsBaseId())){
-				queueDO.setGoodsBaseId(goodsBaseId);
-			}
+	        queueDO.setGoodsBaseId(goodsBaseId);
+		
 			if(!StringUtils.isEmpty(param.getOrderId())) {
 				queueDO.setOrderId(Long.valueOf(param.getOrderId()));
 			}
