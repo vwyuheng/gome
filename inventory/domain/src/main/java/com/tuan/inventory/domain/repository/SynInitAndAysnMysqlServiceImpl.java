@@ -702,12 +702,14 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeAction() {
 					try {
 					synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
-					//更新库存基本表
-					GoodsBaseInventoryDO baseInventoryDO = new GoodsBaseInventoryDO();
-					baseInventoryDO.setGoodsBaseId(goodBaseId);
-					//TODO TotalCount需要查询累加
-					baseInventoryDO.setBaseTotalCount(adjustNum);
-					synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
+					
+					long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+					if(goodsBaseId>0) {
+						GoodsBaseInventoryDO	baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+						//更新base表调整后的库存总量
+						baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()+adjustNum);
+						synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+					}
 					
 					List<Long>	resultACK = goodsInventoryDomainRepository
 							.adjustGoodsInventory(goodsId, goodBaseId,(adjustNum),
