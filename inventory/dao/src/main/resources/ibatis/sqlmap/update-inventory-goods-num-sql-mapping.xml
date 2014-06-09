@@ -57,14 +57,14 @@
 	</update>
 	
 	 <!-- 更新商品基本信息表-->
-	<update id="updataGoodsBaseNumByID" parameterClass="com.tuan.inventory.dao.data.GoodsUpdateNumberDO">
+	<update id="updataGoodsBaseNumByID" parameterClass="com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO">
 		 update jeehe_inventory_base
 		<dynamic prepend="set">
-			<isNotNull prepend="," property="saleCount">
-				sale_count =  #saleCount:INTEGER#
+			<isNotNull prepend="," property="baseSaleCount">
+				base_sale_count =  #baseSaleCount:INTEGER#
       		</isNotNull>
-      		<isNotNull prepend="," property="totalNum">
-				total_num =  #totalNum:INTEGER#
+      		<isNotNull prepend="," property="baseTotalCount">
+				base_total_count =  #baseTotalCount:INTEGER#
       		</isNotNull>
 		</dynamic>
 		where id = #id:LONG# 

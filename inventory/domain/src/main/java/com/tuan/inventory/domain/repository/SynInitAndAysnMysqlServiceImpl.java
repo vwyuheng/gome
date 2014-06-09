@@ -224,7 +224,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							if(inventoryInfoDO!=null) {
 								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-								
 								//操作库存基表
 								long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
 								GoodsBaseInventoryDO baseInventoryDO = null;
@@ -253,6 +252,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 										inventoryInfoDO);
 								//更新库存基表
+								String breAck = null;
+								List<Long> listAck = null;
 								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")){
 									long goodsBaseId=inventoryInfoDO.getGoodsBaseId();
 									GoodsBaseInventoryDO baseInventoryDO = null;
@@ -262,13 +263,30 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										baseInventoryDO.setGoodsBaseId(goodsBaseId);
 										baseInventoryDO.setBaseSaleCount(0);
 										baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
-										goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
+										breAck=goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
+										if(StringUtils.isEmpty(breAck)) {
+											throw new TuanRuntimeException(
+													QueueConstant.SERVICE_REDIS_FALIURE,
+													"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+													new Exception());
+										}
+										if(!breAck.equalsIgnoreCase("ok")) {
+											throw new TuanRuntimeException(
+													QueueConstant.SERVICE_REDIS_FALIURE,
+													"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+													new Exception());
+										}
 									}else{
 										int totalCount = inventoryInfoDO.getTotalNumber();
-										goodsInventoryDomainRepository.updateGoodsBaseInventory(goodsBaseId,0,totalCount);
+										listAck=goodsInventoryDomainRepository.updateGoodsBaseInventory(goodsBaseId,0,totalCount);
+										if(CollectionUtils.isEmpty(listAck)) {
+											throw new TuanRuntimeException(
+													QueueConstant.SERVICE_REDIS_FALIURE,
+													"SynInitAndAysnMysqlServiceImpl.updateGoodsBaseInventory to redis error occured!",
+													new Exception());
+										}
 									}
 								}
-								
 								if(StringUtils.isEmpty(retAck)) {
 									throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,

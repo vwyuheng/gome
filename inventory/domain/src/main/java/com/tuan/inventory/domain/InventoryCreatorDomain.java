@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -205,14 +206,13 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		notifyParam.setLeftNumber(param.getLeftNumber());
 		//库存总数 减 库存剩余
 		int sales = 0;
-		//TODO
-//		查询redis
 		//销量
 		notifyParam.setSales(String.valueOf(sales));
 		//库存基本信息
-		notifyParam.setGoodsBaseId(inventoryInfoDO.getGoodsBaseId());
-		notifyParam.setBaseSaleCount(sales);
-		notifyParam.setBaseTotalCount(param.getTotalNumber());
+		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+		notifyParam.setGoodsBaseId(goodsBaseId);
+		notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+		notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 		
 		if (!CollectionUtils.isEmpty(selectionList)) {
 			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
@@ -269,7 +269,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("新增库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-				goodsBaseId =param.getGoodsBaseId();
 			updateActionDO.setGoodsBaseId(goodsBaseId);
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
