@@ -39,7 +39,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private UpdateInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
@@ -85,53 +84,51 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	 */
 	private void selectionInventoryHandler() {
 		try {
-		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // if1
-			this.selectionList = param.getGoodsSelection();
-			this.selectionParam = new ArrayList<GoodsSelectionAndSuppliersResult>();
-	
-			for (GoodsSelectionModel model : selectionList) { // for
-				if (model.getId() != null && model.getId() > 0) { // if选型
-					GoodsSelectionAndSuppliersResult selection = null;
-					Long selectionId = Long.valueOf(model.getId());
-					// 查询商品选型库存
-					GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
-							.querySelectionRelationById(selectionId);
-					if (selectionDO != null
-							/*&& selectionDO.getLimitStorage() == 1*/) { //为了计算销量 不管是否限制库存的都要扣减
-						// 扣减库存并返回扣减标识,计算库存并
-						if ((selectionDO.getLeftNumber() - model.getNum()) < 0) {
-							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
-							this.isSelectionEnough = false;
-						} else {
-							selection = new GoodsSelectionAndSuppliersResult();
-							selection.setId(model.getId());
-							selection.setWmsGoodsId(model.getWmsGoodsId());  //物流
-							// 扣减的库存量
-							selection.setGoodsInventory(model.getNum());
-							selection.setOriginalGoodsInventory(selectionDO
-									.getLeftNumber());
-							// 选型库存，并且是库存充足时用
-							this.selectionParam.add(selection);
-							
+			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // if1
+				this.selectionList = param.getGoodsSelection();
+				this.selectionParam = new ArrayList<GoodsSelectionAndSuppliersResult>();
+
+				for (GoodsSelectionModel model : selectionList) { // for
+					if (model.getId() != null && model.getId() > 0) { // if选型
+						GoodsSelectionAndSuppliersResult selection = null;
+						Long selectionId = Long.valueOf(model.getId());
+						// 查询商品选型库存
+						GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
+								.querySelectionRelationById(selectionId);
+						if (selectionDO != null
+								&& selectionDO.getLimitStorage() == 1) { // 只处理限制库存商品
+							// 扣减库存并返回扣减标识,计算库存并
+							if ((selectionDO.getLeftNumber() - model.getNum()) < 0) {
+								// 该处为了保证只要有一个选型商品库存不足则返回库存不足
+								this.isSelectionEnough = false;
+							} else {
+								selection = new GoodsSelectionAndSuppliersResult();
+								selection.setId(model.getId());
+								selection.setWmsGoodsId(model.getWmsGoodsId()); // 物流
+								// 扣减的库存量
+								selection.setGoodsInventory(model.getNum());
+								selection.setOriginalGoodsInventory(selectionDO
+										.getLeftNumber());
+								// 选型库存，并且是库存充足时用
+								this.selectionParam.add(selection);
+
+							}
+
 						}
 
-					}
+					}// if选型
 
-				}// if选型
+				}// for
 
-			}// for
-
-		} else { // if selection
-			//isSelectionEnough = false;
-		}
+			}
 		} catch (Exception e) {
 			isSelectionEnough = false;
-			this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"selectionInventoryHandler error" + e.getMessage()),false, e);
-			
+			this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
+					"selectionInventoryHandler error" + e.getMessage()), false,
+					e);
+
 		}
-		
+
 	}
 
 	/**
@@ -139,49 +136,47 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	 */
 	public void suppliersInventoryHandler() {
 		try {
-		if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // if1
-			this.suppliersList = param.getGoodsSuppliers();
-			this.suppliersParam = new ArrayList<GoodsSelectionAndSuppliersResult>();
-			for (GoodsSuppliersModel model : suppliersList) { // for
-				if (model.getSuppliersId() > 0) { // if分店
-					GoodsSelectionAndSuppliersResult suppliers = null;
-					Long suppliersId = Long.valueOf(model.getSuppliersId());
-					GoodsSuppliersDO suppliersDO = this.goodsInventoryDomainRepository
-							.querySuppliersInventoryById(suppliersId);
+			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) { // if1
+				this.suppliersList = param.getGoodsSuppliers();
+				this.suppliersParam = new ArrayList<GoodsSelectionAndSuppliersResult>();
+				for (GoodsSuppliersModel model : suppliersList) { // for
+					if (model.getSuppliersId() > 0) { // if分店
+						GoodsSelectionAndSuppliersResult suppliers = null;
+						Long suppliersId = Long.valueOf(model.getSuppliersId());
+						GoodsSuppliersDO suppliersDO = this.goodsInventoryDomainRepository
+								.querySuppliersInventoryById(suppliersId);
 
-					if (suppliersDO != null
-							&& suppliersDO.getLimitStorage() == 1) {
-						// 扣减库存并返回扣减标识,计算库存并
-						if ((suppliersDO.getLeftNumber() - model.getNum()) < 0) {
-							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
-							this.isSuppliersEnough = false;
+						if (suppliersDO != null
+								&& suppliersDO.getLimitStorage() == 1) {
+							// 扣减库存并返回扣减标识,计算库存并
+							if ((suppliersDO.getLeftNumber() - model.getNum()) < 0) {
+								// 该处为了保证只要有一个选型商品库存不足则返回库存不足
+								this.isSuppliersEnough = false;
 
-						} else {
-							suppliers = new GoodsSelectionAndSuppliersResult();
-							// 扣减的库存量
-							suppliers.setId(model.getSuppliersId());
-							suppliers.setGoodsInventory(model.getNum());
-							suppliers.setOriginalGoodsInventory(suppliersDO
-									.getLeftNumber());
-							this.suppliersParam.add(suppliers);
-							
+							} else {
+								suppliers = new GoodsSelectionAndSuppliersResult();
+								// 扣减的库存量
+								suppliers.setId(model.getSuppliersId());
+								suppliers.setGoodsInventory(model.getNum());
+								suppliers.setOriginalGoodsInventory(suppliersDO
+										.getLeftNumber());
+								this.suppliersParam.add(suppliers);
+
+							}
+
 						}
 
-					}
-
-				}// if
+					}// if
+				}
 			}
-		}else {
-			//isSuppliersEnough = false;
-		}
 		} catch (Exception e) {
 			isSuppliersEnough = false;
-			this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"suppliersInventoryHandler error" + e.getMessage()),false, e);
-			
+			this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
+					"suppliersInventoryHandler error" + e.getMessage()), false,
+					e);
+
 		}
-	
+
 	}
 	
 	private void calculateInventory() {
@@ -231,11 +226,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		//是否需要校验下？
 		
 		// 扣减库存并返回扣减标识,计算库存并
-		if ((originalGoodsInventory-goodsDeductNum) >= 0) {
+		if (inventoryInfoDO.getLimitStorage()==1&&(originalGoodsInventory-goodsDeductNum) >= 0) { //限制库存商品
 			this.isEnough = true;
 			// 更新inventoryInfoDO对象的库存属性值 TODO 更新全局变量尤其要小心谨慎
 			//this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); //这个值不是扣减更新依据，是记录日志什么的用
 			//this.inventoryInfoDO.setTotalNumber(totalNumber);
+		}else if(inventoryInfoDO.getLimitStorage()==0) { //非限制库存商品
+			this.isEnough = true;
 		}
 	}
 
@@ -663,11 +660,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
 
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;

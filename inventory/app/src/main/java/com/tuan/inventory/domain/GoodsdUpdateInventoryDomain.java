@@ -60,11 +60,10 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	@SuppressWarnings("unchecked")
 	public GoodsdUpdateInventoryDomain(UpdateRequestPacket packet,UpdateInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {
-			
-			this.userId = reqparam.getUserId();
-			this.goodsId = reqparam.getGoodsId();
-			this.orderId = reqparam.getOrderId();
-			this.goodsBaseId = reqparam.getGoodsBaseId();
+			this.userId = JsonStrVerificationUtils.validateStr(reqparam.getUserId());
+			this.goodsBaseId = JsonStrVerificationUtils.validateStr(reqparam.getGoodsBaseId());
+			this.goodsId = JsonStrVerificationUtils.validateStr(reqparam.getGoodsId());
+			this.orderId = JsonStrVerificationUtils.validateStr(reqparam.getOrderId());
 			this.num = reqparam.getNum();
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
 			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
