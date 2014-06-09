@@ -51,6 +51,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private List<SelectionNotifyMessageParam> selectionMsg;
 	//分店
 	private List<SuppliersNotifyMessageParam> suppliersMsg;
+	private String goodsBaseId2str;
 	private String goodsId2str;
 	private String type;
 	private String id;
@@ -188,36 +189,29 @@ public class InventoryAdjustDomain extends AbstractDomain {
 													"adjustInventory dlock error"), true);
 				}
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
-					if (inventoryDO != null) {
-						// 调整剩余库存数量
-						inventoryDO.setLeftNumber(inventoryDO.getLeftNumber()
-								+ (adjustNum));
-						// 调整商品总库存数量
-						inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()
-								+ (adjustNum));
-
-						if (inventoryDO.getLimitStorage() == 0) {
-							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
-						} else if (inventoryDO.getTotalNumber() == 0
-								&& inventoryDO.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
-							inventoryDO.setLimitStorage(0); // 更新数据库用
+					if (inventoryDO != null&&inventoryDO.getLimitStorage()==1) {
+						
+						if(origoodstotalnum+(adjustNum)<0) {
+							// 调整剩余库存数量
 							inventoryDO.setLeftNumber(0);
 							inventoryDO.setTotalNumber(0);
-
-							limitStorage = -1; // 这个是更新redis用
-							// 这个是更新redis用
-							adjustNum = adjustNum + (-adjustNum)
-									+ Integer.MAX_VALUE;
+							inventoryDO.setLimitStorage(0);  //变为无限量
+						}else {
+							// 调整剩余库存数量
+							inventoryDO.setLeftNumber(inventoryDO.getLeftNumber()
+									+ (adjustNum));
+							// 调整商品总库存数量
+							inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()
+									+ (adjustNum));
 						}
+						inventoryDO.setGoodsBaseId(goodsBaseId);  //更新goodsbaseid
 					}
 					if(inventoryDO!=null&&goodsId>0) {
 						lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage);
 						writeSysUpdateLog(lm,true);
 						 // 消费对列的信息
-						String goodsBaseId =param.getGoodsBaseId();
-						if(!StringUtils.isEmpty(goodsBaseId)&&StringUtils.isNumeric(goodsBaseId)){
-							this.goodsBaseId=Long.valueOf(goodsBaseId);
-						}
+						//String goodsBaseId =param.getGoodsBaseId();
+						
 						CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,this.goodsBaseId,(adjustNum),limitStorage,inventoryDO);
 						PublicCodeEnum publicCodeEnum = callResult.getPublicCodeEnum();
                         if(publicCodeEnum == PublicCodeEnum.SUCCESS){
@@ -440,6 +434,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		}
 		// 初始化参数
 		private void fillParam() {
+			this.goodsBaseId2str = param.getGoodsBaseId();
 			//商品id，必传参数，该参数无论是选型还是分店都要传过来
 			this.goodsId2str = param.getGoodsId();
 			// 2:商品 4：选型 6：分店
@@ -489,6 +484,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		public CreateInventoryResultEnum initCheck() {
 			this.fillParam();
 			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
+			this.goodsBaseId =  StringUtils.isEmpty(goodsBaseId2str)?0:Long.valueOf(goodsBaseId2str);
 			//初始化加分布式锁
 			lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
 			writeBusInitLog(lm,false);
