@@ -173,7 +173,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			
 			@Override
 			public void executeAfter() {
-				inventoryWmsCreaterDomain.sendNotify();
+				//TODO 暂时不发为好
+//				inventoryWmsCreaterDomain.sendNotify();
 			}
 		});
 		

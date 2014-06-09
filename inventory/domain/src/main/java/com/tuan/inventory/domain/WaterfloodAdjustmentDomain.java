@@ -12,6 +12,7 @@ import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.lock.res.LockResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -323,10 +324,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						//销量
 						notifyParam.setSales(String.valueOf(sales));
 						//发送库存基表信息
-						notifyParam.setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
-						notifyParam.setBaseSaleCount(sales);
-						notifyParam.setBaseTotalCount(inventoryDO.getTotalNumber());
-						
+						GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+						notifyParam.setGoodsBaseId(goodsBaseId);
+						notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+						notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 					}
 					if(!CollectionUtils.isEmpty(selectionMsg)){
 						this.fillSelectionMsg();

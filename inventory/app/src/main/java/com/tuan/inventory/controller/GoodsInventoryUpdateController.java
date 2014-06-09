@@ -238,7 +238,7 @@ public class GoodsInventoryUpdateController {
 	}
 	/**
 	 * http://localhost:882/rest/j/update/createwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&goodsSupplier=test&goodsName=55t&totalNumber=1000&leftNumber=800&isBeDelivery=1&goodsSelection=[{"goodTypeId":18,"id":18,"leftNumber":50,"totalNumber":50,"limitStorage":1}]
-	 * 物流库存创建接口
+	 * 物流库存创建接口 暂时不发消息
 	 * @param packet
 	 * @param param
 	 * @param request
@@ -273,7 +273,7 @@ public class GoodsInventoryUpdateController {
 	}
 	/**
 	 * http://localhost:882/rest/j/update/adjustwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&isBeDelivery=1&num=1&goodsIds=[173552,217335]&goodsSelection=[{"goodTypeId":18,"id":18,"num":1}]
-	 * 物流库存调整接口
+	 * 物流库存调整接口 不发消息
 	 * @param packet
 	 * @param param
 	 * @param request
