@@ -12,7 +12,7 @@ public class SelectionNotifyMessageParam extends TuanBaseDO{
 	private java.lang.Integer leftNumber; 	// 当前选型剩余数库存默认值：0 
 	private Integer waterfloodVal;  //注水值
 	private int limitStorage;	//0:库存无限制；1：限制库存
-	private String sales; //销量
+	//private String sales; //销量
 	private String wmsGoodsId;  //物流编码
 	
 	public static String getNotifyType() {
@@ -63,12 +63,7 @@ public class SelectionNotifyMessageParam extends TuanBaseDO{
 	public void setLimitStorage(int limitStorage) {
 		this.limitStorage = limitStorage;
 	}
-	public String getSales() {
-		return sales;
-	}
-	public void setSales(String sales) {
-		this.sales = sales;
-	}
+	
 	public String getWmsGoodsId() {
 		return wmsGoodsId;
 	}

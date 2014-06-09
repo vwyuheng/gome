@@ -93,8 +93,6 @@ public class ObjectUtils {
 			//result.setSuppliersInventoryId(selModel.getSuppliersInventoryId());
 			result.setLimitStorage(selModel.getLimitStorage());
 			result.setUserId(selModel.getUserId());
-			int sales = selModel.getTotalNumber() - selModel.getLeftNumber();
-			result.setSales(String.valueOf(sales));
 			result.setWaterfloodVal(selModel.getWaterfloodVal());
 			result.setWmsGoodsId(selModel.getWmsGoodsId());
 		}
@@ -112,8 +110,6 @@ public class ObjectUtils {
 			result.setLimitStorage(supModel.getLimitStorage());
 			result.setUserId(supModel.getUserId());
 			result.setWaterfloodVal(supModel.getWaterfloodVal());
-			int sales = supModel.getTotalNumber() - supModel.getLeftNumber();
-			result.setSales(String.valueOf(sales));
 		}
 		return result;
 	}

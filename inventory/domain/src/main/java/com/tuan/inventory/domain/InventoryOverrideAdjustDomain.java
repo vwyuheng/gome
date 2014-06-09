@@ -51,6 +51,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private List<SelectionNotifyMessageParam> selectionMsg;
 	//分店
 	private List<SuppliersNotifyMessageParam> suppliersMsg;
+	private String goodsBaseId2str;
 	private String goodsId2str;
 	private String type;
 	private String id;
@@ -106,7 +107,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				if(inventoryDO!=null) {
+				if(inventoryDO!=null&&inventoryDO.getLimitStorage()==1) {
 					this.preleftnum = inventoryDO.getLeftNumber();
 					this.pretotalnum = inventoryDO.getTotalNumber();
 				}
@@ -119,7 +120,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				this.businessType = ResultStatusEnum.GOODS_SELECTION.getDescription();
 				//查询商品选型库存
 				this.selectionInventory = this.goodsInventoryDomainRepository.querySelectionRelationById(selectionId);
-				if(selectionInventory!=null) {
+				if(selectionInventory!=null&&selectionInventory.getLimitStorage()==1) {
 					this.preselOrSuppleftnum = selectionInventory.getLeftNumber();
 					this.preselOrSupptotalnum = selectionInventory.getTotalNumber();
 				}
@@ -129,7 +130,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				this.businessType = ResultStatusEnum.GOODS_SUPPLIERS.getDescription();
 				//查询商品分店库存
 				this.suppliersInventory = this.goodsInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
-				if(suppliersInventory!=null) {
+				if(suppliersInventory!=null&&suppliersInventory.getLimitStorage()==1) {
 					this.preselOrSuppleftnum = suppliersInventory.getLeftNumber();
 					this.preselOrSupptotalnum = suppliersInventory.getTotalNumber();
 				}
@@ -225,14 +226,17 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						//清除选型关系
 						inventoryDO.setWmsId(0l);
 						inventoryDO.setGoodsSelectionIds("");
+						if(goodsBaseId!=null&&goodsBaseId>0) {
+							inventoryDO.setGoodsBaseId(goodsBaseId);
+						}
 						if (inventoryDO.getLimitStorage() == 0&&inventoryDO.getTotalNumber() != 0) {
 							inventoryDO.setLimitStorage(1); // 更新数据库用
 							//return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
 						} else if (inventoryDO.getTotalNumber() == 0
 								&& inventoryDO.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
 							inventoryDO.setLimitStorage(0); // 更新数据库用
-							inventoryDO.setLeftNumber(Integer.MAX_VALUE);
-							inventoryDO.setTotalNumber(Integer.MAX_VALUE);
+							inventoryDO.setLeftNumber(0);
+							inventoryDO.setTotalNumber(0);
 						}
 					}
 					
@@ -499,6 +503,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		// 初始化参数
 		private void fillParam() {
 			this.tokenid = param.getTokenid();
+			this.goodsBaseId2str = param.getGoodsBaseId();
 			//商品id，必传参数，该参数无论是选型还是分店都要传过来
 			this.goodsId2str = param.getGoodsId();
 			// 2:商品 4：选型 6：分店
@@ -559,6 +564,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		@SuppressWarnings("unchecked")
 		public CreateInventoryResultEnum initCheck() {
 			this.fillParam();
+			this.goodsBaseId =  StringUtils.isEmpty(goodsBaseId2str)?0:Long.valueOf(goodsBaseId2str);
 			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
 			//初始化加分布式锁
 			lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
@@ -598,6 +604,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setGoodsId(goodsId);
 			updateActionDO.setBusinessType(businessType);
 			updateActionDO.setItem(id);
@@ -626,10 +633,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-			if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
-				goodsBaseId = Long.valueOf(param.getGoodsBaseId());
-			}
-			updateActionDO.setGoodsBaseId(goodsBaseId);
+			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
 			this.updateActionDO = null;
@@ -652,8 +656,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			selMsg.setUserId(Long.valueOf(param.getUserId()));
 			selMsg.setLimitStorage(selectionInventory.getLimitStorage());
 			selMsg.setWaterfloodVal(selectionInventory.getWaterfloodVal());
-			int sales = selMsg.getTotalNumber()-selMsg.getLeftNumber();
-			selMsg.setSales(String.valueOf(sales));
+			selMsg.setWmsGoodsId(selectionInventory.getWmsGoodsId());
 			selectionMsg.add(selMsg);
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.setMethod("fillSelectionMsg")
@@ -674,8 +677,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			supMsg.setUserId(Long.valueOf(param.getUserId()));
 			supMsg.setLimitStorage(suppliersInventory.getLimitStorage());
 			supMsg.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
-			int sales = supMsg.getTotalNumber()-supMsg.getLeftNumber();
-			supMsg.setSales(String.valueOf(sales));
 			suppliersMsg.add(supMsg);
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm

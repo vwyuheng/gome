@@ -12,7 +12,7 @@ public class SuppliersNotifyMessageParam extends TuanBaseDO{
 	private java.lang.Integer leftNumber;// 当前分店剩余数库存默认值:0
 	private java.lang.Integer limitStorage; // 0:库存无限制；1：限制库存
 	private Integer waterfloodVal;  //注水值
-	private String sales; //销量
+	//private String sales; //销量
 	public static String getNotifyType() {
 		return notifyType;
 	}
@@ -61,13 +61,5 @@ public class SuppliersNotifyMessageParam extends TuanBaseDO{
 	public void setWaterfloodVal(Integer waterfloodVal) {
 		this.waterfloodVal = waterfloodVal;
 	}
-	public String getSales() {
-		return sales;
-	}
-	public void setSales(String sales) {
-		this.sales = sales;
-	}
-	
-	
 	
 }
