@@ -2065,4 +2065,95 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 		
 	}
+	@Override
+	public CallResult<GoodsSelectionDO> updateGoodsSelection(
+			final GoodsInventoryDO goodsDO, final GoodsSelectionDO selectionDO)
+			throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+						
+						if(goodsDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+							
+						}
+						if(selectionDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
+						}
+						if(goodsDO!=null) {
+							//补上redis的处理
+							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsDO.getGoodsId(), goodsDO);
+							if(StringUtils.isEmpty(retAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							if(!retAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							
+						}
+						if (selectionDO != null) {
+								boolean selRetACK = goodsInventoryDomainRepository
+										.saveGoodsSelectionInventory(
+												goodsDO.getGoodsId(),
+												selectionDO);
+								if (!selRetACK) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+											new Exception());
+								}
+
+							}
+						
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
+							throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
+									"update invalid '" + selectionDO.getId()
+											+ "' for key 'selectionId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							selectionDO);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (selectionDO == null) {
+						 logger.error(this.getClass()+"_create param invalid ,GoodsSelectionDO is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					if (goodsDO==null) {
+						logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<GoodsSelectionDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(GoodsSelectionDO)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
 }
