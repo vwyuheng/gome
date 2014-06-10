@@ -10,6 +10,7 @@ import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
@@ -56,6 +57,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private List<GoodsSuppliersDO> suppliersInventoryList = null;
 	private GoodsInventoryDO inventoryInfoDO = null;
 	private long goodsId = 0;
+	private long goodsBaseId = 0;
 	
 	
 	//回滚
@@ -184,7 +186,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						if(this.rollback(goodsId, goodsBaseId,deductNum, selectionParamResult, suppliersParamResult)){
 							if(loadMessageData(goodsId)) {
 								if(this.fillParamAndUpdate()) {
-									 writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
+									 writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),goodsBaseId:("+goodsBaseId+")");
 									  //订单为已支付的，首先进行数据同步:再更新mysql库存,
 							          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 							          if (updateDataEnum != updateDataEnum.SUCCESS) { 
@@ -265,7 +267,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			try {
 				 inventoryInfoDO = new GoodsInventoryDO();
 				 goodsId = goodsInventoryModel.getGoodsId();
+				 goodsBaseId = goodsInventoryModel.getGoodsBaseId();
 				inventoryInfoDO.setGoodsId(goodsId);
+				inventoryInfoDO.setGoodsBaseId(goodsBaseId);
 				inventoryInfoDO.setLimitStorage(goodsInventoryModel
 						.getLimitStorage());
 				inventoryInfoDO.setWaterfloodVal(goodsInventoryModel
@@ -332,6 +336,13 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
 			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(goodsInventoryModel.getGoodsSuppliersList()));
 		}
+		GoodsBaseInventoryDO baseInventoryDO =goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+		if(baseInventoryDO!=null){
+			notifyParam.setGoodsBaseId(goodsBaseId);
+			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
+			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+		}
+		
 		return notifyParam;
 	}
 	

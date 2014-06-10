@@ -211,6 +211,7 @@ public class ObjectUtils {
 			     result.setGoodsSelectionList(goodsSelectionList);
 			if(!CollectionUtils.isEmpty(goodsSuppliersList))
 			     result.setGoodsSuppliersList(goodsSuppliersList);
+			result.setGoodsBaseId(giDO.getGoodsBaseId());
 		}
 		return result;
 	}

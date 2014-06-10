@@ -542,6 +542,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						if(goodsDO!=null) {
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+							Long goodsBaseId = goodsDO.getGoodsBaseId();
+							GoodsBaseInventoryDO baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+							if(baseInventoryDO!=null){
+								baseInventoryDO.setBaseTotalCount(baseInventoryDO.getBaseTotalCount()+goodsDO.getTotalNumber());
+								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
+							}
 						}
 						if (!CollectionUtils.isEmpty(selectionInventoryList)) { // if1
 							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);

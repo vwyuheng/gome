@@ -25,7 +25,7 @@ public class GoodsInventoryModel extends TuanBaseDO {
 	private List<GoodsSelectionModel> goodsSelectionList;
 	//商品分店list
 	private List<GoodsSuppliersModel> goodsSuppliersList;
-	
+	private Long goodsBaseId;
 	
 	public Long getGoodsId() {
 		return goodsId;
@@ -92,6 +92,12 @@ public class GoodsInventoryModel extends TuanBaseDO {
 	}
 	public void setIsDirectConsumption(java.lang.Integer isDirectConsumption) {
 		this.isDirectConsumption = isDirectConsumption;
+	}
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

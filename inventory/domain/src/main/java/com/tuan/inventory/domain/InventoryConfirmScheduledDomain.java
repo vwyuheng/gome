@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -40,6 +41,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private List<GoodsSuppliersDO> suppliersInventoryList = null;
 	private GoodsInventoryDO inventoryInfoDO = null;
 	private long goodsId = 0;
+	private long goodsBaseId = 0;
 	private final int delStatus = 6;
 	public InventoryConfirmScheduledDomain(String clientIp,
 			String clientName,LogModel lm) {
@@ -189,7 +191,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		try {
 			inventoryInfoDO = new GoodsInventoryDO();
 			goodsId = goodsInventoryModel.getGoodsId();
+			goodsBaseId = goodsInventoryModel.getGoodsBaseId();
 			inventoryInfoDO.setGoodsId(goodsId);
+			inventoryInfoDO.setGoodsBaseId(goodsBaseId);
 			inventoryInfoDO.setLimitStorage(goodsInventoryModel
 					.getLimitStorage());
 			inventoryInfoDO.setWaterfloodVal(goodsInventoryModel
@@ -275,6 +279,13 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
 			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(goodsInventoryModel.getGoodsSuppliersList()));
 		}
+		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+		if(baseInventoryDO!=null){
+			notifyParam.setGoodsBaseId(goodsBaseId);
+			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
+			baseInventoryDO.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+		}
+		
 		return notifyParam;
 	}
 
