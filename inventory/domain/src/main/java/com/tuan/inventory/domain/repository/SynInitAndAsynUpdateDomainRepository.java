@@ -253,23 +253,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param selectionDO
 	 */
 	public void updateGoodsSelection(GoodsSelectionDO selectionDO) throws Exception{
-		//try {
 		this.synInitAndAsynUpdateDAO.updateGoodsSelectionDO(selectionDO);
-		/*} catch (Exception e) {
-			log.error(
-					"SynInitAndAsynUpdateDomainRepository.updateGoodsInventory error occured!"
-							+ e.getMessage(), e);
-			if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
-				throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
-						"update invalid '" + selectionDO.getId()
-								+ "' for key 'selectionId'", e);
-			}
-			throw new TuanRuntimeException(
-					QueueConstant.SERVICE_DATABASE_FALIURE,
-					"SynInitAndAsynUpdateDomainRepository.updateGoodsInventory error occured!",
-					e);
-			
-		}*/
+		
 	}
 	public void updateGoodsSelectionWms(GoodsWmsSelectionResult selection) throws Exception{
 		

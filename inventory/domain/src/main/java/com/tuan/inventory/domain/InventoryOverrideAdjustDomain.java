@@ -39,7 +39,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private OverrideAdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	
 	private SequenceUtil sequenceUtil;
@@ -231,7 +230,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						}
 						if (inventoryDO.getLimitStorage() == 0&&inventoryDO.getTotalNumber() != 0) {
 							inventoryDO.setLimitStorage(1); // 更新数据库用
-							//return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
 						} else if (inventoryDO.getTotalNumber() == 0
 								&& inventoryDO.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
 							inventoryDO.setLimitStorage(0); // 更新数据库用
@@ -240,9 +238,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						}
 					}
 					
-					//更新mysql
-					//boolean handlerResult = inventoryInitAndUpdateHandle
-					//		.updateGoodsInventory(goodsId,inventoryDO);
 					CallResult<GoodsInventoryDO> callResult  = null;
 						
 					if (goodsId>0&&inventoryDO != null) {
@@ -301,8 +296,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						if(afttotalnum<=0) {
 							afttotalnum = 0;
 							inventoryDO.setLimitStorage(0);
-							aftleftnum=Integer.MAX_VALUE;
-							afttotalnum=Integer.MAX_VALUE;
+							aftleftnum=0;
+							afttotalnum=0;
 						}
 						//同时调整商品总的库存的剩余和总库存量
 						//调整剩余库存数量
@@ -355,17 +350,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 										message);
 						writeSysUpdateLog(lm, true);
 					}
-							
-				/*		
-					if (selhandlerResult) {
-						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("selectionInventory", selectionInventory.toString()).addMetaData("inventoryDO", inventoryDO.toString());
-						writeSysUpdateLog(lm,true);
-						this.goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId, selectionInventory);
-						this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
-						lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("selectionInventory", selectionInventory.toString()).addMetaData("inventoryDO", inventoryDO.toString());
-						writeSysUpdateLog(lm,true);
-						
-					}*/
 
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
@@ -403,8 +387,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						if(afttotalnum<=0) {
 							afttotalnum = 0;
 							inventoryDO.setLimitStorage(0);
-							aftleftnum=Integer.MAX_VALUE;
-							afttotalnum=Integer.MAX_VALUE;
+							aftleftnum=0;
+							afttotalnum=0;
 						}
 						//同时调整商品总的库存的剩余和总库存量
 						//调整剩余库存数量
@@ -413,10 +397,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						inventoryDO.setTotalNumber(afttotalnum);
 					}
 					
-				
-					//更新mysql
-					/*boolean handlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsSuppliers(inventoryDO,suppliersInventory);*/
 					CallResult<GoodsSuppliersDO> callResult = null;
 
 					if (inventoryDO != null && suppliersInventory != null) {
@@ -456,17 +436,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 								.addMetaData("message", message);
 						writeSysUpdateLog(lm, true);
 					}
-							
-				/*		
-					if (handlerResult) {
-						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type);
-						writeSysUpdateLog(lm,true);
-						this.goodsInventoryDomainRepository.saveGoodsSuppliersInventory(goodsId, suppliersInventory);
-						this.goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryDO);
-						lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type);
-						writeSysUpdateLog(lm,true);
-						
-					}*/
 
 				}//else SUPPLIERS
 			} finally{
@@ -731,11 +700,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}
-
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
+	
 	public Long getGoodsId() {
 		return goodsId;
 	}
