@@ -275,7 +275,18 @@
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                     
+	</appender>   
+	<!-- 序列化日志记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="INVENTORY-DESERILIZABLE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/des/job-inventory-des.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/des/job-inventory-des.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                        
 	<!-- ===================================================================== -->
 	<!-- Loggers                                                               -->
 	<!-- ===================================================================== -->
@@ -401,6 +412,11 @@
 	<logger name="COMMON.SERVICE" additivity="false">
 			<level value="INFO"/>
 			<appender-ref ref="COMMON-SERVICE-APPENDER"/>
+	</logger>
+	<!-- 序列号日志 -->
+	<logger name="INVENTORY.DESERILIZABLE.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="INVENTORY-DESERILIZABLE-APPENDER"/>
 	</logger>
 	<!-- ===================================================================== -->
 	<!-- Root logger                                                           -->

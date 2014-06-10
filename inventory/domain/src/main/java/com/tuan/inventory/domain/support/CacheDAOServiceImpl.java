@@ -9,8 +9,11 @@ import javax.annotation.Resource;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -21,12 +24,13 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.support.enu.GoodBaseHashFieldEnum;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
+import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class CacheDAOServiceImpl implements BaseDAOService {
-
+	private static final Log logger = LogFactory.getLog("INVENTORY.DESERILIZABLE.LOG");
 	@Resource
 	RedisCacheUtil redisCacheUtil;
 	
@@ -102,37 +106,88 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public GoodsInventoryDO queryGoodsInventory(Long goodsId) {
-		Map<String, String> objMap = this.redisCacheUtil.hgetAll(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
-						+ String.valueOf(goodsId));
-		if (!CollectionUtils.isEmpty(objMap)) {
-			return JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(objMap), GoodsInventoryDO.class);
+		long startTime = System.currentTimeMillis();
+		String method = "queryGoodsInventory";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
+		try {
+			Map<String, String> objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+							+ String.valueOf(goodsId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				/*return JsonUtils.convertStringToObject(
+						JsonUtils.convertObjectToString(objMap),
+						GoodsInventoryDO.class);*/
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsInventoryDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
 	}
 
 	@Override
 	public GoodsSelectionDO querySelectionRelationById(Long selectionId) {
-		Map<String, String> objMap = this.redisCacheUtil
-				.hgetAll(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
-						+ String.valueOf(selectionId));
-		if (!CollectionUtils.isEmpty(objMap)) {
-			return JsonUtils.convertStringToObject(
-					JsonUtils.convertObjectToString(objMap),
-					GoodsSelectionDO.class);
+		long startTime = System.currentTimeMillis();
+		String method = "querySelectionRelationById";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
+		try {
+			Map<String, String> objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+							+ String.valueOf(selectionId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				/*
+				 * return JsonUtils.convertStringToObject(
+				 * JsonUtils.convertObjectToString(objMap),
+				 * GoodsSelectionDO.class);
+				 */
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsSelectionDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
 	}
 
 	@Override
-	public GoodsSuppliersDO querySuppliersInventoryById(
-			Long suppliersId) {
-		Map<String, String> objMap = this.redisCacheUtil
-				.hgetAll(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
-						+ String.valueOf(suppliersId));
-		if (!CollectionUtils.isEmpty(objMap)) {
-			return JsonUtils.convertStringToObject(
-					JsonUtils.convertObjectToString(objMap),
-					GoodsSuppliersDO.class);
+	public GoodsSuppliersDO querySuppliersInventoryById(Long suppliersId) {
+		long startTime = System.currentTimeMillis();
+		String method = "querySuppliersInventoryById";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
+		try {
+			Map<String, String> objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+							+ String.valueOf(suppliersId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				/*
+				 * return JsonUtils.convertStringToObject(
+				 * JsonUtils.convertObjectToString(objMap),
+				 * GoodsSuppliersDO.class);
+				 */
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsSuppliersDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
 	}
@@ -242,16 +297,29 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key) {
-		        // 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
-				String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER
-						+ ":" + key);
-				GoodsInventoryQueueDO queueDO = null;
-				if(StringUtils.isNotEmpty(member)) {
-					
-//					queueDO = (GoodsInventoryQueueDO) LogUtil.jsonToObject(member,GoodsInventoryQueueDO.class);
-					queueDO = JsonUtils.convertStringToObject(member,GoodsInventoryQueueDO.class);
-				}
-				return queueDO;
+		long startTime = System.currentTimeMillis();
+		String method = "queryInventoryQueueDO";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
+		GoodsInventoryQueueDO queueDO = null;
+		try {
+			// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
+			String member = this.redisCacheUtil
+					.get(QueueConstant.QUEUE_KEY_MEMBER + ":" + key);
+			if (StringUtils.isNotEmpty(member)) {
+				// queueDO =
+				// JsonUtils.convertStringToObject(member,GoodsInventoryQueueDO.class);
+				queueDO = JSON.parseObject(member, GoodsInventoryQueueDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+					.addMetaData("runResult", runResult).toJson(true));
+		}
+		return queueDO;
 	}
 
 	@Override
@@ -413,13 +481,26 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId) {
-		Map<String, String> objMap = this.redisCacheUtil
-				.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
-						+ wmsGoodsId);
-		if (!CollectionUtils.isEmpty(objMap)) {
-			return JsonUtils.convertStringToObject(
-					JsonUtils.convertObjectToString(objMap),
-					GoodsInventoryWMSDO.class);
+		long startTime = System.currentTimeMillis();
+		String method = "queryWmsInventoryById";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
+		try {
+			Map<String, String> objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+							+ wmsGoodsId);
+			if (!CollectionUtils.isEmpty(objMap)) {
+				return JsonUtils.convertStringToObject(
+						JsonUtils.convertObjectToString(objMap),
+						GoodsInventoryWMSDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
 	}
