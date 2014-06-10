@@ -973,7 +973,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	}
 	@Override
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,final Map<String, String> hash,
-			final GoodsInventoryDO inventoryInfoDO) throws Exception {
+			final GoodsInventoryDO inventoryInfoDO,final GoodsInventoryDO oldInventoryInfoDO) throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
 				new TuanServiceCallback() {
@@ -982,15 +982,18 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							//TODO 传递oldnum对象，扣减原库存+新库存
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
 							//更新库存基表
-							GoodsBaseInventoryDO baseInventoryDO = new GoodsBaseInventoryDO();
-							baseInventoryDO.setGoodsBaseId(inventoryInfoDO.getGoodsBaseId());
-							baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
-							baseInventoryDO.setBaseSaleCount(inventoryInfoDO.getGoodsSaleCount());
-							synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
-							
+							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+							GoodsBaseInventoryDO baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+							if(baseInventoryDO!=null){
+								baseInventoryDO.setGoodsBaseId(goodsBaseId);
+								int num=baseInventoryDO.getBaseTotalCount()-inventoryInfoDO.getTotalNumber()+oldInventoryInfoDO.getTotalNumber();
+								baseInventoryDO.setBaseTotalCount(num);
+								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
+							}
 							if(!CollectionUtils.isEmpty(hash)) {
 								String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);
-								goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), baseInventoryDO);
+								if(baseInventoryDO!=null)
+								goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
 								
 								if(StringUtils.isEmpty(retAck)) {
 									throw new TuanRuntimeException(

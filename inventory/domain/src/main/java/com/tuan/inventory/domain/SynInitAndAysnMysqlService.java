@@ -29,7 +29,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,final int pretotalnum,String goodsSelectionIds,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,int adjustNum,GoodsInventoryDO goodsDO) throws Exception;
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO, GoodsInventoryDO oldgoodsDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,int pretotalnum,GoodsSelectionDO selectionDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,GoodsSelectionDO selectionDO) throws Exception;
 	public CallResult<GoodsSuppliersDO> updateGoodsSuppliers(GoodsInventoryDO goodsDO,GoodsSuppliersDO suppliersDO) throws Exception;

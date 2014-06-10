@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
@@ -48,8 +49,10 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	private String wmsGoodsId;  //物流编码
 	private GoodsInventoryWMSDO wmsDO;
 	private GoodsInventoryDO inventoryInfoDO;
+	private GoodsInventoryDO oldinventoryInfoDO;
 	private GoodsSuppliersDO suppliersDO;
 	private Long goodsId;
+	private Long goodsBaseId;
 	private Long suppliersId;
 	private String isBeDelivery;
 	private long premaryKey4Suppliers;  //分店主键
@@ -93,7 +96,9 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		//加载商品库存信息
 		if(goodsId!=0) {
 				this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-			}
+				oldinventoryInfoDO = new GoodsInventoryDO();
+				BeanUtils.copyProperties(oldinventoryInfoDO, inventoryInfoDO);
+		}
 			
 		
 		//处理物流配型数据
@@ -161,6 +166,9 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		}
 		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
 			goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+		} // if 
+		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
+			goodsBaseId = Long.valueOf(StringUtils.isEmpty(param.getGoodsBaseId())?"0":param.getGoodsBaseId());
 		} // if 
 		if(!StringUtils.isEmpty(param.getGoodsTypeIds())) {
 			goodsTypeIds = param.getGoodsTypeIds();	
@@ -375,7 +383,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 					writeSysDeductLog(lm.setMethod("InventoryUpdateDomain.updateAndInsertWmsData").addMetaData("goodsBaseId error", goodsBaseId), true);
 				}
 				
-				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO);
+				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO,oldinventoryInfoDO);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
@@ -504,10 +512,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("更新物流相关数据");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-			String goodsBaseId = param.getGoodsBaseId();
-			if(!StringUtils.isEmpty(goodsBaseId)&&StringUtils.isNumeric(goodsBaseId)){
-				updateActionDO.setGoodsBaseId(Long.valueOf(goodsBaseId));
-			}
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
 			this.updateActionDO = null;
