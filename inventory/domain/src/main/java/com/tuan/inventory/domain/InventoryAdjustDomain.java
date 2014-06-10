@@ -266,7 +266,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					
 					CallResult<GoodsSelectionDO> callResult  = null;
 					// 消费对列的信息
-					callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,selectionInventory);
+					callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,origoodstotalnum,selectionInventory);
 					PublicCodeEnum publicCodeEnum = callResult
 							.getPublicCodeEnum();
 					

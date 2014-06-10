@@ -1155,22 +1155,77 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 }
 
 	@Override
-	public CallResult<GoodsSelectionDO> updateGoodsSelection(final GoodsInventoryDO goodsDO,
+	public CallResult<GoodsSelectionDO> updateGoodsSelection(final GoodsInventoryDO goodsDO,final int pretotalnum,
 			final GoodsSelectionDO selectionDO) throws Exception {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					try {
+						long goodsBaseId = goodsDO.getGoodsBaseId();
+						GoodsBaseInventoryDO	baseDO = null;
 						if(goodsDO!=null) {
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+							//更新商品基表
+							if(goodsBaseId>0) {
+								baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								//更新base表调整后的库存总量
+								baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+goodsDO.getTotalNumber());
+								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+							}
 						}
 						if(selectionDO!=null) {
 							synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
 						}
+						if(goodsDO!=null) {
+							//补上redis的处理
+							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsDO.getGoodsId(), goodsDO);
+							if(StringUtils.isEmpty(retAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							if(!retAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							
+							//更新redis商品基表
+							String baseRetAck = null;
+							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")){
+								baseRetAck = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseDO);
+							}
+							
+							if(StringUtils.isEmpty(baseRetAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							if(!baseRetAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+						}
+							if (selectionDO != null) {
+								boolean selRetACK = goodsInventoryDomainRepository
+										.saveGoodsSelectionInventory(
+												goodsDO.getGoodsId(),
+												selectionDO);
+								if (!selRetACK) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+											new Exception());
+								}
+
+							}
 						
-						//补上redis的处理
-					
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"

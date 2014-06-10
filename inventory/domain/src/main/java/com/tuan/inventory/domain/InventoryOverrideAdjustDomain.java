@@ -247,7 +247,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
 							goodsBaseId = Long.valueOf(param.getGoodsBaseId());
 						}
-						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,goodsBaseId,goodsSelectionIds,inventoryDO);
+						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,pretotalnum,goodsSelectionIds,inventoryDO);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
 						
@@ -305,10 +305,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						//调整商品总库存数量
 						inventoryDO.setTotalNumber(afttotalnum);
 					}
-					//更新mysql
-					/*boolean selhandlerResult = inventoryInitAndUpdateHandle
-							.updateGoodsSelection(inventoryDO,
-									selectionInventory);*/
+
 					CallResult<GoodsSelectionDO> callResult = null;
 
 					if (inventoryDO != null && selectionInventory != null) {
@@ -322,7 +319,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						writeSysUpdateLog(lm, true);
 						// 消费对列的信息
 						callResult = synInitAndAysnMysqlService
-								.updateGoodsSelection(inventoryDO,
+								.updateGoodsSelection(inventoryDO,pretotalnum,
 										selectionInventory);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();

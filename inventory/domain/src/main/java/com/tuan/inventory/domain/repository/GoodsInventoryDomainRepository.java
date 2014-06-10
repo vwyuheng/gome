@@ -197,9 +197,11 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	    return true;
 	
 	}
-	public void saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
+	public boolean saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
 		if(selectionDO!=null) {
-			this.baseDAOService.saveGoodsSelectionInventory(goodsId, selectionDO);
+			return this.baseDAOService.saveGoodsSelectionInventory(goodsId, selectionDO);
+		}else {
+			return false;
 		}
 		
 	}
