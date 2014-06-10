@@ -26,7 +26,6 @@ import com.tuan.inventory.domain.support.BaseDAOService;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
-import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
@@ -48,8 +47,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	//保存商品库存
 	public String saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
-		inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
-		inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
+		//inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
+		//inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 		return this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
 	
@@ -64,8 +63,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public String saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO inventoryInfoDO:goodsIds) {
-				inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
-				inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
+				//inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
+				//inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 				String result = this.baseDAOService.saveInventory(inventoryInfoDO.getGoodsId(), inventoryInfoDO);
 				if(StringUtils.isEmpty(result)) {
 					return null;
@@ -182,8 +181,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 					if(tmpSelDO==null) {  //不存在才创建
 						//将商品id set到选型中
 						srDO.setGoodsId(goodsId);
-						srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-						srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
+						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 					boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 					if(!subRet) {
 						return false;
@@ -211,8 +210,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 					GoodsSuppliersDO tmpSuppDO = this.baseDAOService.querySuppliersInventoryById(sDO.getSuppliersId());
 					if(tmpSuppDO==null) { //不存在才创建
 						sDO.setGoodsId(goodsId);
-						sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
-						sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
+						//sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
+						//sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
 						boolean retAck = this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
 						if(!retAck) {
 							return false;

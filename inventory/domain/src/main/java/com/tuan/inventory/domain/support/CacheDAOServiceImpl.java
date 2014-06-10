@@ -23,7 +23,6 @@ import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
-import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class CacheDAOServiceImpl implements BaseDAOService {
