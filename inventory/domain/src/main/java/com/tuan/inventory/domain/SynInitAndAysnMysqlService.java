@@ -27,7 +27,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<Boolean> updateGoodsInventory(long goodsId,final GoodsInventoryDO goodsDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(Long goodsId, final Long goodBaseId,int adjustNum,int limitStorage,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(GoodsInventoryDO goodsDO) throws Exception;
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,final long goodBaseId,String goodsSelectionIds,GoodsInventoryDO goodsDO) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,final int pretotalnum,String goodsSelectionIds,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,int adjustNum,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,GoodsSelectionDO selectionDO) throws Exception;

@@ -44,8 +44,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param goodsDO
 	 */
 	public void saveGoodsInventory(GoodsInventoryDO goodsDO) {
-		goodsDO.setTotalNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getTotalNumber());
-		goodsDO.setLeftNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getLeftNumber());
+		//goodsDO.setTotalNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getTotalNumber());
+		//goodsDO.setLeftNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getLeftNumber());
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryDO(goodsDO);
 	}
 	
@@ -115,8 +115,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDo==null) {
 						//将商品id set到选型中
 						srDO.setGoodsId(goodsId);
-						srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-						srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
+						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 						this.saveGoodsSelection(srDO);
 					}
 					
@@ -173,23 +173,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param selectionDO
 	 */
 	public void saveGoodsSelection(GoodsSelectionDO selectionDO) throws Exception{
-		//try {
 		this.synInitAndAsynUpdateDAO.insertGoodsSelectionDO(selectionDO);
-		/*}  catch (Exception e) {
-			log.error(
-					"SynInitAndAsynUpdateDomainRepository.saveGoodsSelection error occured!"
-							+ e.getMessage(), e);
-			if (e instanceof DataIntegrityViolationException) {// 消息数据重复
-				throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
-						"Duplicate entry '" + selectionDO.getId()
-								+ "' for key 'selectionId'", e);
-			}
-			throw new TuanRuntimeException(
-					QueueConstant.SERVICE_DATABASE_FALIURE,
-					"SynInitAndAsynUpdateDomainRepository.saveGoodsSelection error occured!",
-					e);
-			
-		}*/
+		
 	}
 	
 	public int deleteGoodsSelection(long selectionId) throws Exception{
@@ -276,8 +261,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					GoodsSuppliersDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(suppliersId);
 					if(tmpDO==null) {
 						sDO.setGoodsId(goodsId);
-						sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
-						sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
+						//sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
+						//sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
 						this.saveGoodsSuppliers(sDO);
 					}
 					
@@ -316,23 +301,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param suppliersDO
 	 */
 	public void saveGoodsSuppliers(GoodsSuppliersDO suppliersDO) throws Exception{
-		//try {
 		this.synInitAndAsynUpdateDAO.insertGoodsSuppliersDO(suppliersDO);
-		/*}  catch (Exception e) {
-			log.error(
-					"SynInitAndAsynUpdateDomainRepository.saveGoodsSuppliers error occured!"
-							+ e.getMessage(), e);
-			if (e instanceof DataIntegrityViolationException) {// 消息数据重复
-				throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
-						"Duplicate entry '" + suppliersDO.getId()
-								+ "' for key 'suppliersId'", e);
-			}
-			throw new TuanRuntimeException(
-					QueueConstant.SERVICE_DATABASE_FALIURE,
-					"SynInitAndAsynUpdateDomainRepository.saveGoodsSuppliers error occured!",
-					e);
-			
-		}*/
+		
 		
 	}
 	
@@ -379,23 +349,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param suppliersDO
 	 */
 	public void updateGoodsSuppliers(GoodsSuppliersDO suppliersDO) throws Exception{
-		//try {
+	
 		this.synInitAndAsynUpdateDAO.updateGoodsSuppliersDO(suppliersDO);
-		/*} catch (Exception e) {
-			log.error(
-					"SynInitAndAsynUpdateDomainRepository.updateGoodsSuppliers error occured!"
-							+ e.getMessage(), e);
-			if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
-				throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
-						"update invalid '" + suppliersDO.getId()
-								+ "' for key 'suppliersId'", e);
-			}
-			throw new TuanRuntimeException(
-					QueueConstant.SERVICE_DATABASE_FALIURE,
-					"SynInitAndAsynUpdateDomainRepository.updateGoodsSuppliers error occured!",
-					e);
-			
-		}*/
+		
 	}
 	/**
 	 * 保存物流商品库存

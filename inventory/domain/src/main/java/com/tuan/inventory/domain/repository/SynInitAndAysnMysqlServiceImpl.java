@@ -810,7 +810,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 		
 	}
 	@Override
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,final long goodBaseId,final String goodsSelectionIds,
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,final int pretotalnum,final String goodsSelectionIds,
 			final GoodsInventoryDO inventoryInfoDO) throws Exception {
 		TuanCallbackResult callBackResult = super.execute(
 				new TuanServiceCallback() {
@@ -818,18 +818,20 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
 							//更新商品基表
-							GoodsBaseInventoryDO baseInventoryDO = new GoodsBaseInventoryDO();
-							baseInventoryDO.setGoodsBaseId(goodBaseId);
-							//TODO 数据库查询base总量-原始库存+调整后库存
-							baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
-							synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
+							long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+							GoodsBaseInventoryDO	baseDO = null;
+							if(goodsBaseId>0) {
+								baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								//更新base表调整后的库存总量
+								baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber());
+								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+							}
 							
 							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryInfoDO);
 							//更新redis商品基表
 							String baseRetAck = null;
 							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")){
-								//TODO redis查询base总量-原始库存+调整后库存
-								baseRetAck = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodBaseId, baseInventoryDO);
+								baseRetAck = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseDO);
 							}
 							if(StringUtils.isEmpty(retAck)||StringUtils.isEmpty(baseRetAck)) {
 								throw new TuanRuntimeException(
