@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -47,6 +48,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<GoodsInventoryWMSDO> selectIsOrNotGoodsWMSByGoodsId(long goodsId);
 	public CallResult<WmsIsBeDeliveryDO> selectWmsIsBeDeliveryResult(String wmsGoodsId);
 	public CallResult<List<GoodsInventoryDO>> selectInventoryList4Wms(String wmsGoodsId);
+	public CallResult<GoodsBaseInventoryDO> selectGoodsBaseInventory(Long GoodsBaseId);
 	
 	
 	//删除

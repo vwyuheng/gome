@@ -752,14 +752,6 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						public TuanCallbackResult preHandler() {
 							
 							InventoryQueryEnum enumRes = null;
-							
-							// 初始化检查
-							CreateInventoryResultEnum resultEnum =null;
-//						//初始化检查	=  initCheck(goodsBaseId,lm);
-							
-							if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-								return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
-							}
 							if (goodsBaseId <= 0) {
 								enumRes = InventoryQueryEnum.INVALID_GOODSBASEID;
 							}
@@ -777,6 +769,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							InventoryQueryResult res = null;
 							GoodsBaseInventoryDO gsModel = goodsInventoryDomainRepository
 									.queryGoodsBaseById(goodsBaseId);
+							if(gsModel==null){
+								 CallResult<GoodsBaseInventoryDO> callResult =synInitAndAysnMysqlService.selectGoodsBaseInventory(goodsBaseId);
+								 gsModel = (GoodsBaseInventoryDO) callResult.getBusinessObject();
+							}
 							if (gsModel != null) {
 								res = new InventoryQueryResult(
 										InventoryQueryEnum.SUCCESS, gsModel);
