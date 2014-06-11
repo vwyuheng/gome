@@ -115,18 +115,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			this.goodsId = Long.valueOf(param.getGoodsId());
 			this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
 			this.tokenid = param.getTokenid();
-			//goodsBase初始化
-			if(goodsBaseId>0){
-				GoodsBaseInventoryDO tmpBaseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-				if(tmpBaseDO == null) {
-					GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
-					if(sourceBaseDO!=null) {
-							synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
-					}else {
-						return CreateInventoryResultEnum.SYS_ERROR;
-					}
-				}
-			}
+			
 			 //幂等控制，已处理成功
 			if (!StringUtils.isEmpty(tokenid)) { // if
 				this.idemptent = idemptent();

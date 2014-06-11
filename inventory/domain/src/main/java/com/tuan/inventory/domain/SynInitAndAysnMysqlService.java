@@ -20,6 +20,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<Boolean> saveGoodsWmsInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsSelectionDO> selectionList) throws Exception ;
 	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,GoodsInventoryWMSDO wmsInventory,GoodsInventoryWMSDO wmsInventory4wmsGoodsId) throws Exception ;
+	public CallResult<Boolean> saveGoodsBaseInventory(GoodsBaseInventoryDO baseInventoryDO) throws Exception ;
 	public CallResult<List<GoodsSelectionDO>> saveBatchGoodsSelection(long goodsId,List<GoodsSelectionDO> selectionInventoryList) throws Exception ;
 	public CallResult<List<GoodsSuppliersDO>> saveBatchGoodsSuppliers(long goodsId,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	

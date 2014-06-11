@@ -2211,4 +2211,68 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 
 	}
+	@Override
+	public CallResult<Boolean> saveGoodsBaseInventory(
+			final GoodsBaseInventoryDO baseInventoryDO) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							if(baseInventoryDO!=null) {
+								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
+								
+								String breAck=goodsInventoryDomainRepository.saveGoodsBaseInventory(baseInventoryDO.getGoodsBaseId(), baseInventoryDO);
+								if(StringUtils.isEmpty(breAck)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+											new Exception());
+								}
+								if(!breAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+											new Exception());
+								}
+							}
+							
+						} catch (Exception e) {
+							
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+										"Duplicate entry '" + baseInventoryDO.getGoodsBaseId()
+										+ "' for key 'goodsBaseId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliers error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (baseInventoryDO == null) {
+							logger.error(this.getClass()+"_create param invalid ,param is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
 }

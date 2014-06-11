@@ -17,8 +17,10 @@ import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -35,19 +37,13 @@ import com.tuan.inventory.service.InventoryQueryServiceCallback;
 
 public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService implements
 		GoodsInventoryQueryService {
-
+	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-
 	@Resource
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
-	//@Resource
-	//@Resource
-	//InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//@Resource
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Resource
 	private DLockImpl dLock;//分布式锁
 	
@@ -760,18 +756,46 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							if (StringUtils.isEmpty(goodsBaseIdStr)||!StringUtils.isNumeric(goodsBaseIdStr)) {
 								enumRes = InventoryQueryEnum.INVALID_GOODSBASEID;
 							}
+							
 							if(goodsBaseId>0){
 								GoodsBaseInventoryDO tmpBaseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 								if(tmpBaseDO == null) {
 									GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
 									if(sourceBaseDO!=null) {
+										String message = StringUtils.EMPTY;
+										CallResult<Boolean> callResult  = null;
+										long startTime = System.currentTimeMillis();
 										try {
-											synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
+											//synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
+											callResult = synInitAndAysnMysqlService.saveGoodsBaseInventory(sourceBaseDO);
+											if(callResult==null) {
+												enumRes = InventoryQueryEnum.SYS_ERROR;
+											}
+											PublicCodeEnum publicCodeEnum = callResult
+													.getPublicCodeEnum();
+											if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+												// 消息数据不存并且不成功
+												message = "saveGoodsBaseInventory2Mysql_error[" + publicCodeEnum.getMessage()
+														+ "]goodsBaseId:" + goodsBaseId;
+												enumRes = InventoryQueryEnum.SYS_ERROR;
+												
+											} else {
+												message = "saveGoodsBaseInventory2MysqlAndRedis_success[save2mysqlAndRedis success]goodsBaseId:" + goodsBaseId;
+												
+												
+											}
 										} catch (Exception e) {
 											enumRes = InventoryQueryEnum.SYS_ERROR;
+										}finally {
+											log.info(lm.addMetaData("goodsBaseId",goodsBaseId)
+													.addMetaData("sourceBaseDO",sourceBaseDO)
+													.addMetaData("message",message)
+													.addMetaData("endTime", System.currentTimeMillis())
+													.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
 										}
+										
 									}else {
-										enumRes = InventoryQueryEnum.SYS_ERROR;
+										enumRes = InventoryQueryEnum.NO_GOODSBASE;
 									}
 								}
 							}
