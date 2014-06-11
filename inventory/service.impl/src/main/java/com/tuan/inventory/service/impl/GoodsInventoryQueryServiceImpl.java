@@ -760,7 +760,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							if(goodsBaseId>0){
 								GoodsBaseInventoryDO tmpBaseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 								if(tmpBaseDO == null) {
-									GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+									CallResult<GoodsBaseInventoryDO>  result=synInitAndAysnMysqlService.selectInventoryBase4Init(goodsBaseId);
+									GoodsBaseInventoryDO sourceBaseDO =result.getBusinessResult();
 									if(sourceBaseDO!=null) {
 										String message = StringUtils.EMPTY;
 										CallResult<Boolean> callResult  = null;

@@ -50,6 +50,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<WmsIsBeDeliveryDO> selectWmsIsBeDeliveryResult(String wmsGoodsId);
 	public CallResult<List<GoodsInventoryDO>> selectInventoryList4Wms(String wmsGoodsId);
 	public CallResult<GoodsBaseInventoryDO> selectGoodsBaseInventory(Long GoodsBaseId);
+	public CallResult<GoodsBaseInventoryDO> selectInventoryBase4Init(Long GoodsBaseId);
 	
 	
 	//删除

@@ -10,8 +10,8 @@ public class GoodsBaseInventoryDO extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	
 	private Long goodsBaseId;// 商品基本ID
-	private int baseSaleCount;//商品总销量
-	private int baseTotalCount;//商品总库存
+	private Integer baseSaleCount;//商品总销量
+	private Integer baseTotalCount;//商品总库存
 
 	public Long getGoodsBaseId() {
 		return goodsBaseId;
@@ -19,16 +19,16 @@ public class GoodsBaseInventoryDO extends TuanBaseDO {
 	public void setGoodsBaseId(Long goodsBaseId) {
 		this.goodsBaseId = goodsBaseId;
 	}
-	public int getBaseSaleCount() {
+	public Integer getBaseSaleCount() {
 		return baseSaleCount;
 	}
-	public void setBaseSaleCount(int baseSaleCount) {
+	public void setBaseSaleCount(Integer baseSaleCount) {
 		this.baseSaleCount = baseSaleCount;
 	}
-	public int getBaseTotalCount() {
+	public Integer getBaseTotalCount() {
 		return baseTotalCount;
 	}
-	public void setBaseTotalCount(int baseTotalCount) {
+	public void setBaseTotalCount(Integer baseTotalCount) {
 		this.baseTotalCount = baseTotalCount;
 	}
 	

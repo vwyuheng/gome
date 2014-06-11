@@ -2280,4 +2280,49 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 		
 	}
+	@Override
+	public CallResult<GoodsBaseInventoryDO> selectInventoryBase4Init(
+			final Long goodsBaseId) {
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						GoodsBaseInventoryDO goodsBaseInventoryDO = null;
+						try {
+							goodsBaseInventoryDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+						} catch (Exception e) {
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.selectInventoryBase4Init error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+								throw new TuanRuntimeException(QueueConstant.NO_DATA,
+										"empty entry '" + goodsBaseId
+												+ "' for key 'goodsBaseId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.selectGoodsBaseInventory error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								goodsBaseInventoryDO);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (goodsBaseId==null) {
+							 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<GoodsBaseInventoryDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(GoodsBaseInventoryDO)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+	}
 }

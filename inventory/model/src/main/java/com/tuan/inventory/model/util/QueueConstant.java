@@ -63,6 +63,8 @@ public class QueueConstant {
 	public static final int INVALID_RETURN = 1010;// 返回值不正确
 	
 	public static final int FAIL_ADJUST_INVENTORY = -2; //	库存调整失败
+	
+	public static final int NO_GOODSBASE = 1044 ;//商品基本信息不存在
 		
 	
 	

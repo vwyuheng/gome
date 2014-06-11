@@ -22,7 +22,7 @@ public enum PublicCodeEnum {
 	INVALID_SUPPLIERSID(QueueConstant.INVALID_SUPPLIERSID,"INVALID_SUPPLIERSID"),
 	DATA_EXISTED(QueueConstant.DATA_EXISTED,"DATA_EXISTED"),
 	UNKNOW_ERROR(QueueConstant.UNKNOW_ERROR,"UNKNOW_ERROR"),
-	
+	NO_GOODSBASE(QueueConstant.NO_GOODSBASE,"NO_GOODSBASE"),
 	//addd
 	FAIL_ADJUST_INVENTORY(QueueConstant.FAIL_ADJUST_INVENTORY,"FAIL_ADJUST_INVENTORY"),
 	
@@ -71,7 +71,9 @@ public enum PublicCodeEnum {
 			return INVALID_TIME;
 		} else if(code == QueueConstant.INVALID_RETURN){
 			return INVALID_RETURN;
-		} 
+		} else if(code == QueueConstant.NO_GOODSBASE){
+			return NO_GOODSBASE;
+		}
 		
 		
 		
