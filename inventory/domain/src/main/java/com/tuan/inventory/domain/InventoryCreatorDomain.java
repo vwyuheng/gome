@@ -374,7 +374,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			inventoryInfoDO.setLimitStorage(param.getLimitStorage());
 			inventoryInfoDO.setUserId(userId);
 			inventoryInfoDO.setWaterfloodVal(param.getWaterfloodVal());
-			int sales = param.getTotalNumber()-param.getLeftNumber();
+			int sales = 0;
 			//商品库存销量
 			inventoryInfoDO.setGoodsSaleCount(sales);
 
