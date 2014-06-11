@@ -21,6 +21,8 @@ public class GoodsInventoryModel extends TuanBaseDO {
 	private java.lang.Integer isAddGoodsSelection; // 商品是否添加配型 0：不添加；1：添加
 	private java.lang.Integer isDirectConsumption; // 商品销售是否需要指定分店 0：不指定；1：指定
 	private java.lang.Integer waterfloodVal;  //注水值
+	private java.lang.Integer goodsSaleCount; //商品销量
+	
 	//商品选型list
 	private List<GoodsSelectionModel> goodsSelectionList;
 	//商品分店list
@@ -98,6 +100,12 @@ public class GoodsInventoryModel extends TuanBaseDO {
 	}
 	public void setGoodsBaseId(Long goodsBaseId) {
 		this.goodsBaseId = goodsBaseId;
+	}
+	public java.lang.Integer getGoodsSaleCount() {
+		return goodsSaleCount;
+	}
+	public void setGoodsSaleCount(java.lang.Integer goodsSaleCount) {
+		this.goodsSaleCount = goodsSaleCount;
 	}
 	
 	

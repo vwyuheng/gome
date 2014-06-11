@@ -207,6 +207,7 @@ public class ObjectUtils {
 			result.setIsAddGoodsSelection(giDO.getIsAddGoodsSelection());
 			result.setIsDirectConsumption(giDO.getIsDirectConsumption());
 			result.setWaterfloodVal(giDO.getWaterfloodVal());
+			result.setGoodsSaleCount(giDO.getGoodsSaleCount());
 			if(!CollectionUtils.isEmpty(goodsSelectionList))
 			     result.setGoodsSelectionList(goodsSelectionList);
 			if(!CollectionUtils.isEmpty(goodsSuppliersList))
