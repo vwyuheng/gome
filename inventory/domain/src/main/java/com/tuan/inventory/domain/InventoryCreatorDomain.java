@@ -15,6 +15,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -25,6 +26,7 @@ import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
+import com.tuan.inventory.model.enu.res.InventoryQueryEnum;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 
@@ -35,6 +37,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	private CreaterInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
@@ -114,6 +117,18 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			this.goodsId = Long.valueOf(param.getGoodsId());
 			this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
 			this.tokenid = param.getTokenid();
+			//goodsBase初始化
+			if(goodsBaseId>0){
+				GoodsBaseInventoryDO tmpBaseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+				if(tmpBaseDO == null) {
+					GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+					if(sourceBaseDO!=null) {
+							synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
+					}else {
+						return CreateInventoryResultEnum.SYS_ERROR;
+					}
+				}
+			}
 			 //幂等控制，已处理成功
 			if (!StringUtils.isEmpty(tokenid)) { // if
 				this.idemptent = idemptent();
@@ -133,7 +148,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 				this.fillSuppliers();
 
 			}
-
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.addMetaData("errorMsg",
@@ -404,6 +418,13 @@ public class InventoryCreatorDomain extends AbstractDomain {
 
 	public Long getGoodsId() {
 		return goodsId;
+	}
+	public SynInitAndAsynUpdateDomainRepository getSynInitAndAsynUpdateDomainRepository() {
+		return synInitAndAsynUpdateDomainRepository;
+	}
+	public void setSynInitAndAsynUpdateDomainRepository(
+			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
+		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
 	}
 
 }

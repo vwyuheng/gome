@@ -15,6 +15,7 @@ import com.tuan.inventory.domain.InventoryWmsUpdateDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.WaterfloodAdjustmentDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -38,6 +39,8 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService implements GoodsInventoryUpdateService {
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+	@Resource
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	/*@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;*/
 	@Resource
@@ -67,6 +70,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCreatorDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryCreatorDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
 		//inventoryCreatorDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
