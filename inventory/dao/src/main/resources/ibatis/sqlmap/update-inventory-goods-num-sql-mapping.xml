@@ -67,7 +67,7 @@
 				base_total_count =  #baseTotalCount:INTEGER#
       		</isNotNull>
 		</dynamic>
-		where id = #id:LONG# 
+		where goods_base_id = #id:LONG# 
 	</update>
 <!-- 	<update id="set_sql_model_user"  > -->
 <!-- 		set sql_mode='STRICT_TRANS_TABLES' -->
@@ -82,7 +82,7 @@
 				sale_count =  #saleCount:INTEGER#
       		</isNotNull>
 		</dynamic>
-		where id = #id:LONG# 
+		where goods_base_id = #id:LONG# 
 	</update>
 
 </sqlMap>
