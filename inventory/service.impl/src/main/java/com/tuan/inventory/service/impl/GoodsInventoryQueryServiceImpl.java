@@ -799,10 +799,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					,false);
 			writeSysLog(lm.toJson());
 			
-//			return new CallResult<GoodsBaseModel>(result.isSuccess(),
-//					PublicCodeEnum.valuesOf(resultCode),
-//					(GoodsInventoryModel) qresult.getResultObject(),
-//					result.getThrowable());
-			return null;
+			return new CallResult<GoodsBaseModel>(result.isSuccess(),
+					PublicCodeEnum.valuesOf(resultCode),
+					(GoodsBaseModel) qresult.getResultObject(),
+					result.getThrowable());
 		}
 }
