@@ -358,8 +358,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		long startTime = System.currentTimeMillis();
 		try {
 		// 保存商品库存		
-		//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);	
-				// 消费对列的信息
 				callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
 				if(callResult==null) {
 					return CreateInventoryResultEnum.SYS_ERROR;
