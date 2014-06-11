@@ -815,13 +815,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							GoodsBaseInventoryDO baseDO = goodsInventoryDomainRepository
 									.queryGoodsBaseById(goodsBaseId);
 							GoodsBaseModel baseModel =	ObjectUtils.toModel(baseDO);
-							if(gsModel==null){
-								 CallResult<GoodsBaseInventoryDO> callResult =synInitAndAysnMysqlService.selectGoodsBaseInventory(goodsBaseId);
-								 gsModel = (GoodsBaseInventoryDO) callResult.getBusinessObject();
-							}
-							if (gsModel != null) {
+							if (baseModel != null) {
 								res = new InventoryQueryResult(
-										InventoryQueryEnum.SUCCESS, gsModel);
+										InventoryQueryEnum.SUCCESS, baseModel);
 								return TuanCallbackResult.success(res.getResult()
 										.getCode(), res);
 							} else {

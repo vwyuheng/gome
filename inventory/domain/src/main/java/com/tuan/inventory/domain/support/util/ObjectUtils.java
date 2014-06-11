@@ -13,12 +13,14 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
@@ -343,6 +345,16 @@ public class ObjectUtils {
 		return result;
 	}
 	
+	public static GoodsBaseModel toModel(GoodsBaseInventoryDO baseDO) {
+		GoodsBaseModel result = null;
+		if(baseDO!=null) {
+			result = new GoodsBaseModel();
+			result.setGoodsBaseId(baseDO.getGoodsBaseId());
+			result.setBaseSaleCount(baseDO.getBaseSaleCount());
+			result.setBaseTotalCount(baseDO.getBaseTotalCount());
+		}
+		return result;
+	}
 
 	@SuppressWarnings("rawtypes")
 	public static Map<String,String> toHashMap(Object object) {
