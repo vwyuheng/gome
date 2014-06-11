@@ -211,8 +211,10 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		//库存基本信息
 		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 		notifyParam.setGoodsBaseId(goodsBaseId);
-		notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
-		notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
+		if(baseInventoryDO!=null) {
+			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
+		}
 		
 		if (!CollectionUtils.isEmpty(selectionList)) {
 			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
@@ -228,6 +230,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setGoodsId(goodsId);
 			if (isExists && inventoryInfoDO != null) {
 				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SELF
@@ -269,7 +272,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("新增库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-			updateActionDO.setGoodsBaseId(goodsBaseId);
+			
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
 			this.updateActionDO = null;
@@ -310,6 +313,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 						selection.setSuppliersInventoryId(model
 								.getSuppliersInventoryId());
 						selection.setUserId(userId);
+						selection.setWmsGoodsId(model.getWmsGoodsId());
 						selectionRelation.add(selection);
 					}
 
