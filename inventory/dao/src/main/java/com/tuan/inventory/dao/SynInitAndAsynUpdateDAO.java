@@ -40,5 +40,7 @@ public interface  SynInitAndAsynUpdateDAO {
 	 * @param goodsBaseId return GoodsBaseInventoryDO
 	 */
 	public GoodsBaseInventoryDO selectGoodBaseBygoodsId(long goodsBaseId);
+	public GoodsBaseInventoryDO selectInventoryBase4Init(long goodsBaseId);
+	
 }
 

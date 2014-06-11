@@ -16,6 +16,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -37,6 +38,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
+
+	@Resource
+	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	//@Resource
 	//@Resource
 	//InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
@@ -752,9 +757,25 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						public TuanCallbackResult preHandler() {
 							
 							InventoryQueryEnum enumRes = null;
-							if (goodsBaseId <= 0) {
+							if (StringUtils.isEmpty(goodsBaseIdStr)||!StringUtils.isNumeric(goodsBaseIdStr)) {
 								enumRes = InventoryQueryEnum.INVALID_GOODSBASEID;
 							}
+							if(goodsBaseId>0){
+								GoodsBaseInventoryDO tmpBaseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								if(tmpBaseDO == null) {
+									GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+									if(sourceBaseDO!=null) {
+										try {
+											synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
+										} catch (Exception e) {
+											enumRes = InventoryQueryEnum.SYS_ERROR;
+										}
+									}else {
+										enumRes = InventoryQueryEnum.SYS_ERROR;
+									}
+								}
+							}
+							
 							// 检查出现错误
 							if (enumRes != null) {
 								return TuanCallbackResult.failure(

@@ -403,4 +403,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public GoodsBaseInventoryDO getGoodBaseBygoodsId(long goodsBaseId) {
 		return synInitAndAsynUpdateDAO.selectGoodBaseBygoodsId(goodsBaseId);
 	}
+	
+	public GoodsBaseInventoryDO selectInventoryBase4Init(long goodsBaseId) {
+		return synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
+	}
 }

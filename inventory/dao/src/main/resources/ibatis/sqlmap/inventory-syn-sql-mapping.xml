@@ -536,4 +536,16 @@
 	where
 	gb.goods_base_id = #goodsBaseId:BIGINT#
 	</select>
+	
+    <!-- 通过基本id获取库存基本信息 -->	
+	<select id="selectInventoryBase4Init" resultMap="GoodsBaseResult"  parameterClass="java.lang.Long">
+	SELECT
+	goods_base_id, 
+    sale_count AS base_sale_count,
+    total_num AS base_total_count
+	FROM
+	jeehe_goods_base  where 
+	goods_base_id = #goodsBaseId:BIGINT#
+	</select>
+	
 </sqlMap>

@@ -112,5 +112,10 @@ public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implem
 	public GoodsBaseInventoryDO selectGoodBaseBygoodsId(long goodsBaseId) {
 		return (GoodsBaseInventoryDO) getSqlMapClientTemplate().queryForObject("selectGoodBaseBygoodsId", goodsBaseId);
 	}
+
+	@Override
+	public GoodsBaseInventoryDO selectInventoryBase4Init(long goodsBaseId) {
+		return (GoodsBaseInventoryDO) getSqlMapClientTemplate().queryForObject("selectInventoryBase4Init", goodsBaseId);
+	}
 	
 }
