@@ -761,7 +761,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								enumRes = InventoryQueryEnum.INVALID_GOODSBASEID;
 							}
 							if(goodsBaseId>0){
-								GoodsBaseInventoryDO tmpBaseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								GoodsBaseInventoryDO tmpBaseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 								if(tmpBaseDO == null) {
 									GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
 									if(sourceBaseDO!=null) {

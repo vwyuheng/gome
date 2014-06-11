@@ -117,7 +117,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 			this.tokenid = param.getTokenid();
 			//goodsBase初始化
 			if(goodsBaseId>0){
-				GoodsBaseInventoryDO tmpBaseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+				GoodsBaseInventoryDO tmpBaseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 				if(tmpBaseDO == null) {
 					GoodsBaseInventoryDO sourceBaseDO =synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
 					if(sourceBaseDO!=null) {
