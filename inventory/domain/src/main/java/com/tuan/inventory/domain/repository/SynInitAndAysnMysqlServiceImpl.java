@@ -222,18 +222,23 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
+							GoodsBaseInventoryDO baseInventoryDO = null;
 							if(inventoryInfoDO!=null) {
 								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 								//操作库存基表
 								long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
-								GoodsBaseInventoryDO baseInventoryDO = null;
 								baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 								if(baseInventoryDO == null){
-									baseInventoryDO = new GoodsBaseInventoryDO();
-									baseInventoryDO.setGoodsBaseId(goodsBaseId);
-									baseInventoryDO.setBaseSaleCount(0);
-									baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
-									synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);	
+									baseInventoryDO =  synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+									if(baseInventoryDO!=null) {
+										baseInventoryDO.setBaseTotalCount(baseInventoryDO.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
+									}else {
+										baseInventoryDO = new GoodsBaseInventoryDO();
+										baseInventoryDO.setGoodsBaseId(goodsBaseId);
+										baseInventoryDO.setBaseSaleCount(0);
+										baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
+									}
+									synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
 								}else{
 									baseInventoryDO.setBaseTotalCount(baseInventoryDO.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
 									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
@@ -256,13 +261,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								List<Long> listAck = null;
 								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")){
 									long goodsBaseId=inventoryInfoDO.getGoodsBaseId();
-									GoodsBaseInventoryDO baseInventoryDO = null;
-									baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-									if(baseInventoryDO == null){
-										baseInventoryDO = new GoodsBaseInventoryDO();
+									//GoodsBaseInventoryDO baseInventoryDO = null;
+									//baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+									if(baseInventoryDO != null){
+										/*baseInventoryDO = new GoodsBaseInventoryDO();
 										baseInventoryDO.setGoodsBaseId(goodsBaseId);
 										baseInventoryDO.setBaseSaleCount(0);
-										baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
+										baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());*/
 										breAck=goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
 										if(StringUtils.isEmpty(breAck)) {
 											throw new TuanRuntimeException(
