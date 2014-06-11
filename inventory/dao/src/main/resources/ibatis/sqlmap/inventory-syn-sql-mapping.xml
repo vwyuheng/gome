@@ -528,9 +528,9 @@
     <!-- 根据商品id获取商品基本信息  -->	
 	<select id="selectGoodBaseBygoodsId" resultMap="GoodsBaseResult"  parameterClass="java.lang.Long">
 	SELECT
-	ga.goods_base_id,
-	ga.base_sale_count,
-	ga.base_total_count
+	gb.goods_base_id,
+	gb.base_sale_count,
+	gb.base_total_count
 	FROM
 	jeehe_inventory_base gb
 	where
