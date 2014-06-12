@@ -106,10 +106,8 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		if(!CollectionUtils.isEmpty(goodsTypeIdList)) {
 			//根据商品id获取其下的选型
 			List<GoodsSelectionModel> result = goodsInventoryDomainRepository.queryGoodsSelectionListByGoodsId(goodsId);
-			//if(!CollectionUtils.isEmpty(tmpGoodsTypeIdsList)) {
 				selectionDOList = new ArrayList<GoodsSelectionDO>();
 				for(Long tmpGoodsTypId : goodsTypeIdList) {
-					//Long tmpGoodsTypId = Long.parseLong(id);
 					//循环过滤掉不符合条件的选型
 					if(!CollectionUtils.isEmpty(result)) {
 						for(GoodsSelectionModel selModel :result) {
@@ -435,8 +433,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 					create.setLm(lm);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-					//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-					//create.setInitCacheDomainRepository(initCacheDomainRepository);
 					resultEnum = create.business4WmsExecute();
 				} finally{
 					dLock.unlockManual(key);
