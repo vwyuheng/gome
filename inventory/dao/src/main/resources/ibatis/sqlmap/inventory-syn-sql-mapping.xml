@@ -548,4 +548,31 @@
 	goods_base_id = #goodsBaseId:BIGINT#
 	</select>
 	
+	
+	<!-- 累加商品销量字段   -->	
+    <update id="updateGoodsInventory4SalesCount" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryDO" >
+      update jeehe_inventory_attribute
+      <dynamic prepend="set" >
+		<isNotNull prepend="," property="goodsSaleCount">
+			goods_sale_count = goods_sale_count + #goodsSaleCount:INTEGER#
+		</isNotNull>
+      </dynamic>
+      where goods_id = #goodsId:BIGINT#
+    </update>
+	
+	
+	 <!-- 累加销量   -->	
+    <update id="updateInventoryBase4SalesCount" parameterClass="com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO" >
+      update jeehe_inventory_base
+      <dynamic prepend="set" >
+        <isNotNull prepend="," property="baseSaleCount">
+			base_sale_count = base_sale_count + #baseSaleCount:INTEGER#
+		</isNotNull>
+		<!-- <isNotNull prepend="," property="baseTotalCount">
+			base_total_count = #baseTotalCount:INTEGER#
+		</isNotNull> -->
+      </dynamic>
+      where goods_base_id = #goodsBaseId:BIGINT#
+    </update>
+	
 </sqlMap>
