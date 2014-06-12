@@ -459,9 +459,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		long startTime = System.currentTimeMillis();
 		try {
 		// 更新商品库存
-			// handler = this.inventoryInitAndUpdateHandle.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
-					// 消费对列的信息
-					callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
+		callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
 					PublicCodeEnum publicCodeEnum = callResult
 							.getPublicCodeEnum();
 					

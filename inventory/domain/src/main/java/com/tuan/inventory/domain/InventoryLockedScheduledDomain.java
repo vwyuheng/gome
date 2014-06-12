@@ -39,17 +39,13 @@ import com.tuan.ordercenter.model.result.OrderQueryResult;
 public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
-	//库存需发更新消息的
+	//库存需发更新消息的:需排重
 	private ConcurrentHashSet<GoodsInventoryQueueModel> inventorySendMsg;
-	//缓存订单支付成功的队列id，以便处理完后将队列标记删除
-	//private ConcurrentHashSet<Long> markDelAftersendMsg;
-	//缓存回滚库存的队列id，供redis库存回滚用
-	private ConcurrentHashSet<GoodsInventoryQueueModel> inventoryRollback;
-	//缓存需回滚的商品id，供mysql回滚库存用
-	//private ConcurrentHashSet<Long> inventoryRollback4Mysql;
+	//缓存回滚库存的队列id，供redis库存回滚用,回滚时不能排重
+	private List<GoodsInventoryQueueModel> inventoryRollback = null;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
+	
 	private InventoryScheduledParam param;
 	private final int delStatus = 4;
 	private List<GoodsSelectionDO> selectionInventoryList = null;
@@ -84,7 +80,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			//用于缓存队列id:正常的
 			//markDelAftersendMsg = new ConcurrentHashSet<Long>();
 			//用于订单支付未成功时，缓存队列id
-			inventoryRollback = new ConcurrentHashSet<GoodsInventoryQueueModel>();
+			//inventoryRollback = new ConcurrentHashSet<GoodsInventoryQueueModel>();
+			inventoryRollback = new ArrayList<GoodsInventoryQueueModel>();
 			//inventoryRollback4Mysql = new ConcurrentHashSet<Long>();
 			// 商品库存是否存在
 			//取初始状态队列信息
@@ -256,7 +253,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			//注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-			//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
+
 			return create.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 		}
 		/**
