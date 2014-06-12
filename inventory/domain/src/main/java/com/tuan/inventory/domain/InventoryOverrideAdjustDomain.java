@@ -6,12 +6,15 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.lock.res.LockResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
@@ -32,7 +35,7 @@ import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryOverrideAdjustDomain extends AbstractDomain {
-	
+	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -97,8 +100,18 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SUCCESS;
 				}
 			}
+			long startTime = System.currentTimeMillis();
+			String method = "InventoryOverrideAdjustDomain";
+			final LogModel lm = LogModel.newLogModel(method);
+			logger.info(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
 			//初始化检查
 			resultEnum = this.initCheck();
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 				return resultEnum;
 			}
@@ -241,7 +254,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					CallResult<GoodsInventoryDO> callResult  = null;
 						
 					if (goodsId>0&&inventoryDO != null) {
-						lm.addMetaData("adjustInventory","adjustInventory start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString());
+						lm.addMetaData("oadjustInventory","oadjustInventory start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString());
 						writeSysUpdateLog(lm,true);
 						// 消费对列的信息
 						if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
@@ -253,13 +266,13 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						
 						if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
 							// 消息数据不存并且不成功
-							message = "updateGoodsInventory_error[" + publicCodeEnum.getMessage()
+							message = "oadjustInventory_error[" + publicCodeEnum.getMessage()
 									+ "]goodsId:" + goodsId;
 							return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
 						} else {
-							message = "updateGoodsInventory_success[save success]goodsId:" + goodsId;
+							message = "uoadjustInventory_success[save success]goodsId:" + goodsId;
 						}
-					lm.addMetaData("adjustInventory","adjustInventory end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString()).addMetaData("message", message);
+					lm.addMetaData("oadjustInventory","oadjustInventory end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString()).addMetaData("message", message);
 					writeSysUpdateLog(lm,true);
 					}
 						
@@ -269,7 +282,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					if (selectionInventory.getLimitStorage() == 0&&selectionInventory.getTotalNumber() != 0) {
 						inventoryDO.setLimitStorage(1); // 更新数据库用
 						selectionInventory.setLimitStorage(1);
-						//return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
 					} 
 					
 					if (selectionInventory != null) {
@@ -309,8 +321,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					CallResult<GoodsSelectionDO> callResult = null;
 
 					if (inventoryDO != null && selectionInventory != null) {
-						lm.addMetaData("adjustInventory",
-								"adjustInventory start")
+						lm.addMetaData("oadjustInventory",
+								"oadjustInventory start")
 								.addMetaData("goodsId", goodsId)
 								.addMetaData("type", type)
 								.addMetaData("inventoryDO", inventoryDO)
@@ -333,11 +345,11 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 							return CreateInventoryResultEnum
 									.valueOfEnum(publicCodeEnum.getCode());
 						} else {
-							message = "updateGoodsSelection_success[save success]selectionId:"
+							message = "oadjustInventorySelection_success[save success]selectionId:"
 									+ selectionInventory.getId();
 						}
-						lm.addMetaData("adjustInventory",
-								"adjustInventory mysql,end")
+						lm.addMetaData("oadjustInventory",
+								"oadjustInventory mysql,end")
 								.addMetaData("goodsId", goodsId)
 								.addMetaData("type", type)
 								.addMetaData("inventoryDO", inventoryDO)
@@ -397,15 +409,15 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					CallResult<GoodsSuppliersDO> callResult = null;
 
 					if (inventoryDO != null && suppliersInventory != null) {
-						lm.addMetaData("adjustInventory",
-								"adjustInventory suppliers mysql,start")
+						lm.addMetaData("oadjustInventory",
+								"oadjustInventory suppliers mysql,start")
 								.addMetaData("goodsId", goodsId)
 								.addMetaData("type", type)
 								.addMetaData("inventoryDO", inventoryDO)
 								.addMetaData("suppliersInventory",
 										suppliersInventory);
 						writeSysUpdateLog(lm, true);
-						// 消费对列的信息
+						// 消费对列的信息:未加redis，目前公司业务只有商品的库存全量调整
 						callResult = synInitAndAysnMysqlService
 								.updateGoodsSuppliers(inventoryDO,
 										suppliersInventory);
@@ -414,17 +426,17 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 
 						if (publicCodeEnum != PublicCodeEnum.SUCCESS) { //
 							// 消息数据不存并且不成功
-							message = "updateGoodsSuppliers_error["
+							message = "oadjustInventorySuppliers_error["
 									+ publicCodeEnum.getMessage()
 									+ "]suppliersId:" + suppliersInventory.getSuppliersId();
 							return CreateInventoryResultEnum
 									.valueOfEnum(publicCodeEnum.getCode());
 						} else {
-							message = "updateGoodsSuppliers_success[save success]suppliersId:"
+							message = "oadjustInventorySuppliers_success[save success]suppliersId:"
 									+ suppliersInventory.getSuppliersId();
 						}
-						lm.addMetaData("adjustInventory",
-								"adjustInventory mysql,end")
+						lm.addMetaData("oadjustInventory",
+								"oadjustInventory mysql,end")
 								.addMetaData("goodsId", goodsId)
 								.addMetaData("type", type)
 								.addMetaData("inventoryDO", inventoryDO)
@@ -496,6 +508,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			try {
 				notifyParam = new InventoryNotifyMessageParam();
 				notifyParam.setUserId(Long.valueOf(param!=null&&param.getUserId()!=null?param.getUserId():"0"));
+				notifyParam.setGoodsBaseId(goodsBaseId);
 				notifyParam.setGoodsId(goodsId);
 				if(inventoryDO!=null) {
 					notifyParam.setLimitStorage(inventoryDO.getLimitStorage());
@@ -503,21 +516,24 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					notifyParam.setTotalNumber(afttotalnum);
 					notifyParam.setLeftNumber(aftleftnum);
 					//库存总数 减 库存剩余
-					int sales = (this.afttotalnum-this.aftleftnum);
+					int sales = inventoryDO.getGoodsSaleCount();
 					//销量
 					notifyParam.setSales(String.valueOf(sales));
-					
-					//发送库存基表信息
-					notifyParam.setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
-					notifyParam.setBaseTotalCount(afttotalnum);
-					notifyParam.setBaseSaleCount(sales);
 				}
+				//发送库存基表信息
+				GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+				if(baseInventoryDO!=null) {
+					notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+					notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
+				}
+				this.fillSelectionMsg();
 				if(!CollectionUtils.isEmpty(selectionMsg)){
-					this.fillSelectionMsg();
+					
 					notifyParam.setSelectionRelation(selectionMsg);
 				}
+				this.fillSuppliersMsg();
 				if(!CollectionUtils.isEmpty(suppliersMsg)){
-					this.fillSuppliersMsg();
+					
 					notifyParam.setSuppliersRelation(suppliersMsg);
 				}
 			} catch (Exception e) {
