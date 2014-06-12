@@ -990,15 +990,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
 							GoodsBaseInventoryDO baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 							if(baseInventoryDO!=null){
-								baseInventoryDO.setGoodsBaseId(goodsBaseId);
-								int num=baseInventoryDO.getBaseTotalCount()-inventoryInfoDO.getTotalNumber()+oldInventoryInfoDO.getTotalNumber();
+								int num=baseInventoryDO.getBaseTotalCount()-oldInventoryInfoDO.getTotalNumber()+inventoryInfoDO.getTotalNumber();
 								baseInventoryDO.setBaseTotalCount(num);
 								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
 							}
 							if(!CollectionUtils.isEmpty(hash)) {
 								String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);
-								if(baseInventoryDO!=null)
-								goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
+								
 								
 								if(StringUtils.isEmpty(retAck)) {
 									throw new TuanRuntimeException(
@@ -1018,7 +1016,22 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										"collection hash  is null, error occured!",
 										new Exception());
 							}
-							
+							if(baseInventoryDO!=null) {
+								String baseACK = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
+								if(StringUtils.isEmpty(baseACK)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+											new Exception());
+								}
+								if(!baseACK.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+											new Exception());
+								}
+							}
+								
 						} catch (Exception e) {
 							logger.error(
 									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
