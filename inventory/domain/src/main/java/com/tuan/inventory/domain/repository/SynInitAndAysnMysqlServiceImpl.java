@@ -2093,7 +2093,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if(selectionDO!=null) {
 							synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
 						}
-						if(goodsDO!=null) {
+						/*if(goodsDO!=null) {
 							//补上redis的处理
 							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsDO.getGoodsId(), goodsDO);
 							if(StringUtils.isEmpty(retAck)) {
@@ -2122,7 +2122,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											new Exception());
 								}
 
-							}
+							}*/
 						
 					} catch (Exception e) {
 						logger.error(

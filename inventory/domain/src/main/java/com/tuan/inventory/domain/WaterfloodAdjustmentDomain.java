@@ -6,6 +6,8 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
@@ -34,6 +36,7 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.result.CallResult;
 
 public class WaterfloodAdjustmentDomain extends AbstractDomain {
+	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -48,6 +51,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private GoodsSuppliersDO suppliersInventory;
 
 	//商品id 参数
+	private String goodsBaseId2str;
 	private String goodsId2str;
 	private String type;
 	private String id;
@@ -89,11 +93,20 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
+		long startTime = System.currentTimeMillis();
+		String method = "WaterfloodAdjustmentDomain";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
 		CreateInventoryResultEnum resultEnum = null;
 		try {
-			
 			// 初始化检查
 			resultEnum = this.initCheck();
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
@@ -136,7 +149,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("WaterfloodAdjustmentDomain errorMsg",
 							"busiCheck error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
@@ -197,8 +210,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if(inventoryDO.getWaterfloodVal()<0) {  //注水暂只调总的，故目前只检查总的
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
-				//更新mysql
-				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSelection(inventoryDO,selectionInventory);
 				
 				// 消费对列的信息
 				CallResult<GoodsSelectionDO>  callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,selectionInventory);
@@ -212,10 +223,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
 				} else {
 					message = "updateGoodsSelection_success[save success]selectionId:" + selectionInventory==null?"0":String.valueOf(selectionInventory.getId());
+					
 				}
-				
-				//if(handlerResult) {
-					this.ack = this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(goodsId,selectionId, (adjustNum));
+
+				this.ack = this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(goodsId,selectionId, (adjustNum));
 					if(!verifyselOrsuppWf()) { //TODO maybe有问题
 						//将注水还原到调整前
 						this.goodsInventoryDomainRepository.adjustSelectionWaterfloodById(goodsId,selectionId, (-adjustNum));
@@ -224,10 +235,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						this.goodswfval = inventoryDO.getWaterfloodVal();
 						this.selOrSuppwfval = selectionInventory.getWaterfloodVal();
 					}
-				//}
 				
-				//更新选型的mysql:为了避免因mysql更新异常导致的redis数据不一致，故一定要在redis处理完成后再调mysql的处理逻辑
-				//this.synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionInventory);
+				
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
 				if(suppliersInventory!=null) {
 					//调整注水数量
@@ -239,8 +248,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if(inventoryDO.getWaterfloodVal()<0) {  //注水暂只调总的，故目前只检查总的
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
-				//更新mysql
-				//boolean handlerResult = inventoryInitAndUpdateHandle.updateGoodsSuppliers(inventoryDO,suppliersInventory);
+				
 				CallResult<GoodsSuppliersDO> callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(inventoryDO,suppliersInventory);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
@@ -253,7 +261,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				} else {
 					message = "updateGoodsSuppliers_success[save success]suppliersId:" + suppliersInventory==null?"0":String.valueOf(suppliersInventory.getId());
 				}
-				//if(handlerResult) {
+			
 					this.ack = this.goodsInventoryDomainRepository.adjustSuppliersWaterfloodById(goodsId,suppliersId, (adjustNum));
 					if(!verifyselOrsuppWf()) {  //TODO maybe有问题
 						//将注水还原到调整前
@@ -263,7 +271,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						this.goodswfval = inventoryDO.getWaterfloodVal();
 						this.selOrSuppwfval = selectionInventory.getWaterfloodVal();
 					}
-				//}
 			}
 
 		} catch (Exception e) {
@@ -277,6 +284,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	
 	// 初始化参数
 	private void fillParam() {
+		this.goodsBaseId2str = param.getGoodsBaseId();
 		//商品id，必传参数，该参数无论是选型还是分店都要传过来
 		this.goodsId2str = param.getGoodsId();
 		// 2:商品 4：选型 6：分店
@@ -306,6 +314,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(){
 					InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 					notifyParam.setUserId(Long.valueOf(param.getUserId()));
+					notifyParam.setGoodsBaseId(goodsBaseId);
 					notifyParam.setGoodsId(goodsId);
 					if(inventoryDO!=null) {
 						notifyParam.setLimitStorage(inventoryDO.getLimitStorage());
@@ -313,21 +322,25 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						notifyParam.setTotalNumber(inventoryDO.getTotalNumber());
 						notifyParam.setLeftNumber(inventoryDO.getLeftNumber());
 						//库存总数 减 库存剩余
-						int sales = (inventoryDO.getTotalNumber())-inventoryDO.getLeftNumber();
+						int sales = inventoryDO.getGoodsSaleCount();
 						//销量
 						notifyParam.setSales(String.valueOf(sales));
-						//发送库存基表信息
-						GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-						notifyParam.setGoodsBaseId(goodsBaseId);
+						
+					}
+					//发送库存基表信息
+					GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+					if(baseInventoryDO!=null) {
 						notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 						notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 					}
+					this.fillSelectionMsg();
 					if(!CollectionUtils.isEmpty(selectionMsg)){
-						this.fillSelectionMsg();
+						
 						notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionMsg));
 					}
+					this.fillSuppliersMsg();
 					if(!CollectionUtils.isEmpty(suppliersMsg)){
-						this.fillSuppliersMsg();
+						
 						notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(suppliersMsg));
 					}
 					return notifyParam;
@@ -338,6 +351,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	public CreateInventoryResultEnum initCheck() {
 				this.fillParam();
 				this.goodsId = StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
+				this.goodsBaseId = StringUtils.isEmpty(goodsBaseId2str)?0:Long.valueOf(goodsBaseId2str);
 				//初始化加分布式锁
 				lm.addMetaData("WaterfloodAdjustmentDomain initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
 				writeBusInitLog(lm,false);
@@ -359,7 +373,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					//注入相关Repository
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-					//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 					resultEnum = create.businessExecute();
 				} finally{
 					dLock.unlockManual(key);
@@ -379,6 +392,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
 			updateActionDO.setGoodsId(goodsId);
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setBusinessType(businessType);
 			updateActionDO.setItem(StringUtil.handlerItem(type, goodsId2str, id));
 			updateActionDO.setOriginalInventory(StringUtil.handlerOriWf(type, originalgoodswfVal, oriselOrSuppwfval));
@@ -395,8 +409,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
 			updateActionDO.setRemark("注水调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-			if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId()))
-			updateActionDO.setGoodsBaseId(goodsBaseId);
+			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm
 					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
