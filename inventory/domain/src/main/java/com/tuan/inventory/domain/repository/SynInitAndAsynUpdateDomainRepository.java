@@ -407,4 +407,11 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public GoodsBaseInventoryDO selectInventoryBase4Init(long goodsBaseId) {
 		return synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
 	}
+	
+	public void updateGoodsInventoryDO4SalesCount(GoodsInventoryDO goodsDO) {
+		this.synInitAndAsynUpdateDAO.updateGoodsInventoryDO4SalesCount(goodsDO);
+	}
+	public void updateGoodsInventoryBaseDO4Sales(GoodsBaseInventoryDO baseDO) {
+		this.synInitAndAsynUpdateDAO.updateGoodsInventoryBaseDO4Sales(baseDO);
+	}
 }
