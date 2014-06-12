@@ -33,6 +33,7 @@ import com.tuan.inventory.model.param.UpdateInventoryParam;
 
 public class InventoryUpdateDomain extends AbstractDomain {
 	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
+	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -246,11 +247,19 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
+		long startTime = System.currentTimeMillis();
+		String method = "InventoryUpdateDomain";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
 		
-		lm.addMetaData("init","init,after").addMetaData("init[" + (goodsId) + "]", goodsId).addMetaData("message", resultEnum.getDescription());
-		writeBusInitLog(lm,true);
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 		
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
