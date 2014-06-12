@@ -413,6 +413,10 @@
     <update id="updateGoodsInventory" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryDO" >
       update jeehe_inventory_attribute
       <dynamic prepend="set" >
+     
+		<isNotNull prepend="," property="goodsSaleCount">
+			goods_sale_count =  #goodsSaleCount:INTEGER#
+		</isNotNull>
         <isNotNull prepend="," property="totalNumber">
 			total_num = #totalNumber:INTEGER#
 		</isNotNull>

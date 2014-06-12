@@ -82,7 +82,7 @@
 				sale_count =  #goodsSaleCount:INTEGER#
       		</isNotNull>
 		</dynamic>
-		where goods_id = #id:LONG#
+		where goods_id = #id:BIGINT#
 	</update>
 
 </sqlMap>

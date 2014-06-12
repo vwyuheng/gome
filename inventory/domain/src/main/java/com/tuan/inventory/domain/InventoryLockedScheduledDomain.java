@@ -270,6 +270,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				 goodsBaseId = goodsInventoryModel.getGoodsBaseId();
 				inventoryInfoDO.setGoodsId(goodsId);
 				inventoryInfoDO.setGoodsBaseId(goodsBaseId);
+				inventoryInfoDO.setGoodsSaleCount(goodsInventoryModel.getGoodsSaleCount());
 				inventoryInfoDO.setLimitStorage(goodsInventoryModel
 						.getLimitStorage());
 				inventoryInfoDO.setWaterfloodVal(goodsInventoryModel
@@ -304,8 +305,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						}
 					}
 				}
-				//调用数据同步
-				//return this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+				
 			} catch (Exception e) {
 				this.writeBusJobErrorLog(
 						lm.addMetaData("errorMsg",
@@ -322,6 +322,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
 		notifyParam.setGoodsId(goodsInventoryModel.getGoodsId());
+		notifyParam.setGoodsBaseId(goodsBaseId);
 		notifyParam.setLimitStorage(goodsInventoryModel.getLimitStorage());
 		notifyParam.setWaterfloodVal(goodsInventoryModel.getWaterfloodVal());
 		notifyParam.setTotalNumber(goodsInventoryModel.getTotalNumber());
@@ -338,7 +339,6 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 		GoodsBaseInventoryDO baseInventoryDO =goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 		if(baseInventoryDO!=null){
-			notifyParam.setGoodsBaseId(goodsBaseId);
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 		}
@@ -461,10 +461,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
+	
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
