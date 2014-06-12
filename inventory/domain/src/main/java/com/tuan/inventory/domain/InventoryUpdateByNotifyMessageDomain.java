@@ -40,14 +40,18 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 				int totalNumber = param.getTotalNumber();
 				int leftNumber = param.getLeftNumber();
 				long goodsBaseId = param.getGoodsBaseId();
-				int saleCount = param.getBaseSaleCount();
+				//int saleCount = param.getBaseSaleCount();
+				int goodsSaleCount = StringUtils.isEmpty(param.getSales())?Integer.parseInt("0"):Integer.parseInt(param.getSales());  //商品销量
 				GoodsUpdateNumberDO goodsUpdateNumberDO=new GoodsUpdateNumberDO();
 				goodsUpdateNumberDO.setLeftNum(leftNumber);
 				goodsUpdateNumberDO.setTotalNum(totalNumber);
 				goodsUpdateNumberDO.setId(param.getGoodsId());
+				//更新attribute表
 				goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
 				goodsUpdateNumberDO.setId(goodsBaseId);
-				goodsUpdateNumberDO.setSaleCount(saleCount);
+				goodsUpdateNumberDO.setGoodsSaleCount(goodsSaleCount);
+				//goodsUpdateNumberDO.setSaleCount(saleCount);
+				//更新jeehe_goods表销量
 				goodUpdateNumberDomainRepository.updataGoodsNum(goodsUpdateNumberDO);
 				
 				log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());

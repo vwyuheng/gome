@@ -78,11 +78,11 @@
 	<update id="updataGoodsNumByID" parameterClass="com.tuan.inventory.dao.data.GoodsUpdateNumberDO">
 		 update jeehe_goods
 		<dynamic prepend="set">
-			<isNotNull prepend="," property="saleCount">
-				sale_count =  #saleCount:INTEGER#
+			<isNotNull prepend="," property="goodsSaleCount">
+				sale_count =  #goodsSaleCount:INTEGER#
       		</isNotNull>
 		</dynamic>
-		where goods_base_id = #id:LONG# 
+		where goods_base_id = #id:LONG#
 	</update>
 
 </sqlMap>

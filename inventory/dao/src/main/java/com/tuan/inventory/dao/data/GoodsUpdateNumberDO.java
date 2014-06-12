@@ -3,7 +3,7 @@ package com.tuan.inventory.dao.data;
 public class GoodsUpdateNumberDO {
    private int totalNum;
    private int leftNum;
-   private int saleCount;
+   private int goodsSaleCount;
    private Long id;
 public int getTotalNum() {
 	return totalNum;
@@ -23,12 +23,13 @@ public Long getId() {
 public void setId(Long id) {
 	this.id = id;
 }
-public int getSaleCount() {
-	return saleCount;
+public int getGoodsSaleCount() {
+	return goodsSaleCount;
 }
-public void setSaleCount(int saleCount) {
-	this.saleCount = saleCount;
+public void setGoodsSaleCount(int goodsSaleCount) {
+	this.goodsSaleCount = goodsSaleCount;
 }
+
 
    
 }
