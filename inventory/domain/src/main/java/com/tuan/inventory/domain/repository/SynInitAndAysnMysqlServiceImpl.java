@@ -1183,9 +1183,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							//更新商品基表
 							if(goodsBaseId>0) {
 								baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
-								//更新base表调整后的库存总量
-								baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+goodsDO.getTotalNumber());
-								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								if(baseDO!=null) {
+									//更新base表调整后的库存总量
+									baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+goodsDO.getTotalNumber());
+									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								}
+								
 							}
 						}
 						if(selectionDO!=null) {
@@ -1209,7 +1212,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 							//更新redis商品基表
 							String baseRetAck = null;
-							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")){
+							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseDO!=null){
 								baseRetAck = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseDO);
 							}
 							
@@ -1260,14 +1263,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							selectionDO);
 				}
 				public TuanCallbackResult executeCheck() {
-					if (selectionDO == null) {
-						 logger.error(this.getClass()+"_create param invalid ,GoodsSelectionDO is null");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					if (goodsDO==null) {
-						logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
+					if (selectionDO == null&&goodsDO==null) {
+						 logger.error(this.getClass()+"_create param invalid ,all param is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -2325,4 +2322,238 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				(GoodsBaseInventoryDO)callBackResult.getBusinessObject(),
 				callBackResult.getThrowable());
 	}
+	@Override
+	public CallResult<GoodsSelectionDO> updateGoodsSelection(
+			final GoodsInventoryDO goodsDO, final int pretotalnum, final int adjustNum,
+			final GoodsSelectionDO selectionDO) throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+						long goodsBaseId = 0;
+						GoodsBaseInventoryDO	baseDO = null;
+						if(goodsDO!=null) {
+							goodsBaseId = goodsDO.getGoodsBaseId();
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+							//更新商品基表
+							if(goodsBaseId>0) {
+								baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								if(baseDO!=null) {
+									//更新base表调整后的库存总量
+									baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+goodsDO.getTotalNumber());
+									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								}
+								
+							}
+						}
+						if(selectionDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selectionDO);
+						}
+						if(goodsDO!=null) {
+							//补上redis的处理
+							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsDO.getGoodsId(), goodsDO);
+							if(StringUtils.isEmpty(retAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							if(!retAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							
+							//更新redis商品基表
+							String baseRetAck = null;
+							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseDO!=null&&goodsBaseId!=0){
+								baseRetAck = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseDO);
+							}
+							
+							if(StringUtils.isEmpty(baseRetAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							if(!baseRetAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+						}
+					   if (selectionDO != null) {
+								List<Long> selRetACK = goodsInventoryDomainRepository
+										.adjustSelectionInventoryById(goodsDO.getGoodsId(),
+												selectionDO.getId(), (adjustNum));
+								if (!DataUtil.verifyInventory(selRetACK)) {
+									//将库存还原到调整前
+									 goodsInventoryDomainRepository
+											.adjustSelectionInventoryById(goodsDO.getGoodsId(),
+													selectionDO.getId(), (-adjustNum));
+									throw new TuanRuntimeException(
+											QueueConstant.FAIL_ADJUST_INVENTORY,
+											"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+											new Exception());
+								}
+
+							}
+						
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
+							throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
+									"update invalid '" + selectionDO.getId()
+											+ "' for key 'selectionId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							selectionDO);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (selectionDO == null&&goodsDO==null) {
+						 logger.error(this.getClass()+"_create param invalid ,all param is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<GoodsSelectionDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(GoodsSelectionDO)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+	@Override
+	public CallResult<GoodsSuppliersDO> updateGoodsSuppliers(
+			final GoodsInventoryDO goodsDO, final int pretotalnum, final int adjustNum,
+			final GoodsSuppliersDO suppliersDO) throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+						long goodsBaseId = 0;
+						GoodsBaseInventoryDO	baseDO = null;
+						if(goodsDO!=null) {
+							goodsBaseId = goodsDO.getGoodsBaseId();
+							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+							//更新商品基表
+							if(goodsBaseId>0) {
+								baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								if(baseDO!=null) {
+									//更新base表调整后的库存总量
+									baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+goodsDO.getTotalNumber());
+									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								}
+								
+							}
+						}
+						if(suppliersDO!=null) {
+							synInitAndAsynUpdateDomainRepository.updateGoodsSuppliers(suppliersDO);
+						}
+					
+						if(goodsDO!=null) {
+							//补上redis的处理
+							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsDO.getGoodsId(), goodsDO);
+							if(StringUtils.isEmpty(retAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							if(!retAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory to redis error occured!",
+										new Exception());
+							}
+							
+						}
+						if(baseDO!=null&&goodsBaseId!=0) {
+							//更新redis商品基表
+							String	baseRetAck = goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseDO);
+							
+							
+							if(StringUtils.isEmpty(baseRetAck)) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+										new Exception());
+							}
+							if(!baseRetAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+										new Exception());
+							}
+						}
+						if (suppliersDO != null) {
+							List<Long> suppACK = goodsInventoryDomainRepository
+									.adjustSuppliersInventoryById(suppliersDO.getGoodsId(),
+											suppliersDO.getSuppliersId(), (adjustNum));
+							if (!DataUtil.verifyInventory(suppACK)) {
+								//将库存还原到调整前
+								goodsInventoryDomainRepository
+										.adjustSuppliersInventoryById(suppliersDO.getGoodsId(),
+												suppliersDO.getSuppliersId(), (-adjustNum));
+								throw new TuanRuntimeException(
+										QueueConstant.FAIL_ADJUST_INVENTORY,
+										"SynInitAndAysnMysqlServiceImpl.adjustSuppliersInventoryById to redis error occured!",
+										new Exception());
+							}
+
+						}
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsSuppliers error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
+							throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
+									"update invalid '" + suppliersDO.getId()
+											+ "' for key 'suppliersId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.updateGoodsSuppliers error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							suppliersDO);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (suppliersDO == null) {
+						 logger.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<GoodsSuppliersDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(GoodsSuppliersDO)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
 }

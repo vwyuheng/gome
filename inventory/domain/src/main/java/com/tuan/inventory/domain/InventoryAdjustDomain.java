@@ -81,7 +81,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private long selectionId;
 	private long suppliersId;
 	//调整后库存
-	private List<Long> resultACK;
+	//private List<Long> resultACK;
 	
 	private int limitStorage = 0;
 	
@@ -246,7 +246,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
 								.getCode())) {
-					if (selectionInventory != null) {
+					if (selectionInventory != null&&selectionInventory.getLimitStorage()==1) {
 						//调整前校验
 
 						//调整剩余库存数量
@@ -264,18 +264,18 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()
 								+ (adjustNum));
 					}
-					if (inventoryDO.getLeftNumber() < 0
+					/*if (inventoryDO.getLeftNumber() < 0
 							|| inventoryDO.getTotalNumber() < 0
 							|| selectionInventory.getLeftNumber() < 0
 							|| selectionInventory.getTotalNumber() < 0) {
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
-					}
+					}*/
 					lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory);
 					writeSysUpdateLog(lm,true);
 					
 					CallResult<GoodsSelectionDO> callResult  = null;
 					// 消费对列的信息
-					callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,origoodstotalnum,selectionInventory);
+					callResult = synInitAndAysnMysqlService.updateGoodsSelection(inventoryDO,origoodstotalnum,adjustNum,selectionInventory);
 					PublicCodeEnum publicCodeEnum = callResult
 							.getPublicCodeEnum();
 					
@@ -287,18 +287,25 @@ public class InventoryAdjustDomain extends AbstractDomain {
 								.valueOfEnum(publicCodeEnum.getCode());
 					} else {
 						message = "updateGoodsSelection_success[save success]selectionId:" + selectionInventory==null?String.valueOf(0):String.valueOf(selectionInventory.getId());
+						this.goodsleftnum = inventoryDO.getLeftNumber();
+						this.goodstotalnum = inventoryDO.getTotalNumber();
+						this.selOrSuppleftnum = selectionInventory
+								.getLeftNumber();
+						this.selOrSupptotalnum = selectionInventory
+								.getTotalNumber();
+					
 					}
 					
 					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory).addMetaData("message", message);
 					writeSysUpdateLog(lm,true);
-					lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
+					/*lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
 					writeSysUpdateLog(lm,true);
 						this.resultACK = this.goodsInventoryDomainRepository
 								.adjustSelectionInventoryById(goodsId,
 										selectionId, (adjustNum));
 						lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("resultACK", resultACK);
 						writeSysUpdateLog(lm,true);
-						if (!verifyInventory()) { //TODO 这地有问题，暂时影响可能不大
+						if (!verifyInventory()) { 
 							
 							lm.addMetaData("adjustInventory","rollback redis,start").addMetaData("goodsId", goodsId).addMetaData("selectionId", selectionId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
 							writeSysUpdateLog(lm,true);
@@ -316,7 +323,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 									.getLeftNumber();
 							this.selOrSupptotalnum = selectionInventory
 									.getTotalNumber();
-						}
+						}*/
 
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
@@ -337,16 +344,16 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						inventoryDO.setTotalNumber(inventoryDO.getTotalNumber()
 								+ (adjustNum));
 					}
-					if (inventoryDO.getLeftNumber() < 0
+					/*if (inventoryDO.getLeftNumber() < 0
 							|| inventoryDO.getTotalNumber() < 0
 							|| selectionInventory.getLeftNumber() < 0
 							|| selectionInventory.getTotalNumber() < 0) {
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
-					}
+					}*/
 					lm.addMetaData("adjustInventory","adjustInventory suppliers mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory);
 					writeSysUpdateLog(lm,true);
 				
-					CallResult<GoodsSuppliersDO> callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(inventoryDO,suppliersInventory);
+					CallResult<GoodsSuppliersDO> callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(inventoryDO,origoodstotalnum,adjustNum,suppliersInventory);
 					PublicCodeEnum publicCodeEnum = callResult
 							.getPublicCodeEnum();
 					
@@ -358,18 +365,24 @@ public class InventoryAdjustDomain extends AbstractDomain {
 								.valueOfEnum(publicCodeEnum.getCode());
 					} else {
 						message = "updateGoodsSuppliers_success[save success]suppliersId:" + suppliersInventory==null?"0":String.valueOf(suppliersInventory.getId());
+						this.goodsleftnum = inventoryDO.getLeftNumber();
+						this.goodstotalnum = inventoryDO.getTotalNumber();
+						this.selOrSuppleftnum = suppliersInventory
+								.getLeftNumber();
+						this.selOrSupptotalnum = suppliersInventory
+								.getTotalNumber();
 					}
 					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory).addMetaData("message", message);
 					writeSysUpdateLog(lm,true);
 				
-						lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
+					/*	lm.addMetaData("adjustInventory","adjustInventory redis,start").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
 						writeSysUpdateLog(lm,true);
 						this.resultACK = this.goodsInventoryDomainRepository
 								.adjustSuppliersInventoryById(goodsId,
 										suppliersId, (adjustNum));
 						lm.addMetaData("adjustInventory","adjustInventory redis,end").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type).addMetaData("adjustNum", adjustNum).addMetaData("resultACK", resultACK);
 						writeSysUpdateLog(lm,true);
-						if (!verifyInventory()) { //TODO 这地有问题，暂时影响可能不大
+						if (!verifyInventory()) { 
 							lm.addMetaData("adjustInventory","rollback redis,start").addMetaData("goodsId", goodsId).addMetaData("suppliersId", suppliersId).addMetaData("type", type).addMetaData("adjustNum", adjustNum);
 							writeSysUpdateLog(lm,true);
 							//将库存还原到调整前
@@ -386,7 +399,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 									.getLeftNumber();
 							this.selOrSupptotalnum = suppliersInventory
 									.getTotalNumber();
-						}
+						}*/
 
 				}//else SUPPLIERS
 			} finally{
@@ -494,8 +507,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-				//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
 				resultEnum = create.businessExecute();
 			}finally{
 				dLock.unlockManual(key);
@@ -539,7 +550,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		this.updateActionDO = updateActionDO;
 		return true;
 	}
-	private boolean verifyInventory() {
+	/*private boolean verifyInventory() {
 		boolean ret = true;
 		//if(resultACK) {
 		if(!CollectionUtils.isEmpty(resultACK)) {
@@ -554,7 +565,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			ret= false;
 		}
 		return ret;
-	}
+	}*/
 	
 	public void fillSelectionMsg() {
 		List<SelectionNotifyMessageParam> selectionMsg = new ArrayList<SelectionNotifyMessageParam>();
