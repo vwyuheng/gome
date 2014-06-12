@@ -39,7 +39,6 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 		        //库存调整
 				int totalNumber = param.getTotalNumber();
 				int leftNumber = param.getLeftNumber();
-				long goodsBaseId = param.getGoodsBaseId();
 				//int saleCount = param.getBaseSaleCount();
 				int goodsSaleCount = StringUtils.isEmpty(param.getSales())?Integer.parseInt("0"):Integer.parseInt(param.getSales());  //商品销量
 				GoodsUpdateNumberDO goodsUpdateNumberDO=new GoodsUpdateNumberDO();
@@ -48,10 +47,9 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 				goodsUpdateNumberDO.setId(param.getGoodsId());
 				//更新attribute表
 				goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
-				goodsUpdateNumberDO.setId(goodsBaseId);
 				goodsUpdateNumberDO.setGoodsSaleCount(goodsSaleCount);
 				//goodsUpdateNumberDO.setSaleCount(saleCount);
-				//更新jeehe_goods表销量
+				//更新jeehe_goods表销量,只需根据商品id即可，因更新的是商品的销量
 				goodUpdateNumberDomainRepository.updataGoodsNum(goodsUpdateNumberDO);
 				
 				log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
