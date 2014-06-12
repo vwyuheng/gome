@@ -263,6 +263,86 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
+		}else {
+			//查询商品所属的选型
+			List<GoodsSelectionModel> selResult = goodsInventoryDomainRepository
+					.queryGoodsSelectionListByGoodsId(Long.valueOf(param.getGoodsId()));
+			//检查商品所属选型商品
+			if(!CollectionUtils.isEmpty(selResult)) {  //若商品存在选型，则为选型商品，
+				isSelection = true;
+			}
+			//查询商品所属的分店
+			List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
+							.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
+			//这个逻辑比较清晰，首先若存在选型或分店的商品，则该商品所传参数中，选型或分店参数不能为空，否则校验不通过
+			//检查商品所属分店商品
+			if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
+						isSupplier = true;
+					}
+			if(isSelection&&!isSupplier) {  //只包含选型的
+				if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
+					return CreateInventoryResultEnum.SELECTION_GOODS;
+				}
+			}
+			if(isSupplier&&!isSelection) {  //只包含分店的
+				if (CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
+					return CreateInventoryResultEnum.SUPPLIERS_GOODS;
+				}
+			}
+			
+			if(isSupplier&&isSelection) {  //分店选型都有的
+				if (CollectionUtils.isEmpty(param.getGoodsSuppliers())||CollectionUtils.isEmpty(param.getGoodsSelection())) {
+					return CreateInventoryResultEnum.SEL_SUPP_GOODS;
+				}
+			}
+			//校验商品选型id
+			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
+				
+				List<Long> selectionIdlist = null;
+				//List<Long> wmsIdlist = null;
+				if(!CollectionUtils.isEmpty(selResult)) {
+					selectionIdlist = new ArrayList<Long>();
+					//wmsIdlist = new ArrayList<Long>();
+					 for(GoodsSelectionModel model : selResult) {
+						 selectionIdlist.add(model.getId());
+						 //wmsIdlist.add(model.getWmsId());
+					 }
+				}
+				if(!CollectionUtils.isEmpty(selectionIdlist)) {
+					for(GoodsSelectionModel gsmdoel : param.getGoodsSelection()) {
+						if(!selectionIdlist.contains(gsmdoel.getId())||gsmdoel.getId()<=0) {
+							return CreateInventoryResultEnum.INVALID_SELECTIONID;
+						}
+						if(gsmdoel.getNum()<0) {
+							return CreateInventoryResultEnum.INVALID_SELECTIONNUM;
+						}
+					}
+				}
+				
+			}
+			
+			//校验商品分店id，若存在的话
+			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
+				List<Long> suppliersIdlist = null;
+				
+				if(!CollectionUtils.isEmpty(suppResult)) {
+					 suppliersIdlist = new ArrayList<Long>();
+					 for(GoodsSuppliersModel model : suppResult) {
+						 suppliersIdlist.add(model.getSuppliersId());
+					 }
+				}
+				if(!CollectionUtils.isEmpty(suppliersIdlist)) {
+					for(GoodsSuppliersModel smdoel : param.getGoodsSuppliers()) {
+						if(!suppliersIdlist.contains(smdoel.getSuppliersId())||smdoel.getSuppliersId()<=0) {
+							return CreateInventoryResultEnum.INVALID_SUPPLIERSID;
+						}
+						if(smdoel.getNum()<0) {
+							return CreateInventoryResultEnum.INVALID_SUPPLIERSNUM;
+						}
+					}
+				}
+				
+			}
 		}
 		// 真正的库存更新业务处理
 		try {
@@ -569,87 +649,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		//GoodsVerificationDomain vfDomian = new GoodsVerificationDomain(Long.valueOf(param.getGoodsId()),param.getGoodsSelection(),param.getGoodsSuppliers());
 		//vfDomian.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		//return vfDomian.checkParam();
-		
-		//查询商品所属的选型
-		List<GoodsSelectionModel> selResult = goodsInventoryDomainRepository
-				.queryGoodsSelectionListByGoodsId(Long.valueOf(param.getGoodsId()));
-		//检查商品所属选型商品
-		if(!CollectionUtils.isEmpty(selResult)) {  //若商品存在选型，则为选型商品，
-			isSelection = true;
-		}
-		//查询商品所属的分店
-		List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
-						.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
-		//这个逻辑比较清晰，首先若存在选型或分店的商品，则该商品所传参数中，选型或分店参数不能为空，否则校验不通过
-		//检查商品所属分店商品
-		if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
-					isSupplier = true;
-				}
-		if(isSelection&&!isSupplier) {  //只包含选型的
-			if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
-				return CreateInventoryResultEnum.SELECTION_GOODS;
-			}
-		}
-		if(isSupplier&&!isSelection) {  //只包含分店的
-			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
-				return CreateInventoryResultEnum.SUPPLIERS_GOODS;
-			}
-		}
-		
-		if(isSupplier&&isSelection) {  //分店选型都有的
-			if (CollectionUtils.isEmpty(param.getGoodsSuppliers())||CollectionUtils.isEmpty(param.getGoodsSelection())) {
-				return CreateInventoryResultEnum.SEL_SUPP_GOODS;
-			}
-		}
-		//校验商品选型id
-		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
-			
-			List<Long> selectionIdlist = null;
-			//List<Long> wmsIdlist = null;
-			if(!CollectionUtils.isEmpty(selResult)) {
-				selectionIdlist = new ArrayList<Long>();
-				//wmsIdlist = new ArrayList<Long>();
-				 for(GoodsSelectionModel model : selResult) {
-					 selectionIdlist.add(model.getId());
-					 //wmsIdlist.add(model.getWmsId());
-				 }
-			}
-			if(!CollectionUtils.isEmpty(selectionIdlist)) {
-				for(GoodsSelectionModel gsmdoel : param.getGoodsSelection()) {
-					if(!selectionIdlist.contains(gsmdoel.getId())||gsmdoel.getId()<=0) {
-						return CreateInventoryResultEnum.INVALID_SELECTIONID;
-					}
-					if(gsmdoel.getNum()<0) {
-						return CreateInventoryResultEnum.INVALID_SELECTIONNUM;
-					}
-				}
-			}
-			
-		}
-		
-		//校验商品分店id，若存在的话
-		if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
-			List<Long> suppliersIdlist = null;
-			
-			if(!CollectionUtils.isEmpty(suppResult)) {
-				 suppliersIdlist = new ArrayList<Long>();
-				 for(GoodsSuppliersModel model : suppResult) {
-					 suppliersIdlist.add(model.getSuppliersId());
-				 }
-			}
-			if(!CollectionUtils.isEmpty(suppliersIdlist)) {
-				for(GoodsSuppliersModel smdoel : param.getGoodsSuppliers()) {
-					if(!suppliersIdlist.contains(smdoel.getSuppliersId())||smdoel.getSuppliersId()<=0) {
-						return CreateInventoryResultEnum.INVALID_SUPPLIERSID;
-					}
-					if(smdoel.getNum()<0) {
-						return CreateInventoryResultEnum.INVALID_SUPPLIERSNUM;
-					}
-				}
-			}
-			
-		}
-		
+
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
