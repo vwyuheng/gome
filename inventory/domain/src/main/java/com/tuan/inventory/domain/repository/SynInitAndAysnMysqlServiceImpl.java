@@ -2300,7 +2300,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							throw new TuanRuntimeException(
 									QueueConstant.SERVICE_DATABASE_FALIURE,
-									"SynInitAndAysnMysqlServiceImpl.selectGoodsBaseInventory error occured!",
+									"SynInitAndAysnMysqlServiceImpl.selectInventoryBase4Init error occured!",
 									e);
 							
 						}
@@ -2310,7 +2310,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsBaseId==null) {
-							 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+							 logger.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
