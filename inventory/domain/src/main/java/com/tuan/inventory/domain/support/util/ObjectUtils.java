@@ -210,6 +210,8 @@ public class ObjectUtils {
 			result.setIsDirectConsumption(giDO.getIsDirectConsumption());
 			result.setWaterfloodVal(giDO.getWaterfloodVal());
 			result.setGoodsSaleCount(giDO.getGoodsSaleCount());
+			result.setGoodsBaseId(giDO.getGoodsBaseId());
+			result.setWmsId(giDO.getWmsId());
 			if(!CollectionUtils.isEmpty(goodsSelectionList))
 			     result.setGoodsSelectionList(goodsSelectionList);
 			if(!CollectionUtils.isEmpty(goodsSuppliersList))
@@ -226,9 +228,16 @@ public class ObjectUtils {
 			result.setGoodsId(giDO.getGoodsId());
 			result.setLeftNumber(giDO.getLeftNumber());
 			result.setTotalNumber(giDO.getTotalNumber());
+			
 			result.setLimitStorage(giDO.getLimitStorage());
 			result.setUserId(giDO.getUserId());
 			result.setWaterfloodVal(giDO.getWaterfloodVal());
+			result.setWmsId(giDO.getWmsId());
+			result.setGoodsBaseId(giDO.getGoodsBaseId());
+			result.setGoodsSaleCount(giDO.getGoodsSaleCount());
+			result.setGoodsSelectionIds(giDO.getGoodsSelectionIds());
+			result.setIsAddGoodsSelection(giDO.getIsAddGoodsSelection());
+			result.setIsDirectConsumption(giDO.getIsDirectConsumption());
 			//if(!CollectionUtils.isEmpty(goodsSelectionList))
 				//result.setGoodsSelectionList(goodsSelectionList);
 			//if(!CollectionUtils.isEmpty(goodsSuppliersList))

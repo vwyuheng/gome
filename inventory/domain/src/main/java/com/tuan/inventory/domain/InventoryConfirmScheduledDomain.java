@@ -30,11 +30,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private GoodsInventoryModel goodsInventoryModel;
 	//缓存商品id，并排重，以便归并相同商品的消息发送次数
 	private ConcurrentHashSet<GoodsInventoryQueueModel> listGoodsIdSends;
-	//private ConcurrentHashSet<Long> listQueueIdMarkDelete;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
-	
 	
 	private List<GoodsSelectionDO> selectionInventoryList = null;
 	private List<GoodsInventoryWMSDO> wmsInventoryList = null;
@@ -56,7 +53,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		boolean preresult = true;
 		try {
 			listGoodsIdSends = new ConcurrentHashSet<GoodsInventoryQueueModel>();
-			//listQueueIdMarkDelete = new ConcurrentHashSet<Long>();
 			// 商品库存是否存在
 			//取初始状态队列信息
 			List<GoodsInventoryQueueModel> queueList = goodsInventoryDomainRepository
@@ -67,10 +63,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					//队列数据数据按商品id 归集后 发送消息更新数据准备
 					if (verifyId(model.getGoodsId()))
 						listGoodsIdSends.add(model);
-					//listGoodsIdSends.add(model.getGoodsId());
-					//队列数据消费完标记删除数据准备
-					//if (verifyId(model.getId()))
-						//listQueueIdMarkDelete.add(model.getId());
+					
 				}
 			}else {
 				writeJobLog("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
@@ -99,6 +92,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
 				for (GoodsInventoryQueueModel queueModel : listGoodsIdSends) {
 					long goodsId = queueModel.getGoodsId();
+					//long goodsBaseId = queueModel.getGoodsBaseId();
 					long queueId = queueModel.getId();
 					if (loadMessageData(goodsId)) {  //更加商品id加载数据
 						
@@ -201,6 +195,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			inventoryInfoDO
 					.setTotalNumber(goodsInventoryModel.getTotalNumber());
 			inventoryInfoDO.setLeftNumber(goodsInventoryModel.getLeftNumber());
+			inventoryInfoDO.setGoodsSaleCount(goodsInventoryModel.getGoodsSaleCount());
 			if (!CollectionUtils.isEmpty(goodsInventoryModel
 					.getGoodsSelectionList())) {
 				selectionInventoryList = new ArrayList<GoodsSelectionDO>();
@@ -334,10 +329,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}
-	*/
+	
 	
 }

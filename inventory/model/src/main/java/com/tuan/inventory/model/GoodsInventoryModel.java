@@ -22,7 +22,7 @@ public class GoodsInventoryModel extends TuanBaseDO {
 	private java.lang.Integer isDirectConsumption; // 商品销售是否需要指定分店 0：不指定；1：指定
 	private java.lang.Integer waterfloodVal;  //注水值
 	private java.lang.Integer goodsSaleCount; //商品销量
-	
+	private Long wmsId;// 商品物流ID(FK)
 	//商品选型list
 	private List<GoodsSelectionModel> goodsSelectionList;
 	//商品分店list
@@ -106,6 +106,12 @@ public class GoodsInventoryModel extends TuanBaseDO {
 	}
 	public void setGoodsSaleCount(java.lang.Integer goodsSaleCount) {
 		this.goodsSaleCount = goodsSaleCount;
+	}
+	public Long getWmsId() {
+		return wmsId;
+	}
+	public void setWmsId(Long wmsId) {
+		this.wmsId = wmsId;
 	}
 	
 	
