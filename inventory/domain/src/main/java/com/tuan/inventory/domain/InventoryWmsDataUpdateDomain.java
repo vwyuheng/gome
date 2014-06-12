@@ -41,8 +41,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	private UpdateWmsDataParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
-	//private InitCacheDomainRepository initCacheDomainRepository;
 	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private String tokenid;  //redis序列,解决接口幂等问题
@@ -500,6 +498,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
 		try {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+			updateActionDO.setGoodsBaseId(goodsBaseId);
 			updateActionDO.setGoodsId(goodsId);
 			if (inventoryInfoDO != null) {
 				updateActionDO.setBusinessType(ResultStatusEnum.GOODS_WMS
@@ -512,7 +511,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("更新物流相关数据");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
-			updateActionDO.setGoodsBaseId(goodsBaseId);
+			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
 			this.updateActionDO = null;
@@ -555,11 +554,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
 
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;
