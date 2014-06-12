@@ -5,6 +5,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
@@ -17,10 +19,8 @@ import com.tuan.inventory.domain.InventoryInitDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
-import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -37,7 +37,7 @@ import com.tuan.inventory.service.InventoryQueryServiceCallback;
 
 public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService implements
 		GoodsInventoryQueryService {
-	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
+	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
@@ -63,12 +63,22 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
+						
+						long startTime = System.currentTimeMillis();
+						String method = "findGoodsSelectionBySelectionId";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
+						
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
-						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSelectionBySelectionId]", goodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsId", goodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -137,12 +147,20 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
+						long startTime = System.currentTimeMillis();
+						String method = "findGoodsSuppliersBySuppliersId";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
-						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSuppliersBySuppliersId]", goodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsId", goodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -209,14 +227,21 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						
+						long startTime = System.currentTimeMillis();
+						String method = "findGoodsInventoryByGoodsId";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 				
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
-						lm.addMetaData("init","init,after").addMetaData("init[findGoodsInventoryByGoodsId]", goodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsId", goodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -285,12 +310,20 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
+						long startTime = System.currentTimeMillis();
+						String method = "findGoodsSelectionListByGoodsId";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
-						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSelectionListByGoodsId]", goodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsId", goodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -358,13 +391,20 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						
+						long startTime = System.currentTimeMillis();
+						String method = "findGoodsSuppliersListByGoodsId";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 						
-						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSuppliersListByGoodsId]", goodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsId", goodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -435,12 +475,20 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
+						long startTime = System.currentTimeMillis();
+						String method = "findGoodsSelectionListBySelectionIdList";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
 
-						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSelectionListBySelectionIdList]", goodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsId", goodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -586,14 +634,21 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
 					public TuanCallbackResult preHandler() {
-						
+						long startTime = System.currentTimeMillis();
+						String method = "findWmsIsBeDeliveryByWmsGoodsId";
+						final LogModel lm = LogModel.newLogModel(method);
+						logger.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 				
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initWmsCheck(wmsGoodsId,isBeDelivery,lm);
 						
-						lm.addMetaData("init","init,after").addMetaData("init[findWmsIsBeDeliveryByWmsGoodsId]", wmsGoodsId).addMetaData("message", resultEnum.getDescription());
-						writeBusInitLog(lm,true);
+						long endTime = System.currentTimeMillis();
+						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+								+ "milliseconds(毫秒)执行完成!";
+						logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("wmsGoodsId", wmsGoodsId)
+								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -758,6 +813,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							}
 							
 							if(goodsBaseId>0){
+								long startTime = System.currentTimeMillis();
 								GoodsBaseInventoryDO tmpBaseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 								if(tmpBaseDO == null) {
 									CallResult<GoodsBaseInventoryDO>  cresult=synInitAndAysnMysqlService.selectInventoryBase4Init(goodsBaseId);
@@ -770,7 +826,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									if(sourceBaseDO!=null) {
 										String message = StringUtils.EMPTY;
 										CallResult<Boolean> callResult  = null;
-										long startTime = System.currentTimeMillis();
+										
 										try {
 											//synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
 											callResult = synInitAndAysnMysqlService.saveGoodsBaseInventory(sourceBaseDO);
@@ -788,16 +844,17 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 											} else {
 												message = "saveGoodsBaseInventory2MysqlAndRedis_success[save2mysqlAndRedis success]goodsBaseId:" + goodsBaseId;
 												
-												
 											}
 										} catch (Exception e) {
 											enumRes = InventoryQueryEnum.SYS_ERROR;
 										}finally {
-											log.info(lm.addMetaData("goodsBaseId",goodsBaseId)
+											long endTime = System.currentTimeMillis();
+											String runResult = "[init]业务处理历时" + (startTime - endTime)
+													+ "milliseconds(毫秒)执行完成!";
+											logger.info(lm.addMetaData("goodsBaseId",goodsBaseId)
 													.addMetaData("sourceBaseDO",sourceBaseDO)
 													.addMetaData("message",message)
-													.addMetaData("endTime", System.currentTimeMillis())
-													.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+													.addMetaData("runResult", runResult).toJson());
 										}
 										
 									}else {
