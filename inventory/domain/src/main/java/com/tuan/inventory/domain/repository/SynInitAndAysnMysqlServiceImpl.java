@@ -263,7 +263,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 									long goodsBaseId=inventoryInfoDO.getGoodsBaseId();
 									//GoodsBaseInventoryDO baseInventoryDO = null;
 									//baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-									if(baseInventoryDO != null){
+									if(baseInventoryDO == null){
 										/*baseInventoryDO = new GoodsBaseInventoryDO();
 										baseInventoryDO.setGoodsBaseId(goodsBaseId);
 										baseInventoryDO.setBaseSaleCount(0);
@@ -284,7 +284,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 									}else{
 										int totalCount = inventoryInfoDO.getTotalNumber();
 										listAck=goodsInventoryDomainRepository.updateGoodsBaseInventory(goodsBaseId,0,totalCount);
-										if(CollectionUtils.isEmpty(listAck)) {
+										if(!DataUtil.verifyInventory(listAck)) {
 											throw new TuanRuntimeException(
 													QueueConstant.SERVICE_REDIS_FALIURE,
 													"SynInitAndAysnMysqlServiceImpl.updateGoodsBaseInventory to redis error occured!",
