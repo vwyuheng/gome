@@ -207,7 +207,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/adjustw", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustmentWaterflood(@ModelAttribute UpdateRequestPacket packet,
-			String goodsId,String id, String userId,String type, String num, HttpServletRequest request,String goodsBaseId) {
+			String goodsBaseId,String goodsId,String id, String userId,String type, String num, HttpServletRequest request) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -216,11 +216,11 @@ public class GoodsInventoryUpdateController {
 		LogModel lm = (LogModel) request.getAttribute("lm");
 		lm.setMethod("/adjustw")
 		.addMetaData("RequestPacket", packet)
+		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("goodsId", goodsId)
 		.addMetaData("id", id)
 		.addMetaData("userId", userId)
 		.addMetaData("type", type)
-		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("num", num);
 		GoodsdAdjustWaterfloodDomain adjustWaterfloodDomain = new GoodsdAdjustWaterfloodDomain(
 				packet,goodsId,id,userId,type,num, lm, messageRoot,goodsBaseId);

@@ -41,7 +41,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private DLockImpl dLock;//分布式锁
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryDO;
@@ -100,9 +99,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if (inventoryDO != null) {
 					this.originalgoodswfVal = inventoryDO.getWaterfloodVal();
-				} /*else {
-					return CreateInventoryResultEnum.IS_EXISTED;
-				}*/
+				} 
 			}
 			
 			// 真正的业务检查处理
@@ -121,9 +118,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if (selectionInventory != null) {
 					this.oriselOrSuppwfval = selectionInventory
 							.getWaterfloodVal();
-				} /*else {
-					return CreateInventoryResultEnum.IS_EXISTED;
-				}*/
+				} 
 			} else if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
 					.getCode())) {
 				this.suppliersId = Long.valueOf(id);
@@ -135,9 +130,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if (suppliersInventory != null) {
 					this.oriselOrSuppwfval = suppliersInventory
 							.getWaterfloodVal();
-				} /*else {
-					return CreateInventoryResultEnum.IS_EXISTED;
-				}*/
+				} 
 			}
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
@@ -277,7 +270,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"adjustWaterfloodVal error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
@@ -515,11 +508,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}
-	
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
 
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;
