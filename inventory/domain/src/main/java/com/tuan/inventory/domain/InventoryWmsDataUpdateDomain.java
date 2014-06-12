@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.sf.json.JSONObject;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -16,6 +18,7 @@ import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.lock.res.LockResult;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
@@ -33,6 +36,7 @@ import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
+import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.result.CallResult;
 
@@ -405,6 +409,52 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
+	
+	//发送库存新增消息
+	public void sendNotify(){
+					try {
+						InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
+						goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject.fromObject(notifyParam));
+						/*Type orderParamType = new TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType();
+						String paramJson = new Gson().toJson(notifyParam, orderParamType);
+						extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
+					} catch (Exception e) {
+						this.writeBusUpdateErrorLog(
+								lm.setMethod("sendNotify").addMetaData("errorMsg",e.getMessage()),false, e);
+					}
+				}
+		
+		//填充notifyserver发送参数
+		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(){
+					InventoryNotifyMessageParam notifyParam = null;
+					try {
+						notifyParam = new InventoryNotifyMessageParam();
+						notifyParam.setGoodsBaseId(goodsBaseId);
+						notifyParam.setGoodsId(goodsId);
+						if(inventoryInfoDO!=null) {
+							notifyParam.setLimitStorage(inventoryInfoDO.getLimitStorage());
+							notifyParam.setWaterfloodVal(inventoryInfoDO.getWaterfloodVal());
+							notifyParam.setTotalNumber(inventoryInfoDO.getTotalNumber());
+							notifyParam.setLeftNumber(inventoryInfoDO.getLeftNumber());
+							//销量
+							notifyParam.setSales(String.valueOf(inventoryInfoDO.getGoodsSaleCount()));
+						}
+						//查询base销量和商品销量
+						GoodsBaseInventoryDO baseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+						if(baseDO!=null) {
+							//库存总数 减 库存剩余//创建商品时
+							notifyParam.setBaseSaleCount(baseDO.getBaseSaleCount());
+							notifyParam.setBaseTotalCount(baseDO.getBaseTotalCount());
+						}
+						//由于分店和选型的库存数量没有变化故无需处理
+						
+					} catch (Exception e) {
+						this.writeBusInitErrorLog(
+								lm.setMethod("fillInventoryNotifyMessageParam").addMetaData("errorMsg",e.getMessage()),false, e);
+					}
+					return notifyParam;
+				}
+		
 	 //初始化物流库存库存
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initWmsCheck(Long goodsId,String wmsGoodsId,String isBeDelivery,List<Long> goodsTypeIdList,LogModel lm) {

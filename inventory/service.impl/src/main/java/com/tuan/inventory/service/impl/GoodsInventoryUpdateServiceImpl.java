@@ -635,7 +635,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			}
 
 			@Override
-			public void executeAfter() {}
+			public void executeAfter() {
+				wmsDataUpdateDomain.sendNotify();
+			}
 		});
 
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
