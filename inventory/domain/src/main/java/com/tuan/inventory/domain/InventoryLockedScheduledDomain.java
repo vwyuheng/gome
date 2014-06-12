@@ -55,13 +55,6 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private long goodsId = 0;
 	private long goodsBaseId = 0;
 	
-	
-	//回滚
-	//扣减的商品库存量
-	//private int deductNum  = 0;
-	//private List<GoodsSelectionAndSuppliersResult> selectionParam;
-	//private List<GoodsSelectionAndSuppliersResult> suppliersParam;
-	
 	public InventoryLockedScheduledDomain(String clientIp,
 			String clientName,InventoryScheduledParam param,LogModel lm) {
 		this.clientIp = clientIp;
@@ -77,12 +70,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		try {
 			//用于归集缓存商品id
 			inventorySendMsg = new ConcurrentHashSet<GoodsInventoryQueueModel>();
-			//用于缓存队列id:正常的
-			//markDelAftersendMsg = new ConcurrentHashSet<Long>();
 			//用于订单支付未成功时，缓存队列id
 			//inventoryRollback = new ConcurrentHashSet<GoodsInventoryQueueModel>();
 			inventoryRollback = new ArrayList<GoodsInventoryQueueModel>();
-			//inventoryRollback4Mysql = new ConcurrentHashSet<Long>();
 			// 商品库存是否存在
 			//取初始状态队列信息
 			List<GoodsInventoryQueueModel> queueList = goodsInventoryDomainRepository
@@ -103,16 +93,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
 								if (verifyId(model.getGoodsId())) {
 									this.inventorySendMsg.add(model);
-									//this.inventorySendMsg.add(model.getGoodsId());
-									//缓存订单支付成功的队列id，以便处理完后将队列标记删除
-									//this.markDelAftersendMsg.add(model.getId());
 								}
 								   
 							}else {
 								if (verifyId(model.getId())) {
-									//this.inventoryRollback.add(model.getId());
 									this.inventoryRollback.add(model);
-									//this.inventoryRollback4Mysql.add(model.getGoodsId());
 								}
 								   
 							}
@@ -343,23 +328,26 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		return notifyParam;
 	}
 	
-	//发送消息成功后将队列标记删除:逻辑删除
+	// 发送消息成功后将队列标记删除:逻辑删除
 	public void markDeleteAfterSendMsgSuccess(long queueId) {
 		try {
-			if(verifyId(queueId)) {
-						String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
-						if(!StringUtils.isEmpty(member)) {
-							//标记删除【队列】,同时将缓存的队列删除
-							this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
-						}
-						
-					}
-					
-			
+			if (verifyId(queueId)) {
+				String member = this.goodsInventoryDomainRepository
+						.queryMember(String.valueOf(queueId));
+				if (!StringUtils.isEmpty(member)) {
+					// 标记删除【队列】,同时将缓存的队列删除
+					this.goodsInventoryDomainRepository
+							.markQueueStatusAndDeleteCacheMember(member,
+									(delStatus), String.valueOf(queueId));
+				}
+
+			}
+
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(lm
-					.addMetaData("errMsg", "markDeleteAfterSendMsgSuccess error"+e.getMessage()),false, e);
-			
+			this.writeBusJobErrorLog(lm.addMetaData("errMsg",
+					"markDeleteAfterSendMsgSuccess error" + e.getMessage()),
+					false, e);
+
 		}
 	}
 	
