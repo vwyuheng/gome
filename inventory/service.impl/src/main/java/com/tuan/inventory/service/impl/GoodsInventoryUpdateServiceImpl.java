@@ -41,12 +41,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
-	/*@Resource
-	private InitCacheDomainRepository initCacheDomainRepository;*/
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//@Resource
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	@Resource
 	private SequenceUtil sequenceUtil;
 	@Resource
@@ -598,10 +594,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		wmsDataUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		wmsDataUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//wmsDataUpdateDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		wmsDataUpdateDomain.setSequenceUtil(sequenceUtil);
 		wmsDataUpdateDomain.setdLock(dLock);
-		//wmsDataUpdateDomain.setInitCacheDomainRepository(initCacheDomainRepository);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
