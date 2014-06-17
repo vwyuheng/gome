@@ -984,7 +984,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
-							//TODO 传递oldnum对象，扣减原库存+新库存
+							//
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
 							//更新库存基表
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
@@ -996,7 +996,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							if(!CollectionUtils.isEmpty(hash)) {
 								String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);
-								
 								
 								if(StringUtils.isEmpty(retAck)) {
 									throw new TuanRuntimeException(
