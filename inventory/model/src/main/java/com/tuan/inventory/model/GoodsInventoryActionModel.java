@@ -10,6 +10,7 @@ public class GoodsInventoryActionModel extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;  //日志主键
+	private Long goodsBaseId;  //库存基表ID
 	private Long goodsId;// 商品ID(FK)
 	private Long orderId;// 订单id
 	private Long userId ;//用户id
@@ -128,6 +129,12 @@ public class GoodsInventoryActionModel extends TuanBaseDO {
 	}
 	public void setActionType(String actionType) {
 		this.actionType = actionType;
+	}
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 	

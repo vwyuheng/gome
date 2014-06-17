@@ -143,6 +143,7 @@ public class ObjectUtils {
 			result.setLimitStorage(selModel.getLimitStorage());
 			result.setUserId(selModel.getUserId());
 			result.setWaterfloodVal(selModel.getWaterfloodVal());
+			result.setWmsGoodsId(selModel.getWmsGoodsId());
 		}
 		return result;
 	}
@@ -161,6 +162,8 @@ public class ObjectUtils {
 			result.setLimitStorage(gsDO.getLimitStorage());
 			result.setUserId(gsDO.getUserId());
 			result.setWaterfloodVal(gsDO.getWaterfloodVal());
+			
+			result.setWmsGoodsId(gsDO.getWmsGoodsId());
 		}
 		return result;
 	}
@@ -228,7 +231,6 @@ public class ObjectUtils {
 			result.setGoodsId(giDO.getGoodsId());
 			result.setLeftNumber(giDO.getLeftNumber());
 			result.setTotalNumber(giDO.getTotalNumber());
-			
 			result.setLimitStorage(giDO.getLimitStorage());
 			result.setUserId(giDO.getUserId());
 			result.setWaterfloodVal(giDO.getWaterfloodVal());
@@ -301,6 +303,7 @@ public class ObjectUtils {
 			result = new GoodsInventoryQueueModel();
 			result.setId(queueDO.getId());
 			result.setGoodsId(queueDO.getGoodsId());
+			result.setGoodsBaseId(queueDO.getGoodsBaseId());
 			result.setUserId(queueDO.getUserId());
 			result.setOrderId(queueDO.getOrderId());
 			result.setDeductNum(queueDO.getDeductNum());
@@ -337,6 +340,7 @@ public class ObjectUtils {
 		if(model!=null) {
 			result = new GoodsInventoryActionDO();
 			result.setId(model.getId());
+			result.setGoodsBaseId(model.getGoodsBaseId());
 			result.setGoodsId(model.getGoodsId());
 			result.setActionType(model.getActionType());
 			result.setBusinessType(model.getBusinessType());
