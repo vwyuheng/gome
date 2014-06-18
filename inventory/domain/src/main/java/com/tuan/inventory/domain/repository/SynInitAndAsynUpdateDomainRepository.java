@@ -23,8 +23,6 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 public class SynInitAndAsynUpdateDomainRepository {
 	@Resource
 	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
-	//@Resource
-	//private SequenceUtil sequenceUtil;
 	
 	public GoodsInventoryDO selectGoodsInventoryDO(long goodsId) {
 		return this.synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);

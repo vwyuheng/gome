@@ -383,37 +383,28 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							if(inventoryInfoDO!=null) {
 								//先检查mysql库中是否存在
-								GoodsInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(goodsId);
-								if(tmpDo==null) {
+								GoodsInventoryDO tmpGoodsDo = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(goodsId);
+								if(tmpGoodsDo==null) {
 									long baseId=inventoryInfoDO.getGoodsBaseId();
 									synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-									GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryBaseDO(inventoryInfoDO.getGoodsBaseId());
-									GoodsBaseInventoryDO baseInventoryDO=new GoodsBaseInventoryDO();
-									
-									baseInventoryDO.setGoodsBaseId(baseId);
-									baseInventoryDO.setBaseSaleCount(0);
-									baseInventoryDO.setBaseTotalCount(0);
-									synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-									synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
-								}
-								
-								
-								if(tmpGoodsDo==null) {
-									synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-									GoodsInventoryBaseDO tmpDo = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryBaseDO(inventoryInfoDO.getGoodsBaseId());
+									GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(baseId);
 									if(tmpDo==null) {  //常态化初上线时是1vs1的关系,故直接取
-										//插入基本信息
-										GoodsInventoryBaseDO baseDO = new GoodsInventoryBaseDO();
-										baseDO.setGoodsBaseId(inventoryInfoDO.getGoodsBaseId());
+										//初始化基本信息
+										GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(baseId);
+										/*baseDO.setGoodsBaseId(baseId);
 										baseDO.setBaseSaleCount(inventoryInfoDO.getGoodsSaleCount());
-										baseDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
-										synInitAndAsynUpdateDomainRepository.saveGoodsInventoryBase(baseDO);
+										baseDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());*/
+										if(baseDO!=null) {
+											synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
+										}
+										
 									}else {  //相同baseid 不同的商品id时
 										//计算库存总数
 										tmpDo.setBaseTotalCount(tmpDo.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
 										tmpDo.setBaseSaleCount(tmpDo.getBaseSaleCount()+inventoryInfoDO.getGoodsSaleCount());
-										synInitAndAsynUpdateDomainRepository.updateInventoryBase(tmpDo);
+										synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(tmpDo);
 									}
+									
 								}
 								
 							}
