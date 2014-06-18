@@ -52,12 +52,28 @@ public class SynInitAndAsynUpdateDomainRepository {
 
 		if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
 			for (GoodsInventoryDO goodsDO : wmsInventoryList) { // for
+				long goodsBaseId = goodsDO.getGoodsBaseId();
 				long goodsId = goodsDO.getGoodsId();
 				if (goodsId > 0) { // if选型
-					GoodsInventoryDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);
-					if(tmpDO==null) {
+					GoodsInventoryDO tmpGoodsDO = synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);
+					if(tmpGoodsDO==null) {
 						//
 						this.saveGoodsInventory(goodsDO);
+						if(goodsBaseId>0) {  //常态化刚上线时是1:1的,故可以直接取
+							GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDAO.selectGoodBaseBygoodsId(goodsBaseId);
+							if(tmpDo==null) {
+								//初始化基本信息
+								GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
+								if(baseDO!=null) {
+									synInitAndAsynUpdateDAO.insertGoodsBaseInventoryDO(baseDO);
+								}
+							}else {
+								//计算库存总数
+								tmpDo.setBaseTotalCount(tmpDo.getBaseTotalCount()+goodsDO.getTotalNumber());
+								tmpDo.setBaseSaleCount(tmpDo.getBaseSaleCount()+goodsDO.getGoodsSaleCount());
+								synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(tmpDo);
+							}
+						}
 					}
 					
 				}
