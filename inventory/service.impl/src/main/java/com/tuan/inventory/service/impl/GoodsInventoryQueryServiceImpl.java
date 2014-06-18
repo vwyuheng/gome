@@ -744,7 +744,6 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 				resultEnum = create.businessExecute();
 			} finally{
 				dLock.unlockManual(key);
@@ -780,7 +779,6 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						create.setLm(lm);
 						create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 						create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-						//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 						resultEnum = create.business4WmsExecute();
 					} finally{
 						dLock.unlockManual(key);
@@ -828,7 +826,6 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 										CallResult<Boolean> callResult  = null;
 										
 										try {
-											//synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(sourceBaseDO);
 											callResult = synInitAndAysnMysqlService.saveGoodsBaseInventory(sourceBaseDO);
 											if(callResult==null) {
 												enumRes = InventoryQueryEnum.SYS_ERROR;
