@@ -265,8 +265,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		long startTime = System.currentTimeMillis();
 		try {
 			// 保存商品库存
-			//result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsUpate,wmsInventoryList, selWmsList);
-			// 消费对列的信息
 			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(goodsId,wmsUpate,wmsInventoryRadySaveList,selWmsList4GoodsTypeId);
 				PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
@@ -308,9 +306,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
 		try {
-		// 保存商品库存
-		//result = this.inventoryInitAndUpdateHandle.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
-			// 消费对列的信息
+		     // 保存商品库存
 			callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
 			PublicCodeEnum publicCodeEnum = callResult
 					.getPublicCodeEnum();
