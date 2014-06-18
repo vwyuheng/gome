@@ -107,7 +107,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()),false, e);
-			return CreateInventoryResultEnum.DB_ERROR;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 
 		return CreateInventoryResultEnum.SUCCESS;
@@ -179,8 +179,6 @@ public class InventoryCallbackDomain extends AbstractDomain {
 					}
 					if (queueDO != null) {
 						// 将队列标记删除
-						//this.goodsInventoryDomainRepository.markQueueStatus(key,
-						//	(upStatusNum));
 						
 						String member = this.goodsInventoryDomainRepository
 								.queryMember(key);
