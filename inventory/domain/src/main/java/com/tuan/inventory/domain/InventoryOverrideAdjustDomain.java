@@ -257,9 +257,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						lm.addMetaData("oadjustInventory","oadjustInventory start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO.toString());
 						writeSysUpdateLog(lm,true);
 						// 消费对列的信息
-						if(!StringUtils.isEmpty(param.getGoodsBaseId())&&StringUtils.isNumeric(param.getGoodsBaseId())){
-							goodsBaseId = Long.valueOf(param.getGoodsBaseId());
-						}
 						callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,pretotalnum,goodsSelectionIds,inventoryDO);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
@@ -568,8 +565,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
-				//create.setSynInitAndAsynUpdateDomainRepository(this.synInitAndAsynUpdateDomainRepository);
+				
 				resultEnum = create.businessExecute();
 			}finally{
 				dLock.unlockManual(key);
