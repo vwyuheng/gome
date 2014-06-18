@@ -13,6 +13,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
@@ -37,6 +38,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	private BaseDAOService  baseDAOService;
 	@Resource
 	private NotifyServerSendMessage notifyServerSendMessage;
+	@Resource
+	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
 	
 	
 	public void sendNotifyServerMessage(JSONObject jsonObj) {
@@ -63,9 +66,27 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public String saveBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO inventoryInfoDO:goodsIds) {
-				//inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
-				//inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
-				String result = this.baseDAOService.saveInventory(inventoryInfoDO.getGoodsId(), inventoryInfoDO);
+				long goodsId = inventoryInfoDO.getGoodsId();
+				long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+				String result = this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
+				if(StringUtils.isNotEmpty(result)&&result.equalsIgnoreCase("OK")) {
+					if(goodsBaseId>0) {  //常态化刚上线时是1:1的,故可以直接取
+						GoodsBaseInventoryDO tmpDo = baseDAOService.queryGoodsBaseById(goodsBaseId);
+						if(tmpDo==null) {
+							//初始化基本信息
+							GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
+							if(baseDO!=null) {
+								result =	baseDAOService.saveGoodsBaseInventory(goodsBaseId, baseDO);
+							}
+						}else {
+							//计算库存总数
+							tmpDo.setBaseTotalCount(tmpDo.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
+							tmpDo.setBaseSaleCount(tmpDo.getBaseSaleCount()+inventoryInfoDO.getGoodsSaleCount());
+							result =	baseDAOService.saveGoodsBaseInventory(goodsBaseId, tmpDo);
+						}
+					}
+				}
+				
 				if(StringUtils.isEmpty(result)) {
 					return null;
 				}else {
