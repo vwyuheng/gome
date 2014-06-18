@@ -29,8 +29,6 @@ public class InventoryInitDomain extends AbstractDomain{
 	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
-	//private InitCacheDomainRepository initCacheDomainRepository;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private GoodsInventoryDO inventoryInfoDO;
 	//根据商品id得到的物流商品信息

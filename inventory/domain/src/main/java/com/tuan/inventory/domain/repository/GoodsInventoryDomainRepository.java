@@ -13,7 +13,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
@@ -23,6 +22,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.support.BaseDAOService;
 import com.tuan.inventory.domain.support.enu.HashFieldEnum;
 import com.tuan.inventory.domain.support.util.DataUtil;
@@ -32,6 +32,7 @@ import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.result.CallResult;
 
 public class GoodsInventoryDomainRepository extends AbstractInventoryRepository {
 	@Resource
@@ -39,7 +40,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	@Resource
 	private NotifyServerSendMessage notifyServerSendMessage;
 	@Resource
-	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	
 	
 	public void sendNotifyServerMessage(JSONObject jsonObj) {
@@ -50,8 +51,6 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	}
 	//保存商品库存
 	public String saveGoodsInventory(Long goodsId, GoodsInventoryDO inventoryInfoDO) {
-		//inventoryInfoDO.setTotalNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getTotalNumber());
-		//inventoryInfoDO.setLeftNumber(inventoryInfoDO.getLimitStorage()==0?Integer.MAX_VALUE:inventoryInfoDO.getLeftNumber());
 		return this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 	}
 	
@@ -74,10 +73,15 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						GoodsBaseInventoryDO tmpDo = baseDAOService.queryGoodsBaseById(goodsBaseId);
 						if(tmpDo==null) {
 							//初始化基本信息
-							GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
-							if(baseDO!=null) {
-								result =	baseDAOService.saveGoodsBaseInventory(goodsBaseId, baseDO);
+							CallResult<GoodsBaseInventoryDO> callResult = this.synInitAndAysnMysqlService
+									.selectInventoryBase4Init(goodsBaseId);
+							if (callResult != null&&callResult.isSuccess()) {
+								GoodsBaseInventoryDO baseDO = 	callResult.getBusinessResult();
+								if(baseDO!=null) {
+									result =	baseDAOService.saveGoodsBaseInventory(goodsBaseId, baseDO);
+								}
 							}
+							
 						}else {
 							//计算库存总数
 							tmpDo.setBaseTotalCount(tmpDo.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
@@ -202,8 +206,6 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 					if(tmpSelDO==null) {  //不存在才创建
 						//将商品id set到选型中
 						srDO.setGoodsId(goodsId);
-						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 					boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 					if(!subRet) {
 						return false;
@@ -233,8 +235,6 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 					GoodsSuppliersDO tmpSuppDO = this.baseDAOService.querySuppliersInventoryById(sDO.getSuppliersId());
 					if(tmpSuppDO==null) { //不存在才创建
 						sDO.setGoodsId(goodsId);
-						//sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
-						//sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
 						boolean retAck = this.baseDAOService.saveGoodsSuppliersInventory(goodsId, sDO);
 						if(!retAck) {
 							return false;
