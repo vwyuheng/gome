@@ -3,7 +3,7 @@
 	<appender name="DEFAULT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/default/common-default.log</file>     
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
-      		<fileNamePattern>${loggingRoot}/default/ommon-default.log.%d{yyyyMMdd}</fileNamePattern> 
+      		<fileNamePattern>${loggingRoot}/default/common-default.log.%d{yyyyMMdd}</fileNamePattern> 
       		<maxHistory>30</maxHistory>  
     	</rollingPolicy> 	                                                                                         
 		<encoder charset="UTF-8">
