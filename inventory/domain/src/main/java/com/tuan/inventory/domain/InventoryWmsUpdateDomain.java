@@ -34,7 +34,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	private WmsInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryWMSDO wmsDO;
@@ -44,7 +43,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	//缓存选型的id
 	private List<Long> selIds;
 	private String wmsGoodsId;  //物流商品的一种编码
-	//private Long goodsId;
 	private List<GoodsSelectionModel> selectionList;
 	private boolean isEnough;
 	private boolean isSelectionEnough = true;
@@ -86,7 +84,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
 							.querySelectionRelationById(selectionId);
 					if (selectionDO != null
-							/*&& selectionDO.getLimitStorage() == 1*/) { //为了计算销量 不管是否限制库存的都要扣减
+							&& selectionDO.getLimitStorage() == 1) { //为了计算销量 不管是否限制库存的都要扣减
 						// 扣减库存并返回扣减标识,计算库存并
 						if ((selectionDO.getLeftNumber() + model.getNum()) <= 0) {
 							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
@@ -111,9 +109,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 			}// for
 
-		} else {// if selection
-			//isSelectionEnough = false;
-		}
+		} 
 		} catch (Exception e) {
 			isSelectionEnough = false;
 			this.writeBusUpdateErrorLog(
@@ -153,7 +149,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		//赋值
 		this.wmsGoodsDeductNum = deductNum;
 		// 扣减库存并返回扣减标识,计算库存并
-		if (((orileftnum+deductNum) >= 0)||(oritotalnum+deductNum>=0)) {
+		if (oritotalnum+deductNum>=0) {
 			this.isEnough = true;
 			
 		}
@@ -161,7 +157,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 	private boolean verifyInventory() {
 		boolean ret = true;
-		//if(resultACK) {
 		if(!CollectionUtils.isEmpty(resultACK)) {
 			for(long result:resultACK) {
 				if(result<0) {  //如果结果中存在小于0的则返回false
@@ -238,7 +233,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						this.wmsDO.setTotalNumber(this.oritotalnum
 								+ wmsGoodsDeductNum);
 					}
-					if ((wmsDO != null&&wmsDO.getLeftNumber() < 0) || (wmsDO != null&&wmsDO.getTotalNumber() < 0)) {
+					if (wmsDO != null&&wmsDO.getTotalNumber() < 0) {
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 					}
 
@@ -258,9 +253,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					writeSysUpdateLog(lm,true);
 					return handlerResultEnum;
 				}
-				/*if (!handlerResult) {
-					return CreateInventoryResultEnum.FAIL_ADJUST_INVENTORY;
-				}*/
+				
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory redis,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("wmsGoodsDeductNum", wmsGoodsDeductNum).addMetaData("goodsList", goodsList);
 				writeSysUpdateLog(lm,true);
 				//redis
@@ -361,7 +354,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					//create.setSelIds(selIds);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-					//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 					resultEnum = create.business4WmsExecute();
 				} finally{
 					dLock.unlockManual(key);
@@ -376,7 +368,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		public CreateInventoryResultEnum synUpdateMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult>  selectionParam) {
 			InventoryInitDomain create = new InventoryInitDomain();
 			//注入相关Repository
-			//create.setInventoryInitAndUpdateHandle(this.inventoryInitAndUpdateHandle);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			return create.updateWmsMysqlInventory(wmsDO, wmsInventoryList,selectionParam);
 		}
@@ -487,11 +478,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
