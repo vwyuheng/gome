@@ -70,8 +70,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 				String result = this.baseDAOService.saveInventory(goodsId, inventoryInfoDO);
 				if(StringUtils.isNotEmpty(result)&&result.equalsIgnoreCase("OK")) {
 					if(goodsBaseId>0) {  //常态化刚上线时是1:1的,故可以直接取
-						GoodsBaseInventoryDO tmpDo = baseDAOService.queryGoodsBaseById(goodsBaseId);
-						if(tmpDo==null) {
+						//GoodsBaseInventoryDO tmpDo = baseDAOService.queryGoodsBaseById(goodsBaseId);
+						//if(tmpDo==null) {
 							//初始化基本信息
 							CallResult<GoodsBaseInventoryDO> callResult = this.synInitAndAysnMysqlService
 									.selectInventoryBase4Init(goodsBaseId);
@@ -82,12 +82,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 								}
 							}
 							
-						}else {
+						//}else {
 							//计算库存总数
-							tmpDo.setBaseTotalCount(tmpDo.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
-							tmpDo.setBaseSaleCount(tmpDo.getBaseSaleCount()+inventoryInfoDO.getGoodsSaleCount());
-							result =	baseDAOService.saveGoodsBaseInventory(goodsBaseId, tmpDo);
-						}
+							//tmpDo.setBaseTotalCount(tmpDo.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
+							//tmpDo.setBaseSaleCount(tmpDo.getBaseSaleCount()+inventoryInfoDO.getGoodsSaleCount());
+							//result =	baseDAOService.saveGoodsBaseInventory(goodsBaseId, tmpDo);
+						//}
 					}
 				}
 				
