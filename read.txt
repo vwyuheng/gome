@@ -30,3 +30,6 @@ mvn clean -DAPP_ENV=prod
 mvn install -DAPP_ENV=prod -Dmaven.test.skip=true
 mvn install -DAPP_ENV=test -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.dev_test
 
+
+mvn  clean install -DAPP_ENV=idc_product -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.idc_product
+
