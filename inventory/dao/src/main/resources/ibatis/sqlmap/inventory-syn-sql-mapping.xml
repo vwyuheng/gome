@@ -80,8 +80,8 @@
 	  <!-- 商品基本信息-->	
 	<resultMap id="GoodsBaseResult" class="com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO">
 	    <result column="goods_base_id" property="goodsBaseId" jdbcType="BIGINT" />
-	    <result column="base_sale_count" property="baseSaleCount" jdbcType="VARCHAR" />  
-	    <result column="base_total_count" property="baseTotalCount" jdbcType="VARCHAR" />    
+	    <result column="base_sale_count" property="baseSaleCount" jdbcType="INTEGER" />  
+	    <result column="base_total_count" property="baseTotalCount" jdbcType="INTEGER" />    
 	 </resultMap>
 	 
 	 <!-- 根据物流编码获取商品物流库存信息  -->	
