@@ -65,6 +65,7 @@
 	  <!-- 记录库存日志流水信息-->	
 	<resultMap id="GoodsInventoryActionResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO">
 	    <result column="id" property="id" jdbcType="BIGINT"/>
+	    <result column="goods_base_id" property="goodsBaseId" jdbcType="BIGINT" />
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
 	    <result column="order_id" property="orderId" jdbcType="BIGINT" />
 	    <result column="user_id" property="userId" jdbcType="BIGINT" />
@@ -490,6 +491,7 @@
   	<insert id="insertInventoryQueue" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO" >
     insert into jeehe_inventory_log 
     (id, 
+    goods_base_id,
     goods_id, 
     order_id, 
     user_id, 
@@ -504,6 +506,7 @@
     client_ip,
     remark)
     values (#id:BIGINT#, 
+            #goodsBaseId:BIGINT#,
             #goodsId:BIGINT#,
             #orderId:BIGINT#,
             #userId:BIGINT#,
