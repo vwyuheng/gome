@@ -38,11 +38,13 @@
 	 	
    <!-- 商品主体库存信息-->	
 	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
+	    <result column="goods_base_id" property="goodsBaseId" jdbcType="BIGINT" />
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
 	    <result column="goods_wms_id" property="wmsId" jdbcType="BIGINT" />
 	    <result column="good_selection_ids" property="goodsSelectionIds" jdbcType="VARCHAR" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
+	    <result column="goods_sale_count" property="goodsSaleCount" jdbcType="INTEGER" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />
 	    <result column="add_goods_selection" property="isAddGoodsSelection" jdbcType="INTEGER" />
 	    <result column="direct_consumption" property="isDirectConsumption" jdbcType="INTEGER" />
