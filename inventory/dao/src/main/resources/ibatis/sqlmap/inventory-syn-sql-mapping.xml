@@ -138,12 +138,14 @@
 
 	SELECT
 	ga.goods_id,
+	ga.goods_base_id,
 	ga.goods_wms_id,
 	ga.good_selection_ids,
 	ga.add_goods_selection,
 	ga.direct_consumption,
 	ga.total_num,
 	ga.left_num,
+	ga.goods_sale_count,
 	ga.limit_storage,
 	ga.attach_sale
 	FROM
