@@ -67,7 +67,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCreatorDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryCreatorDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
-		//inventoryCreatorDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
@@ -138,7 +137,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryWmsCreaterDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryWmsCreaterDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//inventoryWmsCreaterDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryWmsCreaterDomain.setSequenceUtil(sequenceUtil);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
@@ -207,7 +205,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//inventoryUpdateDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
 		inventoryUpdateDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -334,7 +331,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//inventoryAdjustDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
 		inventoryAdjustDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -400,7 +396,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		waterfloodAdjustmentDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		waterfloodAdjustmentDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//waterfloodAdjustmentDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		waterfloodAdjustmentDomain.setSequenceUtil(sequenceUtil);
 		waterfloodAdjustmentDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -464,7 +459,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		adjustWmsDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		adjustWmsDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//adjustWmsDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		adjustWmsDomain.setSequenceUtil(sequenceUtil);
 		adjustWmsDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -529,7 +523,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		//注入仓储对象
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//inventoryAdjustDomain.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
 		inventoryAdjustDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
