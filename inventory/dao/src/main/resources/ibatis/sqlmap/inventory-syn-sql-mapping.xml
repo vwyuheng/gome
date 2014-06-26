@@ -456,6 +456,7 @@
     insert into jeehe_inventory_attribute 
     (
     goods_id, 
+    goods_base_id,
     goods_wms_id,
     good_selection_ids,
     total_num, 
@@ -468,6 +469,7 @@
    )
     values (
             #goodsId:BIGINT#,
+            #goodsBaseId:BIGINT#,
             #wmsId:BIGINT#,
             #goodsSelectionIds:VARCHAR#,
             #totalNumber:INTEGER#,
