@@ -229,19 +229,16 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							GoodsInventoryDO isGoodsBaseIdIsnull = null;
 							if(goodsBaseId==null&&goodsId!=0) {
 								// 初始化商品库存信息
-								CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = synInitAndAysnMysqlService
-										.selectGoodsInventoryByGoodsId(goodsId);
-								if (callGoodsInventoryDOResult!= null&&callGoodsInventoryDOResult.isSuccess()) {
-									isGoodsBaseIdIsnull = 	callGoodsInventoryDOResult.getBusinessResult();
-								}
+							isGoodsBaseIdIsnull = initCacheDomainRepository.getInventoryInfoByGoodsId(goodsId);
+							if(isGoodsBaseIdIsnull!=null) {
+								goodsBaseId = isGoodsBaseIdIsnull.getGoodsBaseId();
+								inventoryInfoDO.setGoodsBaseId(goodsBaseId);
+							   }
 							}
 							GoodsBaseInventoryDO baseInventoryDO = null;
 							GoodsBaseInventoryDO upBaseDO = null;
 							if(inventoryInfoDO!=null) {
-								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(isGoodsBaseIdIsnull!=null?isGoodsBaseIdIsnull:inventoryInfoDO);
-								if(goodsBaseId==null&&isGoodsBaseIdIsnull!=null) {
-									goodsBaseId = isGoodsBaseIdIsnull.getGoodsBaseId();
-								}
+								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 								baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 								if(baseInventoryDO == null){
 									//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
