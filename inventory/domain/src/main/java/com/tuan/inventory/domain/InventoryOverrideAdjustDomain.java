@@ -543,8 +543,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		@SuppressWarnings("unchecked")
 		public CreateInventoryResultEnum initCheck() {
 			this.fillParam();
-			//this.goodsBaseId =  StringUtils.isEmpty(goodsBaseId2str)?0:Long.valueOf(goodsBaseId2str);
-			if(StringUtils.isEmpty(goodsBaseId2str)) {  //为了兼容参数goodsbaseid不传的情况
+			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
+			if(StringUtils.isEmpty(goodsBaseId2str)&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
 				GoodsInventoryDO temp = this.goodsInventoryDomainRepository
 						.queryGoodsInventory(goodsId);
 				if(temp!=null) {
@@ -553,7 +553,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			}else {
 				this.goodsBaseId = Long.valueOf(goodsBaseId2str);
 			}
-			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
+			
 			//初始化加分布式锁
 			lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
 			writeBusInitLog(lm,false);
