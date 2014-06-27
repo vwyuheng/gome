@@ -256,7 +256,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			return null;
 		}
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
-		
+		notifyParam.setGoodsBaseId(goodsBaseId);
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
 		notifyParam.setGoodsId(goodsInventoryModel.getGoodsId());
 		notifyParam.setLimitStorage(goodsInventoryModel.getLimitStorage());
@@ -275,7 +275,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		}
 		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 		if(baseInventoryDO!=null){
-			notifyParam.setGoodsBaseId(goodsBaseId);
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 			baseInventoryDO.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 		}

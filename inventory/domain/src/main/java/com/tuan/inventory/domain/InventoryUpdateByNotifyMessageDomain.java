@@ -62,11 +62,8 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 						goodUpdateNumberDomainRepository.updateSelectionRelationNumber(goodsUpdateNumberDO);
 						String wmsGoodsId=selectionNotifyMessageParam.getWmsGoodsId();
 						if(!StringUtils.isEmpty(wmsGoodsId)){
-							Long wmsId=Long.parseLong(wmsGoodsId);
-							if(wmsId>0){
-							goodsUpdateNumberDO.setId(wmsId);
+							goodsUpdateNumberDO.setWmsGoodsId(wmsGoodsId);
 							goodUpdateNumberDomainRepository.updataGoodsWmsNumByID(goodsUpdateNumberDO);
-							}
 						}
 					}
 					log.info(lm.setMethod(method).addMetaData("updatetraget", "SelectionRelation")

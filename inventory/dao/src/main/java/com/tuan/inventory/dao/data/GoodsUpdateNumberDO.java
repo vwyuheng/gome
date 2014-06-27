@@ -5,6 +5,7 @@ public class GoodsUpdateNumberDO {
    private int leftNum;
    private int goodsSaleCount;
    private Long id;
+   private String wmsGoodsId;
 public int getTotalNum() {
 	return totalNum;
 }
@@ -28,6 +29,12 @@ public int getGoodsSaleCount() {
 }
 public void setGoodsSaleCount(int goodsSaleCount) {
 	this.goodsSaleCount = goodsSaleCount;
+}
+public String getWmsGoodsId() {
+	return wmsGoodsId;
+}
+public void setWmsGoodsId(String wmsGoodsId) {
+	this.wmsGoodsId = wmsGoodsId;
 }
 
 
