@@ -506,8 +506,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	// 初始化库存
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
-		this.goodsId = Long.valueOf(param.getGoodsId());
-		this.goodsBaseId = Long.valueOf(StringUtils.isEmpty(param.getGoodsBaseId())?"0":param.getGoodsBaseId());
+		this.goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+		if(StringUtils.isEmpty(param.getGoodsBaseId())) {  //为了兼容参数goodsbaseid不传的情况
+			GoodsInventoryDO temp = this.goodsInventoryDomainRepository
+					.queryGoodsInventory(goodsId);
+			if(temp!=null) {
+				this.goodsBaseId = temp.getGoodsBaseId();
+			}
+		}else {
+			this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+		}
+		
 		// 初始化加分布式锁
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
@@ -529,7 +538,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-			//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 			resultEnum = create.businessExecute();
 		} finally {
 			dLock.unlockManual(key);
