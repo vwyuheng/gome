@@ -227,13 +227,15 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							//操作库存基表
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
 							GoodsInventoryDO isGoodsBaseIdIsnull = null;
-							if(goodsBaseId==null&&goodsId!=0) {
+							if (goodsBaseId == null && goodsId != 0) {
 								// 初始化商品库存信息
-							isGoodsBaseIdIsnull = initCacheDomainRepository.getInventoryInfoByGoodsId(goodsId);
-							if(isGoodsBaseIdIsnull!=null) {
-								goodsBaseId = isGoodsBaseIdIsnull.getGoodsBaseId();
-								inventoryInfoDO.setGoodsBaseId(goodsBaseId);
-							   }
+								isGoodsBaseIdIsnull = initCacheDomainRepository
+										.getInventoryInfoByGoodsId(goodsId);
+								if (isGoodsBaseIdIsnull != null) {
+									goodsBaseId = isGoodsBaseIdIsnull
+											.getGoodsBaseId();
+									inventoryInfoDO.setGoodsBaseId(goodsBaseId);
+								}
 							}
 							GoodsBaseInventoryDO baseInventoryDO = null;
 							GoodsBaseInventoryDO upBaseDO = null;
