@@ -965,7 +965,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	}
 	@Override
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,final Map<String, String> hash,
-			final GoodsInventoryDO inventoryInfoDO,final GoodsInventoryDO oldInventoryInfoDO) throws Exception {
+			final GoodsInventoryDO inventoryInfoDO,final int pretotalnum) throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
 				new TuanServiceCallback() {
@@ -977,7 +977,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
 							GoodsBaseInventoryDO baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 							if(baseInventoryDO!=null){
-								int num=baseInventoryDO.getBaseTotalCount()-oldInventoryInfoDO.getTotalNumber()+inventoryInfoDO.getTotalNumber();
+								int num=baseInventoryDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber();
 								baseInventoryDO.setBaseTotalCount(num);
 								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
 							}

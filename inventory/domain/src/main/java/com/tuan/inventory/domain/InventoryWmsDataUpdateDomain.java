@@ -11,7 +11,6 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
@@ -54,7 +53,8 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	private String wmsGoodsId;  //物流编码
 	private GoodsInventoryWMSDO wmsDO;
 	private GoodsInventoryDO inventoryInfoDO;
-	private GoodsInventoryDO oldinventoryInfoDO;
+	// 调整前总库存
+	private int pretotalnum = 0;
 	private GoodsSuppliersDO suppliersDO;
 	private Long goodsId;
 	private Long goodsBaseId;
@@ -101,8 +101,8 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		//加载商品库存信息
 		if(goodsId!=0) {
 				this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				oldinventoryInfoDO = new GoodsInventoryDO();
-				BeanUtils.copyProperties(oldinventoryInfoDO, inventoryInfoDO);
+				pretotalnum  = inventoryInfoDO.getTotalNumber();
+				
 		}
 			
 		
@@ -387,7 +387,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 					inventoryInfoDO.setWmsId(wmsDO.getId());
 				}
 				
-				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO,oldinventoryInfoDO);
+				CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,hash,inventoryInfoDO,pretotalnum);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
@@ -399,7 +399,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				} else {
 					message = "updateAndInsertWmsData>updateGoodsInventory_success[save success]goodsId:" + goodsId;
 				}
-				lm.setMethod("InventoryWmsDataUpdateDomain.updateAndInsertWmsData").addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId).addMetaData("hash", hash).addMetaData("oldinventoryInfoDO", oldinventoryInfoDO).addMetaData("inventoryInfoDO", inventoryInfoDO).addMetaData("message", message);
+				lm.setMethod("InventoryWmsDataUpdateDomain.updateAndInsertWmsData").addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId).addMetaData("hash", hash).addMetaData("pretotalnum", pretotalnum).addMetaData("inventoryInfoDO", inventoryInfoDO).addMetaData("message", message);
 				writeSysDeductLog(lm,true);
 			}	
 
