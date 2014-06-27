@@ -200,6 +200,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(this.userId);
+		notifyParam.setGoodsBaseId(goodsBaseId);
 		notifyParam.setGoodsId(goodsId);
 		notifyParam.setLimitStorage(param.getLimitStorage());
 		notifyParam.setWaterfloodVal(param.getWaterfloodVal());
@@ -211,7 +212,6 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		notifyParam.setSales(String.valueOf(sales));
 		//库存基本信息
 		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-		notifyParam.setGoodsBaseId(goodsBaseId);
 		if(baseInventoryDO!=null) {
 			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
@@ -369,7 +369,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
 		try {
 			inventoryInfoDO.setGoodsId(goodsId);
-		    inventoryInfoDO.setGoodsBaseId(param.getGoodsBaseId());
+		    inventoryInfoDO.setGoodsBaseId(goodsBaseId);
 			inventoryInfoDO.setLeftNumber(param.getLeftNumber());
 			inventoryInfoDO.setTotalNumber(param.getTotalNumber());
 			inventoryInfoDO.setLimitStorage(param.getLimitStorage());

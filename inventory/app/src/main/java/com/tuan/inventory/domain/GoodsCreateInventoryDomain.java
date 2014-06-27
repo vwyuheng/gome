@@ -70,14 +70,14 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	@SuppressWarnings("unchecked")
 	public GoodsCreateInventoryDomain(UpdateRequestPacket packet,CreaterInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {
-			this.tokenid = reqparam.getTokenid();
-			this.userId = reqparam.getUserId();
-			this.goodsId = reqparam.getGoodsId();
+			this.tokenid = JsonStrVerificationUtils.validateStr(reqparam.getTokenid());
+			this.userId = JsonStrVerificationUtils.validateStr(reqparam.getUserId());
+			this.goodsId = JsonStrVerificationUtils.validateStr(reqparam.getGoodsId());
 			this.totalNumber = reqparam.getTotalNumber();
 			this.leftNumber = reqparam.getLeftNumber();
 			this.limitStorage = reqparam.getLimitStorage();
 			this.waterfloodVal = reqparam.getWaterfloodVal();
-			this.goodsBaseId = reqparam.getGoodsBaseId();
+			this.goodsBaseId = JsonStrVerificationUtils.validateStr(reqparam.getGoodsBaseId());
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
 			String jsonSuppliersResult =  reqparam.getGoodsSuppliers();
 			
@@ -89,7 +89,6 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 			}
 		}
 		this.packet = packet;
-		//this.reqparam = reqparam;
 		this.lm = lm;
 		this.messageRoot = messageRoot;
 		makeParameterMap(this.parameterMap);
@@ -309,7 +308,6 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 
 	@Override
 	public ResultEnum doBusiness() {
-		logerror.info(lm.addMetaData("start", "start"));
 		InventoryCallResult resp = null;
 		try {
 			//调用
