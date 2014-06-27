@@ -112,10 +112,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		try {
-			this.goodsId = Long.valueOf(param.getGoodsId());
-			if(param.getGoodsBaseId()!=null) {
-				this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
-			}
+			this.goodsId = Long.valueOf(param.getGoodsId()!=null?param.getGoodsId():"0");
+			this.goodsBaseId = param.getGoodsBaseId();
 			this.tokenid = param.getTokenid();
 			
 			 //幂等控制，已处理成功
