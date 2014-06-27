@@ -101,7 +101,8 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		//加载商品库存信息
 		if(goodsId!=0) {
 				this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				pretotalnum  = inventoryInfoDO.getTotalNumber();
+				if(inventoryInfoDO!=null)
+				  pretotalnum  = inventoryInfoDO.getTotalNumber();
 				
 		}
 			
