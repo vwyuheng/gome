@@ -223,25 +223,25 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							GoodsBaseInventoryDO baseInventoryDO = null;
+							GoodsBaseInventoryDO upBaseDO = null;
 							if(inventoryInfoDO!=null) {
 								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 								//操作库存基表
-								long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
-								baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+								if(goodsBaseId!=null&&goodsBaseId!=0) {
+									baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								}
 								if(baseInventoryDO == null){
+									//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
 									baseInventoryDO =  synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
 									if(baseInventoryDO!=null) {
-										baseInventoryDO.setBaseTotalCount(baseInventoryDO.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
-									}else {
-										baseInventoryDO = new GoodsBaseInventoryDO();
-										baseInventoryDO.setGoodsBaseId(goodsBaseId);
-										baseInventoryDO.setBaseSaleCount(0);
-										baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());
+										synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
 									}
-									synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
+									
 								}else{
-									baseInventoryDO.setBaseTotalCount(baseInventoryDO.getBaseTotalCount()+inventoryInfoDO.getTotalNumber());
-									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
+									//计算库存总数:
+									upBaseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(upBaseDO);
 								}
 							}
 							// 保选型库存
@@ -253,45 +253,16 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);	
 							}
 							if(inventoryInfoDO!=null) {
-								//synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 								String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 										inventoryInfoDO);
 								//更新库存基表
-								String breAck = null;
-								List<Long> listAck = null;
-								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")){
-									long goodsBaseId=inventoryInfoDO.getGoodsBaseId();
-									//GoodsBaseInventoryDO baseInventoryDO = null;
-									//baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-									if(baseInventoryDO == null){
-										/*baseInventoryDO = new GoodsBaseInventoryDO();
-										baseInventoryDO.setGoodsBaseId(goodsBaseId);
-										baseInventoryDO.setBaseSaleCount(0);
-										baseInventoryDO.setBaseTotalCount(inventoryInfoDO.getTotalNumber());*/
-										breAck=goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
-										if(StringUtils.isEmpty(breAck)) {
-											throw new TuanRuntimeException(
-													QueueConstant.SERVICE_REDIS_FALIURE,
-													"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
-													new Exception());
-										}
-										if(!breAck.equalsIgnoreCase("ok")) {
-											throw new TuanRuntimeException(
-													QueueConstant.SERVICE_REDIS_FALIURE,
-													"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
-													new Exception());
-										}
-									}else{
-										int totalCount = inventoryInfoDO.getTotalNumber();
-										listAck=goodsInventoryDomainRepository.updateGoodsBaseInventory(goodsBaseId,0,totalCount);
-										if(!DataUtil.verifyInventory(listAck)) {
-											throw new TuanRuntimeException(
-													QueueConstant.SERVICE_REDIS_FALIURE,
-													"SynInitAndAysnMysqlServiceImpl.updateGoodsBaseInventory to redis error occured!",
-													new Exception());
-										}
-									}
+								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseInventoryDO!=null){
+									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), baseInventoryDO);
 								}
+								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&upBaseDO!=null){
+									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), upBaseDO);
+								}
+								
 								if(StringUtils.isEmpty(retAck)) {
 									throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
@@ -308,7 +279,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
 										goodsId, selectionInventoryList);
 								if(!selSuccess) {
@@ -322,7 +292,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							// 保存分店库存
 							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
-								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
 								boolean suppSuccess =	goodsInventoryDomainRepository.saveGoodsSuppliersInventory(
 										goodsId, suppliersInventoryList);
 								if(!suppSuccess) {
@@ -554,7 +523,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if(goodsDO!=null) {
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
 							Long goodsBaseId = goodsDO.getGoodsBaseId();
-							//更新base表销量:累加base表销量
+							//更新base表销量:累加base表销量:从redis中取最新的base数据同步到mysql表中去
 							GoodsBaseInventoryDO baseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 							if(baseDO!=null) {
 								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);

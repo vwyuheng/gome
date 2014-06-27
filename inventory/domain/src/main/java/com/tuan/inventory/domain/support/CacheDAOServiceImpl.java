@@ -604,11 +604,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 					.hgetAll(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
 							+ String.valueOf(goodsBaseId));
 			if (!CollectionUtils.isEmpty(objMap)) {
-				/*
-				 * return JsonUtils.convertStringToObject(
-				 * JsonUtils.convertObjectToString(objMap),
-				 * GoodsBaseInventoryDO.class);
-				 */
+				
 				return JSON.parseObject(JSON.toJSONString(objMap),
 						GoodsBaseInventoryDO.class);
 			}

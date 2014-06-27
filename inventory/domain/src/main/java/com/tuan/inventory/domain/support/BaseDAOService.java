@@ -137,7 +137,6 @@ public interface BaseDAOService {
 	
 	public String queryLastIndexGoodsInventoryAction ();
 	public Long deleteQueueMember(String key);
-	//public GoodsInventoryDO queryGoodsInventory(Long goodsId) 
 	
 	public String queryMember(String key);
 	public String setTag(String tag,int seconds, String tagValue);

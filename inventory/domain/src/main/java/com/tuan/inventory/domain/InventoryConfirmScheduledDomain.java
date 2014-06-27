@@ -174,7 +174,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//create.setInventoryInitAndUpdateHandle(this.inventoryInitAndUpdateHandle);
 		return create.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsInventoryList);
 	}
 	/**
