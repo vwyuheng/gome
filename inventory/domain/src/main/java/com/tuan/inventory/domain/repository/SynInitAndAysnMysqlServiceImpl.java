@@ -39,6 +39,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	@Resource
 	private InitCacheDomainRepository initCacheDomainRepository;
 	@Resource
+	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
+	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	
 	@Override
@@ -222,15 +224,25 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
+							//操作库存基表
+							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+							GoodsInventoryDO isGoodsBaseIdIsnull = null;
+							if(goodsBaseId==null&&goodsId!=0) {
+								// 初始化商品库存信息
+								CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = synInitAndAysnMysqlService
+										.selectGoodsInventoryByGoodsId(goodsId);
+								if (callGoodsInventoryDOResult!= null&&callGoodsInventoryDOResult.isSuccess()) {
+									isGoodsBaseIdIsnull = 	callGoodsInventoryDOResult.getBusinessResult();
+								}
+							}
 							GoodsBaseInventoryDO baseInventoryDO = null;
 							GoodsBaseInventoryDO upBaseDO = null;
 							if(inventoryInfoDO!=null) {
-								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
-								//操作库存基表
-								Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
-								if(goodsBaseId!=null&&goodsBaseId!=0) {
-									baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(isGoodsBaseIdIsnull!=null?isGoodsBaseIdIsnull:inventoryInfoDO);
+								if(goodsBaseId==null&&isGoodsBaseIdIsnull!=null) {
+									goodsBaseId = isGoodsBaseIdIsnull.getGoodsBaseId();
 								}
+								baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 								if(baseInventoryDO == null){
 									//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
 									baseInventoryDO =  synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
@@ -257,10 +269,10 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										inventoryInfoDO);
 								//更新库存基表
 								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseInventoryDO!=null){
-									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), baseInventoryDO);
+									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
 								}
 								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&upBaseDO!=null){
-									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), upBaseDO);
+									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, upBaseDO);
 								}
 								
 								if(StringUtils.isEmpty(retAck)) {
