@@ -818,8 +818,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(goodsBaseId>0) {
 								baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 								//更新base表调整后的库存总量
-								baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber());
-								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								if(baseDO!=null) {
+									baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber());
+									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								}
+								
 							}
 							
 							String retAck =	goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryInfoDO);
