@@ -170,9 +170,19 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
 			goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
 		} // if 
-		if (!StringUtils.isEmpty(param.getGoodsBaseId())) { // if1
-			goodsBaseId = Long.valueOf(StringUtils.isEmpty(param.getGoodsBaseId())?"0":param.getGoodsBaseId());
-		} // if 
+		if (StringUtils.isEmpty(param.getGoodsBaseId())&&goodsId!=null&&goodsId!=0) { // if1
+			GoodsInventoryDO temp = this.goodsInventoryDomainRepository
+					.queryGoodsInventory(goodsId);
+			if(temp!=null) {
+				goodsBaseId = temp.getGoodsBaseId();
+			}
+			
+		}else {
+			if(!StringUtils.isEmpty(param.getGoodsBaseId())) {
+				goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+			}
+			
+		}
 		if(!StringUtils.isEmpty(param.getGoodsTypeIds())) {
 			goodsTypeIds = param.getGoodsTypeIds();	
 		}
