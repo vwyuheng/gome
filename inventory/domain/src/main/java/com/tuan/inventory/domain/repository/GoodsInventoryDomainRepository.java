@@ -43,8 +43,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	
 	
-	public void sendNotifyServerMessage(JSONObject jsonObj) {
-		this.notifyServerSendMessage.sendNotifyServerMessage(jsonObj);
+	public void sendNotifyServerMessage(String sender,JSONObject jsonObj) {
+		this.notifyServerSendMessage.sendNotifyServerMessage(sender,jsonObj);
 	}
 	public Long clearWmsSelRelation(Long goodsId,  String member) {
 		return this.baseDAOService.clearWmsSelRelation(goodsId, member);

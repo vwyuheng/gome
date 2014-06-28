@@ -25,12 +25,12 @@ public class NotifyServerHandler {
 		this.exec = Executors.newFixedThreadPool(threadNum);
 	}
 
-	public void sendNotifyMessage(ProducerClientQueue client, JSONObject jsonObj) {
+	public void sendNotifyMessage(String sender,ProducerClientQueue client, JSONObject jsonObj) {
 		NotifyTask task = new NotifyTask();
 		task.setClient(client);
 		task.setMessage(jsonObj.toString());
 		try {
-			log.warn("Waiting:" + jsonObj.toString());
+			log.warn(sender+":" + jsonObj.toString());
 			exec.submit(task);
 		} catch (Exception e) {
 			log.error("Send NotifyMsg Error by NotifyServerHandler [" + jsonObj.toString() + "]", e);

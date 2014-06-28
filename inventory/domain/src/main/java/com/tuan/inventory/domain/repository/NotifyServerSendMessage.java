@@ -5,5 +5,5 @@ import net.sf.json.JSONObject;
 
 public interface NotifyServerSendMessage {
 
-	public void sendNotifyServerMessage(JSONObject jsonObj); 
+	public void sendNotifyServerMessage(String sender,JSONObject jsonObj); 
 }

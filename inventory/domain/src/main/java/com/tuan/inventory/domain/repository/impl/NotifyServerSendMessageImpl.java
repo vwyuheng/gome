@@ -17,11 +17,11 @@ public class NotifyServerSendMessageImpl implements NotifyServerSendMessage {
 	@Resource
 	ProducerClientQueue notifyClient;
 	@Override
-	public void sendNotifyServerMessage(JSONObject jsonObj) {
+	public void sendNotifyServerMessage(String sender,JSONObject jsonObj) {
 		//构建mq对象
 		NotifyServerHandler handler = NotifyServerHandler.create();
 		
-		handler.sendNotifyMessage(notifyClient, jsonObj);
+		handler.sendNotifyMessage(sender,notifyClient, jsonObj);
 
 	}
 

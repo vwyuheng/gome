@@ -18,6 +18,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
+import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -218,7 +219,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			this.goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject
+			this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryLockedScheduledDomain.toString(),JSONObject
 					.fromObject(notifyParam));
 			/*
 			 * Type orderParamType = new

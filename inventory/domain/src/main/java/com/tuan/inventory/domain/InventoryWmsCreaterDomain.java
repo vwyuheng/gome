@@ -13,6 +13,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
@@ -31,7 +32,6 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 	private WmsInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	//private InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryWMSDO wmsDO;
@@ -125,7 +125,6 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		//create.setInventoryInitAndUpdateHandle(inventoryInitAndUpdateHandle);
 		return create.createWmsInventory(wmsDO, selectionRelation);
 	}
 	
@@ -227,10 +226,8 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 					lm.setMethod("fillWmsSelection").addMetaData(
 							"errMsg", e.getMessage()),false, e);
 			this.selectionRelation = null;
-			//return CreateInventoryResultEnum.RUNTIME_EXCEPTION;
 			
 		}
-		//return CreateInventoryResultEnum.SUCCESS;
 	}
 
 	
@@ -260,7 +257,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 		public void sendNotify() {
 			try {
 				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-				goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject
+				goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsCreaterDomain.toString(),JSONObject
 						.fromObject(notifyParam));
 				/*
 				 * Type orderParamType = new
@@ -304,10 +301,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
 	}
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
+	
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
 		this.sequenceUtil = sequenceUtil;
 	}

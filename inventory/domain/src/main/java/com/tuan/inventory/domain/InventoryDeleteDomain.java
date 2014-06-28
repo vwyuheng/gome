@@ -118,7 +118,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject
+			goodsInventoryDomainRepository.sendNotifyServerMessage("",JSONObject
 					.fromObject(notifyParam));
 			/*
 			 * Type orderParamType = new

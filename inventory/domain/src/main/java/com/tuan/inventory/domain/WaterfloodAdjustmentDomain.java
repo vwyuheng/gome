@@ -20,6 +20,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
@@ -301,7 +302,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		public void sendNotify(){
 			try {
 				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-				goodsInventoryDomainRepository.sendNotifyServerMessage(JSONObject.fromObject(notifyParam));
+				goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.WaterfloodAdjustmentDomain.toString(),JSONObject.fromObject(notifyParam));
 				/*Type orderParamType = new TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType();
 				String paramJson = new Gson().toJson(notifyParam, orderParamType);
 				extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
