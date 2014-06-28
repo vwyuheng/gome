@@ -276,7 +276,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 		if(baseInventoryDO!=null){
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
-			baseInventoryDO.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 		}
 		
 		return notifyParam;
