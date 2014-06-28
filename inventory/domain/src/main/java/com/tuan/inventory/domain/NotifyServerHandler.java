@@ -30,7 +30,7 @@ public class NotifyServerHandler {
 		task.setClient(client);
 		task.setMessage(jsonObj.toString());
 		try {
-			log.warn(sender+":" + jsonObj.toString());
+			log.warn("from "+sender+":" + jsonObj.toString());
 			exec.submit(task);
 		} catch (Exception e) {
 			log.error("Send NotifyMsg Error by NotifyServerHandler [" + jsonObj.toString() + "]", e);
