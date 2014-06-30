@@ -33,5 +33,9 @@ mvn install -DAPP_ENV=test -Dmaven.test.skip=true -Dprofile.file.name=/profile/e
 
 mvn install -DAPP_ENV=special -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.special
 
+mvn install -DAPP_ENV=normal  -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.normal
+
+mvn install -DAPP_ENV=urgency  -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.urgency 
+
 mvn  clean install -DAPP_ENV=idc_product -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.idc_product
 
