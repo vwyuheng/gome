@@ -28,6 +28,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.support.util.DataUtil;
+import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
@@ -58,7 +59,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 							}
 							if(wmsDO!=null) {
-								//synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsDO);
 								String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsDO);
 								if(StringUtils.isEmpty(retAck)) {
 									throw new TuanRuntimeException(
@@ -74,7 +74,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								}
 							}
 							if (!CollectionUtils.isEmpty(selectionList)) { // if1
-								//synInitAndAsynUpdateDomainRepository.saveBatchGoodsWms(selectionList);
 								String retselAck = goodsInventoryDomainRepository.saveGoodsSelectionWmsInventory(selectionList);
 								if(StringUtils.isEmpty(retselAck)) {
 									throw new TuanRuntimeException(
@@ -888,6 +887,21 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											
 										}
 										
+									}else {
+										//查询商品所属的选型
+										List<GoodsSelectionModel> selResult = goodsInventoryDomainRepository
+												.queryGoodsSelectionListByGoodsId(Long.valueOf(goodsId));
+										//检查商品所属选型商品
+										if(!CollectionUtils.isEmpty(selResult)) {  //若商品存在选型，则为选型商品，
+											for(GoodsSelectionModel selModel:selResult) {
+												if(selModel.getId()!=null&&selModel.getId()>0) {
+													//Long ack =
+													goodsInventoryDomainRepository.clearWmsSelRelation(goodsId,
+															String.valueOf(selModel.getId()));
+												}
+												
+											}
+										}
 									}
 								
 							}
