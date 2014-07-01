@@ -32,7 +32,8 @@
 		<property name="customerGroupName" value="inventoryupdate"/>
 		<property name="consumerReceiverMap">
 			<map>
-				<entry key="cms.stock.update.normal" value-ref="consumerReceiver" />
+				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
+				<entry key="cms.stock.update" value-ref="consumerReceiver" />
 				<entry key="inventorycenter" value-ref="inventoryUpdateConsumerReceiver" />
 			</map>
 		</property>
