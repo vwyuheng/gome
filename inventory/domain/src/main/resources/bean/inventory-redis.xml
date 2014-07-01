@@ -17,14 +17,14 @@
 			<set>
 				<!-- <value>10.8.35.1:26379</value> -->
 				<!-- 线上redis环境 -->
-				<value>redis212.55tuan.me:26379</value>
+				<!-- <value>redis212.55tuan.me:26379</value>
 				<value>redis213.55tuan.me:26379</value>
 				<value>redis74.55tuan.me:26379</value>
-				<value>redis75.55tuan.me:26379</value>
+				<value>redis75.55tuan.me:26379</value> -->
 				<!-- 特殊测试redis环境 -->
 				<!-- <value>10.9.210.29:26379</value> -->
 				<!-- 常规测试redis环境 -->
-				<!-- <value>redis.55tuan.me:26379</value> -->
+				<value>redis.55tuan.me:26379</value>
 			</set>
 		</constructor-arg>
 		<constructor-arg index="2" ref="jedisPoolConfig" />
