@@ -538,7 +538,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							GoodsBaseInventoryDO baseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 							if(baseDO!=null) {
 								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
-							}
+							}/*else {
+								// 初始化商品库存信息
+								baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
+							}*/
 						}
 						if (!CollectionUtils.isEmpty(selectionInventoryList)) { // if1
 							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionInventoryList);
@@ -703,9 +707,17 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
 					if(goodsBaseId>0) {
 						GoodsBaseInventoryDO	baseDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
-						//更新base表调整后的库存总量
-						baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()+adjustNum);
-						synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+						if(baseDO!=null) {
+							//更新base表调整后的库存总量
+							baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()+adjustNum);
+							synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+						}else {
+							// 初始化商品库存信息
+							baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+							baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()+adjustNum);
+							synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
+						}
+						
 					}
 					
 					List<Long>	resultACK = goodsInventoryDomainRepository
@@ -813,6 +825,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
+							
 							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
 							//更新商品基表
 							long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
@@ -823,6 +836,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								if(baseDO!=null) {
 									baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber());
 									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseDO);
+								}else {//支持编辑
+									// 初始化商品库存信息
+									baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+									///baseDO.setBaseTotalCount(baseDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber());
+									synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
 								}
 								
 							}
@@ -982,6 +1000,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								int num=baseInventoryDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber();
 								baseInventoryDO.setBaseTotalCount(num);
 								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
+							}else {
+								// 初始化商品库存信息
+								baseInventoryDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+								int num=baseInventoryDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber();
+								baseInventoryDO.setBaseTotalCount(num);
+								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
 							}
 							if(!CollectionUtils.isEmpty(hash)) {
 								String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);

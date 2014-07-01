@@ -8,7 +8,7 @@
 			<New class="org.apache.commons.dbcp.BasicDataSource">
 				<Set name="driverClassName">com.mysql.jdbc.Driver</Set>
 				<!-- <Set name="url">jdbc:mysql://10.9.210.29:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set> -->
-				<Set name="url">jdbc:mysql://10.9.28.111:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
+				<Set name="url">jdbc:mysql://wowocobar.55tuan.me:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
 				<Set name="username">Minventory</Set>
 				<Set name="password">123456</Set>
 				<Set name="maxActive">20</Set>
@@ -22,7 +22,7 @@
 			<New class="org.apache.commons.dbcp.BasicDataSource">
 				<Set name="driverClassName">com.mysql.jdbc.Driver</Set>
 				<!-- <Set name="url">jdbc:mysql://10.9.210.29:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set> -->
-				<Set name="url">jdbc:mysql://10.9.28.111:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
+				<Set name="url">jdbc:mysql://wowocobar.55tuan.me:8066/dbinventory?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
 				<Set name="username">Minventory</Set>
 				<Set name="password">123456</Set>
 				<Set name="maxActive">20</Set>
