@@ -30,6 +30,7 @@ import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryUpdateDomain extends AbstractDomain {
 	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
@@ -507,11 +508,22 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 		this.goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
-		if(StringUtils.isEmpty(param.getGoodsBaseId())) {  //为了兼容参数goodsbaseid不传的情况
+		if(StringUtils.isEmpty(param.getGoodsBaseId())&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
 			GoodsInventoryDO temp = this.goodsInventoryDomainRepository
 					.queryGoodsInventory(goodsId);
 			if(temp!=null) {
 				this.goodsBaseId = temp.getGoodsBaseId();
+				if(goodsBaseId!=null&&goodsBaseId==0) {
+					// 初始化商品库存信息
+					CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+							.selectGoodsInventoryByGoodsId(goodsId);
+					if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+						temp = 	callGoodsInventoryDOResult.getBusinessResult();
+						if(temp!=null) {
+							this.goodsBaseId = temp.getGoodsBaseId();
+						}
+					}
+				}
 			}
 		}else {
 			this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
