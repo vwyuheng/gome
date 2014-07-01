@@ -64,6 +64,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private int goodsDeductNum = 0;
 	private int selectionDeductNum = 0;
 	private int suppliersDeductNum = 0;
+	//商品扣减量:非限制库存商品取默认值
+	private int limtStorgeDeNum = 0;
+	private int limitStorage = 0;
 	// 原库存
 	private int originalGoodsInventory = 0;
 	// 领域中缓存选型和分店原始库存和扣减库存的list
@@ -191,6 +194,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		int selNum = 0;
 		int deSuppliersNum = 0;
 		int supNum = 0;
+		
 		//其下所属选型扣减库存的量
 		if (!CollectionUtils.isEmpty(selectionParam)) { // if1
 			for (GoodsSelectionAndSuppliersResult param : selectionParam) { // for
@@ -215,7 +219,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		this.originalGoodsInventory = inventoryInfoDO.getLeftNumber();
 		this.selectionDeductNum = deSelectionNum;
 		this.suppliersDeductNum = deSuppliersNum;
-		
+		limitStorage = inventoryInfoDO.getLimitStorage();
 		if(isSelection&&!isSupplier) {  //只包含选型的
 			this.goodsDeductNum = (selectionDeductNum);
 		}else if(isSupplier&&!isSelection) {  //只包含分店的
@@ -226,12 +230,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			this.goodsDeductNum = (deductNum);
 		}
 		// 扣减库存并返回扣减标识,计算库存并
-		if (inventoryInfoDO.getLimitStorage()==1&&(originalGoodsInventory-goodsDeductNum) >= 0) { //限制库存商品
+		if (limitStorage==1&&(originalGoodsInventory-goodsDeductNum) >= 0) { //限制库存商品
 			this.isEnough = true;
 			// 商品库存扣减后的量
+			limtStorgeDeNum = goodsDeductNum;
 			this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); 
 			inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
-		}else if(inventoryInfoDO.getLimitStorage()==0) { //非限制库存商品
+		}else if(limitStorage==0) { //非限制库存商品
 			this.isEnough = true;
 			//此时要更新leftnum扣减量，以便累加销量
 			inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
@@ -396,7 +401,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				writeSysDeductLog(lm,true);
 				// 扣减库存
 				resultACK = this.goodsInventoryDomainRepository
-						.updateGoodsInventory(goodsId,goodsBaseId, (-goodsDeductNum));
+						.updateGoodsInventory(goodsId,goodsBaseId, (limtStorgeDeNum!=0?-limtStorgeDeNum:limtStorgeDeNum),(-goodsDeductNum));
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("goodsDeductNum", goodsDeductNum).addMetaData("resultACK", resultACK).addMetaData("deduct,end", "end deduct inventory!");
 				writeSysDeductLog(lm,true);
 				// 校验库存
@@ -405,7 +410,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					writeSysDeductLog(lm,true);
 					// 回滚库存
 					List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
-							goodsId,goodsBaseId, (goodsDeductNum));
+							goodsId,goodsBaseId, (limtStorgeDeNum),(goodsDeductNum));
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("robackNum", goodsDeductNum).addMetaData("rollbackAck", rollbackAck).addMetaData("rollback,end", "end rollback inventory!");
 					writeSysDeductLog(lm,true);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
@@ -433,7 +438,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚选型的
 						List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
-								goodsId,goodsBaseId, (goodsDeductNum));
+								goodsId,goodsBaseId, (limtStorgeDeNum),(goodsDeductNum));
 						boolean rbackACK = this.goodsInventoryDomainRepository
 								.rollbackSelectionInventory(selectionParam);
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("selectionParam", selectionParam).addMetaData("resultAck", rollbackAck+",selectionRollback:"+rbackACK).addMetaData("rollback,end", "start rollback selection inventory!");
@@ -464,7 +469,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						writeSysDeductLog(lm,true);
 						// 先回滚总的 再回滚分店的
 						List<Long> rbackAck4Supp = this.goodsInventoryDomainRepository.updateGoodsInventory(
-								goodsId,goodsBaseId, (goodsDeductNum));
+								goodsId,goodsBaseId, (limtStorgeDeNum),(goodsDeductNum));
 						boolean rbackACK4Supp = this.goodsInventoryDomainRepository
 								.rollbackSuppliersInventory(suppliersParam);
 						
@@ -630,7 +635,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			queueDO.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
 			queueDO.setGoodsId(goodsId);
 	        queueDO.setGoodsBaseId(goodsBaseId);
-		
+	        queueDO.setLimitStorage(limitStorage);
 			if(!StringUtils.isEmpty(param.getOrderId())) {
 				queueDO.setOrderId(Long.valueOf(param.getOrderId()));
 			}

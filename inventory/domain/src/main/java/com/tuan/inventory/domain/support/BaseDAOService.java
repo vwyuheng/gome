@@ -105,7 +105,7 @@ public interface BaseDAOService {
 	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId);
 	public List<Long> updateGoodsWms(String wmsGoodsId,int num);
 	public List<Long> updateInventory(Long goodsId,int num);
-	public List<Long> updateGoodsInventory(Long goodsId, Long goodBaseId,int num);
+	public List<Long> updateGoodsInventory(Long goodsId, Long goodBaseId,int leftnum,int num);
 	public List<Long> adjustGoodsInventory(Long goodsId, Long goodBaseId,int num,int limitStorage);
 	public List<Long> updateSelectionInventory(Long selectionId,int num);
 	public List<Long> updateSelectionInventory(Long selectionId,String wmsGoodsId,int num);

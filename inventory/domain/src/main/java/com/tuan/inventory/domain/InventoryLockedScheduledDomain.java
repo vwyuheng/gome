@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
-import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
@@ -55,6 +54,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private GoodsInventoryDO inventoryInfoDO = null;
 	private long goodsId = 0;
 	private long goodsBaseId = 0;
+	//private int limitStorage  = 0;
+	//商品扣减量:非限制库存商品取默认值
+	//private int limtStorgeDeNum = 0;
 	
 	public InventoryLockedScheduledDomain(String clientIp,
 			String clientName,InventoryScheduledParam param,LogModel lm) {
@@ -162,11 +164,12 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						long queueId = rollbackModel.getId();
 						long goodsId = rollbackModel.getGoodsId();
 						long goodsBaseId = rollbackModel.getGoodsBaseId();
+						int limitStorage = rollbackModel.getLimitStorage();
 						int  deductNum = rollbackModel.getDeductNum();
 						List<GoodsSelectionAndSuppliersResult> selectionParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSelectionParam());
 						List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList( rollbackModel.getSuppliersParam());
 						//先回滚redis库存，
-						if(this.rollback(goodsId, goodsBaseId,deductNum, selectionParamResult, suppliersParamResult)){
+						if(this.rollback(goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, suppliersParamResult)){
 							if(loadMessageData(goodsId)) {
 								if(this.fillParamAndUpdate()) {
 									 writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),goodsBaseId:("+goodsBaseId+")");
@@ -352,15 +355,19 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 	}
 	
-	public boolean rollback(long goodsId,long goodsBaseId,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
+	public boolean rollback(long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
 		boolean success = true;
 		try {
 			// 回滚库存
 			if (goodsId > 0) {
 				writeJobLog("rollback goodsId=" + (goodsId) + "],"
 						+ "deductNum=" + deductNum);
+				int limtStorgeDeNum = 0;
+				if(limitStorage==1) {
+					limtStorgeDeNum = deductNum;
+				}
 				List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
-						.updateGoodsInventory(goodsId,goodsBaseId, (deductNum));
+						.updateGoodsInventory(goodsId,goodsBaseId,(limtStorgeDeNum), (deductNum));
 
 				writeJobLog("isRollback after[" + goodsId + "]"
 						+ ",rollbackAftNum:" + rollbackAftNum);
@@ -389,7 +396,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 
 	//回滚库存 :暂留
-	public boolean rollback(String key) {
+	/*public boolean rollback(String key) {
 		try {
 			//库存回滚
 			GoodsInventoryQueueDO queueDO = this.goodsInventoryDomainRepository
@@ -428,7 +435,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			return false;
 		}
 		return true;
-	}
+	}*/
 	
 	/**
 	 * 校验id

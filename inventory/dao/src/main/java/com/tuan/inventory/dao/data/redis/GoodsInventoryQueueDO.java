@@ -17,6 +17,7 @@ public class GoodsInventoryQueueDO extends TuanBaseDO {
 	private Long orderId;// 订单id
 	private Long userId ;//用户id
 	private Long goodsBaseId;
+	private int limitStorage; // 0:库存无限制；1：限制库存
 	//需扣减的商品库存量
 	private int deductNum  = 0;
 	//原库存
@@ -90,6 +91,12 @@ public class GoodsInventoryQueueDO extends TuanBaseDO {
 	}
 	public void setGoodsBaseId(Long goodsBaseId) {
 		this.goodsBaseId = goodsBaseId;
+	}
+	public int getLimitStorage() {
+		return limitStorage;
+	}
+	public void setLimitStorage(int limitStorage) {
+		this.limitStorage = limitStorage;
 	}
 
 	

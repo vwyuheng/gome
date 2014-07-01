@@ -37,6 +37,9 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	private int upStatusNum;
 	//需扣减的商品库存量
 	private int deductNum  = 0;
+	private int limitStorage  = 0;
+	//商品扣减量:非限制库存商品取默认值
+	private int limtStorgeDeNum = 0;
 	// 原库存
 	private int originalGoodsInventory = 0;
 	// 领域中缓存选型和分店原始库存和扣减库存的list
@@ -94,11 +97,15 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				if (this.queueDO != null) {
 					this.goodsId = queueDO.getGoodsId();
 					this.goodsBaseId = queueDO.getGoodsBaseId();
+					this.limitStorage = queueDO.getLimitStorage();
 					this.deductNum = queueDO.getDeductNum();
 					this.originalGoodsInventory = queueDO
 							.getOriginalGoodsInventory();
 					this.selectionParam = queueDO.getSelectionParam();
 					this.suppliersParam = queueDO.getSuppliersParam();
+					if(limitStorage==1) {
+						limtStorgeDeNum = deductNum;
+					}
 
 				}
 			}
@@ -157,7 +164,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 						lm.addMetaData("isRollback goods[" + (isRollback+":"+goodsId) + "]", goodsId+",deductNum:"+deductNum);
 						writeSysDeductLog(lm,true);
 						List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
-								.updateGoodsInventory(goodsId,goodsBaseId, (deductNum));
+								.updateGoodsInventory(goodsId,goodsBaseId,(limtStorgeDeNum), (deductNum));
 					lm.addMetaData("isRollback after[" + (isRollback+":"+goodsId) + "]", goodsId+",rollbackAftNum:"+rollbackAftNum+",goodsBaseId:"+goodsBaseId);
 					writeSysDeductLog(lm,true);
 					}

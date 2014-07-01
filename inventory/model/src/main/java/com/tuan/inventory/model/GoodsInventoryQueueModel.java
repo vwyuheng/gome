@@ -20,6 +20,7 @@ public class GoodsInventoryQueueModel extends TuanBaseDO {
 	private int deductNum  = 0;
 	//原库存
 	private int originalGoodsInventory = 0;
+	private int limitStorage; // 0:库存无限制；1：限制库存
 	//选型和分店原始库存和扣减库存的list
 	private List<GoodsSelectionAndSuppliersModel> selectionParam;
 	private List<GoodsSelectionAndSuppliersModel> suppliersParam;
@@ -88,6 +89,12 @@ public class GoodsInventoryQueueModel extends TuanBaseDO {
 	}
 	public void setGoodsBaseId(Long goodsBaseId) {
 		this.goodsBaseId = goodsBaseId;
+	}
+	public int getLimitStorage() {
+		return limitStorage;
+	}
+	public void setLimitStorage(int limitStorage) {
+		this.limitStorage = limitStorage;
 	}
 	
 }
