@@ -12,8 +12,11 @@
 		<isNotNull prepend="," property="totalNum">
 			totalNumber =#totalNum:INTEGER#
 		</isNotNull>
+		 <isNotNull prepend="," property="limitStorage">
+			limit_storage = #limitStorage:INTEGER#
+		</isNotNull>
       </dynamic>
-      where suppliers_id = #id:INTEGER# and `status` = 0  and limit_storage = 1
+      where suppliers_id = #id:INTEGER# and `status` = 0
     </update>
     <!-- 更新选型库存  -->	
     <update id="updateSelectionRelationNumberBySID" parameterClass="com.tuan.inventory.dao.data.GoodsUpdateNumberDO" >
@@ -25,8 +28,11 @@
 		<isNotNull prepend="," property="totalNum">
 			totalNumber =#totalNum:INTEGER#
 		</isNotNull>
+		 <isNotNull prepend="," property="limitStorage">
+			limit_storage = #limitStorage:INTEGER#
+		</isNotNull>
       </dynamic>
-      where id = #id:INTEGER# and `status` = 0 and limit_storage = 1 
+      where id = #id:INTEGER# and `status` = 0
     </update>
     <!-- 更新商品库存   -->	
     <update id="updateGoodsAttributesNumberByGID" parameterClass="com.tuan.inventory.dao.data.GoodsUpdateNumberDO" >
@@ -38,8 +44,11 @@
 		 <isNotNull prepend="," property="totalNum">
 			total_num = #totalNum:INTEGER#
 		</isNotNull>
+		 <isNotNull prepend="," property="limitStorage">
+			limit_storage = #limitStorage:INTEGER#
+		</isNotNull>
       </dynamic>
-      where goods_id = #id:INTEGER#  and limit_storage = 1
+      where goods_id = #id:INTEGER#
     </update>
     
     <!-- 更新物流信息  -->

@@ -3,6 +3,7 @@ package com.tuan.inventory.dao.data;
 public class GoodsUpdateNumberDO {
    private int totalNum;
    private int leftNum;
+   private int limitStorage;
    private int goodsSaleCount;
    private Long id;
    private String wmsGoodsId;
@@ -35,6 +36,12 @@ public String getWmsGoodsId() {
 }
 public void setWmsGoodsId(String wmsGoodsId) {
 	this.wmsGoodsId = wmsGoodsId;
+}
+public int getLimitStorage() {
+	return limitStorage;
+}
+public void setLimitStorage(int limitStorage) {
+	this.limitStorage = limitStorage;
 }
 
 

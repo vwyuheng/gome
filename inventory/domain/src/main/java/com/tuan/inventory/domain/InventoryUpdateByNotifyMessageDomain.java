@@ -44,6 +44,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 				GoodsUpdateNumberDO goodsUpdateNumberDO=new GoodsUpdateNumberDO();
 				goodsUpdateNumberDO.setLeftNum(leftNumber);
 				goodsUpdateNumberDO.setTotalNum(totalNumber);
+				goodsUpdateNumberDO.setLimitStorage(limitStorage);
 				goodsUpdateNumberDO.setId(param.getGoodsId());
 				//更新attribute表
 				goodUpdateNumberDomainRepository.updateGoodsAttributesNumber(goodsUpdateNumberDO);
@@ -58,6 +59,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 					for (SelectionNotifyMessageParam selectionNotifyMessageParam : selectionRelation) {
 						goodsUpdateNumberDO.setLeftNum(selectionNotifyMessageParam.getLeftNumber());
 						goodsUpdateNumberDO.setTotalNum(selectionNotifyMessageParam.getTotalNumber());
+						goodsUpdateNumberDO.setLimitStorage(selectionNotifyMessageParam.getLimitStorage());
 						goodsUpdateNumberDO.setId(selectionNotifyMessageParam.getId());
 						goodUpdateNumberDomainRepository.updateSelectionRelationNumber(goodsUpdateNumberDO);
 						String wmsGoodsId=selectionNotifyMessageParam.getWmsGoodsId();
@@ -74,6 +76,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 					for (SuppliersNotifyMessageParam suppliersNotifyMessageParam : suppliersRelation) {
 						goodsUpdateNumberDO.setLeftNum(suppliersNotifyMessageParam.getLeftNumber());
 						goodsUpdateNumberDO.setTotalNum(suppliersNotifyMessageParam.getTotalNumber());
+						goodsUpdateNumberDO.setLimitStorage(suppliersNotifyMessageParam.getLimitStorage());
 						goodsUpdateNumberDO.setId(suppliersNotifyMessageParam.getId());
 						goodUpdateNumberDomainRepository.updateSuppliersInventoryNumber(goodsUpdateNumberDO);
 					}
