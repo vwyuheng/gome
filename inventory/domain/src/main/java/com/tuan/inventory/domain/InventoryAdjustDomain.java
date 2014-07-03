@@ -382,9 +382,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					notifyParam.setTotalNumber(this.goodstotalnum);
 					notifyParam.setLeftNumber(this.goodsleftnum);
 					//库存总数 减 库存剩余
-					int sales = inventoryDO.getGoodsSaleCount();
+					Integer sales = inventoryDO.getGoodsSaleCount();
 					//销量
-					notifyParam.setSales(String.valueOf(sales));
+					notifyParam.setSales(String.valueOf(sales==null?0:sales));
 					//库存基表信息发送
 					GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 					notifyParam.setGoodsBaseId(goodsBaseId);
