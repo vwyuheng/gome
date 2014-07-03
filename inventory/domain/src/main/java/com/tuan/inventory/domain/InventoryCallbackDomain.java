@@ -90,24 +90,22 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			this.fillParam();
 			//预处理
 			this.preHandler();
-			if (isRollback) {
-				// 根据key查询缓存的队列信息
-				this.queueDO = this.goodsInventoryDomainRepository
-						.queryInventoryQueueDO(key);
-				if (this.queueDO != null) {
-					this.goodsId = queueDO.getGoodsId();
-					this.goodsBaseId = queueDO.getGoodsBaseId();
-					this.limitStorage = queueDO.getLimitStorage();
-					this.deductNum = queueDO.getDeductNum();
-					this.originalGoodsInventory = queueDO
-							.getOriginalGoodsInventory();
-					this.selectionParam = queueDO.getSelectionParam();
-					this.suppliersParam = queueDO.getSuppliersParam();
-					if(limitStorage==1) {
-						limtStorgeDeNum = deductNum;
-					}
-
+			// 根据key查询缓存的队列信息
+			this.queueDO = this.goodsInventoryDomainRepository
+					.queryInventoryQueueDO(key);
+			if (this.queueDO != null) {
+				this.goodsId = queueDO.getGoodsId();
+				this.goodsBaseId = queueDO.getGoodsBaseId();
+				this.limitStorage = queueDO.getLimitStorage();
+				this.deductNum = queueDO.getDeductNum();
+				this.originalGoodsInventory = queueDO
+						.getOriginalGoodsInventory();
+				this.selectionParam = queueDO.getSelectionParam();
+				this.suppliersParam = queueDO.getSuppliersParam();
+				if(limitStorage==1) {
+					limtStorgeDeNum = deductNum;
 				}
+
 			}
 
 		} catch (Exception e) {
