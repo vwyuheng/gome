@@ -323,9 +323,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						notifyParam.setTotalNumber(inventoryDO.getTotalNumber());
 						notifyParam.setLeftNumber(inventoryDO.getLeftNumber());
 						//库存总数 减 库存剩余
-						int sales = inventoryDO.getGoodsSaleCount();
+						Integer sales = inventoryDO.getGoodsSaleCount();
 						//销量
-						notifyParam.setSales(String.valueOf(sales));
+						notifyParam.setSales(String.valueOf(sales==null?0:sales));
 						
 					}
 					//发送库存基表信息

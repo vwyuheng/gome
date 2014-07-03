@@ -466,7 +466,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 							notifyParam.setTotalNumber(inventoryInfoDO.getTotalNumber());
 							notifyParam.setLeftNumber(inventoryInfoDO.getLeftNumber());
 							//销量
-							notifyParam.setSales(String.valueOf(inventoryInfoDO.getGoodsSaleCount()));
+							notifyParam.setSales(String.valueOf(inventoryInfoDO.getGoodsSaleCount()==null?0:inventoryInfoDO.getGoodsSaleCount()));
 						}
 						//查询base销量和商品销量
 						GoodsBaseInventoryDO baseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
