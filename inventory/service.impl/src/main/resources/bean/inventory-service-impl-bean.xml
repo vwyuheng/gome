@@ -35,9 +35,9 @@
 				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
 				<entry key="cms.stock.update.normal" value-ref="consumerReceiver" />
 				<!-- 特殊和线上 -->
-				<!-- <entry key="inventorycenter" value-ref="inventoryUpdateConsumerReceiver" /> -->
+				<entry key="inventorycenter" value-ref="inventoryUpdateConsumerReceiver" />
 				 <!-- 常规 -->
-				<entry key="inventorycenter.normal" value-ref="inventoryUpdateConsumerReceiver" />
+				<!-- <entry key="inventorycenter.normal" value-ref="inventoryUpdateConsumerReceiver" /> -->
 			</map>
 		</property>
 	</bean>
