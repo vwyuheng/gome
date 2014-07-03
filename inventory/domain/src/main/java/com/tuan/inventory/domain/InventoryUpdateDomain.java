@@ -297,11 +297,11 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 			}
 			
-			if(isSupplier&&isSelection) {  //分店选型都有的
+			/*if(isSupplier&&isSelection) {  //分店选型都有的
 				if (CollectionUtils.isEmpty(param.getGoodsSuppliers())||CollectionUtils.isEmpty(param.getGoodsSelection())) {
 					return CreateInventoryResultEnum.SEL_SUPP_GOODS;
 				}
-			}
+			}*/
 			//校验商品选型id
 			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
 				
