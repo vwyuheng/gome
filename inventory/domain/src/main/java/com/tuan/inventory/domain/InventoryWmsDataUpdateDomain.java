@@ -42,6 +42,7 @@ import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	private static Log logMsg=LogFactory.getLog("NOTIFYSERVER.USER");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -436,8 +437,13 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	//发送库存新增消息
 	public void sendNotify(){
 					try {
-						InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-						goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsDataUpdateDomain.toString(),JSONObject.fromObject(notifyParam));
+						if(goodsId!=0&&goodsBaseId!=0) {
+							InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
+							goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsDataUpdateDomain.toString(),JSONObject.fromObject(notifyParam));
+						}else {
+							logMsg.warn("from InventoryWmsDataUpdateDomain send msg,goodsBaseId:"+goodsBaseId+",goodsId:"+goodsId+" is illegal!");
+						}
+						
 						/*Type orderParamType = new TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType();
 						String paramJson = new Gson().toJson(notifyParam, orderParamType);
 						extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
