@@ -314,9 +314,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		notifyParam.setTotalNumber(goodsInventoryModel.getTotalNumber());
 		notifyParam.setLeftNumber(goodsInventoryModel.getLeftNumber());
 		//库存总数 减 库存剩余
-		int sales = goodsInventoryModel.getGoodsSaleCount();
+		Integer sales = goodsInventoryModel.getGoodsSaleCount();
 		//销量
-		notifyParam.setSales(String.valueOf(sales));
+		notifyParam.setSales(String.valueOf(sales==null?0:sales));
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSelectionList())) {
 			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(goodsInventoryModel.getGoodsSelectionList()));
 		}

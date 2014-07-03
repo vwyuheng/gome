@@ -514,9 +514,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					notifyParam.setTotalNumber(afttotalnum);
 					notifyParam.setLeftNumber(aftleftnum);
 					//库存总数 减 库存剩余
-					int sales = inventoryDO.getGoodsSaleCount();
+					Integer sales = inventoryDO.getGoodsSaleCount();
 					//销量
-					notifyParam.setSales(String.valueOf(sales));
+					notifyParam.setSales(String.valueOf(sales==null?0:sales));
 				}
 				//发送库存基表信息
 				GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);

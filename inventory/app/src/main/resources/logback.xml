@@ -136,7 +136,7 @@
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender>                                                                                                                                                                                                                                                                                                                                
                   
-    <appender name="COMMON-SERVICE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
+    <appender name="SYSTEM-ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">                                                                           
     	<file>${loggingRoot}/service/common-service.log</file>     
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"> 
       		<fileNamePattern>${loggingRoot}/service/common-service.log.%d{yyyyMMdd}</fileNamePattern> 
@@ -146,17 +146,7 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>                                                                                                                                                                                                                                                                                    
     </appender>  
-    <!--  error --> 
-    <appender name="SYSTEM-ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/commonsys/common-sys-error.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/commonsys/common-sys-error.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>     
+    
 	<!-- notifyserver -->
 	<appender name="NOTIFY-MESSAGE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/notifymessage/notify-message-product.log</file>
@@ -411,7 +401,7 @@
 	</logger>
 	<logger name="COMMON.SERVICE" additivity="false">
 			<level value="INFO"/>
-			<appender-ref ref="COMMON-SERVICE-APPENDER"/>
+			<appender-ref ref="SYSTEM-ERROR-APPENDER"/>
 	</logger>
 	<!-- 序列号日志 -->
 	<logger name="INVENTORY.DESERILIZABLE.LOG" additivity="false">

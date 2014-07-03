@@ -21,6 +21,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -244,13 +245,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	
-	private boolean verifyInventory() {
+	/*private boolean verifyInventory() {
 		if (!CollectionUtils.isEmpty(resultACK)) {
 			return true;
 		} else {
 			return false;
 		}
-	}
+	}*/
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
@@ -405,7 +406,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("goodsDeductNum", goodsDeductNum).addMetaData("resultACK", resultACK).addMetaData("deduct,end", "end deduct inventory!");
 				writeSysDeductLog(lm,true);
 				// 校验库存
-				if (!verifyInventory()) {
+				if (!DataUtil.verifyInventory(resultACK)) {
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("rollback,start", "start rollback inventory!");
 					writeSysDeductLog(lm,true);
 					// 回滚库存
@@ -463,7 +464,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("resultAck", rACK4Supp).addMetaData("end", "end deduct suppliers inventory!");
 					writeSysDeductLog(lm,true);
 					// 校验库存
-					if (!verifyInventory()) {
+					if (!rACK4Supp) {
 						// 回滚库存
 						lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("rollback,start", "start rollback suppliers inventory!");
 						writeSysDeductLog(lm,true);

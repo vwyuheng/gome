@@ -280,9 +280,9 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 			notifyParam.setTotalNumber(param.getTotalNumber());
 			notifyParam.setLeftNumber(param.getLeftNumber());
 			//库存总数 减 库存剩余
-			int sales = param.getTotalNumber()-param.getLeftNumber();
+			//int sales = param.getTotalNumber()-param.getLeftNumber();
 			//销量
-			notifyParam.setSales(String.valueOf(sales));
+			notifyParam.setSales(String.valueOf(0));
 			
 			if (!CollectionUtils.isEmpty(selectionList)) {
 				notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));

@@ -257,7 +257,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			return null;
 		}
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
-		notifyParam.setGoodsBaseId(goodsBaseId);
+		notifyParam.setGoodsBaseId(goodsInventoryModel.getGoodsBaseId());
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
 		notifyParam.setGoodsId(goodsInventoryModel.getGoodsId());
 		notifyParam.setLimitStorage(goodsInventoryModel.getLimitStorage());
@@ -265,16 +265,16 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		notifyParam.setTotalNumber(goodsInventoryModel.getTotalNumber());
 		notifyParam.setLeftNumber(goodsInventoryModel.getLeftNumber());
 		//库存总数 减 库存剩余
-		int sales = goodsInventoryModel.getGoodsSaleCount();
+		Integer sales = goodsInventoryModel.getGoodsSaleCount();
 		//销量
-		notifyParam.setSales(String.valueOf(sales));
+		notifyParam.setSales(String.valueOf(sales==null?0:sales));
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSelectionList())) {
 			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(goodsInventoryModel.getGoodsSelectionList()));
 		}
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
 			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(goodsInventoryModel.getGoodsSuppliersList()));
 		}
-		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsInventoryModel.getGoodsBaseId());
 		if(baseInventoryDO!=null){
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
