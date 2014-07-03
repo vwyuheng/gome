@@ -175,7 +175,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
-		
+		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+			return resultEnum;
+		}
 		// 真正的库存更新业务处理
 		try {
 			// 商品选型处理
@@ -186,16 +188,13 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				this.calculateInventory();
 			}
 			
-			//}
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-			return resultEnum;
-		}
+		
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -240,7 +239,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				}else {
 					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isEnough:"+isEnough+",orileftnum:"+orileftnum+",oritotalnum="+oritotalnum+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 					logSysDeduct.info(message);
-					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+					//return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory mysql,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("wmsDO", wmsDO).addMetaData("goodsList", goodsList).addMetaData("selectionParam", selectionParam);
 				writeSysUpdateLog(lm,true);
@@ -261,13 +260,19 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsWmsInventory(wmsGoodsId,
 								(wmsGoodsDeductNum));
-				boolean verifyflg = this.goodsInventoryDomainRepository
-						.updateBatchGoodsInventory(goodsList, wmsGoodsDeductNum);
+				boolean verifyflg = false;
+				if(!CollectionUtils.isEmpty(goodsList)&&verifyInventory()) {
+					 verifyflg = this.goodsInventoryDomainRepository
+							.updateBatchGoodsInventory(goodsList, wmsGoodsDeductNum);
+				}else {
+					 verifyflg = verifyInventory();
+				}
+				
 				
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory redis,end").addMetaData("resultwms", resultACK).addMetaData("resultgoods", verifyflg);
 				writeSysUpdateLog(lm,true);
 				// 校验库存
-				if (!verifyInventory() || !verifyflg) {
+				if (!verifyflg) {
 					lm.addMetaData("updateAdjustWmsInventory","rollback redis,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("goodsList", goodsList).addMetaData("wmsGoodsDeductNum", wmsGoodsDeductNum);
 					writeSysUpdateLog(lm,true);
 					// 回滚库存
@@ -282,6 +287,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					writeSysUpdateLog(lm,true);
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
+				
 				// 更新选型库存
 				if (isSelectionEnough&&!CollectionUtils.isEmpty(selectionList)) {
 					lm.addMetaData("updateAdjustWmsInventory","selection mysql,start").addMetaData("selectionParam", selectionParam);
@@ -305,10 +311,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						writeSysUpdateLog(lm,true);
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 					}
-				}else {
-					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isSelectionEnough:"+isSelectionEnough+",wmsGoodsId:"+wmsGoodsId+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",wmsGoodsDeductNum:"+wmsGoodsDeductNum+",selectionParam:"+selectionParam+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
-					logSysDeduct.info(message);
-					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			} finally{
 				dLock.unlockManual(key);
@@ -369,6 +371,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			InventoryInitDomain create = new InventoryInitDomain();
 			//注入相关Repository
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			create.setLm(lm);
 			return create.updateWmsMysqlInventory(wmsDO, wmsInventoryList,selectionParam);
 		}
 	

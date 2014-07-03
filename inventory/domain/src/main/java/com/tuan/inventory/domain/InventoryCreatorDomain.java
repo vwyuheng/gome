@@ -177,6 +177,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		create.setLm(lm);
 		return create.createInventory(tokenid,inventoryInfoDO, selectionRelation, suppliersRelation);
 	}
 	// 发送库存新增消息

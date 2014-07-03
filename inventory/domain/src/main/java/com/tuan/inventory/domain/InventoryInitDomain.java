@@ -405,8 +405,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		long startTime = System.currentTimeMillis();
 		try {
 			// 保存商品库存		
-//			result = this.inventoryInitAndUpdateHandle.saveGoodsWmsInventory(wmsDO, selectionList);
-			// 消费对列的信息
 			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(wmsDO,selectionList);
 			PublicCodeEnum publicCodeEnum = callResult.getPublicCodeEnum();
 
@@ -491,8 +489,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		long startTime = System.currentTimeMillis();
 		try {
 			// 更新商品库存
-			//handler = this.inventoryInitAndUpdateHandle.batchAdjustGoodsWms(wmsDO,wmsInventoryList, selectionList);
-			// 消费对列的信息
 			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,wmsInventoryList, selectionList);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
@@ -546,10 +542,6 @@ public class InventoryInitDomain extends AbstractDomain{
 	public void setLm(LogModel lm) {
 		this.lm = lm;
 	}
-	/*public void setInventoryInitAndUpdateHandle(
-			InventoryInitAndUpdateHandle inventoryInitAndUpdateHandle) {
-		this.inventoryInitAndUpdateHandle = inventoryInitAndUpdateHandle;
-	}*/
 	
 	public void setIsBeDelivery(String isBeDelivery) {
 		this.isBeDelivery = isBeDelivery;

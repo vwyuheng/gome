@@ -125,6 +125,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 		//注入相关Repository
 		create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 		create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		create.setLm(lm);
 		return create.createWmsInventory(wmsDO, selectionRelation);
 	}
 	
