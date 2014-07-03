@@ -17,7 +17,7 @@ public class InventoryNotifyMessageParam extends TuanBaseDO{
 	private java.lang.Integer totalNumber;// 当前总库存999999：无限制
 	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
 	private java.lang.Integer waterfloodVal;  //注水值
-	private String sales; //销量
+	private int sales; //销量
 	//选型
 	private List<SelectionNotifyMessageParam> selectionRelation;
 	//分店
@@ -80,10 +80,11 @@ public class InventoryNotifyMessageParam extends TuanBaseDO{
 			List<SuppliersNotifyMessageParam> suppliersRelation) {
 		this.suppliersRelation = suppliersRelation;
 	}
-	public String getSales() {
+	
+	public int getSales() {
 		return sales;
 	}
-	public void setSales(String sales) {
+	public void setSales(int sales) {
 		this.sales = sales;
 	}
 	public Long getGoodsBaseId() {

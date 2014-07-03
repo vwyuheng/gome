@@ -40,7 +40,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 				int totalNumber = param.getTotalNumber();
 				int leftNumber = param.getLeftNumber();
 				int limitStorage = param.getLimitStorage();
-				int goodsSaleCount = StringUtils.isEmpty(param.getSales())?Integer.parseInt("0"):Integer.parseInt(param.getSales());  //商品销量
+				int goodsSaleCount = param.getSales();  //商品销量
 				GoodsUpdateNumberDO goodsUpdateNumberDO=new GoodsUpdateNumberDO();
 				goodsUpdateNumberDO.setLeftNum(leftNumber);
 				goodsUpdateNumberDO.setTotalNum(totalNumber);

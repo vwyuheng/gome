@@ -206,10 +206,8 @@ public class InventoryCreatorDomain extends AbstractDomain {
 		notifyParam.setWaterfloodVal(param.getWaterfloodVal());
 		notifyParam.setTotalNumber(param.getTotalNumber());
 		notifyParam.setLeftNumber(param.getLeftNumber());
-		//库存总数 减 库存剩余
-		int sales = 0;
 		//销量
-		notifyParam.setSales(String.valueOf(sales));
+		notifyParam.setSales(0);
 		//库存基本信息
 		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 		if(baseInventoryDO!=null) {
