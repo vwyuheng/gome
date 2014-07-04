@@ -286,16 +286,16 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
 						isSupplier = true;
 					}
-			if(isSelection&&!isSupplier) {  //只包含选型的
+			/*if(isSelection&&!isSupplier) {  //只包含选型的
 				if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
 					return CreateInventoryResultEnum.SELECTION_GOODS;
 				}
-			}
-			if(isSupplier&&!isSelection) {  //只包含分店的
+			}*/
+			/*if(isSupplier&&!isSelection) {  //只包含分店的
 				if (CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
 					return CreateInventoryResultEnum.SUPPLIERS_GOODS;
 				}
-			}
+			}*/
 			
 			/*if(isSupplier&&isSelection) {  //分店选型都有的
 				if (CollectionUtils.isEmpty(param.getGoodsSuppliers())||CollectionUtils.isEmpty(param.getGoodsSelection())) {
@@ -329,7 +329,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			
 			//校验商品分店id，若存在的话
-			if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
+			/*if (!CollectionUtils.isEmpty(param.getGoodsSuppliers())) {
 				List<Long> suppliersIdlist = null;
 				
 				if(!CollectionUtils.isEmpty(suppResult)) {
@@ -349,14 +349,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					}
 				}
 				
-			}
+			}*/
 		}
 		// 真正的库存更新业务处理
 		try {
 			// 商品选型处理
 			this.selectionInventoryHandler();
 			// 商品分店处理
-			this.suppliersInventoryHandler();
+			//this.suppliersInventoryHandler();
 			if(isSelectionEnough&&isSuppliersEnough) {
 				//商品库存扣减的计算
 				this.calculateInventory();
@@ -454,7 +454,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新分店库存
-			if (isSuppliersEnough) {
+			/*if (isSuppliersEnough) {
 				if(!CollectionUtils.isEmpty(suppliersParam)) {
 					//扣减开始记录日志
 					lm.setMethod("InventoryUpdateDomain.updateInventory").addMetaData("goodsId", goodsId).addMetaData("suppliersParam", suppliersParam).addMetaData("start", "start deduct suppliers inventory!");
@@ -485,7 +485,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",isSuppliersEnough:"+isSuppliersEnough+",suppliersParam:"+suppliersParam+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 				logSysDeduct.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
-			}
+			}*/
 
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(

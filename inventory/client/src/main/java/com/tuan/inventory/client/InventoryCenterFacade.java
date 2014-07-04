@@ -120,6 +120,17 @@ public interface InventoryCenterFacade {
 	 */
 	public InventoryCallResult createInventory(final String clientIp, final String clientName
 			,final CreaterInventoryParam param,Message traceMessage);
+	
+	/**
+	 * 创建库存接口，根据传入的参数创建库存【商品改价】
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	InventoryCallResult createInventory4GoodsCost(final String clientIp, final String clientName
+			,final CreaterInventoryParam param,Message traceMessage);
 	/**
 	 * 更新商品库存
 	 * @param clientIp

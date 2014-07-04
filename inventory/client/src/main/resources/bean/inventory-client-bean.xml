@@ -11,9 +11,10 @@
 	default-lazy-init="true" default-autowire="byName">
 
 	<bean id="inventoryCenterFacade" class="com.tuan.inventory.client.impl.InventoryCenterFacadeImpl" />
+	
 	<bean id="goodsInventoryQuery" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>http://localhost:8080/remoting/goodsInventoryQueryService</value>
+			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryQueryService</value>
 		</property>
 		<property name="serviceInterface">
 			<value>com.tuan.inventory.service.GoodsInventoryQueryService</value>
@@ -22,19 +23,11 @@
 	
 	<bean id="goodsInventoryUpdate" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>http://localhost:8080/remoting/goodsInventoryUpdateService</value>
+			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryUpdateService</value>
 		</property>
 		<property name="serviceInterface">
 			<value>com.tuan.inventory.service.GoodsInventoryUpdateService</value>
 		</property>
 	</bean>
 	
-	<bean id="goodsInventoryScheduled" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
-		<property name="serviceUrl">
-			<value>http://localhost:8080/remoting/goodsInventoryScheduledService</value>
-		</property>
-		<property name="serviceInterface">
-			<value>com.tuan.inventory.service.GoodsInventoryScheduledService</value>
-		</property>
-	</bean>
 </beans>

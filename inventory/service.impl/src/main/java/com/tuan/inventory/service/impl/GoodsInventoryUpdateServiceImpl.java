@@ -636,6 +636,72 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
+	/**
+	 * 新增库存4商品改价
+	 */
+	@Override
+	public InventoryCallResult createInventory4GoodsCost(String clientIp,
+			String clientName, CreaterInventoryParam param, Message traceMessage) {
+		
+		String method = "GoodsInventoryUpdateService.createInventory4GoodsCost";
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		TraceMessageUtil.traceMessagePrintS(
+				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
+		//构建领域对象
+		final InventoryCreatorDomain inventoryCreatorDomain = new InventoryCreatorDomain(clientIp, clientName, param, lm);
+		//注入仓储对象
+		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryCreatorDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryCreatorDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
+		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+			@Override
+			public TuanCallbackResult executeParamsCheck() {
+				CreateInventoryResultEnum resultEnum = inventoryCreatorDomain.checkParam();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeBusiCheck() {
+				CreateInventoryResultEnum resEnum = inventoryCreatorDomain.busiCheck();
+				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resEnum.getCode(), null,resEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeAction() {
+				CreateInventoryResultEnum resultEnum = inventoryCreatorDomain.createInventory();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public void executeAfter() {
+				//inventoryCreatorDomain.sendNotify();
+			}
+		});
+
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
+		.addMetaData("end", "end");
+		writeSysUpdateLog(lm, false);
+		writeSysLog(lm, true);
+		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
+		return new InventoryCallResult(result.getResultCode(), 
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
+	}
 	
 	
 

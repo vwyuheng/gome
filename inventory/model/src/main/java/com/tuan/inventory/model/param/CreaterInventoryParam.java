@@ -15,6 +15,7 @@ public class CreaterInventoryParam extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	private String tokenid;  //redis序列,解决接口幂等问题
 	private String userId;
+	private String preGoodsId;// 改价前商品ID
 	private String goodsId;// 商品ID(FK)
 	private Long goodsBaseId;// 商品库存基本信息ID
 	private Integer totalNumber;// 当前总库存999999：无限制
@@ -85,6 +86,12 @@ public class CreaterInventoryParam extends TuanBaseDO {
 	}
 	public void setGoodsBaseId(Long goodsBaseId) {
 		this.goodsBaseId = goodsBaseId;
+	}
+	public String getPreGoodsId() {
+		return preGoodsId;
+	}
+	public void setPreGoodsId(String preGoodsId) {
+		this.preGoodsId = preGoodsId;
 	}
 	
 	
