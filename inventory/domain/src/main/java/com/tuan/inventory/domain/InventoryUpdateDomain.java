@@ -244,6 +244,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 	}
 
+	
+	/*private boolean verifyInventory() {
+		if (!CollectionUtils.isEmpty(resultACK)) {
+			return true;
+		} else {
+			return false;
+		}
+	}*/
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
@@ -298,10 +306,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
 				
 				List<Long> selectionIdlist = null;
+				//List<Long> wmsIdlist = null;
 				if(!CollectionUtils.isEmpty(selResult)) {
 					selectionIdlist = new ArrayList<Long>();
+					//wmsIdlist = new ArrayList<Long>();
 					 for(GoodsSelectionModel model : selResult) {
 						 selectionIdlist.add(model.getId());
+						 //wmsIdlist.add(model.getWmsId());
 					 }
 				}
 				if(!CollectionUtils.isEmpty(selectionIdlist)) {
