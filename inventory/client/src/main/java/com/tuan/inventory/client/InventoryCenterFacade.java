@@ -11,7 +11,6 @@ import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
-import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
@@ -111,31 +110,7 @@ public interface InventoryCenterFacade {
 	 */
 	public CallResult<GoodsBaseModel> querySalesCountByGoodsBaseId(final String clientIp, final String clientName, 
 			final String goodsBaseId);
-	/**
-	 * 回调确认过的队列的消费接口
-	 * @param clientIp
-	 * @param clientName
-	 * @param traceMessage
-	 */
-	public void confirmQueueConsume(String clientIp,
-			String clientName,Message traceMessage);
-	/**
-	 * 被锁定队列的消费接口
-	 * @param clientIp
-	 * @param clientName
-	 * @param param
-	 * @param traceMessage
-	 */
-	public void lockedQueueConsume(String clientIp,
-			String clientName,InventoryScheduledParam param,Message traceMessage);
-	/**
-	 * 日志队列的消费接口
-	 * @param clientIp
-	 * @param clientName
-	 * @param traceMessage
-	 */
-	public void logsQueueConsume(String clientIp,
-			String clientName,Message traceMessage);
+	
 	/** 
 	 * 创建库存接口，根据传入的参数创建库存
 	 * @param clientIp String 客户端ip地址

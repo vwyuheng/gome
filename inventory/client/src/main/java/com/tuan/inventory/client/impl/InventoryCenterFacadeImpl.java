@@ -2,6 +2,8 @@ package com.tuan.inventory.client.impl;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import com.tuan.inventory.client.InventoryCenterFacade;
 import com.tuan.inventory.model.GoodsBaseModel;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -12,7 +14,6 @@ import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
-import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
@@ -20,14 +21,14 @@ import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
-import com.tuan.inventory.service.GoodsInventoryScheduledService;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
 import com.wowotrace.trace.model.Message;
 
 public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
+	@Resource
 	private GoodsInventoryQueryService  goodsInventoryQuery;
+	@Resource
 	private GoodsInventoryUpdateService goodsInventoryUpdate;
-	private GoodsInventoryScheduledService goodsInventoryScheduled;
 	@Override
 	public CallResult<GoodsSelectionModel> queryGoodsSelection(String clientIp,
 			String clientName, long goodsId, long selectionId) {
@@ -76,21 +77,7 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 			String clientIp, String clientName, String goodsBaseId) {
 		return goodsInventoryQuery.findSalesCountByGoodsBaseId(clientIp, clientName, goodsBaseId);
 	}
-	@Override
-	public void confirmQueueConsume(String clientIp, String clientName,
-			Message traceMessage) {
-		goodsInventoryScheduled.confirmQueueConsume(clientIp, clientName, traceMessage);
-	}
-	@Override
-	public void lockedQueueConsume(String clientIp, String clientName,
-			InventoryScheduledParam param, Message traceMessage) {
-		goodsInventoryScheduled.lockedQueueConsume(clientIp, clientName, param, traceMessage);		
-	}
-	@Override
-	public void logsQueueConsume(String clientIp, String clientName,
-			Message traceMessage) {
-		goodsInventoryScheduled.logsQueueConsume(clientIp, clientName, traceMessage)	;	
-	}
+	
 	@Override
 	public InventoryCallResult createInventory(String clientIp,
 			String clientName, CreaterInventoryParam param, Message traceMessage) {
@@ -151,12 +138,6 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 			GoodsInventoryUpdateService goodsInventoryUpdate) {
 		this.goodsInventoryUpdate = goodsInventoryUpdate;
 	}
-	public GoodsInventoryScheduledService getGoodsInventoryScheduled() {
-		return goodsInventoryScheduled;
-	}
-	public void setGoodsInventoryScheduled(
-			GoodsInventoryScheduledService goodsInventoryScheduled) {
-		this.goodsInventoryScheduled = goodsInventoryScheduled;
-	}
+	
 
 }
