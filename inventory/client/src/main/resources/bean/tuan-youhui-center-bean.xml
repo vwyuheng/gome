@@ -10,64 +10,31 @@
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 
-	<bean id="youhuiCenterFacade" class="com.tuan.pmt.client.impl.YouhuiCenterFacadeImpl" />
-
-	<bean id="couponCheckService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+	<bean id="inventoryCenterFacade" class="com.tuan.inventory.client.impl.InventoryCenterFacadeImpl" />
+	<bean id="goodsInventoryQuery" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>rmi://youhui.55tuan.me:16050/couponCheckService</value>
+			<value>http://localhost:8080/remoting/goodsInventoryQueryService</value>
 		</property>
 		<property name="serviceInterface">
-			<value>com.tuan.pmt.service.CouponCheckService</value>
-		</property>
-		<property name="lookupStubOnStartup">
-			<value>false</value>
-		</property>
-		<property name="refreshStubOnConnectFailure">
-			<value>true</value>
-		</property>
-		<property name="cacheStub">
-			<value>true</value>
+			<value>com.tuan.inventory.service.GoodsInventoryQueryService</value>
 		</property>
 	</bean>
 	
-	<bean id="couponQueryService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+	<bean id="goodsInventoryUpdate" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>rmi://youhui.55tuan.me:16050/couponQueryService</value>
+			<value>http://localhost:8080/remoting/goodsInventoryUpdateService</value>
 		</property>
 		<property name="serviceInterface">
-			<value>com.tuan.pmt.service.CouponQueryService</value>
-		</property>
-		<property name="lookupStubOnStartup">
-			<value>false</value>
-		</property>
-		<property name="refreshStubOnConnectFailure">
-			<value>true</value>
-		</property>
-		<property name="cacheStub">
-			<value>true</value>
+			<value>com.tuan.inventory.service.GoodsInventoryUpdateService</value>
 		</property>
 	</bean>
 	
-	<bean id="couponUpdateService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+	<bean id="goodsInventoryScheduled" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>rmi://youhui.55tuan.me:16050/couponUpdateService</value>
+			<value>http://localhost:8080/remoting/goodsInventoryScheduledService</value>
 		</property>
 		<property name="serviceInterface">
-			<value>com.tuan.pmt.service.CouponUpdateService</value>
-		</property>
-		<property name="lookupStubOnStartup">
-			<value>false</value>
-		</property>
-		<property name="refreshStubOnConnectFailure">
-			<value>true</value>
-		</property>
-		<property name="cacheStub">
-			<value>true</value>
+			<value>com.tuan.inventory.service.GoodsInventoryScheduledService</value>
 		</property>
 	</bean>
-	
-	
-	<bean id="youhuiSpyMemcachedClient" class="com.tuan.core.common.lang.cache.remote.SpyMemcachedClient">
-        <property name="memcachedNodes" value="mem10.55tuan.me:31222 mem11.55tuan.me:31222 mem23.55tuan.me:31222 mem24.55tuan.me:31222" />
-    </bean>
 </beans>

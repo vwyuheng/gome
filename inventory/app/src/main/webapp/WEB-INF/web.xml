@@ -31,6 +31,15 @@
 		</listener-class>
 	</listener> -->
 	 <servlet>
+		<servlet-name>remoting</servlet-name>
+		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>remoting</servlet-name>
+		<url-pattern>/remoting</url-pattern>
+	</servlet-mapping>
+	
+	 <servlet>
 		<servlet-name>inventory</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
