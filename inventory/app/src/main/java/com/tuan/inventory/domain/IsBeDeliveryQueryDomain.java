@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.IsBeDeliveryDomain;
 import com.tuan.inventory.model.WmsIsBeDeliveryModel;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.resp.inner.IsBeDeliveryQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;

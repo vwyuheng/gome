@@ -5,7 +5,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.GoodsSelectionDomain;
 import com.tuan.inventory.model.GoodsSelectionModel;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.resp.inner.GoodsSelectionQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;

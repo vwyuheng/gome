@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.tuan.inventory.domain.ConfirmQueueConsumeDomain;
 import com.tuan.inventory.domain.LockedQueueConsumeDomain;
 import com.tuan.inventory.domain.LogsQueueConsumeDomain;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
 import com.tuan.inventory.resp.outer.GoodsInventoryUpdateResp;
 import com.tuan.inventory.service.GoodsInventoryScheduledService;

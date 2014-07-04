@@ -7,8 +7,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
-import com.tuan.inventory.model.enu.ResultEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;

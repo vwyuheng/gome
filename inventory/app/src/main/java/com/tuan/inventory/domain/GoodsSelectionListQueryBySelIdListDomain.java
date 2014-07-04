@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.GoodsSelectionListBySelIdListDomain;
 import com.tuan.inventory.model.GoodsSelectionModel;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.resp.inner.GoodsSelectionListQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;

@@ -16,7 +16,7 @@ import com.tuan.inventory.domain.GoodsSelectionQueryDomain;
 import com.tuan.inventory.domain.GoodsSupplierQueryDomain;
 import com.tuan.inventory.domain.GoodsSuppliersListQueryDomain;
 import com.tuan.inventory.domain.IsBeDeliveryQueryDomain;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.resp.inner.GoodsBaseQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsQueryInnerResp;
 import com.tuan.inventory.resp.inner.GoodsSelectionListQueryInnerResp;

@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.tuan.inventory.domain.base.GoodsSuppliersListDomain;
 import com.tuan.inventory.model.GoodsSuppliersModel;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.resp.inner.GoodsSuppliersListQueryInnerResp;
 import com.tuan.inventory.resp.inner.RequestPacket;

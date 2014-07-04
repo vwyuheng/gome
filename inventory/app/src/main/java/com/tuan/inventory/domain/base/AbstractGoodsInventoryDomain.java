@@ -3,7 +3,7 @@ package com.tuan.inventory.domain.base;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 
 public abstract class AbstractGoodsInventoryDomain {
 	public  String clientName = "Inventory-app";

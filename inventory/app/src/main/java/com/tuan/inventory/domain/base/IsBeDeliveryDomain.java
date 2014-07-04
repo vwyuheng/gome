@@ -5,7 +5,7 @@ import java.util.SortedMap;
 import org.apache.commons.lang.StringUtils;
 
 import com.tuan.inventory.domain.IsBeDeliveryQueryDomain;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.resp.inner.RequestPacket;
 import com.tuan.inventory.utils.JsonStrVerificationUtils;
 import com.tuan.inventory.utils.LogModel;

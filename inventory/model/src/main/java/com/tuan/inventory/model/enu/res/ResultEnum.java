@@ -1,4 +1,4 @@
-package com.tuan.inventory.model.enu;
+package com.tuan.inventory.model.enu.res;
 
 
 

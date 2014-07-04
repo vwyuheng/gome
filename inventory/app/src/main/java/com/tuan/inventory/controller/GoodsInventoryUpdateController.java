@@ -22,7 +22,7 @@ import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
 import com.tuan.inventory.domain.GoodsdOverrideAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdUpdateInventoryDomain;
 import com.tuan.inventory.domain.UpdateWmsDataDomain;
-import com.tuan.inventory.model.enu.ResultEnum;
+import com.tuan.inventory.model.enu.res.ResultEnum;
 import com.tuan.inventory.model.param.rest.CreaterInventoryRestParam;
 import com.tuan.inventory.model.param.rest.RestTestParam;
 import com.tuan.inventory.model.param.rest.TestParam;
