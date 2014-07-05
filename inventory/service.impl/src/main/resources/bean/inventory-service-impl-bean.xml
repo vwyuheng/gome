@@ -33,7 +33,7 @@
 		<property name="consumerReceiverMap">
 			<map>
 				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
-				<entry key="cms.stock.update" value-ref="consumerReceiver" />
+				<entry key="cms.stock.update.normal" value-ref="consumerReceiver" />
 				<!-- 特殊和线上 -->
 				<entry key="inventorycenter" value-ref="inventoryUpdateConsumerReceiver" />
 				 <!-- 常规 -->

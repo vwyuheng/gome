@@ -144,7 +144,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SUCCESS;
 				}
 			}
-			this.preGoodsId = param.getGoodsId();
+			this.preGoodsId = param.getPreGoodsId();
 			this.goodsId = param.getGoodsId();
 			this.goodsBaseId = param.getGoodsBaseId();
 			int limitStorage = param.getLimitStorage();
