@@ -6,7 +6,8 @@ import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryAdjustDomain;
 import com.tuan.inventory.domain.InventoryCallbackDomain;
-import com.tuan.inventory.domain.InventoryCreatorDomain;
+import com.tuan.inventory.domain.InventoryCreate4GoodsCostDomain;
+import com.tuan.inventory.domain.InventoryCreateDomain;
 import com.tuan.inventory.domain.InventoryOverrideAdjustDomain;
 import com.tuan.inventory.domain.InventoryUpdateDomain;
 import com.tuan.inventory.domain.InventoryWmsCreaterDomain;
@@ -22,6 +23,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
+import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
@@ -62,7 +64,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
 		//构建领域对象
-		final InventoryCreatorDomain inventoryCreatorDomain = new InventoryCreatorDomain(clientIp, clientName, param, lm);
+		final InventoryCreateDomain inventoryCreatorDomain = new InventoryCreateDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryCreatorDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
@@ -641,25 +643,26 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	 */
 	@Override
 	public InventoryCallResult createInventory4GoodsCost(String clientIp,
-			String clientName, CreaterInventoryParam param, Message traceMessage) {
+			String clientName, CreateInventory4GoodsCostParam param, Message traceMessage) {
 		
 		String method = "GoodsInventoryUpdateService.createInventory4GoodsCost";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
 		TraceMessageUtil.traceMessagePrintS(
-				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
+				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory4GoodsCost");
 		//构建领域对象
-		final InventoryCreatorDomain inventoryCreatorDomain = new InventoryCreatorDomain(clientIp, clientName, param, lm);
+		final InventoryCreate4GoodsCostDomain inventoryCreateDomain = new InventoryCreate4GoodsCostDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
-		inventoryCreatorDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		inventoryCreatorDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		inventoryCreatorDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
-		inventoryCreatorDomain.setSequenceUtil(sequenceUtil);
+		inventoryCreateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryCreateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryCreateDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
+		inventoryCreateDomain.setSequenceUtil(sequenceUtil);
+		inventoryCreateDomain.setdLock(dLock);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
-				CreateInventoryResultEnum resultEnum = inventoryCreatorDomain.checkParam();
+				CreateInventoryResultEnum resultEnum = inventoryCreateDomain.checkParam();
 				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
 					return TuanCallbackResult.success();
 				}else{
@@ -669,7 +672,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public TuanCallbackResult executeBusiCheck() {
-				CreateInventoryResultEnum resEnum = inventoryCreatorDomain.busiCheck();
+				CreateInventoryResultEnum resEnum = inventoryCreateDomain.busiCheck();
 				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
 					return TuanCallbackResult.success();
 				}else{
@@ -679,7 +682,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public TuanCallbackResult executeAction() {
-				CreateInventoryResultEnum resultEnum = inventoryCreatorDomain.createInventory();
+				CreateInventoryResultEnum resultEnum = inventoryCreateDomain.createInventory();
 				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
 					return TuanCallbackResult.success();
 				}else{
@@ -689,7 +692,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				//inventoryCreatorDomain.sendNotify();
+				inventoryCreateDomain.sendNotify();
 			}
 		});
 

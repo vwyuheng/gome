@@ -5,6 +5,7 @@ import com.tuan.core.common.annotation.product.ProductLogLevelEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
+import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
@@ -37,7 +38,7 @@ public interface GoodsInventoryUpdateService {
 	 */
 	@ProductCode(code = "00010", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult createInventory4GoodsCost(final String clientIp, final String clientName
-			,final CreaterInventoryParam param,Message traceMessage);
+			,final CreateInventory4GoodsCostParam param,Message traceMessage);
 	
 	/**
 	 * 更新商品库存

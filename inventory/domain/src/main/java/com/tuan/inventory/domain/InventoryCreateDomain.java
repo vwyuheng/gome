@@ -30,7 +30,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 
-public class InventoryCreatorDomain extends AbstractDomain {
+public class InventoryCreateDomain extends AbstractDomain {
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -59,7 +59,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	boolean addSuppliers = false;
 	boolean idemptent = false;
 	
-	public InventoryCreatorDomain(String clientIp, String clientName,
+	public InventoryCreateDomain(String clientIp, String clientName,
 			CreaterInventoryParam param, LogModel lm) {
 		this.clientIp = clientIp;
 		this.clientName = clientName;
@@ -113,7 +113,7 @@ public class InventoryCreatorDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		try {
-			this.goodsId = Long.valueOf(param.getGoodsId()!=null?param.getGoodsId():"0");
+			this.goodsId = Long.valueOf(StringUtils.isNotEmpty(param.getGoodsId())?param.getGoodsId():"0");
 			this.goodsBaseId = param.getGoodsBaseId();
 			this.tokenid = param.getTokenid();
 			

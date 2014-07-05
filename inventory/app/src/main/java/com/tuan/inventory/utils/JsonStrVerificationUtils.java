@@ -11,7 +11,7 @@ public class JsonStrVerificationUtils extends org.apache.commons.lang.StringUtil
 	 * @return
 	 */
 	public static String validateStr(String valStr) {
-		if(valStr!=null&&StringUtils.isNotEmpty(valStr)) {
+		if(StringUtils.isNotEmpty(valStr)) {
 			if(valStr.equals("\"\"")||valStr.equals("'\'")||valStr.equals("[]")) {
 				return null;
 	         }

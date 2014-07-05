@@ -38,6 +38,10 @@ public enum CreateInventoryResultEnum {
 	NO_SELECT_SELECTION			(1039, 	"当前物流码有选型信息，但用户没有选择相关选型."),
 	NO_WMS_DATA			(1041, 	"物流信息不存在."),
 	INVALID_SELECTION_GOODSTYPEID         (1042, "非法的商品选型类型id"),
+	INVALID_GOODSBASEID         (1043, "商品基本id无效"),
+	NO_GOODSBASE        (1044, "商品基本信息不存在！"),
+	FAILED_ORDERQUERYSERVICE        (1045, "调用订单中心接口失败！"),
+	NO_GOODS       (1046, "商品信息不存在！"),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),

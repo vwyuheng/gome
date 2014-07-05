@@ -482,6 +482,51 @@ public class InventoryInitDomain extends AbstractDomain{
 		return CreateInventoryResultEnum.SUCCESS;	
 		
 	}
+	/**
+	 * 商品改价更新老商品信息
+	 * @param goodsId
+	 * @param inventoryInfoDO
+	 * @param selectionInventoryList
+	 * @param suppliersInventoryList
+	 * @return
+	 */
+	public CreateInventoryResultEnum updateInventory4GoodsCost(GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) {
+		
+		CallResult<Boolean> callResult  = null;
+		String message = StringUtils.EMPTY;
+		long startTime = System.currentTimeMillis();
+		try {
+			// 更新商品库存
+			callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+				// 消息数据不存并且不成功
+				message = "updateInventory4GoodsCost_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsId;
+				return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+			} else {
+				message = "updateInventory4GoodsCost_success[save success]goodsId:" + goodsId;
+			}
+			//} 
+		} catch (Exception e) {
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg:"+message,
+							"updateInventory4GoodsCost error " + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("inventoryInfoDO",inventoryInfoDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
+		}
+		return CreateInventoryResultEnum.SUCCESS;	
+		
+	}
 	//更新物流的库存信息
 	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult> selectionList) {
 		String message = StringUtils.EMPTY;

@@ -28,7 +28,9 @@ public enum ResultStatusEnum {
 	FAULT_COMPENSATION_INVENTORY   ("18",   "出错补偿还库存"),
 	ADJUST_WMSINVENTORY   ("20",   "物流库存调整"),
 	UPDATE_WMSDATA   ("22",   " 更新物流相关数据"),
-	ADD_WMSINVENTORY   ("19",   "新增物流库存");
+	ADD_WMSINVENTORY   ("19",   "新增物流库存"),
+	ADJUST_GOODSPRICE   ("23",   "商品改价"),
+	TASK_RESTORE_INVENTORY   ("24",   "商品改价还原库存");
 	
 	
 	

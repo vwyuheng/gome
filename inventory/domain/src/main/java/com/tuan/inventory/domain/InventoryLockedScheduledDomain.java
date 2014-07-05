@@ -104,7 +104,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								}
 								   
 							}
-						}
+						}//if
 					}
 					
 				}

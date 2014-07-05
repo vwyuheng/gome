@@ -20,6 +20,7 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
+import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
@@ -401,4 +402,30 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
 		goodsInventoryScheduledService.logsQueueConsume(clientIP, clientName, traceMessage);
 	}
+	
+	
+	//改价测试	
+		@Test
+		public void testCreateInventory4GoodsCost() {
+			CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
+			
+			Long goodsId = sequenceUtil.getSequence(SEQNAME.seq_inventory);
+			// String goodsId = "2001";
+			 System.out.println("goodsId="+goodsId);
+			param.setGoodsId(goodsId);
+			param.setUserId(2l);
+			param.setPreGoodsId(856851l);
+			param.setLimitStorage(1);
+			
+			
+			RequestPacket packet = new RequestPacket();
+			packet.setTraceId(UUID.randomUUID().toString());
+			packet.setTraceRootId(UUID.randomUUID().toString());
+			Message traceMessage = JobUtils.makeTraceMessage(packet);
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+			System.out.println("11param="+LogUtil.formatObjLog(param));
+			goodsInventoryUpdateService.createInventory4GoodsCost(clientIP, clientName, param, traceMessage);
+			//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
+			
+		}
 }

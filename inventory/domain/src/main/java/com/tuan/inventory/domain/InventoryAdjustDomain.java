@@ -34,6 +34,7 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
 import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.model.util.QueueConstant;
 
 public class InventoryAdjustDomain extends AbstractDomain {
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
@@ -477,8 +478,13 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setItem(id);
 			updateActionDO.setOriginalInventory(StringUtil.handlerOriInventory(type, origoodsleftnum, origoodstotalnum, oriselOrSuppleftnum, oriselOrSupptotalnum));
 			updateActionDO.setInventoryChange(String.valueOf(adjustNum));
-			updateActionDO.setActionType(ResultStatusEnum.CALLBACK_CONFIRM
-					.getDescription());
+			if(param.getTask()==QueueConstant.TASK_RESTORE_INVENTORY) {
+				updateActionDO.setActionType(ResultStatusEnum.TASK_RESTORE_INVENTORY
+						.getDescription());
+			}else{
+				updateActionDO.setActionType(ResultStatusEnum.ADJUST_INVENTORY
+						.getDescription());
+			}
 			if(!StringUtils.isEmpty(param.getUserId())) {
 				updateActionDO.setUserId(Long.valueOf(param.getUserId()));
 			}
@@ -487,7 +493,12 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
 					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
-			updateActionDO.setRemark("库存调整");
+			if(param.getTask()==QueueConstant.TASK_RESTORE_INVENTORY) {
+				updateActionDO.setRemark("商品改价还原库存");
+			}else {
+				updateActionDO.setRemark("库存调整");
+			}
+			
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {

@@ -65,7 +65,11 @@ public class QueueConstant {
 	public static final int FAIL_ADJUST_INVENTORY = -2; //	库存调整失败
 	
 	public static final int NO_GOODSBASE = 1044 ;//商品基本信息不存在
-		
+	
+	//订单中心跑任务还库存用
+	public static final int TASK_RESTORE_INVENTORY = 1 ;//商品基本信息不存在
+	
+	
 	
 	
 }

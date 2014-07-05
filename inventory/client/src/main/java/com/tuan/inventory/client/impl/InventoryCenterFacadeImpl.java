@@ -13,6 +13,7 @@ import com.tuan.inventory.model.WmsIsBeDeliveryModel;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
 import com.tuan.inventory.model.param.AdjustWaterfloodParam;
 import com.tuan.inventory.model.param.CallbackParam;
+import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
@@ -127,7 +128,7 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 	
 	@Override
 	public InventoryCallResult createInventory4GoodsCost(String clientIp,
-			String clientName, CreaterInventoryParam param, Message traceMessage) {
+			String clientName, CreateInventory4GoodsCostParam param, Message traceMessage) {
 		return goodsInventoryUpdate.createInventory4GoodsCost(clientIp, clientName, param, traceMessage);
 	}
 	

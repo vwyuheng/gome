@@ -505,7 +505,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			InventoryNotifyMessageParam notifyParam = null;
 			try {
 				notifyParam = new InventoryNotifyMessageParam();
-				notifyParam.setUserId(Long.valueOf(param!=null&&param.getUserId()!=null?param.getUserId():"0"));
+				notifyParam.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
 				notifyParam.setGoodsBaseId(goodsBaseId);
 				notifyParam.setGoodsId(goodsId);
 				if(inventoryDO!=null) {

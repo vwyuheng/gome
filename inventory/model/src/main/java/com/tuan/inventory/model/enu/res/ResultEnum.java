@@ -67,6 +67,8 @@ public enum ResultEnum {
 	INVALID_SELECTION_GOODSTYPEID         ("1042", "非法的商品选型类型id"),
 	INVALID_GOODSBASEID         ("1043", "商品基本id无效"),
 	NO_GOODSBASE        ("1044", "商品基本信息不存在！"),
+	FAILED_ORDERQUERYSERVICE        ("1045", "调用订单中心接口失败！"),
+	NO_GOODS       ("1046", "商品信息不存在！"),
 	NO_DATA("0","没有可用的数据"),
 	
 	//ERROR_2000	("2000",	"程序运行时错误"),
@@ -270,6 +272,12 @@ public enum ResultEnum {
 		}
 		if(code.equals("1044")){
 			return ResultEnum.NO_GOODSBASE;
+		}
+		if(code.equals("1045")){
+			return ResultEnum.FAILED_ORDERQUERYSERVICE;
+		}
+		if(code.equals("1046")){
+			return ResultEnum.NO_GOODS;
 		}
 		
 		if(code.equals("9999")){
