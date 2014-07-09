@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
-	<context:property-placeholder location="classpath:META-INF/app.properties" />
+	<!-- <context:property-placeholder location="classpath:META-INF/app.properties" /> -->
 	
 	<!-- notifyServer发送客户端 -->
 	<import resource="classpath:com/tuan/notifyserver/core/bean/client/notifyserver-pclient.xml" />
@@ -23,4 +23,33 @@
 	</bean>
 	<bean id="notifyServerSendMessage" class="com.tuan.inventory.domain.repository.impl.NotifyServerSendMessageImpl" />
 	
+	<!-- notify消费者 -->
+	<import resource="classpath:com/tuan/notifyserver/core/bean/client/notifyserver-cclient-jetty.xml" />
+	<bean id="consumerClientCheckAbstract" abstract="true">
+		<property name="port" value="50509"/>
+	</bean>
+	<bean id="consumerClientPortAbstract" abstract="true" parent="consumerClientAbstract" >
+		<property name="localPort" value="50509" />
+		<property name="checkPort" value="50509" />
+	</bean>
+	<bean id="consumerClientReceiveAbstract" abstract="true">
+		<property name="port" value="50509"/>
+	</bean>
+	<bean id="consumerReceiver" class="com.tuan.inventory.service.impl.MessageNotifyCallBackServiceImpl" />
+	<bean id="inventoryUpdateConsumerReceiver" class="com.tuan.inventory.service.impl.InventoryUpdateCallBackServiceImpl" />
+	<bean id="consumerClientAbstract" abstract="true">
+		<property name="customerGroupName" value="inventoryupdate"/>
+		<property name="consumerReceiverMap">
+			<map>
+				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
+				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
+				<!-- 开发联调 -->
+				<entry key="${notify.consumer.cms.queueName}" value-ref="consumerReceiver" />
+				<!-- 特殊和线上 -->
+				<entry key="${notify.consumer.self.queueName}" value-ref="inventoryUpdateConsumerReceiver" />
+				 <!-- 常规 -->
+				<!-- <entry key="inventorycenter.normal" value-ref="inventoryUpdateConsumerReceiver" /> -->
+			</map>
+		</property>
+	</bean>
 </beans>
