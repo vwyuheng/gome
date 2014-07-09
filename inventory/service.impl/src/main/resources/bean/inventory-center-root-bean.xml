@@ -9,7 +9,7 @@
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 	  
-	<context:property-placeholder location="classpath:META-INF/app.properties" />
+	<!-- <context:property-placeholder location="classpath:META-INF/app.properties" /> -->
 
    <import resource="classpath:/bean/inventory-dao-env-bean.xml" />
 	<import resource="classpath:/bean/inventory-dao-bean.xml" />
