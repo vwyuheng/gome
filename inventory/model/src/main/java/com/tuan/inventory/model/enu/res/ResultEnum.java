@@ -12,6 +12,7 @@ public enum ResultEnum {
 	INVALID_RETURN      ("1010",	"返回值不正确"),
 	
 	INVALID_LOG_PARAM				("1", 	"无效的日志"),
+	DATA_EXISTED						("2", 	"数据已存在"),
 	FAIL_ADJUST_INVENTORY			("-2", 	"库存调整失败"),
 	FAIL_ADJUST_WATERFLOOD			("-3", 	"注水调整失败"),
 	SHORTAGE_STOCK_INVENTORY				("-4", 	"库存不足"),
@@ -278,6 +279,10 @@ public enum ResultEnum {
 		}
 		if(code.equals("1046")){
 			return ResultEnum.NO_GOODS;
+		}
+		
+		if(code.equals("2")){
+			return ResultEnum.DATA_EXISTED;
 		}
 		
 		if(code.equals("9999")){

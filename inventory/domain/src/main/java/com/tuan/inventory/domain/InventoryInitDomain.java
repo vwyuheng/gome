@@ -362,7 +362,7 @@ public class InventoryInitDomain extends AbstractDomain{
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				if (publicCodeEnum != PublicCodeEnum.SUCCESS
-						&& !publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+						/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
 					// 消息数据不存并且不成功
 					message = "saveGoodsInventory2Mysql_error[" + publicCodeEnum.getMessage()
 							+ "]goodsId:" + goodsId;
