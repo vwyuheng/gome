@@ -216,7 +216,7 @@
     <appender name="SYS-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/write/business-sys-update.log</file>
         	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/read/business-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
+      			<fileNamePattern>${loggingRoot}/write/business-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
       			<maxHistory>20</maxHistory>
     		</rollingPolicy>
 		<encoder charset="UTF-8">

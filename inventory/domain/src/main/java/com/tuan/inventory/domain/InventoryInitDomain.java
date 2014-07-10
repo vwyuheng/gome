@@ -91,6 +91,8 @@ public class InventoryInitDomain extends AbstractDomain{
 				if(wmsUpate==null) {
 					// 初始化库存
 					this.isInitWms = true;
+					//先查询本系统mysql表
+					
 					// 初始化商品库存信息
 					CallResult<GoodsInventoryWMSDO> callGoodsWmsResult = this.synInitAndAysnMysqlService
 							.selectGoodsInventoryWMSByWmsGoodsId(wmsGoodsId,StringUtils.isEmpty(isBeDelivery)?null:Integer.valueOf(isBeDelivery));

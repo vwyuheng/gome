@@ -61,5 +61,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<List<GoodsSelectionDO>> deleteBatchGoodsSelection(List<GoodsSelectionDO> selectionDOList) throws Exception;
 	public CallResult<List<GoodsSuppliersDO>> deleteBatchGoodsSuppliers(List<GoodsSuppliersDO> suppliersDOList) throws Exception;
 	
+	//查询本系统
+	public CallResult<GoodsInventoryWMSDO> selectSelfGoodsInventoryWMSByWmsGoodsId(String wmsGoodsId,int isBeDelivery);
 	
 }

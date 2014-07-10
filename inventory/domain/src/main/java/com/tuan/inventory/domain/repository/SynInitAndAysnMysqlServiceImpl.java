@@ -1949,7 +1949,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (wmsDO == null&&CollectionUtils.isEmpty(selectionList)) {
+						if (wmsDO == null) {
 							logger.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
@@ -2715,6 +2715,53 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	final int resultCode = callBackResult.getResultCode();
 	return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
 			(Boolean)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+	@Override
+	public CallResult<GoodsInventoryWMSDO> selectSelfGoodsInventoryWMSByWmsGoodsId(
+			final String wmsGoodsId, final int isBeDelivery) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					GoodsInventoryWMSDO wmsDO = null;
+					try {
+						wmsDO = initCacheDomainRepository.selectGoodsInventoryWMS(wmsGoodsId,isBeDelivery);
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryWMSByWmsGoodsId error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + wmsGoodsId
+											+ "' for key 'wmsGoodsId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryWMSByWmsGoodsId error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							wmsDO);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (StringUtils.isEmpty(wmsGoodsId)) {
+						 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.PARAM_INVALID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<GoodsInventoryWMSDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(GoodsInventoryWMSDO)callBackResult.getBusinessObject(),
 			callBackResult.getThrowable());
 
 }
