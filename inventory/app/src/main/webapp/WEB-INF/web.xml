@@ -30,14 +30,6 @@
 			org.springframework.web.util.Log4jConfigListener
 		</listener-class>
 	</listener> -->
-	 <servlet>
-		<servlet-name>remoting</servlet-name>
-		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
-	</servlet>
-	<servlet-mapping>
-		<servlet-name>remoting</servlet-name>
-		<url-pattern>/remoting</url-pattern>
-	</servlet-mapping>
 	
 	 <servlet>
 		<servlet-name>inventory</servlet-name>
@@ -59,6 +51,19 @@
 		<servlet-name>job</servlet-name>
 		<url-pattern>/job/*</url-pattern>
     </servlet-mapping>
+    
+     <servlet>
+		<servlet-name>remoting</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>remoting</servlet-name>
+		<url-pattern>/remoting/*</url-pattern>
+	</servlet-mapping>
+	
+    
+    
 	<!-- end2 -->
 	<!-- start -->
     <filter>
