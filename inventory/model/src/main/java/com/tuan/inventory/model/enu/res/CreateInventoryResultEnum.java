@@ -2,7 +2,7 @@ package com.tuan.inventory.model.enu.res;
 
 public enum CreateInventoryResultEnum {
 	SUCCESS						(0, 	"成功"),
-	DATA_EXISTED						(2, 	"数据已存在"),
+	DATA_EXISTED						(2, 	"DATA_EXISTED"),
 	INVALID_USER_ID				(-1, 	"用户id无效"),
 	FAIL_ADJUST_INVENTORY			(-2, 	"库存调整失败"),
 	FAIL_ADJUST_WATERFLOOD			(-3, 	"注水调整失败"),
