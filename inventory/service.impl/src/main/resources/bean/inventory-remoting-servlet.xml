@@ -9,18 +9,16 @@
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 
-	<bean id="goodsInventoryQueryServiceImpl" class="com.tuan.inventory.service.impl.GoodsInventoryQueryServiceImpl"/>
 	<bean name="/goodsInventoryQueryService"
 		class="org.springframework.remoting.caucho.HessianServiceExporter">
-		<property name="service" ref="goodsInventoryQueryServiceImpl" />
+		<property name="service" ref="goodsInventoryQueryService" />
 		<property name="serviceInterface"
 			value="com.tuan.inventory.service.GoodsInventoryQueryService" />
 	</bean>
 	
-	<bean id="goodsInventoryUpdateServiceImpl" class="com.tuan.inventory.service.impl.GoodsInventoryUpdateServiceImpl"/>
 	<bean name="/goodsInventoryUpdateService"
 		class="org.springframework.remoting.caucho.HessianServiceExporter">
-		<property name="service" ref="goodsInventoryUpdateServiceImpl" />
+		<property name="service" ref="goodsInventoryUpdateService" />
 		<property name="serviceInterface"
 			value="com.tuan.inventory.service.GoodsInventoryUpdateService" />
 	</bean>
