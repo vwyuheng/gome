@@ -131,6 +131,20 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 			String clientName, CreateInventory4GoodsCostParam param, Message traceMessage) {
 		return goodsInventoryUpdate.createInventory4GoodsCost(clientIp, clientName, param, traceMessage);
 	}
+	public GoodsInventoryQueryService getGoodsInventoryQuery() {
+		return goodsInventoryQuery;
+	}
+	public void setGoodsInventoryQuery(
+			GoodsInventoryQueryService goodsInventoryQuery) {
+		this.goodsInventoryQuery = goodsInventoryQuery;
+	}
+	public GoodsInventoryUpdateService getGoodsInventoryUpdate() {
+		return goodsInventoryUpdate;
+	}
+	public void setGoodsInventoryUpdate(
+			GoodsInventoryUpdateService goodsInventoryUpdate) {
+		this.goodsInventoryUpdate = goodsInventoryUpdate;
+	}
 	
 
 }
