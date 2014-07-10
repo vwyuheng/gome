@@ -8,6 +8,7 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 
+import com.tuan.inventory.client.InventoryCenterFacade;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -28,6 +29,7 @@ import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
+import com.tuan.inventory.model.result.InventoryCallResult;
 import com.tuan.inventory.service.GoodsInventoryQueryService;
 import com.tuan.inventory.service.GoodsInventoryScheduledService;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
@@ -37,7 +39,8 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
-	
+	@Resource
+	InventoryCenterFacade inventoryCenterFacade;
 	@Resource
 	GoodsInventoryQueryService goodsInventoryQueryService;
 	@Resource
@@ -48,7 +51,18 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Resource
 	SequenceUtil sequenceUtil;
 	
-	
+	@Test
+	public void testHessian() {
+		CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
+		param.setGoodsBaseId(8000000554836l);
+		param.setGoodsId(554859l);
+		param.setPreGoodsId(554842l);
+		param.setLimitStorage(1);
+		
+		InventoryCallResult result = inventoryCenterFacade.createInventory4GoodsCost("127.0.0.1", "inventory", param, null);
+		//根据goodsId查询库存商品信息
+		System.out.println("result="+result);
+	}
 	@Test
 	public void testUpdateWmsData() {
 		UpdateWmsDataParam param = new UpdateWmsDataParam();
@@ -407,7 +421,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	//改价测试	
 		@Test
 		public void testCreateInventory4GoodsCost() {
-			CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
+			/*CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
 			
 			Long goodsId = sequenceUtil.getSequence(SEQNAME.seq_inventory);
 			// String goodsId = "2001";
@@ -417,6 +431,11 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			param.setPreGoodsId(856851l);
 			param.setGoodsBaseId(8000000856851l);
 			
+			param.setLimitStorage(1);*/
+			CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
+			param.setGoodsBaseId(8000000554836l);
+			param.setGoodsId(554859l);
+			param.setPreGoodsId(554842l);
 			param.setLimitStorage(1);
 			
 			
@@ -426,8 +445,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			Message traceMessage = JobUtils.makeTraceMessage(packet);
 			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
 			System.out.println("11param="+LogUtil.formatObjLog(param));
-			goodsInventoryUpdateService.createInventory4GoodsCost(clientIP, clientName, param, traceMessage);
-			//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
+			InventoryCallResult result = goodsInventoryUpdateService.createInventory4GoodsCost(clientIP, clientName, param, traceMessage);
+			System.out.println(" result="+ result);
 			
 		}
 }

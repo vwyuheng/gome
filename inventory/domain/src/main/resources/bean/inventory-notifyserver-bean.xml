@@ -41,14 +41,14 @@
 		<property name="customerGroupName" value="inventoryupdate"/>
 		<property name="consumerReceiverMap">
 			<map>
-				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
+			
 				<!-- <entry key="cms.stock.update.normal" value-ref="consumerReceiver" /> -->
 				<!-- 开发联调 -->
 				<entry key="${notify.consumer.cms.queueName}" value-ref="consumerReceiver" />
 				<!-- 特殊和线上 -->
 				<entry key="${notify.server.queueName}" value-ref="inventoryUpdateConsumerReceiver" />
 				 <!-- 常规 -->
-				<!-- <entry key="inventorycenter.normal" value-ref="inventoryUpdateConsumerReceiver" /> -->
+				<!-- <entry key="inventorycenter" value-ref="inventoryUpdateConsumerReceiver" /> -->
 			</map>
 		</property>
 	</bean>

@@ -18,6 +18,7 @@ public enum PublicCodeEnum {
 	SUCCESS(QueueConstant.SUCCESS,"SUCCESS"),
 	PARAM_INVALID(QueueConstant.INVALID_PARAM,"INVALID_PARAM"),
 	NO_DATA(QueueConstant.NO_DATA,"NO_DATA"),
+	NO_GOODS(QueueConstant.NO_GOODS,"NO_GOODS"),
 	INVALID_SELECTIONID(QueueConstant.INVALID_SELECTIONID,"INVALID_SELECTIONID"),
 	INVALID_SUPPLIERSID(QueueConstant.INVALID_SUPPLIERSID,"INVALID_SUPPLIERSID"),
 	DATA_EXISTED(QueueConstant.DATA_EXISTED,"DATA_EXISTED"),
@@ -73,7 +74,11 @@ public enum PublicCodeEnum {
 			return INVALID_RETURN;
 		} else if(code == QueueConstant.NO_GOODSBASE){
 			return NO_GOODSBASE;
+		}else if (code == QueueConstant.NO_GOODS) {
+			return NO_GOODS;
 		}
+		
+			
 		
 		
 		

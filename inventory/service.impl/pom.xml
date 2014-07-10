@@ -43,6 +43,12 @@
 			<groupId>com.tuan.cozy</groupId>
 			<artifactId>cozy-utils-trace</artifactId>
 		</dependency>
+		<!-- test start -->
+		<dependency>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-client</artifactId>
+			</dependency>
+		<!-- test end -->
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-model</artifactId>

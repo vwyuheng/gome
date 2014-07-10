@@ -258,7 +258,7 @@
 				<version>${inventory.app.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.tuan.inventorycenter</groupId>
+				<groupId>com.tuan.inventory</groupId>
 				<artifactId>inventory-client</artifactId>
 				<version>${inventory.client.version}</version>
 			</dependency>

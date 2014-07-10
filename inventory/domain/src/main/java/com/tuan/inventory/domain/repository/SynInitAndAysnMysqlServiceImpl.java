@@ -503,10 +503,16 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (goodsId<=0||(inventoryInfoDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
-							 logger.error(this.getClass()+"_create param invalid ,param is null");
+						if (goodsId<=0) {
+							logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_GOODSID
+											.getCode());
+						}
+						if (inventoryInfoDO == null) {
+							 logger.error(this.getClass()+"_create param invalid ,goodsInfo is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
 						}
 						

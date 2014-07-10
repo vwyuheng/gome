@@ -40,6 +40,7 @@ public class QueueConstant {
 	
 	
 	/** 系统异常常数 */
+	public static final int NO_GOODS = 1046;// 没有可用的数据
 	public static final int NO_DATA = 0;// 没有可用的数据
 	public static final int SUCCESS = 1;// 操作成功
 	public static final int INCORRECT_UPDATE = -13;// 更改超过预期的记录数

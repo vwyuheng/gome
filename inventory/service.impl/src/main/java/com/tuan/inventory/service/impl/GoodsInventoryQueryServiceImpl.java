@@ -244,7 +244,9 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.NO_GOODS, null));
 						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;

@@ -14,7 +14,9 @@
 	
 	<bean id="goodsInventoryQuery" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryQueryService</value>
+			<!-- <value>http://inventory.55tuan.me:8787/remoting/goodsInventoryQueryService</value> -->
+			<value>http://inventory.55tuan.me:882/remoting/goodsInventoryQueryService</value>
+			<!-- <value>http://localhost:882/remoting/goodsInventoryQueryService</value> -->
 		</property>
 		<property name="serviceInterface">
 			<value>com.tuan.inventory.service.GoodsInventoryQueryService</value>
@@ -23,7 +25,9 @@
 	
 	<bean id="goodsInventoryUpdate" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
-			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryUpdateService</value>
+			<!-- <value>http://localhost:882/remoting/goodsInventoryUpdateService</value> -->
+<!-- 			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryUpdateService</value> -->
+			<value>http://inventory.55tuan.me:882/remoting/goodsInventoryUpdateService</value>
 		</property>
 		<property name="serviceInterface">
 			<value>com.tuan.inventory.service.GoodsInventoryUpdateService</value>

@@ -12,6 +12,7 @@ public enum InventoryQueryEnum {
 	INVALID_WMSGOODSID(1032, "物流编码无效"),
 	INVALID_GOODSBASEID        (1043, "商品基本id无效"),
 	NO_GOODSBASE        (1044, "商品基本信息不存在！"),
+	NO_GOODS       (1046, "商品信息不存在！"),
 	/**用户id无效*/
 	INVALID_SELECTIONID(-3, "选型id无效"),
 	/**无效客户端*/

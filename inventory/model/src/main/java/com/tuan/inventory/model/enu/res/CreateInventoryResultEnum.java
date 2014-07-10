@@ -92,6 +92,8 @@ public enum CreateInventoryResultEnum {
 				return INVALID_TYPE;
 			case 1016:
 				return INVALID_SELECTIONNUM;
+			case 1046:
+				return NO_GOODS;
 			
 				
 				
