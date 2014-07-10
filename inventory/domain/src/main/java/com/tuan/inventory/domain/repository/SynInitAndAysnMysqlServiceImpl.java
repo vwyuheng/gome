@@ -335,7 +335,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (goodsId<=0||(inventoryInfoDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
+						if (goodsId<=0) {
+							logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.INVALID_GOODSID
+											.getCode());
+						}
+						if (inventoryInfoDO == null) {
 							logger.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
@@ -2720,14 +2726,14 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 }
 	@Override
 	public CallResult<GoodsInventoryWMSDO> selectSelfGoodsInventoryWMSByWmsGoodsId(
-			final String wmsGoodsId, final int isBeDelivery) {
+			final String wmsGoodsId) {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					GoodsInventoryWMSDO wmsDO = null;
 					try {
-						wmsDO = initCacheDomainRepository.selectGoodsInventoryWMS(wmsGoodsId,isBeDelivery);
+						wmsDO = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryWMSDO(wmsGoodsId);
 					} catch (Exception e) {
 						logger.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryWMSByWmsGoodsId error occured!"

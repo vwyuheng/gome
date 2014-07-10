@@ -91,18 +91,29 @@ public class InventoryInitDomain extends AbstractDomain{
 				if(wmsUpate==null) {
 					// 初始化库存
 					this.isInitWms = true;
-					//先查询本系统mysql表
-					
-					// 初始化商品库存信息
-					CallResult<GoodsInventoryWMSDO> callGoodsWmsResult = this.synInitAndAysnMysqlService
-							.selectGoodsInventoryWMSByWmsGoodsId(wmsGoodsId,StringUtils.isEmpty(isBeDelivery)?null:Integer.valueOf(isBeDelivery));
-					
-					if (callGoodsWmsResult == null || !callGoodsWmsResult.isSuccess()) {
+					//先查询本系统mysql表:为了防止mysql与redis数据不一致
+					CallResult<GoodsInventoryWMSDO> callSelfResult = synInitAndAysnMysqlService.selectSelfGoodsInventoryWMSByWmsGoodsId(wmsGoodsId);
+					if (callSelfResult == null || !callSelfResult.isSuccess()) {
 						this.isInitWms = false;
 						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
 					}else {  //初始化赋值
-						this.wmsUpate = callGoodsWmsResult.getBusinessResult();
+						GoodsInventoryWMSDO tmpWmsDO = callSelfResult.getBusinessResult();
+						if(tmpWmsDO!=null) {
+							this.wmsUpate = tmpWmsDO;
+						}else {
+							// 初始化商品库存信息
+							CallResult<GoodsInventoryWMSDO> callGoodsWmsResult = this.synInitAndAysnMysqlService
+									.selectGoodsInventoryWMSByWmsGoodsId(wmsGoodsId,StringUtils.isEmpty(isBeDelivery)?null:Integer.valueOf(isBeDelivery));
+							
+							if (callGoodsWmsResult == null || !callGoodsWmsResult.isSuccess()) {
+								this.isInitWms = false;
+								return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+							}else {  //初始化赋值
+								this.wmsUpate = callGoodsWmsResult.getBusinessResult();
+							}
+						}
 					}
+					
 					//通过物流编码查询商品id是否存在,
 					CallResult<List<GoodsInventoryDO>> callGoodsInventoryListDOResult = this.synInitAndAysnMysqlService
 							.selectInventoryList4Wms(wmsGoodsId);

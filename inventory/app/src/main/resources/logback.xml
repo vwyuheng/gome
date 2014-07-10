@@ -227,7 +227,7 @@
     <appender name="INVENTORY-DEDUCT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/write/business-inventory-deduct.log</file>
         	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/update/business-inventory-deduct.log.%d{yyyyMMdd}</fileNamePattern>
+      			<fileNamePattern>${loggingRoot}/write/business-inventory-deduct.log.%d{yyyyMMdd}</fileNamePattern>
       			<maxHistory>20</maxHistory>
     		</rollingPolicy>
 		<encoder charset="UTF-8">
