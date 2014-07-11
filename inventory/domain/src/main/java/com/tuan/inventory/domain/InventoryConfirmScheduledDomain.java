@@ -98,21 +98,31 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					if (loadMessageData(goodsId)) {  //更加商品id加载数据
 						
 						if (fillParamAndUpdate()) { // 组织数据
-
-							writeJobLog("[fillParamAndUpdate,start]更新goodsId:("
-									+ goodsId + "),inventoryInfoDO：("
-									+ inventoryInfoDO
-									+ "),selectionInventoryList:("
-									+ selectionInventoryList
-									+ "),wmsInventoryList:(" + wmsInventoryList
-									+ ")");
 							// 调用数据同步
 							updateDataEnum = this.asynUpdateMysqlInventory(
 									goodsId, inventoryInfoDO,
 									selectionInventoryList,
 									suppliersInventoryList, wmsInventoryList);
-							if (updateDataEnum != updateDataEnum.SUCCESS) {
-								writeJobLog("[fillParamAndUpdate]更新goodsId:("
+							//if (updateDataEnum != updateDataEnum.SUCCESS) {
+							if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
+								// 发消息
+								if(this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
+									writeJobLog("[sendmessage,successed],goodsId:("
+											+ goodsId
+											+ "),inventoryInfoDO：("
+											+ inventoryInfoDO
+											+ "),selectionInventoryList:("
+											+ selectionInventoryList
+											+ "),wmsInventoryList:("
+											+ wmsInventoryList + ")");
+									// 消息发送完成后将取出的队列标记删除状态
+									if(this.verifyId(queueId)) {
+										this.markDelete(queueId);
+									}
+								}
+								
+							} else {
+								writeJobLog("[sendmessage,failed],goodsId:("
 										+ goodsId + "),inventoryInfoDO：("
 										+ inventoryInfoDO
 										+ "),selectionInventoryList:("
@@ -120,21 +130,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 										+ "),wmsInventoryList:("
 										+ wmsInventoryList + "),message("
 										+ updateDataEnum.getDescription() + ")");
-							} else {
-								// 发消息
-								this.sendNotify();
-								// 消息发送完成后将取出的队列标记删除状态
-								if(this.verifyId(queueId)) {
-									this.markDelete(queueId);
-								}
-								writeJobLog("[fillParamAndUpdate,end]更新goodsId:("
-										+ goodsId
-										+ "),inventoryInfoDO：("
-										+ inventoryInfoDO
-										+ "),selectionInventoryList:("
-										+ selectionInventoryList
-										+ "),wmsInventoryList:("
-										+ wmsInventoryList + ")");
 							}
 						}
 					}// if1
@@ -236,24 +231,21 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		
 	}
 	// 发送库存新增消息
-	public void sendNotify() {
+	public boolean sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
 			this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryConfirmScheduledDomain.toString(),JSONObject
 					.fromObject(notifyParam));
-			/*
-			 * Type orderParamType = new
-			 * TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType(); String
-			 * paramJson = new Gson().toJson(notifyParam, orderParamType);
-			 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
-			 */
+			
 		} catch (Exception e) {
 			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
+			return false;
 		}
+		return true;
 	}
 
 	// 填充notifyserver发送参数
-	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
+	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() throws Exception{
 		if(goodsInventoryModel==null) {
 			return null;
 		}
@@ -288,17 +280,12 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	public void markDelete(long queueId) {
 		
 		try {
-			//if (!CollectionUtils.isEmpty(listQueueIdMarkDelete)) {
-				//for(long queueId:listQueueIdMarkDelete) {
-					String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
-					if(!StringUtils.isEmpty(member)) {
-						this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
-					}
-				//}
-			//}
+			String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
+			if(!StringUtils.isEmpty(member)) {
+			 this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+			}
 			
 		} catch (Exception e) {
-			
 			this.writeBusJobErrorLog(lm
 					.addMetaData("errMsg", "markDelete error"+e.getMessage()),false, e);
 			

@@ -141,14 +141,19 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							  writeJobLog("[fillParamAndUpdate,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
 							  //订单为已支付的，首先进行数据同步
 					          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
-					          if (updateDataEnum != updateDataEnum.SUCCESS) { 
-									 writeJobLog("[fillParamAndUpdate]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+					          //if (updateDataEnum != updateDataEnum.SUCCESS) { 
+					          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
+					        	//发送消息
+									if(this.sendNotify()) {
+										writeJobLog("[sendmessage,success]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+										//已支付成功订单，消息发送后，将队列标记删除
+										this.markDeleteAfterSendMsgSuccess(queueId);
+										 
+									}
+									
+									 
 								}else {
-									//发送消息
-									this.sendNotify();
-									//已支付成功订单，消息发送后，将队列标记删除
-									this.markDeleteAfterSendMsgSuccess(queueId);
-									 writeJobLog("[fillParamAndUpdate,end]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+									writeJobLog("[sendmessage,failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 								}
 						}
 					}
@@ -175,14 +180,16 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 									 writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),goodsBaseId:("+goodsBaseId+")");
 									  //订单为已支付的，首先进行数据同步:再更新mysql库存,
 							          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
-							          if (updateDataEnum != updateDataEnum.SUCCESS) { 
-											 writeJobLog("[rollback]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+							          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
+							        	//发送消息:再发送消息
+											if(this.sendNotify()) {
+											    writeJobLog("[rollback,sendmessage successed]queueId:"+queueId+",goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+												//已支付成功订单，消息发送后，将队列标记删除
+												this.markDeleteAfterSendMsgSuccess(queueId);
+											}
+
 										}else {
-											//发送消息:再发送消息
-											this.sendNotify();
-											//已支付成功订单，消息发送后，将队列标记删除
-											this.markDeleteAfterSendMsgSuccess(queueId);
-											 writeJobLog("[rollback,end]queueId:"+queueId+",goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+											 writeJobLog("[rollback,sendmessage failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 										}
 					
 								}
@@ -219,7 +226,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 
 	// 发送库存新增消息
-	public void sendNotify() {
+	public boolean sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
 			this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryLockedScheduledDomain.toString(),JSONObject
@@ -232,7 +239,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			 */
 		} catch (Exception e) {
 			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
+			return false;
 		}
+		return true;
 	}
 	
 	//异步更新mysql商品库存
@@ -304,7 +313,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	
 	
 	// 填充notifyserver发送参数
-	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
+	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() throws Exception{
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
 		notifyParam.setGoodsId(goodsInventoryModel.getGoodsId());

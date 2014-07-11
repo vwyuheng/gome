@@ -30,8 +30,9 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 	public void preHandler() {
 		try {
 			// 商品库存是否存在
-			//取初始状态队列信息
+			//取初始状态队列信息:一次取一条
 			//List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryLastIndexGoodsInventoryAction();
+			//取初始状态队列信息:一次取100条
 			List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryFirstInGoodsInventoryAction();
 			if (!CollectionUtils.isEmpty(queueLogList)) {
 				for (GoodsInventoryActionModel model : queueLogList) {
