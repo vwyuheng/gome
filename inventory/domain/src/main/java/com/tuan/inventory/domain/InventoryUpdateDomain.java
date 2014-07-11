@@ -317,9 +317,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}
 				if(!CollectionUtils.isEmpty(selectionIdlist)) {
 					for(GoodsSelectionModel gsmdoel : param.getGoodsSelection()) {
-						/*if(!selectionIdlist.contains(gsmdoel.getId())||gsmdoel.getId()<=0) {
+						if(!selectionIdlist.contains(gsmdoel.getId())||gsmdoel.getId()<=0) {
 							return CreateInventoryResultEnum.INVALID_SELECTIONID;
-						}*/
+						}
 						if(gsmdoel.getNum()<0) {
 							return CreateInventoryResultEnum.INVALID_SELECTIONNUM;
 						}
