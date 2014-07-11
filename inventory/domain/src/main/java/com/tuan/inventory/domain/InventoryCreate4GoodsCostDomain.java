@@ -273,8 +273,11 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	// 发送库存新增消息
 	public void sendNotify() {
 		try {
-			this.sendPreGoodsInventoryNotify();
-			this.sendAftGoodsInventoryNotify();
+			if(limitStorage==1) {  //非限制库存商品无需处理 ，0:库存无限制；1：限制库存
+				this.sendPreGoodsInventoryNotify();
+				this.sendAftGoodsInventoryNotify();
+			}
+			
 		} catch (Exception e) {
 			writeBusErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
 		}
