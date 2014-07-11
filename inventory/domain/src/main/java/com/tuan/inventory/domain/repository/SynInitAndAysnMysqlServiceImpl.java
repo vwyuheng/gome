@@ -139,12 +139,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							//操作库存基表
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
-							long goodsIds = inventoryInfoDO.getGoodsId();
 							GoodsInventoryDO isGoodsBaseIdIsnull = null;
-							if (goodsBaseId == null && goodsIds != 0) {
+							if (goodsBaseId == null && goodsId != 0) {
 								// 初始化商品库存信息
 								isGoodsBaseIdIsnull = initCacheDomainRepository
-										.getInventoryInfoByGoodsId(goodsIds);
+										.getInventoryInfoByGoodsId(goodsId);
 								if (isGoodsBaseIdIsnull != null) {
 									goodsBaseId = isGoodsBaseIdIsnull
 											.getGoodsBaseId();
@@ -172,9 +171,9 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
 								for(GoodsSelectionDO selDO:selectionInventoryList) {  //将商品id处理到选型中
-									selDO.setGoodsId(goodsIds);
+									selDO.setGoodsId(goodsId);
 								}
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsIds, selectionInventoryList);
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
 							}
 							// 保存分店库存
 							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
@@ -208,7 +207,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
 								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
-										goodsIds, selectionInventoryList);
+										goodsId, selectionInventoryList);
 								if(!selSuccess) {
 									throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
