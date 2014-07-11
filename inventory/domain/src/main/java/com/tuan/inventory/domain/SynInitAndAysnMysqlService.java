@@ -45,6 +45,7 @@ public interface SynInitAndAysnMysqlService {
 	//查询：
 	public CallResult<List<GoodsSelectionDO>> selectSelectionByGoodsTypeIds(final List<Long> goodsTypeIdList);
 	public CallResult<GoodsInventoryDO> selectGoodsInventoryByGoodsId(long goodsId);
+	public CallResult<GoodsInventoryDO> selectSelfGoodsInventoryByGoodsId(long goodsId);
 	public  CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(long goodsId);
 	public  CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(long goodsId);
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(String wmsGoodsId,int isBeDelivery);

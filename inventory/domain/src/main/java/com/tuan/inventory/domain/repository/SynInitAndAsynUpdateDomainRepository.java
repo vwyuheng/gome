@@ -129,10 +129,12 @@ public class SynInitAndAsynUpdateDomainRepository {
 					GoodsSelectionDO tmpDo = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
 					if(tmpDo==null) {
 						//将商品id set到选型中
-						//;srDO.setGoodsId(goodsId);
+						srDO.setGoodsId(goodsId);
 						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
 						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 						this.saveGoodsSelection(srDO);
+					}else {
+						this.updateGoodsSelection(srDO);
 					}
 					
 				}

@@ -198,17 +198,28 @@ public class InventoryInitDomain extends AbstractDomain{
 			if(inventoryInfoDO==null) {
 				// 初始化库存
 				this.isInit = true;
-				// 初始化商品库存信息
-				CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-						.selectGoodsInventoryByGoodsId(goodsId);
-				if (callGoodsInventoryDOResult == null || !callGoodsInventoryDOResult.isSuccess()) {
+				//选查本地库
+				CallResult<GoodsInventoryDO> callSelfResult = this.synInitAndAysnMysqlService
+						.selectSelfGoodsInventoryByGoodsId(goodsId);
+				if (callSelfResult == null || !callSelfResult.isSuccess()) {
 					this.isInit = false;
 					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
 				}else {
-				     this.inventoryInfoDO = 	callGoodsInventoryDOResult.getBusinessResult();
-				     if(inventoryInfoDO==null) {
-				    	 return CreateInventoryResultEnum.NO_GOODS;
-				     }
+					this.inventoryInfoDO = 	callSelfResult.getBusinessResult();
+					if(inventoryInfoDO==null) {
+						// 初始化商品库存信息
+						CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+								.selectGoodsInventoryByGoodsId(goodsId);
+						if (callGoodsInventoryDOResult == null || !callGoodsInventoryDOResult.isSuccess()) {
+							this.isInit = false;
+							return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+						}else {
+						     this.inventoryInfoDO = 	callGoodsInventoryDOResult.getBusinessResult();
+						     if(inventoryInfoDO==null) {
+						    	 return CreateInventoryResultEnum.NO_GOODS;
+						     }
+						}
+					}
 				}
 				
 				// 查询该商品选型库存信息

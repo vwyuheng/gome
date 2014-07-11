@@ -374,6 +374,12 @@
 		<isNotNull prepend="," property="wmsGoodsId">
 			wms_goods_id = #wmsGoodsId:VARCHAR#
 		</isNotNull>
+		<isNotNull prepend="," property="goodsId">
+			goods_id = #goodsId:BIGINT#
+		</isNotNull>
+		<isNotNull prepend="," property="limitStorage">
+			limit_storage = #limitStorage:INTEGER#
+		</isNotNull>
       </dynamic>
       where id = #id:INTEGER#
     </update>
