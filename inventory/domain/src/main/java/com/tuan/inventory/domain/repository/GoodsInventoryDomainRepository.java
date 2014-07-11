@@ -631,6 +631,10 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		
 		return ObjectUtils.getList(this.baseDAOService.queryLastIndexGoodsInventoryAction());
 	}
+	public List<GoodsInventoryActionModel> queryFirstInGoodsInventoryAction () {
+		
+		return ObjectUtils.getList(this.baseDAOService.queryFirstInGoodsInventoryAction());
+	}
 	
 	public GoodsInventoryQueueModel queryGoodsInventoryQueue(String key) {
 		

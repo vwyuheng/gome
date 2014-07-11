@@ -12,6 +12,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
@@ -294,6 +295,25 @@ public class ObjectUtils {
 				//}
 				
 			}
+		return result;
+	}
+	public static List<GoodsInventoryActionModel> getList(List<String> elements) {
+		List<GoodsInventoryActionModel> result = null;
+		if(!CollectionUtils.isEmpty(elements)){
+			for(String element:elements) {
+				if(StringUtils.isNotEmpty(element)){
+					
+					result =  new ArrayList<GoodsInventoryActionModel>();
+					GoodsInventoryActionModel tmpResult = JSON.parseObject(element,
+							GoodsInventoryActionModel.class);
+					//GoodsInventoryActionModel tmpResult = JsonUtils.convertStringToObject(element, GoodsInventoryActionModel.class);
+					if(tmpResult!=null)
+						result.add(tmpResult);
+					}
+					
+				}
+			}
+		
 		return result;
 	}
 	

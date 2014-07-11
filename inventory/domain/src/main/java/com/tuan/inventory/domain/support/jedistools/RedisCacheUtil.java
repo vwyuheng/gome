@@ -210,6 +210,37 @@ public class RedisCacheUtil {
 		});
 
 	}
+	/**
+	 * 返回列表 key 中指定区间内的元素，区间以偏移量 start 和 end 指定
+	 * @param key
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	public List<String> lrange(final String key, final long start,
+		    final long end) {
+		return jedisFactory.withJedisDo(new JWork<List<String>>() {
+			@Override
+			public List<String> work(Jedis j) throws Exception {
+				if (j == null)
+					return null;
+				try {
+					return j.lrange(key,start,end);
+					
+				} catch (Exception e) {
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.lrange");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("start", start)
+							.addMetaData("end", end)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.lrange("+key+","+start+","+end+") error!",e);
+				}
+				
+			}
+		});
+		
+	}
 	/***
 	 * 返回set集合 key 中的所有成员
 	 * 不存在的 key 被视为空集合

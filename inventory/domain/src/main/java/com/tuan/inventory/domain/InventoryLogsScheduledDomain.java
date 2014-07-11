@@ -31,7 +31,8 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 		try {
 			// 商品库存是否存在
 			//取初始状态队列信息
-			List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryLastIndexGoodsInventoryAction();
+			//List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryLastIndexGoodsInventoryAction();
+			List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryFirstInGoodsInventoryAction();
 			if (!CollectionUtils.isEmpty(queueLogList)) {
 				for (GoodsInventoryActionModel model : queueLogList) {
 				  this.model = model;

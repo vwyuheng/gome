@@ -136,6 +136,7 @@ public interface BaseDAOService {
 	public Set<String> queryInventoryQueueListByStatus (final Double status);
 	
 	public String queryLastIndexGoodsInventoryAction ();
+	public List<String> queryFirstInGoodsInventoryAction ();
 	public Long deleteQueueMember(String key);
 	
 	public String queryMember(String key);
