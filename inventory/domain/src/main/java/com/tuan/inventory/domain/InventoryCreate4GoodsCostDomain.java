@@ -202,7 +202,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			}
 		        // 改价商品
 			/**
-			 * 计算改价商品库存， 总库存=商品总库存【oldTotalNum】-inventoryInfoDO4OldGoods.getTotalNumber()
+			 * 计算改价商品库存， 总库存=商品总库存【oldTotalNum】-inventoryInfoDO4OldGoods.getTotalNumber()[inventoryInfoDO4OldGoods.getGoodsSaleCount()+takeNum]
 			 * 剩余库存= 总库存
 			 */
 			//组装信息
