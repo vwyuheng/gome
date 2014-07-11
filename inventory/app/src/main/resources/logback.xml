@@ -360,7 +360,7 @@
 		<appender-ref ref="SYS-UPDATE-APPENDER"/>
 	</logger>
 	<!-- 记录查询接口 -->
-	 <logger name="HTTPQUERYRESULT.LOG" additivity="false">
+	 <logger name="HTTPRESULT.LOG" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="HTTP-QUERY-APPENDER"/>
 	</logger>

@@ -81,7 +81,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 		
 						//参数校验
@@ -163,7 +164,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (suppliersId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_SUPPLIERSID;
@@ -246,7 +248,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 							
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
-									InventoryQueryEnum.NO_GOODS, null));
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
@@ -328,7 +330,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
@@ -409,7 +412,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
@@ -493,7 +497,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
@@ -572,7 +577,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						writeBusInitLog(lm,true);
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (goodsId <= 0) {
 							enumRes = InventoryQueryEnum.INVALID_GOODSID;
@@ -653,7 +659,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
 						
 						if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-							return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
+									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 						if (StringUtils.isEmpty(wmsGoodsId)) {
 							enumRes = InventoryQueryEnum.INVALID_WMSGOODSID;
