@@ -155,6 +155,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDO==null) {
 						srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
+					}else {
+						this.updateGoodsSelection(srDO);
 					}
 					
 				}
