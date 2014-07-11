@@ -128,7 +128,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 		
 	}
-	@Override
+	/*@Override
 	public CallResult<Boolean> saveGoodsWmsInventory(final long goodsId,final GoodsInventoryWMSDO wmsDO,
 			final List<GoodsSelectionDO> selectionList) throws Exception {
 		
@@ -213,7 +213,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				(Boolean)callBackResult.getBusinessObject(),
 				callBackResult.getThrowable());
 		
-	}
+	}*/
 	
 	@Override
 	public CallResult<Boolean> saveGoodsInventory(final long goodsId,final GoodsInventoryDO inventoryInfoDO,final List<GoodsSelectionDO> selectionInventoryList,final List<GoodsSuppliersDO> suppliersInventoryList)
@@ -344,7 +344,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (inventoryInfoDO == null) {
 							logger.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
 						}
 						
