@@ -43,6 +43,7 @@ public enum CreateInventoryResultEnum {
 	NO_GOODSBASE        (1044, "商品基本信息不存在！"),
 	FAILED_ORDERQUERYSERVICE        (1045, "调用订单中心接口失败！"),
 	NO_GOODS       (1046, "商品信息不存在！"),
+	NO_SELECTION       (1047, "选型信息不存在！"),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),
@@ -95,12 +96,14 @@ public enum CreateInventoryResultEnum {
 				return INVALID_SELECTIONNUM;
 			case 1046:
 				return NO_GOODS;
+			case 1047:
+				return NO_SELECTION;
 			case 2:
 				return DATA_EXISTED;
-			
-				
-				
-				
+			case 1032:
+				return INVALID_WMSGOODSID;
+			case 1041:
+				return NO_WMS_DATA;
 			case -88:
 				return SERVICE_REDIS_FALIURE;
 			case -99:

@@ -57,7 +57,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	private Long preGoodsId;// 改价前商品ID
 	private Long goodsId;
 	private Long goodsBaseId;
-	//private int limitStorage; // 0:库存无限制；1：限制库存
+	private int limitStorage; // 0:库存无限制；1：限制库存
 	private Long userId;
 	// 改价前商品是否存在：初始化后才有效
 	boolean isOldGoodsExists = false;
@@ -147,7 +147,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			this.preGoodsId = param.getPreGoodsId();
 			this.goodsId = param.getGoodsId();
 			this.goodsBaseId = param.getGoodsBaseId();
-			int limitStorage = param.getLimitStorage();
+			limitStorage = param.getLimitStorage();
 			// 业务检查前的预处理
 			CreateInventoryResultEnum preHander =	this.preGoodsCostHandler();
 			if(preHander!=null&&!(preHander.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
@@ -233,6 +233,9 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
+			if(limitStorage==0) {  //非限制库存商品无需处理 ，0:库存无限制；1：限制库存
+				return CreateInventoryResultEnum.SUCCESS;
+			}
 			//更新老商品的库存
 			CreateInventoryResultEnum resultEnum = this.updatePreGoodsInventory();
 			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){

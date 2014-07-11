@@ -40,7 +40,10 @@ public class QueueConstant {
 	
 	
 	/** 系统异常常数 */
-	public static final int NO_GOODS = 1046;// 没有可用的数据
+	public static final int NO_GOODS = 1046;// 没有可用的商品数据
+	
+	public static final int NO_WMS_DATA = 1041;// 物流信息不存在
+	public static final int NO_SELECTION = 1047;// 没有可用的选型数据
 	public static final int NO_DATA = 0;// 没有可用的数据
 	public static final int SUCCESS = 1;// 操作成功
 	public static final int INCORRECT_UPDATE = -13;// 更改超过预期的记录数
@@ -48,7 +51,9 @@ public class QueueConstant {
 	
 	public static final int INVALID_PARAM = -5;// 传入参数错误
 	public static final int INVALID_GOODSID = -8;// 商品id无效
-	
+	public static final int INVALID_WMSGOODSID = 1032;// 物流编码无效
+	public static final int INVALID_GOODSBASEID = 1043;// 商品基本id无效
+	        
 	public static final int INVALID_SELECTIONID = -12;// 选型id无效
 	public static final int INVALID_SUPPLIERSID = -11;// 分店id无效
 	

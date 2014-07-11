@@ -53,11 +53,17 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	
 	@Test
 	public void testHessian() {
+		/**
+		 * CreateInventory4GoodsCostParam[
+		 * tokenid=8e42c669-8d78-423b-a29b-d72ed0b0dd25,userId=<null>,preGoodsId=554944,goodsId=554947,goodsBaseId=8000000554894,limitStorage=0,goodsSelection=<null>,goodsSuppliers=<null>]]
+
+		 */
 		CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
-		param.setGoodsBaseId(8000000554836l);
-		param.setGoodsId(554859l);
-		param.setPreGoodsId(554842l);
-		param.setLimitStorage(1);
+		param.setTokenid("8e42c669-8d78-423b-a29b-d72ed0b0dd25");
+		param.setGoodsBaseId(8000000554894l);
+		param.setGoodsId(554947l);
+		param.setPreGoodsId(554944l);
+		param.setLimitStorage(0);
 		
 		InventoryCallResult result = inventoryCenterFacade.createInventory4GoodsCost("127.0.0.1", "inventory", param, null);
 		//根据goodsId查询库存商品信息
@@ -433,10 +439,15 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			
 			param.setLimitStorage(1);*/
 			CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
-			param.setGoodsBaseId(8000000554836l);
+			/*param.setGoodsBaseId(8000000554836l);
 			param.setGoodsId(554859l);
 			param.setPreGoodsId(554842l);
-			param.setLimitStorage(1);
+			param.setLimitStorage(1);*/
+			param.setTokenid("8e42c669-8d78-423b-a29b-d72ed0b0dd25");
+			param.setGoodsBaseId(8000000554894l);
+			param.setGoodsId(554947l);
+			param.setPreGoodsId(554944l);
+			param.setLimitStorage(0);
 			
 			
 			RequestPacket packet = new RequestPacket();
