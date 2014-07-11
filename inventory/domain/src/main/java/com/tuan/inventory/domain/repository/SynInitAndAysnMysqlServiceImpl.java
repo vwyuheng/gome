@@ -139,11 +139,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							//操作库存基表
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
+							long goodsIds = inventoryInfoDO.getGoodsId();
 							GoodsInventoryDO isGoodsBaseIdIsnull = null;
-							if (goodsBaseId == null && goodsId != 0) {
+							if (goodsBaseId == null && goodsIds != 0) {
 								// 初始化商品库存信息
 								isGoodsBaseIdIsnull = initCacheDomainRepository
-										.getInventoryInfoByGoodsId(goodsId);
+										.getInventoryInfoByGoodsId(goodsIds);
 								if (isGoodsBaseIdIsnull != null) {
 									goodsBaseId = isGoodsBaseIdIsnull
 											.getGoodsBaseId();
@@ -170,7 +171,10 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+								for(GoodsSelectionDO selDO:selectionInventoryList) {  //将商品id处理到选型中
+									selDO.setGoodsId(goodsIds);
+								}
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsIds, selectionInventoryList);
 							}
 							// 保存分店库存
 							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
@@ -204,7 +208,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
 								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
-										goodsId, selectionInventoryList);
+										goodsIds, selectionInventoryList);
 								if(!selSuccess) {
 									throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
@@ -256,7 +260,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											.getCode());
 						}
 						if (inventoryInfoDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,param is null");
+							logger.error(this.getClass()+"_create param invalid ,inventoryInfoDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
