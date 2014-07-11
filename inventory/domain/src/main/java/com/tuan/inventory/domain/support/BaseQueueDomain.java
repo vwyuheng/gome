@@ -18,6 +18,7 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
 public class BaseQueueDomain extends AbstractDomain{
 	
 	protected Long id;  //日志主键
+	private Long goodsBaseId;  //库存基表ID
 	protected Long goodsId;// 商品ID(FK)
 	protected Long orderId;// 订单id
 	protected Long userId ;//用户id
@@ -46,6 +47,7 @@ public class BaseQueueDomain extends AbstractDomain{
 	public BaseQueueDomain(GoodsInventoryActionModel logModel) {
 		super();
 		this.id = logModel.getId();
+		this.goodsBaseId = logModel.getGoodsBaseId();
 		this.goodsId = logModel.getGoodsId();
 		this.orderId = logModel.getOrderId();
 		this.type = logModel.getBusinessType();
@@ -62,12 +64,13 @@ public class BaseQueueDomain extends AbstractDomain{
 	}
 
 
-	public BaseQueueDomain(Long id, Long goodsId,
+	public BaseQueueDomain(Long id, Long goodsBaseId,Long goodsId,
 			Long orderId, String selectType, String suppliersType, String num,String oldNum,
 			String operateType, Long userId, String system, String clientIp,
 			String remark, String jsonContent) {
 		super();
 		this.id = id;
+		this.goodsBaseId = goodsBaseId;
 		this.goodsId = goodsId;
 		this.orderId = orderId;
 		if (StringUtils.isNotEmpty(selectType) ) {
@@ -98,6 +101,7 @@ public class BaseQueueDomain extends AbstractDomain{
 	public GoodsInventoryActionDO toLogQueueDO() {
 		GoodsInventoryActionDO logQueueDO = new GoodsInventoryActionDO();
 		logQueueDO.setId(this.id);
+		logQueueDO.setGoodsBaseId(this.goodsBaseId);
 		logQueueDO.setGoodsId(this.goodsId);
 		logQueueDO.setOrderId(this.orderId);
 		logQueueDO.setBusinessType(this.type);
@@ -122,6 +126,7 @@ public class BaseQueueDomain extends AbstractDomain{
 	public GoodsInventoryActionModel toLogQueueModel() {
 		GoodsInventoryActionModel queue = new GoodsInventoryActionModel();
 		queue.setId(this.id);
+		queue.setGoodsBaseId(goodsBaseId);
 		queue.setGoodsId(this.goodsId);
 		queue.setOrderId(this.orderId);
 		queue.setBusinessType(this.type);
@@ -248,6 +253,14 @@ public class BaseQueueDomain extends AbstractDomain{
 
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 

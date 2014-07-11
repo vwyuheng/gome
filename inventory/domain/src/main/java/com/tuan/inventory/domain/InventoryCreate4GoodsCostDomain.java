@@ -357,6 +357,10 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
+			if (isOldGoodsExists) { // 改价前商品
+				//将商品信息加载上来
+				this.inventoryInfoDO4OldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
+				}
 			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSONObject.fromObject(inventoryInfoDO4NewGoods).toString()+"],inventoryInfoDO4OldGoods:["+JSONObject.fromObject(inventoryInfoDO4OldGoods).toString()+"]"); // 操作内容
 			updateActionDO.setRemark("商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
