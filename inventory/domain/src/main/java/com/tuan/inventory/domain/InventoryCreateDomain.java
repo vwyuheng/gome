@@ -184,7 +184,7 @@ public class InventoryCreateDomain extends AbstractDomain {
 	public void sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryCreatorDomain.toString(),JSONObject
+			goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryCreateDomain.toString(),JSONObject
 					.fromObject(notifyParam));
 			/*
 			 * Type orderParamType = new

@@ -25,7 +25,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 
-public class InventoryWmsCreaterDomain extends AbstractDomain {
+public class InventoryWmsCreateDomain extends AbstractDomain {
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -45,7 +45,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 	// 新增选型
 	boolean addSelection = false;
 
-	public InventoryWmsCreaterDomain(String clientIp, String clientName,
+	public InventoryWmsCreateDomain(String clientIp, String clientName,
 			WmsInventoryParam param, LogModel lm) {
 		this.clientIp = clientIp;
 		this.clientName = clientName;
@@ -258,7 +258,7 @@ public class InventoryWmsCreaterDomain extends AbstractDomain {
 		public void sendNotify() {
 			try {
 				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-				goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsCreaterDomain.toString(),JSONObject
+				goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsCreateDomain.toString(),JSONObject
 						.fromObject(notifyParam));
 				/*
 				 * Type orderParamType = new

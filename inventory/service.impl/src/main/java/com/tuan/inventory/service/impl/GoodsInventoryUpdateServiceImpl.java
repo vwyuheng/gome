@@ -10,7 +10,7 @@ import com.tuan.inventory.domain.InventoryCreate4GoodsCostDomain;
 import com.tuan.inventory.domain.InventoryCreateDomain;
 import com.tuan.inventory.domain.InventoryOverrideAdjustDomain;
 import com.tuan.inventory.domain.InventoryUpdateDomain;
-import com.tuan.inventory.domain.InventoryWmsCreaterDomain;
+import com.tuan.inventory.domain.InventoryWmsCreateDomain;
 import com.tuan.inventory.domain.InventoryWmsDataUpdateDomain;
 import com.tuan.inventory.domain.InventoryWmsUpdateDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
@@ -135,7 +135,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createWmsInventory");
 		//构建领域对象
-		final InventoryWmsCreaterDomain inventoryWmsCreaterDomain = new InventoryWmsCreaterDomain(clientIp, clientName, param, lm);
+		final InventoryWmsCreateDomain inventoryWmsCreaterDomain = new InventoryWmsCreateDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
 		inventoryWmsCreaterDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryWmsCreaterDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
