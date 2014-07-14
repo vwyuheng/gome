@@ -192,89 +192,106 @@ public class InventoryInitDomain extends AbstractDomain{
 	// 初始化检查
 	public CreateInventoryResultEnum initCheck() {
 		try {
-		if (goodsId > 0) { // limitStorage>0:库存无限制；1：限制库存
-			
-			this.inventoryInfoDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-			if(inventoryInfoDO==null) {
-				// 初始化库存
-				this.isInit = true;
-				//选查本地库
-				CallResult<GoodsInventoryDO> callSelfResult = this.synInitAndAysnMysqlService
-						.selectSelfGoodsInventoryByGoodsId(goodsId);
-				if (callSelfResult == null || !callSelfResult.isSuccess()) {
-					this.isInit = false;
-					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-				}else {
-					this.inventoryInfoDO = 	callSelfResult.getBusinessResult();
-					if(inventoryInfoDO==null) {
-						// 初始化商品库存信息
-						CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-								.selectGoodsInventoryByGoodsId(goodsId);
-						if (callGoodsInventoryDOResult == null || !callGoodsInventoryDOResult.isSuccess()) {
+			if (goodsId > 0) { //
+
+				this.inventoryInfoDO = this.goodsInventoryDomainRepository
+						.queryGoodsInventory(goodsId);
+				if (inventoryInfoDO == null) {
+					// 初始化库存
+					this.isInit = true;
+					// 先查本地库
+					CallResult<GoodsInventoryDO> callSelfResult = this.synInitAndAysnMysqlService
+							.selectSelfGoodsInventoryByGoodsId(goodsId);
+					if (callSelfResult == null || !callSelfResult.isSuccess()) {
+						this.isInit = false;
+						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+					} else {
+						this.inventoryInfoDO = callSelfResult
+								.getBusinessResult();
+						if (inventoryInfoDO == null) {
+							// 初始化商品库存信息
+							CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+									.selectGoodsInventoryByGoodsId(goodsId);
+							if (callGoodsInventoryDOResult == null
+									|| !callGoodsInventoryDOResult.isSuccess()) {
+								this.isInit = false;
+								return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+							} else {
+								this.inventoryInfoDO = callGoodsInventoryDOResult
+										.getBusinessResult();
+								if (inventoryInfoDO == null) {
+									return CreateInventoryResultEnum.NO_GOODS;
+								}
+							}
+						}
+					}
+
+					// 查询该商品选型库存信息
+					CallResult<List<GoodsSelectionDO>> callGoodsSelectionListDOResult = this.synInitAndAysnMysqlService
+							.selectGoodsSelectionListByGoodsId(goodsId);
+					if (callGoodsSelectionListDOResult == null
+							|| !callGoodsSelectionListDOResult.isSuccess()) {
+						this.isInit = false;
+						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+					} else {
+						this.selectionInventoryList = callGoodsSelectionListDOResult
+								.getBusinessResult();
+					}
+					// 查询该商品分店库存信息
+					CallResult<List<GoodsSuppliersDO>> callGoodsSuppliersListDOResult = this.synInitAndAysnMysqlService
+							.selectGoodsSuppliersListByGoodsId(goodsId);
+					if (callGoodsSuppliersListDOResult == null
+							|| !callGoodsSuppliersListDOResult.isSuccess()) {
+						this.isInit = false;
+						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+					} else {
+						this.suppliersInventoryList = callGoodsSuppliersListDOResult
+								.getBusinessResult();
+					}
+					// 商品物流库存信息处理
+					// 首先判断是否物流商品
+					CallResult<GoodsInventoryWMSDO> callIsOrNotWmsResult = this.synInitAndAysnMysqlService
+							.selectIsOrNotGoodsWMSByGoodsId(goodsId);
+					if (callIsOrNotWmsResult == null
+							|| !callIsOrNotWmsResult.isSuccess()) {
+						this.isInit = false;
+						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
+					} else { // 是物流商品
+						this.wmsInventory = callIsOrNotWmsResult
+								.getBusinessResult();
+					}
+
+					// 再根据传过来的物流编码来查询物流库存信息
+					if (StringUtils.isNotEmpty(wmsGoodsId)) { // 目的是为了怕遗漏数据，因为该物流表是源头,可能先于商品
+						CallResult<GoodsInventoryWMSDO> callWmsResult = this.synInitAndAysnMysqlService
+								.selectGoodsInventoryWMSByWmsGoodsId(
+										wmsGoodsId, StringUtils
+												.isEmpty(isBeDelivery) ? null
+												: Integer.valueOf(isBeDelivery));
+						if (callWmsResult == null || !callWmsResult.isSuccess()) {
 							this.isInit = false;
 							return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-						}else {
-						     this.inventoryInfoDO = 	callGoodsInventoryDOResult.getBusinessResult();
-						     if(inventoryInfoDO==null) {
-						    	 return CreateInventoryResultEnum.NO_GOODS;
-						     }
+						} else { // 是物流商品
+							this.wmsInventory4wmsGoodsId = callWmsResult
+									.getBusinessResult();
+						}
+					}
+					// 校验是否是统一物流商品
+					if (wmsInventory != null && wmsInventory4wmsGoodsId != null) {
+						if (wmsInventory.getWmsGoodsId().equals(
+								wmsInventory4wmsGoodsId.getWmsGoodsId())) { // 冲突
+							// 有冲突，则以物流参数id不为空的为主
+							this.wmsInventory = null;
 						}
 					}
 				}
-				
-				// 查询该商品选型库存信息
-				CallResult<List<GoodsSelectionDO>> callGoodsSelectionListDOResult = this.synInitAndAysnMysqlService
-						.selectGoodsSelectionListByGoodsId(goodsId);
-				if (callGoodsSelectionListDOResult == null || !callGoodsSelectionListDOResult.isSuccess()) {
-					this.isInit = false;
-					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-				}else {
-				     this.selectionInventoryList = 	callGoodsSelectionListDOResult.getBusinessResult();
-				}
-				// 查询该商品分店库存信息
-				CallResult<List<GoodsSuppliersDO>> callGoodsSuppliersListDOResult = this.synInitAndAysnMysqlService
-						.selectGoodsSuppliersListByGoodsId(goodsId);
-				if (callGoodsSuppliersListDOResult == null || !callGoodsSuppliersListDOResult.isSuccess()) {
-					this.isInit = false;
-					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-				}else {
-				     this.suppliersInventoryList = 	callGoodsSuppliersListDOResult.getBusinessResult();
-				}
-				// 商品物流库存信息处理
-				//首先判断是否物流商品
-				CallResult<GoodsInventoryWMSDO> callIsOrNotWmsResult = this.synInitAndAysnMysqlService
-						.selectIsOrNotGoodsWMSByGoodsId(goodsId);
-				if (callIsOrNotWmsResult == null || !callIsOrNotWmsResult.isSuccess()) {
-					this.isInit = false;
-					return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-				}else { //是物流商品
-				     this.wmsInventory = 	callIsOrNotWmsResult.getBusinessResult();
-				}
-				
-			    //再根据传过来的物流编码来查询物流库存信息
-				if(StringUtils.isNotEmpty(wmsGoodsId)) {  //目的是为了怕遗漏数据，因为该物流表是源头,可能先于商品
-					CallResult<GoodsInventoryWMSDO> callWmsResult = this.synInitAndAysnMysqlService
-							.selectGoodsInventoryWMSByWmsGoodsId(wmsGoodsId,StringUtils.isEmpty(isBeDelivery)?null:Integer.valueOf(isBeDelivery));
-					if (callWmsResult == null || !callWmsResult.isSuccess()) {
-						this.isInit = false;
-						return CreateInventoryResultEnum.INIT_INVENTORY_ERROR;
-					}else { //是物流商品
-					     this.wmsInventory4wmsGoodsId = 	callWmsResult.getBusinessResult();
-					}
-				}
-				//校验是否是统一物流商品
-				if(wmsInventory!=null&&wmsInventory4wmsGoodsId!=null) {
-					if(wmsInventory.getWmsGoodsId().equals(wmsInventory4wmsGoodsId.getWmsGoodsId())) { //冲突
-						//有冲突，则以物流参数id不为空的为主
-						this.wmsInventory = null;
-					}
-				}
+			} else {
+				return CreateInventoryResultEnum.INVALID_GOODSID;
 			}
-		}
 		} catch (Exception e) {
 			this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
-							"initCheck error" + e.getMessage()),false,  e);
+							"initCheck error" + e.getMessage()), false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;

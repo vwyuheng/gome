@@ -372,7 +372,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						
 						if(wmsInventory!=null) {
-							// synInitAndAsynUpdateDomainRepository.saveGoodsWms( wmsInventory);
 							 String retAck = goodsInventoryDomainRepository.saveGoodsWmsInventory(wmsInventory);
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
