@@ -163,7 +163,7 @@ public class GoodsVerificationDomain {
 				return CreateInventoryResultEnum.INVALID_TYPE;
 			}
 		}
-		if(isSupplier&&!isSelection) {  //只包含分店的
+		/*if(isSupplier&&!isSelection) {  //只包含分店的
 			//校验类型是否合法
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode())) {
 				if (StringUtils.isEmpty(id)) {
@@ -176,9 +176,9 @@ public class GoodsVerificationDomain {
 			}else {
 				return CreateInventoryResultEnum.INVALID_TYPE;
 			}
-		}
+		}*/
 		
-		if(isSupplier&&isSelection) {  //分店选型都有的
+		/*if(isSupplier&&isSelection) {  //分店选型都有的
 			//校验类型是否合法
 			if (!(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode()))&&!(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS.getCode()))) {//即非选型亦非分的
 				return CreateInventoryResultEnum.SEL_OR_SUPP;
@@ -199,7 +199,7 @@ public class GoodsVerificationDomain {
 					}
 				}
 			}
-		}
+		}*/
 		
 		return CreateInventoryResultEnum.SUCCESS;
 	}

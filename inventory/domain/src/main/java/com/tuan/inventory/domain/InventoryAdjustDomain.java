@@ -82,8 +82,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	private Long goodsBaseId;
 	private long selectionId;
 	private long suppliersId;
-	//调整后库存
-	//private List<Long> resultACK;
 	
 	private int limitStorage = 0;
 	
@@ -119,7 +117,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				if(inventoryDO!=null&&inventoryDO.getLimitStorage()==1) {
+				limitStorage = inventoryDO.getLimitStorage();
+				if(limitStorage==0) {  //非限制库存
+					return CreateInventoryResultEnum.SUCCESS;
+				}
+				if(inventoryDO!=null) {
 					this.origoodsleftnum = inventoryDO.getLeftNumber();
 					this.origoodstotalnum = inventoryDO.getTotalNumber();
 					
@@ -134,7 +136,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				
 				//查询商品选型库存
 				this.selectionInventory = this.goodsInventoryDomainRepository.querySelectionRelationById(selectionId);
-				if(selectionInventory!=null&&selectionInventory.getLimitStorage()==1) {
+				limitStorage = selectionInventory.getLimitStorage();
+				if(limitStorage==0) {  //非限制库存
+					return CreateInventoryResultEnum.SUCCESS;
+				}
+				if(selectionInventory!=null) {
 					this.oriselOrSuppleftnum = selectionInventory.getLeftNumber();
 					this.oriselOrSupptotalnum = selectionInventory.getTotalNumber();
 					
@@ -146,7 +152,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				this.businessType = ResultStatusEnum.GOODS_SUPPLIERS.getDescription();
 				//查询商品分店库存
 				this.suppliersInventory = this.goodsInventoryDomainRepository.querySuppliersInventoryById(suppliersId);
-				if(suppliersInventory!=null&&suppliersInventory.getLimitStorage()==1) {
+				limitStorage = suppliersInventory.getLimitStorage();
+				if(limitStorage==0) {  //非限制库存
+					return CreateInventoryResultEnum.SUCCESS;
+				}
+				if(suppliersInventory!=null) {
 					this.oriselOrSuppleftnum = suppliersInventory.getLeftNumber();
 					this.oriselOrSupptotalnum = suppliersInventory.getTotalNumber();
 					
@@ -191,13 +201,17 @@ public class InventoryAdjustDomain extends AbstractDomain {
 													"adjustInventory dlock error"), true);
 				}
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
-					if (inventoryDO != null&&inventoryDO.getLimitStorage()==1) {
-						
+					
+					if (inventoryDO != null) {
+						if(limitStorage==0) {  //非限制库存
+							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
+						}
 						if(origoodstotalnum+(adjustNum)<0) {
 							// 调整剩余库存数量
 							inventoryDO.setLeftNumber(0);
 							inventoryDO.setTotalNumber(0);
 							inventoryDO.setLimitStorage(0);  //变为无限量
+							limitStorage = 0;
 						}else {
 							// 调整剩余库存数量
 							inventoryDO.setLeftNumber(inventoryDO.getLeftNumber()
@@ -237,9 +251,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
 								.getCode())) {
-					if (selectionInventory != null&&selectionInventory.getLimitStorage()==1) {
+					if (selectionInventory != null) {
 						//调整前校验
-
+						if(limitStorage==0) {  //非限制库存
+							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
+						}
 						//调整剩余库存数量
 						selectionInventory.setLeftNumber(selectionInventory
 								.getLeftNumber() + (adjustNum));
@@ -289,6 +305,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
 								.getCode())) {
 					if (suppliersInventory != null) {
+						if(limitStorage==0) {  //非限制库存
+							return CreateInventoryResultEnum.NONE_LIMIT_STORAGE;
+						}
 						//调整剩余库存数量
 						suppliersInventory.setLeftNumber(suppliersInventory
 								.getLeftNumber() + (adjustNum));
@@ -378,7 +397,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				notifyParam.setUserId(Long.valueOf(param.getUserId()));
 				notifyParam.setGoodsId(goodsId);
 				if(inventoryDO!=null) {
-					notifyParam.setLimitStorage(inventoryDO.getLimitStorage());
+					notifyParam.setLimitStorage(limitStorage);
 					notifyParam.setWaterfloodVal(inventoryDO.getWaterfloodVal());
 					notifyParam.setTotalNumber(this.goodstotalnum);
 					notifyParam.setLeftNumber(this.goodsleftnum);

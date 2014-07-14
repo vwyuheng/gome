@@ -14,11 +14,7 @@ import com.tuan.core.common.datasource.msloadbalancer.MSDataSourceType;
  *
  */
 @ContextConfiguration(locations = { 
-		"classpath:/bean/inventory-domain-bean-test.xml",
-		"classpath:/bean/inventory-redis.xml",
-		"classpath:/bean/inventory-dao-bean-test.xml",
-		"classpath:/bean/inventory-dao-env-bean-test.xml",
-		"classpath:/bean/inventory-notifyserver-bean.xml",
+		"classpath:/bean/inventory-cache-bean.xml",
 		
 		//"classpath:/bean/inventory-center-ext-bean.xml",
 		//"classpath:/bean/inventory-tasks-bean.xml",

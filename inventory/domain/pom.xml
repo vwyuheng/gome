@@ -25,7 +25,10 @@
 				<groupId>com.tuan.ordercenter</groupId>
 				<artifactId>ordercenter-service</artifactId>
 			</dependency>
-			
+			<dependency>
+			<groupId>memcached</groupId>
+			<artifactId>memcached</artifactId>
+		</dependency>
 			<dependency>
 				<groupId>hessian</groupId>
 				<artifactId>hessian</artifactId>

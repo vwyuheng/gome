@@ -4,35 +4,18 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 
-import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
-import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.core.common.lang.cache.remote.SpyMemcachedClient;
 
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
 	@Resource
-	SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	SpyMemcachedClient memcachedClient;
 	
 	@Test
-	public void testSaveGoodsInventory(){
-		GoodsInventoryDO goodsDO = new GoodsInventoryDO();
-		goodsDO.setGoodsId(1l);
-		goodsDO.setLeftNumber(100);
-		goodsDO.setLimitStorage(1);
-		goodsDO.setTotalNumber(200);
-		goodsDO.setWaterfloodVal(10);
-		synInitAndAsynUpdateDomainRepository.saveGoodsInventory(goodsDO);
-	}
-	
-	@Test
-	public void testUpdateGoodsInventory(){
-//		GoodsInventoryDO goodsDO = new GoodsInventoryDO();
-//		goodsDO.setGoodsId(1l);
-//		goodsDO.setLeftNumber(99);
-//		goodsDO.setLimitStorage(1);
-//		goodsDO.setTotalNumber(100);
-//		goodsDO.setWaterfloodVal(10);
-//		synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsDO);
+	public void testMem(){
+		memcachedClient.set("1test1", "test");
+	    System.out.println("ffff="+memcachedClient.get("1test1"));
 	}
 	
 	
