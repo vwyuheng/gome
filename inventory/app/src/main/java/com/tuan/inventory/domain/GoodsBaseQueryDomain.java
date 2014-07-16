@@ -31,7 +31,7 @@ public class GoodsBaseQueryDomain extends GoodsBaseDomain{
 		writeLog(lm.addMetaData("start", "start"),false);
 		CallResult<GoodsBaseModel> queryCallResult = null;
 		try {
-			queryCallResult = goodsInventoryQueryService.findSalesCountByGoodsBaseId(clientIp, clientName, goodsBaseId);
+			queryCallResult = goodsInventoryQueryService.findSalesCountByGoodsBaseId(clientIp, clientName, Long.parseLong(goodsBaseId));
 		} catch (Exception e) {
 			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
 			return ResultEnum.SYS_ERROR;

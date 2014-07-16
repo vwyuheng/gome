@@ -53,6 +53,10 @@ public abstract class GoodsBaseDomain extends AbstractGoodsInventoryDomain{
 	public ResultEnum checkParameter() {
 		if(!StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsBaseId))){
 			try{
+				if(!StringUtils.isNumeric(goodsBaseId)){
+					return ResultEnum.INVALID_GOODSBASEID;
+				}
+				
 				if(Long.parseLong(goodsBaseId) <= 0){
 					return ResultEnum.INVALID_GOODSBASEID;
 				}

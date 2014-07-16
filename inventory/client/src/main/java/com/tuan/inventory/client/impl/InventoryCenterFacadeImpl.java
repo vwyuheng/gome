@@ -75,7 +75,7 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 	}
 	@Override
 	public CallResult<GoodsBaseModel> querySalesCountByGoodsBaseId(
-			String clientIp, String clientName, String goodsBaseId) {
+			String clientIp, String clientName, long goodsBaseId) {
 		return goodsInventoryQuery.findSalesCountByGoodsBaseId(clientIp, clientName, goodsBaseId);
 	}
 	

@@ -110,7 +110,7 @@ public interface InventoryCenterFacade {
 	 * @return
 	 */
 	public CallResult<GoodsBaseModel> querySalesCountByGoodsBaseId(final String clientIp, final String clientName, 
-			final String goodsBaseId);
+			final long goodsBaseId);
 	
 	/** 
 	 * 创建库存接口，根据传入的参数创建库存

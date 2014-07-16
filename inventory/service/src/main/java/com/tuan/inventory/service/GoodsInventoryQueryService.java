@@ -110,5 +110,5 @@ public interface GoodsInventoryQueryService {
 	 */
 	@ProductCode(code = "00009", version = "1.0", logLevel = ProductLogLevelEnum.INFO)
 	CallResult<GoodsBaseModel> findSalesCountByGoodsBaseId(final String clientIp, final String clientName, 
-			final String goodsBaseId);
+			final long goodsBaseId);
 }
