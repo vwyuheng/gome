@@ -287,6 +287,17 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                        
+	<!-- hessian日志记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="INVENTORY-HESSIAN-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/hessian/inventory-hessian.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/hessian/inventory-hessian.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                        
 	<!-- ===================================================================== -->
 	<!-- Loggers                                                               -->
 	<!-- ===================================================================== -->
@@ -421,6 +432,11 @@
 	<logger name="INVENTORY.DESERILIZABLE.LOG" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="INVENTORY-DESERILIZABLE-APPENDER"/>
+	</logger>
+	<!-- hessian接口日志 -->
+	<logger name="INVENTORY.HESSIAN.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="INVENTORY-HESSIAN-APPENDER"/>
 	</logger>
 	<!-- ===================================================================== -->
 	<!-- Root logger                                                           -->

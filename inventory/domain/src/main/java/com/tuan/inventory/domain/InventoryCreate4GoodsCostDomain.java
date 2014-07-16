@@ -38,6 +38,7 @@ import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	private static Log loghessian = LogFactory.getLog("INVENTORY.HESSIAN.LOG");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -164,14 +165,31 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 					.getObject(OrderQueryService.class,
 							InventoryConfig.QUERY_URL);
+			//初始化改价前商品进来
+			long startTime = System.currentTimeMillis();
+			String method = "OrderQueryService.queryNupayOrderGoodsNum,preGoodsId:"+preGoodsId;
+			final LogModel lm = LogModel.newLogModel(method);
+			loghessian.info(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
 			CallResult<OrderQueryResult>  cllResult= basic.queryNupayOrderGoodsNum( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", preGoodsId);
 			UserOrderQueryEnum result = cllResult.getBusinessResult().getResult();
 			int takeNum = 0;
+			
 			if(result!=null&&result
 					.equals(UserOrderQueryEnum.SUCCESS)) {
 				//未支付订单占用库存量
 				takeNum = (Integer) cllResult.getBusinessResult().getResultObject();
+				long endTime = System.currentTimeMillis();
+				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+						+ "milliseconds(毫秒)执行完成!takeNum="+takeNum;
+				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
+						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
 			} else {
+				long endTime = System.currentTimeMillis();
+				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+						+ "milliseconds(毫秒)执行完成!";
+				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
+						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
 				return CreateInventoryResultEnum.FAILED_ORDERQUERYSERVICE;
 			}
 			//加载goodsbase信息
