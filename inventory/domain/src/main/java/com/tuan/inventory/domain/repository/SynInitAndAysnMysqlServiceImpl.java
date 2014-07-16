@@ -302,7 +302,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										
 									}else {  //相同baseid 不同的商品id时
 										//计算库存总数:暂时去掉
-										upBaseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(baseId);
+										upBaseDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(baseId);
 										synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(upBaseDO);
 									}
 									
