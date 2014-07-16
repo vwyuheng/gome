@@ -18,7 +18,7 @@
 	<import resource="classpath:/bean/inventory-cache-impl-bean.xml" />
 	<import resource="classpath:/bean/inventory-service-framework-bean.xml" />
 	<import resource="classpath:/bean/inventory-center-ext-bean.xml" />
-<!-- 	<import resource="classpath:/bean/inventory-remoting-servlet.xml" /> -->
+	<!-- <import resource="classpath:/bean/inventory-cache-bean.xml" /> -->
 	
 	<import resource="classpath:/bean/inventory-notifyserver-bean.xml" />
 	<import resource="classpath:/bean/inventory-redis.xml" />

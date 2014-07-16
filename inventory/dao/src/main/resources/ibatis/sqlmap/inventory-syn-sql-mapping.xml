@@ -563,7 +563,7 @@
 	<select id="selectInventoryBase4Init" resultMap="GoodsBaseResult"  parameterClass="java.lang.Long">
 
 	SELECT g.goods_base_id ,IFNULL(SUM(sale_count),0) AS
-	base_sale_count,IFNULL(SUM(ga.left_num),0) AS base_total_count FROM
+	base_sale_count,IFNULL(SUM(ga.total_num),0) AS base_total_count FROM
 	jeehe_goods_attribute ga, jeehe_goods g WHERE g.goods_id=ga.goods_id
 	AND g.goods_base_id =  #goodsBaseId:BIGINT#
 	</select>

@@ -1,14 +1,16 @@
-package com.tuan.inventory.domain.support.jedistools;
+package com.tuan.inventory.client.support.jedistools;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisSentinelPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
-import com.tuan.inventory.domain.support.logs.LocalLogger;
+import com.tuan.inventory.client.support.utils.CacheRunTimeException;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisSentinelPoolWrapper242;
+import redis.clients.jedis.exceptions.JedisConnectionException;
 
 /**
  * redis组件:模板方法,统一管理redis连接资源的申请与释放
@@ -17,12 +19,12 @@ import com.tuan.inventory.domain.support.logs.LocalLogger;
  */
 public class JedisFactory extends RedisBaseObject
 {
-	private final static LocalLogger m_logger = LocalLogger.getLog("CACHE.ERROR");
+	private static Log m_logger = LogFactory.getLog("CLIENT.CACHE.ERROR");
 	/**
 	 * spring 注入的 The connection pool.
 	 */
 	@Resource 
-	JedisSentinelPool jedisSentinelPool;
+	JedisSentinelPoolWrapper242 jedisSentinelPool;
 	/**
 	 * spring 静态注入的解决方式
 	 * The connection pool.
@@ -40,7 +42,7 @@ public class JedisFactory extends RedisBaseObject
 	 * 静态注入时，spring需要给jedisSentinelPool属性set值
 	 * @param jedisSentinelPool
 	 */
-	public void setJedisSentinelPool(JedisSentinelPool jedisSentinelPool) {
+	public void setJedisSentinelPool(JedisSentinelPoolWrapper242 jedisSentinelPool) {
 		this.jedisSentinelPool = jedisSentinelPool;
 	}
 	/**

@@ -9,14 +9,16 @@
        http://www.springframework.org/schema/oxm http://www.springframework.org/schema/oxm/spring-oxm-3.0.xsd"
 	default-lazy-init="true" default-autowire="byName">
 	
-	<bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPool">
+	<bean id="jedisSentinelPool" class="redis.clients.jedis.JedisSentinelPoolWrapper242">
 		<constructor-arg index="0">
 				<value>mymaster</value>
 		</constructor-arg>
 		<constructor-arg index="1">
 			<set>
 			     <!--  开发联调-->
-				<!-- <value>10.8.35.3:26379</value> -->
+				<!-- <value>10.8.35.3:26379</value>
+				<value>10.8.35.8:26379</value>
+				<value>10.8.35.1:26379</value> -->
 				<!-- 线上redis环境 -->
 				<!-- <value>redis212.55tuan.me:26379</value>
 				<value>redis213.55tuan.me:26379</value>
@@ -38,9 +40,13 @@
 		<property name="testOnBorrow" value="true" />
 	</bean>
 	
-	<bean id="jedisFactory" class="com.tuan.inventory.domain.support.jedistools.JedisFactory" init-method="init">
+	<bean id="jedisFactory" class="com.tuan.inventory.client.support.jedistools.JedisFactory" init-method="init">
 	<property name="jedisSentinelPool" ref="jedisSentinelPool"/>
 	</bean>
 	
-	<bean id="redisCacheUtil" class="com.tuan.inventory.domain.support.jedistools.RedisCacheUtil"/>
+	<bean id="redisCacheUtil" class="com.tuan.inventory.client.support.jedistools.RedisClientCacheUtil"/>
+	
+	<bean id="inventoryServiceTemplate" class="com.tuan.inventory.client.support.CacheBusiServiceTemplateImpl"/>
+	<bean id="cacheDAOService" class="com.tuan.inventory.client.support.CacheDAOServiceImpl"/>
+	<bean id="goodsInventoryQueryClientService" class="com.tuan.inventory.client.impl.GoodsInventoryQueryClientServiceImpl"/>
 </beans>

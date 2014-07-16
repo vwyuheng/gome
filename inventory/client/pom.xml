@@ -13,11 +13,23 @@
 	<name>inventory-client</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
-
+		<dependency>
+      	<groupId>redis.clients</groupId>
+      	<artifactId>jedis</artifactId>
+       </dependency>
+        <dependency>
+		<groupId>commons-pool</groupId>
+		<artifactId>commons-pool</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-pool2</artifactId>
+		<type>jar</type>
+		<scope>compile</scope>
+	</dependency>
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-model</artifactId>
-
 		</dependency>
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
@@ -27,9 +39,29 @@
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-ext</artifactId>
-
 		</dependency>
-
+       <!-- 	spring test start    -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-beans</artifactId>
@@ -40,20 +72,49 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-aop</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
+			<artifactId>spring-aop</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+		</dependency>
+       
+       <!-- 测试需要end -->
+       <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
+       <dependency>
+			<groupId>jackson</groupId>
+			<artifactId>jackson-all</artifactId>
+		</dependency>
+	  <dependency>
+			<groupId>commons-validator</groupId>
+			<artifactId>commons-validator</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>json-lib</groupId>
+			<artifactId>json-lib</artifactId>
+		</dependency>
+		<dependency>
+				<groupId>com.tuan.ezmorph</groupId>
+				<artifactId>ezmorph</artifactId>
+			</dependency>
+		
+		<dependency>
+				<groupId>commons-collections</groupId>
+				<artifactId>commons-collections</artifactId>
+			</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

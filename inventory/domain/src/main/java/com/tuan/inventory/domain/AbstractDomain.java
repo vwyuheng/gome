@@ -16,9 +16,15 @@ public abstract class AbstractDomain {
 	private static Log logInit=LogFactory.getLog("INVENTORY.INIT");
 	protected static Log logSysUpdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
+	protected static Log logwms = LogFactory.getLog("WMS.HANDLER.LOG");
 	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
 	private static Log logJobError=LogFactory.getLog("INVENTORY.JOB.ERROR.LOG");
 	
+	protected void writeWmsUpdateLog(LogModel lm, boolean purge) {
+		if (logwms.isInfoEnabled()) {
+			logwms.info(lm.toJson(purge));
+		}
+	}
 	protected void writeSysUpdateLog(LogModel lm, boolean purge) {
 		if (logSysUpdate.isInfoEnabled()) {
 			logSysUpdate.info(lm.toJson(purge));
@@ -83,6 +89,11 @@ public abstract class AbstractDomain {
 	protected void writeBusUpdateErrorLog(LogModel lm,boolean toJson,Exception e) {
 		if (logSysUpdate.isErrorEnabled()) { 
 			logSysUpdate.error(lm.toJson(toJson),e);
+		}
+	}
+	protected void writeBusWmsUpdateErrorLog(LogModel lm,boolean toJson,Exception e) {
+		if (logwms.isErrorEnabled()) { 
+			logwms.error(lm.toJson(toJson),e);
 		}
 	}
 	

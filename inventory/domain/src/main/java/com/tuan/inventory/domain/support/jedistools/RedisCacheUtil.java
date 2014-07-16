@@ -56,6 +56,7 @@ public class RedisCacheUtil {
 		});
 
 	}
+	
 	/**
 	 * (域-值)对设置到哈希表 key 中
 	 * 此命令会覆盖哈希表中已存在的域

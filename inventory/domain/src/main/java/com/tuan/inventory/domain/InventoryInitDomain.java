@@ -596,7 +596,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			//handler = false;
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"updateWmsMysqlInventory error" + e.getMessage()),false,  e);
+							"updateWmsMysqlInventory:"+message +","+ e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
 			log.info(lm.addMetaData("wmsDO",wmsDO)

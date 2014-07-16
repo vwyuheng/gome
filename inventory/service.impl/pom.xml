@@ -44,10 +44,10 @@
 			<artifactId>cozy-utils-trace</artifactId>
 		</dependency>
 		<!-- test start -->
-		<dependency>
+		<!-- <dependency>
 				<groupId>com.tuan.inventory</groupId>
 				<artifactId>inventory-client</artifactId>
-			</dependency>
+			</dependency> -->
 		<!-- test end -->
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>

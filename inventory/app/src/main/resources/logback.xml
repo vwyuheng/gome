@@ -223,6 +223,16 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>
 	</appender> 
+    <appender name="WMS-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/wms/wms-sys-update.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/wms/wms-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
+		</encoder>
+	</appender> 
 	<!-- 库存扣减过程记录 -->                                                                                                                                                                                                                                                                                                    
     <appender name="INVENTORY-DEDUCT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/write/business-inventory-deduct.log</file>
@@ -326,7 +336,11 @@
 		<level value="INFO"/>
 		<appender-ref ref="UCORE-BUSINESS-RESULT-APPENDER"/>
 	</logger>
-	
+	<!-- 物流调整日志 -->
+	<logger name="WMS.HANDLER.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="WMS-UPDATE-APPENDER"/>
+	</logger>
 		<!-- 补偿调度日志 -->
 	<logger name="COMPENSATION.NOTIFY.LOG" additivity="false">
 		<level value="INFO"/>

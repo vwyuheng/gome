@@ -8,7 +8,6 @@ import javax.annotation.Resource;
 
 import org.junit.Test;
 
-import com.tuan.inventory.client.InventoryCenterFacade;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -39,8 +38,8 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
-	@Resource
-	InventoryCenterFacade inventoryCenterFacade;
+	/*@Resource
+	InventoryCenterFacade inventoryCenterFacade;*/
 	@Resource
 	GoodsInventoryQueryService goodsInventoryQueryService;
 	@Resource
@@ -51,13 +50,13 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Resource
 	SequenceUtil sequenceUtil;
 	
-	@Test
+	/*@Test
 	public void testHessian() {
-		/**
+		*//**
 		 * CreateInventory4GoodsCostParam[
 		 * tokenid=8e42c669-8d78-423b-a29b-d72ed0b0dd25,userId=<null>,preGoodsId=554944,goodsId=554947,goodsBaseId=8000000554894,limitStorage=0,goodsSelection=<null>,goodsSuppliers=<null>]]
 
-		 */
+		 *//*
 		CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
 		param.setTokenid("8e42c669-8d78-423b-a29b-d72ed0b0dd25");
 		param.setGoodsBaseId(8000000554894l);
@@ -68,7 +67,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		InventoryCallResult result = inventoryCenterFacade.createInventory4GoodsCost("127.0.0.1", "inventory", param, null);
 		//根据goodsId查询库存商品信息
 		System.out.println("result="+result);
-	}
+	}*/
 	@Test
 	public void testUpdateWmsData() {
 		UpdateWmsDataParam param = new UpdateWmsDataParam();
