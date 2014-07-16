@@ -180,19 +180,19 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.NO_GOODSBASE;
 			}*/
 			int oldTotalNum = 0;
-			//int oldLeftNum = 0;
+			GoodsInventoryDO inventoryDO4OldGoods = null;
 			if (isOldGoodsExists) { // 改价前商品
 				//将商品信息加载上来
-				this.inventoryInfoDO4OldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
-				if(inventoryInfoDO4OldGoods!=null) {
-					oldTotalNum = inventoryInfoDO4OldGoods.getTotalNumber();
-					//oldLeftNum = inventoryInfoDO4OldGoods.getLeftNumber();
+				inventoryDO4OldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
+				if(inventoryDO4OldGoods!=null) {
+					//更新其总库存前保存下总库存数量
+					oldTotalNum = inventoryDO4OldGoods.getTotalNumber();
 					/**
 					 * 计算库存
 	                 *老商品计算公式  总库存=已销售量+所占库存量  剩余库存=未付款订单所占库存
 					 */
-					inventoryInfoDO4OldGoods.setLeftNumber(takeNum);
-					inventoryInfoDO4OldGoods.setTotalNumber(inventoryInfoDO4OldGoods.getGoodsSaleCount()+takeNum);
+					//更新该老商品库存
+					this.fillPreInventoryDO(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum, takeNum, inventoryDO4OldGoods);
 				}else {
 					return CreateInventoryResultEnum.NO_GOODS;
 				}
@@ -205,8 +205,11 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			 * 计算改价商品库存， 总库存=商品总库存【oldTotalNum】-inventoryInfoDO4OldGoods.getTotalNumber()[inventoryInfoDO4OldGoods.getGoodsSaleCount()+takeNum]
 			 * 剩余库存= 总库存
 			 */
-			//组装信息
-			this.fillNewInventoryDO(oldTotalNum-inventoryInfoDO4OldGoods.getTotalNumber(),oldTotalNum-inventoryInfoDO4OldGoods.getTotalNumber());  //以供存储
+			if(inventoryDO4OldGoods!=null) {
+				//组装信息
+				this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum));  //以供存储
+			}
+			
 				
 		} catch (Exception e) {
 			this.writeBusErrorLog(
@@ -358,10 +361,10 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
 			if (isOldGoodsExists) { // 改价前商品
-				//将商品信息加载上来
-				this.inventoryInfoDO4OldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
-				}
-			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSONObject.fromObject(inventoryInfoDO4NewGoods).toString()+"],inventoryInfoDO4OldGoods:["+JSONObject.fromObject(inventoryInfoDO4OldGoods).toString()+"]"); // 操作内容
+			//将商品信息加载上来
+		    GoodsInventoryDO oldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
+			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSONObject.fromObject(inventoryInfoDO4NewGoods).toString()+"],inventoryInfoDO4OldGoods:["+JSONObject.fromObject(oldGoods).toString()+"]"); // 操作内容
+			}
 			updateActionDO.setRemark("商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
@@ -404,6 +407,29 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
+	//组装改价商品信息
+	public void fillPreInventoryDO(int totalNumber,int leftNumber,GoodsInventoryDO oldDO) {
+		GoodsInventoryDO preInventoryInfoDO = new GoodsInventoryDO();
+		try {
+			preInventoryInfoDO.setGoodsId(preGoodsId);
+			preInventoryInfoDO.setGoodsBaseId(goodsBaseId);
+			preInventoryInfoDO.setLeftNumber(leftNumber);
+			preInventoryInfoDO.setTotalNumber(totalNumber);
+			preInventoryInfoDO.setLimitStorage(oldDO.getLimitStorage());
+			preInventoryInfoDO.setUserId(oldDO.getUserId());
+			preInventoryInfoDO.setWaterfloodVal(oldDO.getWaterfloodVal());
+			//商品库存销量
+			preInventoryInfoDO.setGoodsSaleCount(oldDO.getGoodsSaleCount());
+			preInventoryInfoDO.setGoodsSelectionIds(oldDO.getGoodsSelectionIds());
+			preInventoryInfoDO.setIsAddGoodsSelection(oldDO.getIsAddGoodsSelection());
+			preInventoryInfoDO.setIsDirectConsumption(oldDO.getIsDirectConsumption());
+			preInventoryInfoDO.setWmsId(oldDO.getWmsId());
+		} catch (Exception e) {
+			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillPreInventoryDO error"+e.getMessage()),false, e);
+			this.inventoryInfoDO4OldGoods = null;
+		}
+		this.inventoryInfoDO4OldGoods = preInventoryInfoDO;
+	}
 	//组装改价商品信息
 	public void fillNewInventoryDO(int totalNumber,int leftNumber) {
 		GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
