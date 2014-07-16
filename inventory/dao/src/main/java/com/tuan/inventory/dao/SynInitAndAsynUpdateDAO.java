@@ -41,6 +41,7 @@ public interface  SynInitAndAsynUpdateDAO {
 	 */
 	public GoodsBaseInventoryDO selectGoodBaseBygoodsId(long goodsBaseId);
 	public GoodsBaseInventoryDO selectInventoryBase4Init(long goodsBaseId);
+	public GoodsBaseInventoryDO selectSelfInventoryBaseInit(long goodsBaseId);
 	
 	void updateGoodsInventoryDO4SalesCount(GoodsInventoryDO goodsDO);
 	void updateGoodsInventoryBaseDO4Sales(GoodsBaseInventoryDO baseDO);

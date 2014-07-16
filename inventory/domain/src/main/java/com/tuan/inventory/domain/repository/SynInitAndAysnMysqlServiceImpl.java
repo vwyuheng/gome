@@ -164,7 +164,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 									
 								}else{
 									//计算库存总数:
-									upBaseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+									upBaseDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(goodsBaseId);
 									synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(upBaseDO);
 								}
 							}

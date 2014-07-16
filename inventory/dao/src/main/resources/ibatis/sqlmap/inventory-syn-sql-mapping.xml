@@ -567,6 +567,12 @@
 	jeehe_goods_attribute ga, jeehe_goods g WHERE g.goods_id=ga.goods_id
 	AND g.goods_base_id =  #goodsBaseId:BIGINT#
 	</select>
+    <!-- 通过基本id获取库存基本信息[库存中心表] -->	
+	<select id="selectSelfInventoryBaseInit" resultMap="GoodsBaseResult"  parameterClass="java.lang.Long">
+	SELECT goods_base_id ,IFNULL(SUM(base_sale_count),0) AS
+	base_sale_count,IFNULL(SUM(base_total_count),0) AS base_total_count FROM jeehe_inventory_base 
+	WHERE goods_base_id =  #goodsBaseId:BIGINT#
+	</select>
 	
 	
 	<!-- 累加商品销量字段   -->	
