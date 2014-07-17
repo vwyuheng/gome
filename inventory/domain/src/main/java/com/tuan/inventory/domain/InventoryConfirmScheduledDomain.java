@@ -107,14 +107,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 							if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
 								// 发消息
 								if(this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
-									writeJobLog("[sendmessage,successed],goodsId:("
-											+ goodsId
-											+ "),inventoryInfoDO：("
-											+ inventoryInfoDO
-											+ "),selectionInventoryList:("
-											+ selectionInventoryList
-											+ "),wmsInventoryList:("
-											+ wmsInventoryList + ")");
 									// 消息发送完成后将取出的队列标记删除状态
 									if(this.verifyId(queueId)) {
 										this.markDelete(queueId);

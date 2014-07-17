@@ -173,7 +173,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								for(GoodsSelectionDO selDO:selectionInventoryList) {  //将商品id处理到选型中
 									selDO.setGoodsId(goodsId);
 								}
-								synInitAndAsynUpdateDomainRepository.saveBatchGoodsSelection(goodsId, selectionInventoryList);
+								synInitAndAsynUpdateDomainRepository.saveAndUpdateGoodsSelection(goodsId, selectionInventoryList);
 							}
 							// 保存分店库存
 							if (!CollectionUtils.isEmpty(suppliersInventoryList)) {
@@ -206,7 +206,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 							// 保选型库存
 							if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-								boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
+								boolean selSuccess = goodsInventoryDomainRepository.saveAndUpdateGoodsSeleInventory(
 										goodsId, selectionInventoryList);
 								if(!selSuccess) {
 									throw new TuanRuntimeException(
@@ -2506,7 +2506,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						
 						// 保选型库存
 						if (!CollectionUtils.isEmpty(selectionInventoryList)) {
-							boolean selSuccess = goodsInventoryDomainRepository.saveGoodsSelectionInventory(
+							boolean selSuccess = goodsInventoryDomainRepository.saveAndUpdateGoodsSeleInventory(
 									goodsId, selectionInventoryList);
 							if(!selSuccess) {
 								throw new TuanRuntimeException(

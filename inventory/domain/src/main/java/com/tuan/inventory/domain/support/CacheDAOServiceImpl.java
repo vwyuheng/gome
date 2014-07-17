@@ -43,7 +43,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	@Override
 	public void pushLogQueues(GoodsInventoryActionDO logActionDO) {
 		// 将库存日志队列信息压入到redis list
-		this.redisCacheUtil.lpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSONObject
+		this.redisCacheUtil.rpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSONObject
 				.fromObject(logActionDO).toString());
 		
 	}
@@ -358,8 +358,8 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 
 	@Override
 	public void lremLogQueue(GoodsInventoryActionDO logActionDO) {
-		// 将库存日志队列信息移除:总是移除最后一条从list最末端往前找 value 相同的对象
-		this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (-1), JSONObject
+		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
+		this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (1), JSONObject
 				.fromObject(logActionDO).toString());
 	}
 

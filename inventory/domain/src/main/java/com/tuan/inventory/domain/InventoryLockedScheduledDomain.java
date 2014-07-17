@@ -138,14 +138,12 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					if(loadMessageData(goodsId)) {
 						//将数据更新到mysql
 						if(this.fillParamAndUpdate()) {
-							  writeJobLog("[fillParamAndUpdate,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
+							  writeJobLog("[asynUpdateMysqlInventory,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
 							  //订单为已支付的，首先进行数据同步
 					          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
-					          //if (updateDataEnum != updateDataEnum.SUCCESS) { 
 					          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
 					        	//发送消息
 									if(this.sendNotify()) {
-										writeJobLog("[sendmessage,success]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 										//已支付成功订单，消息发送后，将队列标记删除
 										this.markDeleteAfterSendMsgSuccess(queueId);
 										 

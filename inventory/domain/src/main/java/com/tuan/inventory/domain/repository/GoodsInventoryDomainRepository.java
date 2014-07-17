@@ -176,9 +176,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 				if (srDO.getId() > 0) { // if选型
 					
 					//首先根据选型id判断该选型是否已存在
-					//GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
-					//if(tmpSelDO==null) {  //不存在才创建
-						//String retAck = this.baseDAOService.saveGoodsSelectionWmsInventory(srDO);
+					GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
+					if(tmpSelDO==null) {  //不存在才创建,TODO
 						srDO.setGoodsId(goodsId);
 						boolean retAck = this.baseDAOService.saveGoodsSelectionInventory(goodsId,srDO);
 						if(!retAck) {
@@ -186,9 +185,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						}else {
 							success = "OK";
 						}
-					/*}else {
+					}else {
 						success = "OK";
-					}*/
+					}
 					
 				}
 				
@@ -202,8 +201,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
 					//首先根据选型id判断该选型是否已存在
-					//GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
-					//if(tmpSelDO==null) {  //不存在才创建
+					GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
+					if(tmpSelDO==null) {  //不存在才创建,初始化时无需更新数据
 						//将商品id set到选型中
 					srDO.setGoodsId(goodsId);
 					boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
@@ -211,7 +210,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						return false;
 					  }
 					
-					//}
+					}
 					
 				}
 				
@@ -219,6 +218,29 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		}//if1
 	    return true;
 	
+	}
+	public boolean saveAndUpdateGoodsSeleInventory(Long goodsId, List<GoodsSelectionDO> selectionDO) {
+		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
+			for (GoodsSelectionDO srDO : selectionDO) { // for
+				if (srDO.getId() > 0) { // if选型
+					//首先根据选型id判断该选型是否已存在
+					//GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
+					//if(tmpSelDO==null) {  //不存在才创建,初始化时无需更新数据
+						//将商品id set到选型中
+						srDO.setGoodsId(goodsId);
+						boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
+						if(!subRet) {
+							return false;
+						}
+						
+					}
+					
+				//}
+				
+			}//for
+		}//if1
+		return true;
+		
 	}
 	public boolean saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
 		if(selectionDO!=null) {

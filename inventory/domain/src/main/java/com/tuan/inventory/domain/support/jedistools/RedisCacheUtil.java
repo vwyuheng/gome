@@ -324,6 +324,34 @@ public class RedisCacheUtil {
 		});
 
 	}
+	/***
+	 * 将一个或多个值 value 插入到列表 key 的表头
+	 * @param key
+	 * @param strings
+	 * @return
+	 */
+	public Long rpush(final String key, final String... strings) {
+		return jedisFactory.withJedisDo(new JWork<Long>() {
+			@Override
+			public Long work(Jedis j) throws Exception {
+				if (j == null)
+					return null;
+				try {
+					return j.rpush(key,strings);
+					
+				} catch (Exception e) {
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.rpush");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("strings", strings)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.rpush("+key+","+strings+") error!",e);
+				}
+				
+			}
+		});
+		
+	}
 	/**
 	 * 将值 value 关联到 key ，
 	 * 并将 key 的生存时间设为 seconds (以秒为单位)

@@ -13,7 +13,8 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 
 public class InventoryLogsScheduledDomain extends AbstractDomain {
 	private LogModel lm;
-	private GoodsInventoryActionModel model;
+	//private GoodsInventoryActionModel model;
+	private List<GoodsInventoryActionModel> queueLogLists;
 	private Event event;
 	//缓存商品id，并排重，以便归并相同商品的消息发送次数
 	private EventHandle logsEventHandle;
@@ -27,7 +28,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 	/***
 	 * 业务处理前的预处理
 	 */
-	public void preHandler() {
+	public boolean preHandler() {
 		try {
 			// 商品库存是否存在
 			//取初始状态队列信息:一次取一条
@@ -35,18 +36,23 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			//取初始状态队列信息:一次取100条
 			List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryFirstInGoodsInventoryAction();
 			if (!CollectionUtils.isEmpty(queueLogList)) {
-				for (GoodsInventoryActionModel model : queueLogList) {
+				queueLogLists = queueLogList;
+				/*for (GoodsInventoryActionModel model : queueLogList) {
 				  this.model = model;
-				}
+				}*/
 			}else {
+				
 				writeJobLog("[LogsTask]获取队列:("+"日志"+")的队列为空！");
+				return false;
 			}
 		} catch (Exception e) {
+			
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg",
 							"preHandler error" + e.getMessage()),false, e);
+			return false;
 		}
-		
+		return true;
 		
 	}
 
@@ -55,14 +61,23 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 
 		try {
 			// 业务检查前的预处理
-			this.preHandler();
-			if (fillActionEvent()) {	 //从队列中取事件
-				boolean eventResult = logsEventHandle.handleEvent(event);
-				if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
-					//移除最后一个元素
-					this.goodsInventoryDomainRepository.lremLogQueue(model);
-				   }
+			if(this.preHandler()) {
+				if(!CollectionUtils.isEmpty(queueLogLists)) {
+					for (GoodsInventoryActionModel model : queueLogLists) {
+						 // this.model = model;
+						  if (fillActionEvent(model)) {	 //从队列中取事件
+								boolean eventResult = logsEventHandle.handleEvent(event);
+								if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
+									//移除最后一个元素
+									this.goodsInventoryDomainRepository.lremLogQueue(model);
+								   }
+								}
+						}
+					
 				}
+			}else {
+				return CreateInventoryResultEnum.SUCCESS;
+			}
 			
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(
@@ -75,7 +90,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 	}
 
 	//加载消息数据
-	public boolean fillActionEvent() {
+	public boolean fillActionEvent(GoodsInventoryActionModel model) {
 		try {
 			if(model==null) {
 				return false;

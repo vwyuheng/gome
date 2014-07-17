@@ -133,9 +133,9 @@ public class SynInitAndAsynUpdateDomainRepository {
 						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
 						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 						this.saveGoodsSelection(srDO);
-					}else {
+					}/*else {//TODO 初始化时无需更新选型数据
 						this.updateGoodsSelection(srDO);
-					}
+					}*/
 					
 				}
 				
@@ -143,6 +143,37 @@ public class SynInitAndAsynUpdateDomainRepository {
 		}//if1
 			
 	
+	}
+	/**
+	 * 批量保存商品选型库存
+	 * @param goodsId
+	 * @param selectionDO
+	 * @throws Exception 
+	 */
+	public void saveAndUpdateGoodsSelection(Long goodsId, List<GoodsSelectionDO> selectionDOList) throws Exception {
+		
+		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
+			for (GoodsSelectionDO srDO : selectionDOList) { // for
+				if (srDO.getId() > 0) { // if选型
+					long selectionId = srDO.getId();
+					//保存前检查下是否存在？
+					GoodsSelectionDO tmpDo = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
+					if(tmpDo==null) {
+						//将商品id set到选型中
+						srDO.setGoodsId(goodsId);
+						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
+						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
+						this.saveGoodsSelection(srDO);
+					}else {//
+						this.updateGoodsSelection(srDO);
+					}
+					
+				}
+				
+			}//for
+		}//if1
+		
+		
 	}
 	public void saveBatchGoodsWms(long goodsId,List<GoodsSelectionDO> selectionDOList) throws Exception {
 		
@@ -155,8 +186,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDO==null) {
 						srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
-					}else {
-						this.updateGoodsSelection(srDO);
+					}else {//TODO 初步估计这块无需更新选型数据
+						//this.updateGoodsSelection(srDO);
 					}
 					
 				}
@@ -307,8 +338,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					GoodsInventoryWMSDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
 					if(tmpDO==null) {
 						this.saveGoodsInventoryWMS(wmsInventory);
-					}else {
-						this.updateGoodsInventoryWMS(wmsInventory);
+					}else {//TODO 创建和初始化时不需要更新wms数据 
+						//this.updateGoodsInventoryWMS(wmsInventory);
 					}
 					
 				}
