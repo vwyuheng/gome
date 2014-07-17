@@ -285,26 +285,30 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							GoodsBaseInventoryDO baseDO =  null;
 							GoodsBaseInventoryDO upBaseDO =  null;
+							Long baseId= null;
 							if(inventoryInfoDO!=null) {
 								//先检查mysql库中是否存在
 								GoodsInventoryDO tmpGoodsDo = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(goodsId);
 								if(tmpGoodsDo==null) {
-									long baseId=inventoryInfoDO.getGoodsBaseId();
+									baseId=inventoryInfoDO.getGoodsBaseId();
 									synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
 									//检查goodsbase信息是否存在
-									GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(baseId);
-									if(tmpDo==null) {  //常态化初上线时是1vs1的关系,故直接取
-										//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
-										baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(baseId);
-										if(baseDO!=null) {
-											synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
+									if(baseId!=null&&baseId!=0) {
+										GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(baseId);
+										if(tmpDo==null) {  //常态化初上线时是1vs1的关系,故直接取
+											//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
+											baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(baseId);
+											if(baseDO!=null) {
+												synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
+											}
+											
+										}else {  //相同baseid 不同的商品id时
+											//计算库存总数:暂时去掉
+											upBaseDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(baseId);
+											synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(upBaseDO);
 										}
-										
-									}else {  //相同baseid 不同的商品id时
-										//计算库存总数:暂时去掉
-										upBaseDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(baseId);
-										synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(upBaseDO);
 									}
+									
 									
 								}
 								
@@ -327,11 +331,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if(inventoryInfoDO!=null) {
 							String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 									inventoryInfoDO);
-							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseDO!=null){
-								retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), baseDO);
+							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseDO!=null&&baseId!=null&&baseId!=0){
+								retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(baseId, baseDO);
 							}
-							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&upBaseDO!=null){
-								retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(inventoryInfoDO.getGoodsBaseId(), upBaseDO);
+							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&upBaseDO!=null&&baseId!=null&&baseId!=0){
+								retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(baseId, upBaseDO);
 							}
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
@@ -2119,21 +2123,24 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							if(baseInventoryDO!=null) {
-								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
+								Long gbaseId = baseInventoryDO.getGoodsBaseId();
+								if(gbaseId!=null&&gbaseId!=0) {
+									synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
+									String breAck=goodsInventoryDomainRepository.saveGoodsBaseInventory(gbaseId, baseInventoryDO);
+									if(StringUtils.isEmpty(breAck)) {
+										throw new TuanRuntimeException(
+												QueueConstant.SERVICE_REDIS_FALIURE,
+												"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+												new Exception());
+									}
+									if(!breAck.equalsIgnoreCase("ok")) {
+										throw new TuanRuntimeException(
+												QueueConstant.SERVICE_REDIS_FALIURE,
+												"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+												new Exception());
+									}
+								}
 								
-								String breAck=goodsInventoryDomainRepository.saveGoodsBaseInventory(baseInventoryDO.getGoodsBaseId(), baseInventoryDO);
-								if(StringUtils.isEmpty(breAck)) {
-									throw new TuanRuntimeException(
-											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
-											new Exception());
-								}
-								if(!breAck.equalsIgnoreCase("ok")) {
-									throw new TuanRuntimeException(
-											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
-											new Exception());
-								}
 							}
 							
 						} catch (Exception e) {

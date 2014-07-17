@@ -227,8 +227,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	public boolean sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryLockedScheduledDomain.toString(),JSONObject
-					.fromObject(notifyParam));
+			if(notifyParam!=null) {
+				this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryLockedScheduledDomain.toString(),JSONObject
+						.fromObject(notifyParam));
+			}
+			
 			/*
 			 * Type orderParamType = new
 			 * TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType(); String

@@ -69,10 +69,10 @@ public class SynInitAndAsynUpdateDomainRepository {
 								}
 							}else {
 								//计算库存总数:暂时去掉
-								GoodsBaseInventoryDO upBaseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
+								/*GoodsBaseInventoryDO upBaseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
 								if(upBaseDO!=null) {
 									synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(upBaseDO);
-								}
+								}*/
 							}
 						}
 					}

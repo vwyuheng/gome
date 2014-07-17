@@ -433,26 +433,30 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
-	
-	//发送库存新增消息
-	public void sendNotify(){
-					try {
-						if(goodsId!=0&&goodsBaseId!=0) {
-							InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-							goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsDataUpdateDomain.toString(),JSONObject.fromObject(notifyParam));
-						}else {
-							logMsg.warn("from InventoryWmsDataUpdateDomain send msg,goodsBaseId:"+goodsBaseId+",goodsId:"+goodsId+" is illegal!");
-						}
-						
-						/*Type orderParamType = new TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType();
-						String paramJson = new Gson().toJson(notifyParam, orderParamType);
-						extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
-					} catch (Exception e) {
-						this.writeBusUpdateErrorLog(
-								lm.setMethod("sendNotify").addMetaData("errorMsg",e.getMessage()),false, e);
-					}
-				}
-		
+
+	// 发送库存新增消息
+	public void sendNotify() {
+		try {
+			if (goodsId != 0 && goodsBaseId != 0) {
+				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
+				goodsInventoryDomainRepository
+						.sendNotifyServerMessage(
+								NotifySenderEnum.InventoryWmsDataUpdateDomain
+										.toString(), JSONObject
+										.fromObject(notifyParam));
+			} else {
+				logMsg.warn("from InventoryWmsDataUpdateDomain send msg,goodsBaseId:"
+						+ goodsBaseId + ",goodsId:" + goodsId + " is illegal!");
+			}
+
+			
+		} catch (Exception e) {
+			this.writeBusUpdateErrorLog(
+					lm.setMethod("sendNotify").addMetaData("errorMsg",
+							e.getMessage()), false, e);
+		}
+	}
+
 		//填充notifyserver发送参数
 		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(){
 					InventoryNotifyMessageParam notifyParam = null;

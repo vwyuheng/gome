@@ -226,8 +226,10 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	public boolean sendNotify() {
 		try {
 			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-			this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryConfirmScheduledDomain.toString(),JSONObject
-					.fromObject(notifyParam));
+			if(notifyParam!=null) {
+				this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryConfirmScheduledDomain.toString(),JSONObject
+						.fromObject(notifyParam));
+			}
 			
 		} catch (Exception e) {
 			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
