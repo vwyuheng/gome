@@ -76,7 +76,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 					
 				}
 			}else {
-				return CreateInventoryResultEnum.SUCCESS;
+				return CreateInventoryResultEnum.SYS_ERROR;
 			}
 			
 		} catch (Exception e) {
