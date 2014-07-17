@@ -614,7 +614,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				updateActionDO.setOrderId(Long.valueOf(param.getOrderId()));
 			}
 			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
-			updateActionDO.setRemark("修改库存");
+			updateActionDO.setRemark("扣减库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
