@@ -252,10 +252,10 @@
     <update id="updateGoodsInventoryWMS" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO" >
       update jeehe_inventory_wms
       <dynamic prepend="set" >
-      <isNotNull prepend="," property="totalNumber">
+      <isNotNull prepend="," property="goodsSupplier">
 			goods_supplier = #goodsSupplier:VARCHAR#
 		</isNotNull>
-		<isNotNull prepend="," property="totalNumber">
+		<isNotNull prepend="," property="goodsName">
 			goods_sname = #goodsName:VARCHAR#
 		</isNotNull>
         <isNotNull prepend="," property="totalNumber">
@@ -353,7 +353,7 @@
        <isNotNull prepend="," property="suppliersId">
 			suppliers_id = #suppliersId:BIGINT#
 		</isNotNull>
-       <isNotNull prepend="," property="suppliersId">
+       <isNotNull prepend="," property="goodTypeId">
 			good_type_id = #goodTypeId:INTEGER#
 		</isNotNull>
         <isNotNull prepend="," property="totalNumber">

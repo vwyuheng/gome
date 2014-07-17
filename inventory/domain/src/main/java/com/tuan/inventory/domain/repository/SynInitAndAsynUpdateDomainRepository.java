@@ -307,6 +307,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					GoodsInventoryWMSDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
 					if(tmpDO==null) {
 						this.saveGoodsInventoryWMS(wmsInventory);
+					}else {
+						this.updateGoodsInventoryWMS(wmsInventory);
 					}
 					
 				}
