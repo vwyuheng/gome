@@ -202,16 +202,16 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
 					//首先根据选型id判断该选型是否已存在
-					GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
-					if(tmpSelDO==null) {  //不存在才创建
+					//GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
+					//if(tmpSelDO==null) {  //不存在才创建
 						//将商品id set到选型中
-						srDO.setGoodsId(goodsId);
+					srDO.setGoodsId(goodsId);
 					boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
 					if(!subRet) {
 						return false;
 					  }
 					
-					}
+					//}
 					
 				}
 				
