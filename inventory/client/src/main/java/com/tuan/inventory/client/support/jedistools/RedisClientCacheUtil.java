@@ -18,7 +18,7 @@ import com.tuan.inventory.client.support.utils.LogModel;
  * @date 2014.3
  */
 public class RedisClientCacheUtil {
-	private static Log log = LogFactory.getLog("CLIENT.CACHE.ERROR");
+	private static Log log = LogFactory.getLog("INVENTORY.CLIENT.LOG");
 	@Resource
 	JedisFactory jedisFactory;
 	/**

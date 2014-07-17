@@ -19,7 +19,7 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
  */
 public class JedisFactory extends RedisBaseObject
 {
-	private static Log m_logger = LogFactory.getLog("CLIENT.CACHE.ERROR");
+	private static Log m_logger = LogFactory.getLog("INVENTORY.CLIENT.LOG");
 	/**
 	 * spring 注入的 The connection pool.
 	 */
