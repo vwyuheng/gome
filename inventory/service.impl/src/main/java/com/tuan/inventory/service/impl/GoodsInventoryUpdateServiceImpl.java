@@ -2,6 +2,9 @@ package com.tuan.inventory.service.impl;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryAdjustDomain;
@@ -39,6 +42,7 @@ import com.wowotrace.traceEnum.MessageResultEnum;
 import com.wowotrace.traceEnum.MessageTypeEnum;
 
 public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService implements GoodsInventoryUpdateService {
+	protected static Log logSaveAndUpdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
@@ -56,11 +60,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult createInventory(String clientIp,
 			String clientName, CreaterInventoryParam param,Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.createInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory");
 		//构建领域对象
@@ -106,12 +111,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				//inventoryCreatorDomain.sendNotify();
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("end", "end");
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -127,11 +133,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult createWmsInventory(String clientIp,
 			String clientName, WmsInventoryParam param,Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.createWmsInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createWmsInventory");
 		//构建领域对象
@@ -177,12 +184,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 //				inventoryWmsCreaterDomain.sendNotify();
 			}
 		});
-		
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("wmsGoodsId", param.getWmsGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("wmsGoodsId", param.getWmsGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -193,11 +201,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult updateInventory(String clientIp,
 			String clientName, UpdateInventoryParam param, Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.updateInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		final LogModel lm = LogModel.newLogModel(method);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory");
 		//构建领域对象
@@ -246,12 +255,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				queueIdParam.setQueueKeyId(queueKeyId);
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", inventoryUpdateDomain.getGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("goodsId", inventoryUpdateDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),queueIdParam);
@@ -259,11 +269,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult callbackAckInventory(String clientIp,
 			String clientName, CallbackParam param, Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.callbackAckInventory";
-		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		final LogModel lm = LogModel.newLogModel(method);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "callbackAckInventory");
 		//构建领域对象
@@ -308,12 +319,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", inventoryCallbackDomain.getGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("goodsId", inventoryCallbackDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -321,11 +333,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult adjustmentInventory(String clientIp,
 			String clientName, AdjustInventoryParam param, Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.adjustmentInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentInventory");
 		//构建领域对象
@@ -372,12 +385,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryAdjustDomain.sendNotify();
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -386,11 +400,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	public InventoryCallResult adjustmentWaterflood(String clientIp,
 			String clientName, AdjustWaterfloodParam param,
 			Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.adjustmentWaterflood";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustmentWaterflood");
 		//构建领域对象
@@ -436,12 +451,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				waterfloodAdjustmentDomain.sendNotify();
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", waterfloodAdjustmentDomain.getGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("goodsId", waterfloodAdjustmentDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -449,11 +465,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult adjustWmsInventory(String clientIp,
 			String clientName, WmsInventoryParam param, Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.adjustWmsInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "adjustWmsInventory");
 		//构建领域对象
@@ -499,12 +516,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("wmsGoodsId", param.getWmsGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("wmsGoodsId", param.getWmsGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -513,11 +531,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	public InventoryCallResult overrideAdjustInventory(String clientIp,
 			String clientName, OverrideAdjustInventoryParam param,
 			Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.overrideAdjustInventory";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "overrideAdjustInventory");
 		//构建领域对象
@@ -564,12 +583,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryAdjustDomain.sendNotify();
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -577,11 +597,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult updateWmsData(String clientIp,
 			String clientName, UpdateWmsDataParam param, Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.updateWmsData";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateWmsData");
 		//构建领域对象
@@ -628,12 +649,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				wmsDataUpdateDomain.sendNotify();
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", wmsDataUpdateDomain.getGoodsId());
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("goodsId", wmsDataUpdateDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
@@ -644,11 +666,12 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	@Override
 	public InventoryCallResult createInventory4GoodsCost(String clientIp,
 			String clientName, CreateInventory4GoodsCostParam param, Message traceMessage) {
-		
+		long startTime = System.currentTimeMillis();
 		String method = "GoodsInventoryUpdateService.createInventory4GoodsCost";
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
-		writeSysUpdateLog(lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
-				.addMetaData("param", param.toString()).addMetaData("traceId",traceMessage == null?"":traceMessage.traceHeader.getRootId()), true);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory4GoodsCost");
 		//构建领域对象
@@ -695,12 +718,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryCreateDomain.sendNotify();
 			}
 		});
-
-		lm.setMethod(method).addMetaData("resultCode", result.getResultCode())
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("end", "end");
-		writeSysUpdateLog(lm, false);
-		writeSysLog(lm, true);
+		.addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
