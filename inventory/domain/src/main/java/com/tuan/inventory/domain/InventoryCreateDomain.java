@@ -290,6 +290,12 @@ public class InventoryCreateDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getGoodsId())) {
 			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}
+		if (param.getGoodsBaseId()==null) {
+			return CreateInventoryResultEnum.INVALID_GOODSBASEID;
+		}
+		if (param.getGoodsBaseId()!=null&&param.getGoodsBaseId()==0) {
+			return CreateInventoryResultEnum.INVALID_GOODSBASEID;
+		}
 
 		return CreateInventoryResultEnum.SUCCESS;
 	}
