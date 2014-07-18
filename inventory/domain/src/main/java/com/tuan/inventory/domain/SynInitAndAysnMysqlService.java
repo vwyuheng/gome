@@ -17,6 +17,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) throws Exception ;
 	//public CallResult<Boolean> saveGoodsWmsInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) throws Exception ;
 	public CallResult<Boolean> saveGoodsWmsInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsSelectionDO> selectionList) throws Exception ;
+	public CallResult<Boolean> saveGoodsWmsUpdateInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsSelectionDO> selectionList) throws Exception ;
 	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,GoodsInventoryWMSDO wmsInventory,GoodsInventoryWMSDO wmsInventory4wmsGoodsId) throws Exception ;
 	public CallResult<Boolean> saveGoodsBaseInventory(GoodsBaseInventoryDO baseInventoryDO) throws Exception ;
@@ -54,6 +55,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<List<GoodsInventoryDO>> selectInventoryList4Wms(String wmsGoodsId);
 	public CallResult<GoodsBaseInventoryDO> selectGoodsBaseInventory(Long GoodsBaseId);
 	public CallResult<GoodsBaseInventoryDO> selectInventoryBase4Init(Long GoodsBaseId);
+	public CallResult<GoodsBaseInventoryDO> selectSelfInventoryBaseInit(Long goodsBaseId);
 	
 	
 	//删除

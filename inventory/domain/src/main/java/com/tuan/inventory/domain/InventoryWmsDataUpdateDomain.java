@@ -516,7 +516,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 					create.setLm(lm);
 					create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 					create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-					resultEnum = create.business4WmsExecute();
+					resultEnum = create.business4WmsUpdateExecute();
 				} finally{
 					dLock.unlockManual(key);
 				}

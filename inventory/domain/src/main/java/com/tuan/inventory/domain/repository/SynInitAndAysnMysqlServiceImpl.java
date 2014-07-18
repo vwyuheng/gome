@@ -916,7 +916,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(baseInventoryDO);
 							}else {
 								// 初始化商品库存信息
-								baseInventoryDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+								baseInventoryDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(goodsBaseId);
 								int num=baseInventoryDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber();
 								baseInventoryDO.setBaseTotalCount(num);
 								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
@@ -2672,4 +2672,159 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			callBackResult.getThrowable());
 
 }
+
+
+	@Override
+	public CallResult<GoodsBaseInventoryDO> selectSelfInventoryBaseInit(
+			final Long goodsBaseId) {
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					
+					public TuanCallbackResult executeAction() {
+						GoodsBaseInventoryDO goodsBaseInventoryDO = null;
+						try {
+							goodsBaseInventoryDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(goodsBaseId);
+						} catch (Exception e) {
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.selectSelfInventoryBaseInit error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+								throw new TuanRuntimeException(QueueConstant.NO_DATA,
+										"empty entry '" + goodsBaseId
+												+ "' for key 'goodsBaseId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.selectSelfInventoryBaseInit error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								goodsBaseInventoryDO);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (goodsBaseId==null) {
+							 logger.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.PARAM_INVALID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<GoodsBaseInventoryDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(GoodsBaseInventoryDO)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+	}
+
+
+	@Override
+	public CallResult<Boolean> saveGoodsWmsUpdateInventory(final long goodsId,
+			final GoodsInventoryWMSDO wmsDO, final List<GoodsInventoryDO> wmsInventoryList,
+			final List<GoodsSelectionDO> selectionList) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							if(wmsDO!=null) {
+								synInitAndAsynUpdateDomainRepository.saveAndUpdateGoodsWms(wmsDO);
+							}
+							if(!CollectionUtils.isEmpty(wmsInventoryList)) {
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
+							}
+							if(!CollectionUtils.isEmpty(selectionList)) {
+								//mysql的有事务
+								synInitAndAsynUpdateDomainRepository.saveBatchGoodsWmsUpdate(goodsId,selectionList);
+							}
+							if(wmsDO!=null) {
+								 String retAck = goodsInventoryDomainRepository.saveAndUpdateGoodsWmsInventory(wmsDO);
+								 if(StringUtils.isEmpty(retAck)) {
+										throw new TuanRuntimeException(
+												QueueConstant.SERVICE_REDIS_FALIURE,
+												"SynInitAndAysnMysqlServiceImpl.saveAndUpdateGoodsWmsInventory to redis error occured!",
+												new Exception());
+									}
+									if(!retAck.equalsIgnoreCase("ok")) {
+										throw new TuanRuntimeException(
+												QueueConstant.SERVICE_REDIS_FALIURE,
+												"SynInitAndAysnMysqlServiceImpl.saveAndUpdateGoodsWmsInventory to redis error occured!",
+												new Exception());
+									}
+							}
+							if(!CollectionUtils.isEmpty(wmsInventoryList)) {
+								String retWms = goodsInventoryDomainRepository.saveBatchGoodsInventory(wmsInventoryList);
+								if(StringUtils.isEmpty(retWms)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retWms.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsInventory to redis error occured!",
+											new Exception());
+								}
+							}
+							if(!CollectionUtils.isEmpty(selectionList)) {
+								//mysql的有事务
+								String retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionWmsUpdateInventory(goodsId,selectionList);	
+								if(StringUtils.isEmpty(retselWms)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!retselWms.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionWmsInventory to redis error occured!",
+											new Exception());
+								}
+							}
+							
+							
+						} catch (Exception e) {
+							
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsUpdateInventory error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+										"Duplicate entry '" + wmsDO.getWmsGoodsId()
+										+ "' for key 'wmsGoodsId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsUpdateInventory error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (wmsDO == null) {
+							logger.error(this.getClass()+"_create param invalid ,wmsDO is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.NO_WMS_DATA
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
 }

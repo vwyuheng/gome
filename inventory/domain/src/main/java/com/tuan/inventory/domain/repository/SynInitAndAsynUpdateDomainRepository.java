@@ -42,8 +42,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 	 * @param goodsDO
 	 */
 	public void saveGoodsInventory(GoodsInventoryDO goodsDO) {
-		//goodsDO.setTotalNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getTotalNumber());
-		//goodsDO.setLeftNumber(goodsDO.getLimitStorage()==0?Integer.MAX_VALUE:goodsDO.getLeftNumber());
+		
 		this.synInitAndAsynUpdateDAO.insertGoodsInventoryDO(goodsDO);
 	}
 	
@@ -69,10 +68,10 @@ public class SynInitAndAsynUpdateDomainRepository {
 								}
 							}else {
 								//计算库存总数:暂时去掉
-								/*GoodsBaseInventoryDO upBaseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
+								GoodsBaseInventoryDO upBaseDO = synInitAndAsynUpdateDAO.selectSelfInventoryBaseInit(goodsBaseId);
 								if(upBaseDO!=null) {
 									synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(upBaseDO);
-								}*/
+								}
 							}
 						}
 					}
@@ -186,8 +185,30 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDO==null) {
 						srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
-					}else {//TODO 初步估计这块无需更新选型数据
+					}else {//
 						//this.updateGoodsSelection(srDO);
+					}
+					
+				}
+				
+			}//for
+		}//if1
+		
+		
+	}
+	public void saveBatchGoodsWmsUpdate(long goodsId,List<GoodsSelectionDO> selectionDOList) throws Exception {
+		
+		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
+			for (GoodsSelectionDO srDO : selectionDOList) { // for
+				long selectionId = srDO.getId();
+				if (selectionId > 0) { // if选型
+					//将商品id set到选型中
+					GoodsSelectionDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
+					if(tmpDO==null) {
+						srDO.setGoodsId(goodsId);
+						this.saveGoodsSelection(srDO);
+					}else {//
+						this.updateGoodsSelection(srDO);
 					}
 					
 				}
@@ -347,6 +368,31 @@ public class SynInitAndAsynUpdateDomainRepository {
 			//}//for
 		}//if1
 			
+	}
+	/**
+	 * 批量保存物流库存信息
+	 * @param goodsId
+	 * @param wmsInventoryList
+	 * @throws Exception
+	 */
+	public void saveAndUpdateGoodsWms(GoodsInventoryWMSDO wmsInventory) throws Exception{
+		if (wmsInventory!=null) { // if1
+			//for (GoodsInventoryWMSDO wmsDO : wmsInventoryList) { // for
+			String wmsGoodsId = wmsInventory.getWmsGoodsId();
+			
+			if (!StringUtils.isEmpty(wmsGoodsId)) { // if分店
+				GoodsInventoryWMSDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
+				if(tmpDO==null) {
+					this.saveGoodsInventoryWMS(wmsInventory);
+				}else {//
+					this.updateGoodsInventoryWMS(wmsInventory);
+				}
+				
+			}
+			
+			//}//for
+		}//if1
+		
 	}
 	/**
 	 * 保存商品分店库存

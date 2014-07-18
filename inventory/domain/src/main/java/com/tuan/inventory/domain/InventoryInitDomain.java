@@ -63,6 +63,16 @@ public class InventoryInitDomain extends AbstractDomain{
 	public InventoryInitDomain() {}
 	
 	// 业务检查4物流
+	public CreateInventoryResultEnum business4WmsUpdateExecute() {
+		CreateInventoryResultEnum resultEnum = null;
+		// 初始化检查
+		resultEnum = this.initCheck4Wms();
+		if (isInitWms) {
+			resultEnum = this.init4WmsUpdate();
+		}
+		return resultEnum;
+	}
+	// 业务检查4物流
 	public CreateInventoryResultEnum business4WmsExecute() {
 			CreateInventoryResultEnum resultEnum = null;
 			// 初始化检查
@@ -298,6 +308,48 @@ public class InventoryInitDomain extends AbstractDomain{
 
 	}
 	
+	/**
+	 * 物流库存初始化
+	 */
+	public CreateInventoryResultEnum init4WmsUpdate() {
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
+		try {
+			// 保存商品库存
+			callResult = synInitAndAysnMysqlService.saveGoodsWmsUpdateInventory(goodsId,wmsUpate,wmsInventoryRadySaveList,selWmsList4GoodsTypeId);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				message = "init4Wms_error[" + publicCodeEnum.getMessage()
+						+ "]wmsGoodsId:" + wmsUpate==null?"":wmsUpate.getWmsGoodsId();
+				return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+			} else {   
+				message = "init4Wms_success[init4Wms success]goodsId="+goodsId+",wmsUpate="+wmsUpate+",wmsInventoryRadySaveList="+wmsInventoryRadySaveList+",selWmsList4GoodsTypeId="+selWmsList4GoodsTypeId;
+				
+				
+			}
+		} catch (Exception e) {
+			this.writeBusInitErrorLog(
+					lm.addMetaData("errorMsg",
+							"init4Wms error" + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("wmsUpate",wmsUpate)
+					.addMetaData("wmsInventoryList",wmsInventoryList)
+					.addMetaData("selWmsList",selWmsList)
+					//.addMetaData("callResult",callResult)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("message",message)
+					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+		}
+		
+		return CreateInventoryResultEnum.SUCCESS;
+		
+	}
 	/**
 	 * 物流库存初始化
 	 */
