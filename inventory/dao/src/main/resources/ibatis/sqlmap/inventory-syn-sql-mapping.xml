@@ -21,20 +21,20 @@
 	 </resultMap>
 	 
 	<!-- 商品配型信息-->	
-	<resultMap id="GoodsSelectionResult" class="com.tuan.inventory.dao.data.redis.GoodsSelectionDO">
+	<resultMap id="goodsSelectionResult" class="com.tuan.inventory.dao.data.redis.GoodsSelectionDO">
 	    <result column="id" property="id" jdbcType="BIGINT" />
 	    <result column="goods_id" property="goodsId" jdbcType="BIGINT" />
 	     <result column="suppliers_id" property="suppliersId" jdbcType="BIGINT" />
-	   <!--  <result column="user_id" property="userId" jdbcType="BIGINT" /> -->
-	    <result column="good_type_id" property="goodTypeId" jdbcType="INTEGER" />
+	    <result column="good_type_id" property="goodTypeId" jdbcType="BIGINT" />
 	    <result column="total_num" property="totalNumber" jdbcType="INTEGER" />
 	    <result column="left_num" property="leftNumber" jdbcType="INTEGER" />
-	     <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
-	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="INTEGER" />
-	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="INTEGER" />
+	    <result column="suppliers_sub_id" property="suppliersSubId" jdbcType="BIGINT" />
+	    <result column="suppliers_inventory_id" property="suppliersInventoryId" jdbcType="BIGINT" />
 	    <result column="limit_storage" property="limitStorage" jdbcType="INTEGER" />   
+	    <result column="attach_sale" property="waterfloodVal" jdbcType="INTEGER" />
 	    <result column="wms_goods_id" property="wmsGoodsId" jdbcType="VARCHAR" />	    
 	 </resultMap>
+	 
 	 	
    <!-- 商品主体库存信息-->	
 	<resultMap id="GoodsInventoryResult" class="com.tuan.inventory.dao.data.redis.GoodsInventoryDO">
@@ -117,16 +117,16 @@
 	supp.suppliers_id = #suppliersId:INTEGER#
 	</select>
 	 <!-- 根据选型id获取商品选型库存信息  -->	
-	<select id="selectSelectionInventoryBySelId" resultMap="GoodsSelectionResult"  parameterClass="java.lang.Long">
+	<select id="selectSelectionInventoryBySelId" resultMap="goodsSelectionResult"  parameterClass="java.lang.Long">
 	SELECT
 	sel.id,
 	sel.goods_id,
-	sel.suppliers_id,
+	IFNULL(sel.suppliers_id,0) AS suppliers_id,
 	sel.good_type_id,
 	sel.total_num,
 	sel.left_num,
-	sel.suppliers_sub_id,
-	sel.suppliers_inventory_id,
+	IFNULL(sel.suppliers_sub_id,0) AS suppliers_sub_id,
+	IFNULL(sel.suppliers_inventory_id,0) AS suppliers_inventory_id,
 	sel.limit_storage,
 	sel.attach_sale,
 	sel.wms_goods_id

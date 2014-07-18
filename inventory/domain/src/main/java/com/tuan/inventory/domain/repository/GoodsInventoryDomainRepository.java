@@ -215,7 +215,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 					//首先根据选型id判断该选型是否已存在
 					//GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
 					//if(tmpSelDO==null) {  //不存在才创建,TODO
-					srDO.setGoodsId(goodsId);
+					//srDO.setGoodsId(goodsId);
 					boolean retAck = this.baseDAOService.saveGoodsSelectionInventory(goodsId,srDO);
 					if(!retAck) {
 						return null;

@@ -16,7 +16,6 @@ import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.LogUtil;
-import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.result.CallResult;
@@ -166,12 +165,9 @@ public class InventoryInitDomain extends AbstractDomain{
 				if(!CollectionUtils.isEmpty(selWmsList)) {
 					selWmsList4GoodsTypeId = new ArrayList<GoodsSelectionDO>();
 						for(GoodsSelectionDO selDO:selWmsList) {
-								//根据选型id查询下是否已存在
-								GoodsSelectionModel wmsSel = this.goodsInventoryDomainRepository.queryGoodsSelectionBySelectionId(selDO.getId());
-								if(wmsSel==null) {
-									selWmsList4GoodsTypeId.add(selDO);
-								}
-							
+							selDO.setGoodsId(goodsId);
+							selDO.setWmsGoodsId(wmsGoodsId);
+							selWmsList4GoodsTypeId.add(selDO);			
 						}
 					
 				}else {

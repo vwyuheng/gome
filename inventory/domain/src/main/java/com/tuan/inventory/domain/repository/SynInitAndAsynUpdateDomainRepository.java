@@ -205,7 +205,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					//将商品id set到选型中
 					GoodsSelectionDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
 					if(tmpDO==null) {
-						srDO.setGoodsId(goodsId);
+						//srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
 					}else {//
 						this.updateGoodsSelection(srDO);

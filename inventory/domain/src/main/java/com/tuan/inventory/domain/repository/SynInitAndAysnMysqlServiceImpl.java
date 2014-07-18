@@ -2810,7 +2810,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (wmsDO == null) {
+						if (goodsId <=0) {
+							logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.INVALID_GOODSID
+											.getCode());
+						}
+						if (wmsDO == null&&CollectionUtils.isEmpty(wmsInventoryList)&&CollectionUtils.isEmpty(selectionList)) {
 							logger.error(this.getClass()+"_create param invalid ,wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA
