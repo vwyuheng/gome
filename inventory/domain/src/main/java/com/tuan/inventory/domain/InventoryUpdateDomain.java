@@ -19,15 +19,18 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
+import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
@@ -35,6 +38,7 @@ import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryUpdateDomain extends AbstractDomain {
 	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
+	private final static LocalLogger logHis = LocalLogger.getLog("INVENTORY.HIS.LOG");
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	private LogModel lm;
 	private String clientIp;
@@ -318,7 +322,54 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				if(!CollectionUtils.isEmpty(selectionIdlist)) {
 					for(GoodsSelectionModel gsmdoel : param.getGoodsSelection()) {
 						if(!selectionIdlist.contains(gsmdoel.getId())||gsmdoel.getId()<=0) {
-							return CreateInventoryResultEnum.INVALID_SELECTIONID;
+							//TODO 将这个不存在的刷进来，处理历史数据问题
+							//从redis缓存中加载选型信息
+							GoodsSelectionDO tmpSelDO = goodsInventoryDomainRepository.querySelectionRelationById(gsmdoel.getId());
+							if(tmpSelDO!=null) {  //存在
+								//从商品库存查最新数据
+								CallResult<GoodsSelectionDO> cselResult = synInitAndAysnMysqlService.selectGoodsSelectionBySelId(gsmdoel.getId());
+								if (cselResult != null&&cselResult.isSuccess()) {
+									 tmpSelDO = cselResult.getBusinessResult();
+								}
+								if(tmpSelDO!=null) {
+									tmpSelDO.setGoodsId(goodsId);
+									//tmpSelDO.setWmsGoodsId(wmsGoodsId);
+									String message = StringUtils.EMPTY;
+									CallResult<Boolean> callResult  = null;
+									long startTimeHis = System.currentTimeMillis();
+									//保存更新数据
+									try {
+										callResult =	synInitAndAysnMysqlService.updateGoodsWmsSel(goodsId, tmpSelDO);
+										PublicCodeEnum publicCodeEnum = callResult
+												.getPublicCodeEnum();
+										if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //更新数据
+											// 消息数据不存并且不成功
+											message = "InventoryUpdateDomain_error[" + publicCodeEnum.getMessage()
+													+ "]goodsId:" + goodsId+",tmpSelDO:"+tmpSelDO;
+											return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+										} else {   
+											message = "InventoryUpdateDomain_success,goodsId="+goodsId+",tmpSelDO="+tmpSelDO;
+											
+											
+										}
+									} catch (Exception e) {
+										logHis.error("errorMsg:"+message+
+												",InventoryUpdateDomain error " + e.getMessage(), e);
+										
+									}finally {
+										logHis.info(lm.addMetaData("goodsId",goodsId)
+												.addMetaData("tmpSelDO",tmpSelDO)
+												.addMetaData("endTime", System.currentTimeMillis())
+												.addMetaData("message",message)
+												.addMetaData("useTime", LogUtil.getRunTime(startTimeHis)).toJson());
+									}
+								}
+									
+								
+							}else {
+								return CreateInventoryResultEnum.INVALID_SELECTIONID;
+							}
+							
 						}
 						if(gsmdoel.getNum()<0) {
 							return CreateInventoryResultEnum.INVALID_SELECTIONNUM;

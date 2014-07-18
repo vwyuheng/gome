@@ -2833,4 +2833,116 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 		
 	}
+
+
+	@Override
+	public CallResult<GoodsSelectionDO> selectGoodsSelectionBySelId(
+			final Long selId) {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					GoodsSelectionDO selectionInventory = null;
+					try {
+						selectionInventory = initCacheDomainRepository.getCacheSelectionRelationInfoById(selId.intValue());
+					} catch (Exception e) {
+						logger.error(
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionBySelId error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
+							throw new TuanRuntimeException(QueueConstant.NO_DATA,
+									"empty entry '" + selId
+											+ "' for key 'selId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionBySelId error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							selectionInventory);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (selId <= 0) {
+						 logger.error(this.getClass()+"_create param invalid ,selId is invalid!");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.INVALID_SELECTIONID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<GoodsSelectionDO>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(GoodsSelectionDO)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
+
+
+	@Override
+	public CallResult<Boolean> updateGoodsWmsSel(
+			final long goodsId,final GoodsSelectionDO selection) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							
+							if(selection!=null) {
+								//mysql的有事务
+								synInitAndAsynUpdateDomainRepository.updateGoodsSelection(selection);
+								boolean retselWms =	goodsInventoryDomainRepository.saveGoodsSelectionInventory(goodsId,selection);	
+								if(!retselWms) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.updateGoodsWmsSel to redis error occured!",
+											new Exception());
+								}
+								
+							}
+							
+						} catch (Exception e) {
+							
+							logger.error(
+									"SynInitAndAysnMysqlServiceImpl.updateGoodsWmsSel error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+										"Duplicate entry '" + selection.getId()
+										+ "' for key 'selId'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.updateGoodsWmsSel error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						
+						if (selection == null) {
+							logger.error(this.getClass()+"_create param invalid ,selection is null");
+							return TuanCallbackResult
+									.failure(PublicCodeEnum.NO_SELECTION
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
 }

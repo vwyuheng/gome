@@ -47,7 +47,7 @@ public class InitCacheDomainRepository {
 		}else {
 			GoodsSelectionDO rsrDo = new GoodsSelectionDO();
 			rsrDo.setId(srDo.getId().longValue());
-			rsrDo.setSuppliersId(Long.valueOf(srDo.getSuppliersId()));
+			rsrDo.setSuppliersId(Long.valueOf(srDo==null?0:(srDo.getSuppliersId()==null?0:srDo.getSuppliersId())));
 			rsrDo.setGoodTypeId(srDo.getGoodTypeId().longValue());
 			rsrDo.setLeftNumber(srDo.getLeftNumber());
 			rsrDo.setTotalNumber(srDo.getTotalNumber());

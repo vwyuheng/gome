@@ -18,6 +18,7 @@ public interface SynInitAndAysnMysqlService {
 	//public CallResult<Boolean> saveGoodsWmsInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) throws Exception ;
 	public CallResult<Boolean> saveGoodsWmsInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsSelectionDO> selectionList) throws Exception ;
 	public CallResult<Boolean> saveGoodsWmsUpdateInventory(long goodsId,final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList,final List<GoodsSelectionDO> selectionList) throws Exception ;
+	public CallResult<Boolean> updateGoodsWmsSel(long goodsId,final GoodsSelectionDO selection) throws Exception ;
 	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList) throws Exception ;
 	public CallResult<Boolean> saveGoodsInventory(long goodsId,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,GoodsInventoryWMSDO wmsInventory,GoodsInventoryWMSDO wmsInventory4wmsGoodsId) throws Exception ;
 	public CallResult<Boolean> saveGoodsBaseInventory(GoodsBaseInventoryDO baseInventoryDO) throws Exception ;
@@ -48,6 +49,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<GoodsInventoryDO> selectGoodsInventoryByGoodsId(long goodsId);
 	public CallResult<GoodsInventoryDO> selectSelfGoodsInventoryByGoodsId(long goodsId);
 	public  CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(long goodsId);
+	public  CallResult<GoodsSelectionDO> selectGoodsSelectionBySelId(Long selId);
 	public  CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(long goodsId);
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(String wmsGoodsId,int isBeDelivery);
 	public CallResult<GoodsInventoryWMSDO> selectIsOrNotGoodsWMSByGoodsId(long goodsId);
