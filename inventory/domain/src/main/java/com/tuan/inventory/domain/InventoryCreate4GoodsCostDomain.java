@@ -156,8 +156,10 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			}
 			
 			if(limitStorage==0) {  //非限制库存商品无需处理 ，0:库存无限制；1：限制库存
-				//组装信息
-				this.fillNewInventoryDO(0,0);  //以供存储
+				//取老商品注水值
+				GoodsInventoryDO	tmp4OldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
+				//组装新商品信息
+				this.fillNewInventoryDO(0,0,tmp4OldGoods.getWaterfloodVal());  //以供存储
 				return CreateInventoryResultEnum.SUCCESS;
 			}
 			//进行真正的业务处理
@@ -225,7 +227,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			 */
 			if(inventoryDO4OldGoods!=null) {
 				//组装信息
-				this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum));  //以供存储
+				this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),inventoryDO4OldGoods.getWaterfloodVal());  //以供存储
 			}
 			
 				
@@ -449,7 +451,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 		this.inventoryInfoDO4OldGoods = preInventoryInfoDO;
 	}
 	//组装改价商品信息
-	public void fillNewInventoryDO(int totalNumber,int leftNumber) {
+	public void fillNewInventoryDO(int totalNumber,int leftNumber,int attachSales) {
 		GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
 		try {
 			inventoryInfoDO.setGoodsId(goodsId);
@@ -458,7 +460,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			inventoryInfoDO.setTotalNumber(totalNumber);
 			inventoryInfoDO.setLimitStorage(param.getLimitStorage());
 			inventoryInfoDO.setUserId(userId);
-			inventoryInfoDO.setWaterfloodVal(0);
+			inventoryInfoDO.setWaterfloodVal(attachSales);
 			//商品库存销量
 			inventoryInfoDO.setGoodsSaleCount(0);
 
