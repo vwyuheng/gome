@@ -61,7 +61,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		try {
 			// 查询商品库存
 			CallResult<GoodsBaseModel> result = goodsInventoryQueryClientService
-					.findSalesCountByGoodsBaseId(clientIP, clientName, 8000000239563l);
+					.findSalesCountByGoodsBaseId(clientIP, clientName, 8000000555060l);
 			
 			// System.out.println("11GoodsInventoryModel11size="+result.getBusinessResult());
 			System.out.println("11GoodsBaseModell11="

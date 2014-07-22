@@ -65,7 +65,7 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 									.getCode(), res);
 						} else {
 							res = new InventoryQueryResult(
-									InventoryQueryEnum.SYS_ERROR, null);
+									InventoryQueryEnum.NO_GOODS, null);
 							return TuanCallbackResult.failure(res.getResult()
 									.getCode(), null, res);
 						}
@@ -138,7 +138,7 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 										.getCode(), res);
 							} else {
 								res = new InventoryQueryResult(
-										InventoryQueryEnum.SYS_ERROR, null);
+										InventoryQueryEnum.NO_GOODSBASE, null);
 								return TuanCallbackResult.failure(res.getResult()
 										.getCode(), null, res);
 							}
