@@ -19,15 +19,22 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
+import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
+import com.tuan.ordercenter.backservice.OrderQueryService;
+import com.tuan.ordercenter.model.enu.ClientNameEnum;
+import com.tuan.ordercenter.model.enu.res.UserOrderQueryEnum;
+import com.tuan.ordercenter.model.result.CallResult;
+import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
@@ -157,7 +164,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			}
 			//进行真正的业务处理
 			//走hessian调用取订单支付状态
-			/*OrderQueryService basic = (OrderQueryService) HessianProxyUtil
+			OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 					.getObject(OrderQueryService.class,
 							InventoryConfig.QUERY_URL);
 			//初始化改价前商品进来
@@ -186,13 +193,15 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
 						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
 				return CreateInventoryResultEnum.FAILED_ORDERQUERYSERVICE;
-			}*/
+			}
 			//加载goodsbase信息
 			/*baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 			if(baseInventoryDO==null) {
 				return CreateInventoryResultEnum.NO_GOODSBASE;
 			}*/
 			int oldTotalNum = 0;
+			int oldLeftNum = 0;
+			int atachNum = 0;
 			GoodsInventoryDO inventoryDO4OldGoods = null;
 			if (isOldGoodsExists) { // 改价前商品
 				//将商品信息加载上来
@@ -200,12 +209,15 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				if(inventoryDO4OldGoods!=null) {
 					//更新其总库存前保存下总库存数量
 					oldTotalNum = inventoryDO4OldGoods.getTotalNumber();
+					oldLeftNum = inventoryDO4OldGoods.getLeftNumber();
+					atachNum = inventoryDO4OldGoods.getWaterfloodVal();
 					/**
 					 * 计算库存
 	                 *老商品计算公式  总库存=已销售量+所占库存量  剩余库存=未付款订单所占库存
 					 */
 					//更新该老商品库存
-					//this.fillPreInventoryDO(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum, takeNum, inventoryDO4OldGoods);
+					
+					this.fillPreInventoryDO(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum, takeNum, inventoryDO4OldGoods);
 				}else {
 					return CreateInventoryResultEnum.NO_GOODS;
 				}
@@ -219,8 +231,14 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			 * 剩余库存= 总库存
 			 */
 			if(inventoryDO4OldGoods!=null) {
-				//组装信息
-				//this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),inventoryDO4OldGoods.getWaterfloodVal());  //以供存储
+				if(takeNum>=oldLeftNum) {//占用库存量大于等于总库存数时
+					//组装新商品信息
+					this.fillNewInventoryDO(0,0,atachNum);  //以供存储
+				}else {
+					//组装信息
+					this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),inventoryDO4OldGoods.getWaterfloodVal());  //以供存储
+				}
+				
 			}
 			
 				
@@ -421,22 +439,27 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	}
 
 	//组装改价商品信息
-	public void fillPreInventoryDO(int totalNumber,int leftNumber,GoodsInventoryDO oldDO) {
+	public void fillPreInventoryDO(int totalNumber,int takeNum,GoodsInventoryDO oldDO) {
 		GoodsInventoryDO preInventoryInfoDO = new GoodsInventoryDO();
 		try {
-			preInventoryInfoDO.setGoodsId(preGoodsId);
-			preInventoryInfoDO.setGoodsBaseId(goodsBaseId);
-			preInventoryInfoDO.setLeftNumber(leftNumber);
-			preInventoryInfoDO.setTotalNumber(totalNumber);
-			preInventoryInfoDO.setLimitStorage(oldDO.getLimitStorage());
-			preInventoryInfoDO.setUserId(oldDO.getUserId());
-			preInventoryInfoDO.setWaterfloodVal(oldDO.getWaterfloodVal());
-			//商品库存销量
-			preInventoryInfoDO.setGoodsSaleCount(oldDO.getGoodsSaleCount());
-			preInventoryInfoDO.setGoodsSelectionIds(oldDO.getGoodsSelectionIds());
-			preInventoryInfoDO.setIsAddGoodsSelection(oldDO.getIsAddGoodsSelection());
-			preInventoryInfoDO.setIsDirectConsumption(oldDO.getIsDirectConsumption());
-			preInventoryInfoDO.setWmsId(oldDO.getWmsId());
+			if(takeNum>=oldDO.getLeftNumber()) {//占用库存量大于等于总库存数时
+				preInventoryInfoDO = oldDO;
+			}else {
+				preInventoryInfoDO.setGoodsId(preGoodsId);
+				preInventoryInfoDO.setGoodsBaseId(goodsBaseId);
+				preInventoryInfoDO.setLeftNumber(takeNum);
+				preInventoryInfoDO.setTotalNumber(totalNumber);
+				preInventoryInfoDO.setLimitStorage(oldDO.getLimitStorage());
+				preInventoryInfoDO.setUserId(oldDO.getUserId());
+				preInventoryInfoDO.setWaterfloodVal(oldDO.getWaterfloodVal());
+				//商品库存销量
+				preInventoryInfoDO.setGoodsSaleCount(oldDO.getGoodsSaleCount());
+				preInventoryInfoDO.setGoodsSelectionIds(oldDO.getGoodsSelectionIds());
+				preInventoryInfoDO.setIsAddGoodsSelection(oldDO.getIsAddGoodsSelection());
+				preInventoryInfoDO.setIsDirectConsumption(oldDO.getIsDirectConsumption());
+				preInventoryInfoDO.setWmsId(oldDO.getWmsId());
+			}
+			
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillPreInventoryDO error"+e.getMessage()),false, e);
 			this.inventoryInfoDO4OldGoods = null;
