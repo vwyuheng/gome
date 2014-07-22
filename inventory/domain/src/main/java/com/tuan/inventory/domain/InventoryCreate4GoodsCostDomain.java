@@ -19,22 +19,15 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
-import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
-import com.tuan.inventory.model.enu.ClientNameEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
-import com.tuan.ordercenter.backservice.OrderQueryService;
-import com.tuan.ordercenter.model.enu.res.UserOrderQueryEnum;
-import com.tuan.ordercenter.model.result.CallResult;
-import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
@@ -164,7 +157,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			}
 			//进行真正的业务处理
 			//走hessian调用取订单支付状态
-			OrderQueryService basic = (OrderQueryService) HessianProxyUtil
+			/*OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 					.getObject(OrderQueryService.class,
 							InventoryConfig.QUERY_URL);
 			//初始化改价前商品进来
@@ -193,7 +186,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
 						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
 				return CreateInventoryResultEnum.FAILED_ORDERQUERYSERVICE;
-			}
+			}*/
 			//加载goodsbase信息
 			/*baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 			if(baseInventoryDO==null) {
@@ -212,7 +205,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	                 *老商品计算公式  总库存=已销售量+所占库存量  剩余库存=未付款订单所占库存
 					 */
 					//更新该老商品库存
-					this.fillPreInventoryDO(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum, takeNum, inventoryDO4OldGoods);
+					//this.fillPreInventoryDO(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum, takeNum, inventoryDO4OldGoods);
 				}else {
 					return CreateInventoryResultEnum.NO_GOODS;
 				}
@@ -227,7 +220,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			 */
 			if(inventoryDO4OldGoods!=null) {
 				//组装信息
-				this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),inventoryDO4OldGoods.getWaterfloodVal());  //以供存储
+				//this.fillNewInventoryDO(oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),oldTotalNum-(inventoryDO4OldGoods.getGoodsSaleCount()+takeNum),inventoryDO4OldGoods.getWaterfloodVal());  //以供存储
 			}
 			
 				
