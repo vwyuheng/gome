@@ -108,7 +108,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				//inventoryCreatorDomain.sendNotify();
+				inventoryCreatorDomain.sendNotify();
 			}
 		});
 		long endTime = System.currentTimeMillis();
