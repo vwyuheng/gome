@@ -712,8 +712,8 @@ public class RedisCacheUtil {
 					ts = j.multi(); 
 					
 					String jsonMember = JSONObject.fromObject(queueDO).toString();
-					//缓存60天
-					ts.setex(setexkey,3600*24*60, jsonMember);
+					//缓存7天
+					ts.setex(setexkey,3600*24*7, jsonMember);
 					
 					ts.zadd(zaddkey,Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
 							//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
