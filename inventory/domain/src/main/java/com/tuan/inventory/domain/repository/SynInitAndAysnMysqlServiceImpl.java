@@ -1570,7 +1570,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 */
 	@Override
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(final
-			String wmsGoodsId,final int isBeDelivery) {
+			String wmsGoodsId,final Integer isBeDelivery) {
 		
 	    TuanCallbackResult callBackResult = super.execute(
 			new TuanServiceCallback() {

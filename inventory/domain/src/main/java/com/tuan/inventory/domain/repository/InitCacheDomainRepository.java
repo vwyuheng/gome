@@ -184,7 +184,7 @@ public class InitCacheDomainRepository {
 		return nullCacheInitDAO.selectRedisInventory(goodsId);
 	}
 	
-	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,int isBeDelivery) {
+	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,Integer isBeDelivery) {
 		return nullCacheInitDAO.selectGoodsInventoryWMS(wmsGoodsId,isBeDelivery);
 	}
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId) {

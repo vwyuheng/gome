@@ -13,7 +13,7 @@ import com.tuan.inventory.dao.data.redis.WmsIsBeDeliveryDO;
 public interface NullCacheInitDAO {
 
 	public GoodsInventoryDO selectRedisInventory(Long goodsId);
-	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,int isBeDelivery);
+	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,Integer isBeDelivery);
 	public GoodsInventoryWMSDO selectIsOrNotGoodsWMS(Long goodsId);
 	public List<GoodsInventoryDO> selectInventory4Wms(String wmsGoodsId);
 	public WmsIsBeDeliveryDO selectWmsIsBeDeliveryResult(String wmsGoodsId);

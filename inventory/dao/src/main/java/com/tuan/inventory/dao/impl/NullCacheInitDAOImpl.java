@@ -21,7 +21,7 @@ public class NullCacheInitDAOImpl extends SqlMapClientDaoSupport  implements Nul
 	}
 
 	@Override
-	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,int isBeDelivery) {
+	public GoodsInventoryWMSDO selectGoodsInventoryWMS(String wmsGoodsId,Integer isBeDelivery) {
 		Map<String, Object> paramMap = new HashMap<String, Object>();
 		if (!StringUtils.isEmpty(wmsGoodsId)) {
 			paramMap.put("wmsGoodsId", wmsGoodsId);

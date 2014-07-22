@@ -111,7 +111,7 @@ public class InventoryInitDomain extends AbstractDomain{
 							this.wmsUpate = tmpWmsDO;
 						}else {
 							// 初始化商品库存信息
-							CallResult<GoodsInventoryWMSDO> callGoodsWmsResult = this.synInitAndAysnMysqlService
+							CallResult<GoodsInventoryWMSDO> callGoodsWmsResult = synInitAndAysnMysqlService
 									.selectGoodsInventoryWMSByWmsGoodsId(wmsGoodsId,StringUtils.isEmpty(isBeDelivery)?null:Integer.valueOf(isBeDelivery));
 							
 							if (callGoodsWmsResult == null || !callGoodsWmsResult.isSuccess()) {
@@ -124,7 +124,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					}
 					
 					//通过物流编码查询商品id是否存在,
-					CallResult<List<GoodsInventoryDO>> callGoodsInventoryListDOResult = this.synInitAndAysnMysqlService
+					CallResult<List<GoodsInventoryDO>> callGoodsInventoryListDOResult = synInitAndAysnMysqlService
 							.selectInventoryList4Wms(wmsGoodsId);
 					if (callGoodsInventoryListDOResult == null || !callGoodsInventoryListDOResult.isSuccess()) {
 						this.isInitWms = false;
