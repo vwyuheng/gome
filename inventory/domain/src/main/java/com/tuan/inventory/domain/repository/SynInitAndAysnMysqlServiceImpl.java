@@ -2802,7 +2802,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
 								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
-										"Duplicate entry '" + wmsDO.getWmsGoodsId()
+										"Duplicate entry '" + wmsDO!=null?wmsDO.getWmsGoodsId():"wmsDO is null"
 										+ "' for key 'wmsGoodsId'", e);
 							}
 							throw new TuanRuntimeException(

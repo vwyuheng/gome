@@ -315,7 +315,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 		//填充notifyserver发送参数
 		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(){
 					InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
-					notifyParam.setUserId(Long.valueOf(param.getUserId()));
+					notifyParam.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
 					notifyParam.setGoodsBaseId(goodsBaseId);
 					notifyParam.setGoodsId(goodsId);
 					if(inventoryDO!=null) {

@@ -706,26 +706,32 @@ public class RedisCacheUtil {
 				if (j == null)
 					return false;
 				boolean result = true;
-				Transaction ts = null;
+				//Transaction ts = null;
+				Pipeline  p = null;
 				try {
 					//开启事务
-					ts = j.multi(); 
-					
+					//ts = j.multi(); 
+					p = j.pipelined();	
 					String jsonMember = JSON.toJSONString(queueDO);
 					//缓存7天
-					ts.setex(setexkey,3600*24*7, jsonMember);
+					p.setex(setexkey,3600*24*7, jsonMember);
 					
-					ts.zadd(zaddkey,Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
+					p.zadd(zaddkey,Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
 							//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
 							jsonMember);
 					
 					// 执行事务
-					ts.exec();
+					List<Object> resultlist = p.syncAndReturnAll();
+					if(resultlist == null || resultlist.isEmpty()){  
+						throw new CacheRunTimeException("Pipeline error: no response...");
+					}
 				} catch (Exception e) {
 					result = false;
 					// 销毁事务
-					if (ts != null)
-						ts.discard();
+					//if (ts != null)
+						//ts.discard();
+					if (p != null)
+						p.discard();
 					//异常发生时记录日志
 					LogModel lm = LogModel.newLogModel("RedisCacheUtil.setexAndzadd");
 					log.error(lm.addMetaData("setexkey", setexkey)

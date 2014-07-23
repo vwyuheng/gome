@@ -394,7 +394,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			InventoryNotifyMessageParam notifyParam = null;
 			try {
 				notifyParam = new InventoryNotifyMessageParam();
-				notifyParam.setUserId(Long.valueOf(param.getUserId()));
+				notifyParam.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
 				notifyParam.setGoodsId(goodsId);
 				if(inventoryDO!=null) {
 					notifyParam.setLimitStorage(limitStorage);
@@ -538,7 +538,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			selMsg.setId(selectionId);
 			selMsg.setLeftNumber(this.selOrSuppleftnum);  //调整后的库存值
 			selMsg.setTotalNumber(this.selOrSupptotalnum);
-			selMsg.setUserId(Long.valueOf(param.getUserId()));
+			selMsg.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
 			selMsg.setLimitStorage(selectionInventory.getLimitStorage());
 			selMsg.setWaterfloodVal(selectionInventory.getWaterfloodVal());
 			selMsg.setWmsGoodsId(selectionInventory.getWmsGoodsId());
@@ -559,7 +559,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			supMsg.setId(suppliersId);
 			supMsg.setLeftNumber(this.selOrSuppleftnum);  //调整后的库存值
 			supMsg.setTotalNumber(this.selOrSupptotalnum);
-			supMsg.setUserId(Long.valueOf(param.getUserId()));
+			supMsg.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
 			supMsg.setLimitStorage(suppliersInventory.getLimitStorage());
 			supMsg.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
 			suppliersMsg.add(supMsg);

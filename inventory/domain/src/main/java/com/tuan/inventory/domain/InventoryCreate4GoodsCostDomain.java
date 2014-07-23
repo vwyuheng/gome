@@ -150,6 +150,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			this.goodsId = param.getGoodsId();
 			this.goodsBaseId = param.getGoodsBaseId();
 			limitStorage = param.getLimitStorage();
+			this.userId = (param!=null&&param.getUserId()!=null)?param.getUserId():0;
 			// 业务检查前的预处理
 			CreateInventoryResultEnum preHander =	this.preGoodsCostHandler();
 			if(preHander!=null&&!(preHander.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
@@ -388,7 +389,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			
 			updateActionDO.setActionType(ResultStatusEnum.ADJUST_GOODSPRICE
 					.getDescription());
-			updateActionDO.setUserId(param.getUserId());
+			updateActionDO.setUserId(userId);
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
