@@ -6,11 +6,16 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
+import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
+import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.job.result.RequestPacket;
 import com.tuan.inventory.job.util.JobUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -38,8 +43,8 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 
 public class InventoryServiceTest extends InventroyAbstractTest {
 
-	/*@Resource
-	InventoryCenterFacade inventoryCenterFacade;*/
+	@Resource
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	GoodsInventoryQueryService goodsInventoryQueryService;
 	@Resource
@@ -458,5 +463,67 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			InventoryCallResult result = goodsInventoryUpdateService.createInventory4GoodsCost(clientIP, clientName, param, traceMessage);
 			System.out.println(" result="+ result);
 			
+		}
+		@Test
+		public void testSaveAction() {
+			for(int i=10000;i>=0;i--) {
+				goodsInventoryDomainRepository.pushLogQueues(fillInventoryUpdateActionDO());
+			}
+			
+			
+		}
+		
+		
+		
+		// 填充日志信息
+		public GoodsInventoryActionDO fillInventoryUpdateActionDO() {
+			GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
+			try {
+				updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
+				updateActionDO.setGoodsId(100l);
+				updateActionDO.setGoodsBaseId(80001000l);
+				//if (inventoryInfoDO != null) {
+					updateActionDO.setBusinessType(ResultStatusEnum.GOODS_SELF
+							.getDescription());
+					updateActionDO.setOriginalInventory(String
+							.valueOf(9));
+					
+					updateActionDO.setInventoryChange(StringUtil.strHandler(1, 1, 1));
+				//}
+				//if (!CollectionUtils.isEmpty(selectionList)) {
+					updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SELECTION
+							.getDescription():updateActionDO.getBusinessType()+",选型："+ResultStatusEnum.GOODS_SELECTION
+							.getDescription());
+					updateActionDO.setItem("test");
+					updateActionDO.setOriginalInventory("1");
+					updateActionDO.setInventoryChange("2");
+				//}
+				//if (!CollectionUtils.isEmpty(suppliersList)) {
+					updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_SUPPLIERS
+							.getDescription():updateActionDO.getBusinessType()+",分店："+ResultStatusEnum.GOODS_SUPPLIERS
+							.getDescription());
+					updateActionDO.setItem("test");
+					updateActionDO.setOriginalInventory("3");
+					updateActionDO.setInventoryChange("5");
+				//}
+				updateActionDO.setActionType(ResultStatusEnum.DEDUCTION_INVENTORY
+						.getDescription());
+				
+				updateActionDO.setUserId(66l);
+				updateActionDO.setClientIp(clientIP);
+				updateActionDO.setClientName(clientName);
+				
+					updateActionDO.setOrderId(1000l);
+				
+				updateActionDO.setContent("test"); // 操作内容
+				updateActionDO.setRemark("扣减库存");
+				updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
+			} catch (Exception e) {
+				//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
+				
+				return null;
+			}
+			
+			return updateActionDO;
 		}
 }

@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
@@ -394,7 +395,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			if (isOldGoodsExists) { // 改价前商品
 			//将商品信息加载上来
 		    GoodsInventoryDO oldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
-			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSONObject.fromObject(inventoryInfoDO4NewGoods).toString()+"],inventoryInfoDO4OldGoods:["+JSONObject.fromObject(oldGoods).toString()+"]"); // 操作内容
+			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSON.toJSONString(inventoryInfoDO4NewGoods)+"],inventoryInfoDO4OldGoods:["+JSON.toJSONString(oldGoods)+"]"); // 操作内容
 			}
 			updateActionDO.setRemark("商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());

@@ -300,10 +300,11 @@ public class ObjectUtils {
 	public static List<GoodsInventoryActionModel> getList(List<String> elements) {
 		List<GoodsInventoryActionModel> result = null;
 		if(!CollectionUtils.isEmpty(elements)){
+			result =  new ArrayList<GoodsInventoryActionModel>();
 			for(String element:elements) {
 				if(StringUtils.isNotEmpty(element)){
 					
-					result =  new ArrayList<GoodsInventoryActionModel>();
+					
 					GoodsInventoryActionModel tmpResult = JSON.parseObject(element,
 							GoodsInventoryActionModel.class);
 					//GoodsInventoryActionModel tmpResult = JsonUtils.convertStringToObject(element, GoodsInventoryActionModel.class);
@@ -333,7 +334,7 @@ public class ObjectUtils {
 				selectionParam = new ArrayList<GoodsSelectionAndSuppliersModel>();
 				List<GoodsSelectionAndSuppliersResult> getSelectionParam = queueDO.getSelectionParam();
 				for(GoodsSelectionAndSuppliersResult gresult:getSelectionParam) {
-					GoodsSelectionAndSuppliersModel gmodel = JsonUtils.convertStringToObject(JSONObject.fromObject(gresult).toString(), GoodsSelectionAndSuppliersModel.class);
+					GoodsSelectionAndSuppliersModel gmodel = JSON.parseObject(JSON.toJSONString(gresult), GoodsSelectionAndSuppliersModel.class);
 					if(gmodel!=null)
 					    selectionParam.add(gmodel);
 				}
@@ -343,7 +344,7 @@ public class ObjectUtils {
 				suppliersParam = new ArrayList<GoodsSelectionAndSuppliersModel>();
 				List<GoodsSelectionAndSuppliersResult> getSuppliersParam = queueDO.getSuppliersParam();
 				for(GoodsSelectionAndSuppliersResult gresult:getSuppliersParam) {
-					GoodsSelectionAndSuppliersModel gmodel = JsonUtils.convertStringToObject(JSONObject.fromObject(gresult).toString(), GoodsSelectionAndSuppliersModel.class);
+					GoodsSelectionAndSuppliersModel gmodel = JSON.parseObject(JSON.toJSONString(gresult).toString(), GoodsSelectionAndSuppliersModel.class);
 					if(gmodel!=null)
 						suppliersParam.add(gmodel);
 				}
@@ -374,6 +375,51 @@ public class ObjectUtils {
 			result.setItem(model.getItem());
 			result.setOriginalInventory(model.getOriginalInventory());
 			result.setRemark(model.getRemark());
+		}
+		return result;
+	}
+	public static List<GoodsInventoryActionDO> toDOList(List<GoodsInventoryActionModel> modelList) {
+		List<GoodsInventoryActionDO> result = null;
+		if(!CollectionUtils.isEmpty(modelList)) {
+			result = new ArrayList<GoodsInventoryActionDO>();
+			for(GoodsInventoryActionModel model:modelList) {
+				if(model!=null) {
+					result.add(toDO(model));
+				}
+				
+			}
+			
+		}
+		return result;
+	}
+	public static List<GoodsInventoryActionModel> toModel(List<GoodsInventoryActionDO> doList) {
+		List<GoodsInventoryActionModel> result = null;
+		if(!CollectionUtils.isEmpty(doList)) {
+			result = new ArrayList<GoodsInventoryActionModel>();
+			for(GoodsInventoryActionDO aDO:doList) {
+				GoodsInventoryActionModel model = new GoodsInventoryActionModel();
+				if(aDO!=null) {
+					model.setId(aDO.getId());
+					model.setGoodsBaseId(aDO.getGoodsBaseId());
+					model.setGoodsId(aDO.getGoodsId());
+					model.setActionType(aDO.getActionType());
+					model.setBusinessType(aDO.getBusinessType());
+					model.setClientIp(aDO.getClientIp());
+					model.setClientName(aDO.getClientName());
+					model.setUserId(aDO.getUserId());
+					model.setContent(aDO.getContent());
+					model.setCreateTime(aDO.getCreateTime());
+					model.setInventoryChange(aDO.getInventoryChange());
+					model.setOrderId(aDO.getOrderId());
+					model.setItem(aDO.getItem());
+					model.setOriginalInventory(aDO.getOriginalInventory());
+					model.setRemark(aDO.getRemark());
+					result.add(model);
+				}
+				
+			}
+			
+			
 		}
 		return result;
 	}

@@ -6,8 +6,6 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import net.sf.json.JSONObject;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,8 +41,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	@Override
 	public void pushLogQueues(GoodsInventoryActionDO logActionDO) {
 		// 将库存日志队列信息压入到redis list
-		this.redisCacheUtil.rpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSONObject
-				.fromObject(logActionDO).toString());
+		this.redisCacheUtil.rpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSON.toJSONString(logActionDO));
 		
 	}
 
@@ -359,8 +356,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	@Override
 	public void lremLogQueue(GoodsInventoryActionDO logActionDO) {
 		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
-		this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (1), JSONObject
-				.fromObject(logActionDO).toString());
+		this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (1), JSON.toJSONString(logActionDO));
 	}
 
 	@Override
@@ -479,9 +475,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 					.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
 							+ wmsGoodsId);
 			if (!CollectionUtils.isEmpty(objMap)) {
-				/*return JsonUtils.convertStringToObject(
-						JsonUtils.convertObjectToString(objMap),
-						GoodsInventoryWMSDO.class);*/
+				
 				return JSON.parseObject(JSON.toJSONString(objMap),
 						GoodsInventoryWMSDO.class);
 			}

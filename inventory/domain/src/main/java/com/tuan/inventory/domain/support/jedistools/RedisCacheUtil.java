@@ -7,11 +7,11 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import net.sf.json.JSONObject;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Transaction;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.support.exception.CacheRunTimeException;
 import com.tuan.inventory.domain.support.jedistools.JedisFactory.JWork;
@@ -711,7 +711,7 @@ public class RedisCacheUtil {
 					//开启事务
 					ts = j.multi(); 
 					
-					String jsonMember = JSONObject.fromObject(queueDO).toString();
+					String jsonMember = JSON.toJSONString(queueDO);
 					//缓存7天
 					ts.setex(setexkey,3600*24*7, jsonMember);
 					

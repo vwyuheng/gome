@@ -1,7 +1,10 @@
 package com.tuan.inventory.domain.repository;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,7 +13,6 @@ import com.tuan.core.common.lang.TuanRuntimeException;
 import com.tuan.inventory.dao.LogOfWaterDAO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.domain.LogQueueDomain;
-import com.tuan.inventory.domain.support.BaseQueueDomain;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.util.QueueConstant;
 
@@ -39,11 +41,14 @@ public class LogQueueDomainRepository {
 	 * 保存消息内容
 	 * @param queueDomain 
 	 */
-	public void saveLogOfWater(BaseQueueDomain logDomain) {
+	public void saveLogOfWater(List<GoodsInventoryActionDO> logDOList) {
 		String uniqueSign = null;
 		try {
-			GoodsInventoryActionDO logQueueDO = logDomain.toLogQueueDO();
-			logOfWaterDAO.insertInventoryQueue(logQueueDO);
+			//GoodsInventoryActionDO logQueueDO = logDomain.toLogQueueDO();
+			if(!CollectionUtils.isEmpty(logDOList)) {
+				logOfWaterDAO.insertInventoryQueue(logDOList,logDOList.size());
+			}
+			
 		} catch (Exception e) {
 			logger.error(
 					"LogQueueDomainRepository.saveLogOfWater error occured!"

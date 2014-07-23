@@ -8,6 +8,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
@@ -269,7 +270,7 @@ public class InventoryCreateDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
-			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // 操作内容
+			updateActionDO.setContent(JSON.toJSONString(param)); // 操作内容
 			updateActionDO.setRemark("新增库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			

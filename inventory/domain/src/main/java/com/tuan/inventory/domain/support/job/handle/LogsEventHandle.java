@@ -1,7 +1,10 @@
 package com.tuan.inventory.domain.support.job.handle;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +30,7 @@ public class LogsEventHandle implements EventHandle {
 	@Resource
 	LogOfWaterHandleService logOfWaterHandleService;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean handleEvent(final Event event) throws Exception{
 		boolean isSuccess = true;
@@ -38,13 +42,13 @@ public class LogsEventHandle implements EventHandle {
 		long startTime = System.currentTimeMillis();
 		logger.info(lm.addMetaData("event",event)
 				.addMetaData("startTime", startTime).toJson());
-		GoodsInventoryActionModel logModel = null;
-		CallResult<GoodsInventoryActionModel> callResult  = null;
+		List<GoodsInventoryActionModel> logModelList = null;
+		CallResult<List<GoodsInventoryActionModel>> callResult  = null;
 		try {
-			logModel = (GoodsInventoryActionModel) event.getData();
-			if (logModel != null) {
+			logModelList = (List<GoodsInventoryActionModel>) event.getData();
+			if (!CollectionUtils.isEmpty(logModelList)) {
 				// 消费对列的信息
-				callResult = logOfWaterHandleService.createLogOfWater(logModel);
+				callResult = logOfWaterHandleService.createLogOfWater(logModelList);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				
@@ -53,23 +57,23 @@ public class LogsEventHandle implements EventHandle {
 					// 消息数据不存并且不成功
 					isSuccess = false;
 					message = "queue_error[" + publicCodeEnum.getMessage()
-							+ "]logid:" + logModel.getId();
+							+ "]logsize:" + logModelList.size();
 				} else {
-					message = "queue_success[save success]logid:" + logModel.getId();
+					message = "queue_success[save success]logsize:" + logModelList.size();
 				}
 			} 
 			
 		} catch (Exception e) {
 			isSuccess = false;
 			logger.error(lm.addMetaData("event",event)
-					.addMetaData("element",logModel)
+					.addMetaData("logModelList",logModelList)
 					.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
 		}
 		logger.info(lm.addMetaData("event",event)
-				.addMetaData("element",logModel)
+				.addMetaData("logModelList",logModelList)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
 				.addMetaData("endTime", System.currentTimeMillis())

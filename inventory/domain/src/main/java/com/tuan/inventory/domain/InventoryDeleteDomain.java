@@ -7,6 +7,7 @@ import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -186,7 +187,7 @@ public class InventoryDeleteDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(0l);
-			updateActionDO.setContent(JSONObject.fromObject(param).toString()); // 操作内容
+			updateActionDO.setContent(JSON.toJSONString(param)); // 操作内容
 			updateActionDO.setRemark("删除库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {

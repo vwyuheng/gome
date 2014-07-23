@@ -1,6 +1,7 @@
 package com.tuan.inventory.domain;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.util.CollectionUtils;
 
@@ -63,18 +64,21 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			// 业务检查前的预处理
 			if(this.preHandler()) {
 				if(!CollectionUtils.isEmpty(queueLogLists)) {
-					for (GoodsInventoryActionModel model : queueLogLists) {
+					//for (GoodsInventoryActionModel model : queueLogLists) {
 						 // this.model = model;
-						  if (fillActionEvent(model)) {	 //从队列中取事件
+						  if (fillActionEvent(queueLogLists)) {	 //从队列中取事件
 								boolean eventResult = logsEventHandle.handleEvent(event);
 								if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
-									//移除最后一个元素
-									this.goodsInventoryDomainRepository.lremLogQueue(model);
+									for (GoodsInventoryActionModel model : queueLogLists) {
+										//循环删除所有元素
+										this.goodsInventoryDomainRepository.lremLogQueue(model);
+									}
+									
 								   }
 								}
 						}
 					
-				}
+				//}
 			}else {
 				return CreateInventoryResultEnum.SYS_ERROR;
 			}
@@ -90,19 +94,19 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 	}
 
 	//加载消息数据
-	public boolean fillActionEvent(GoodsInventoryActionModel model) {
+	public boolean fillActionEvent(List<GoodsInventoryActionModel> modelList) {
 		try {
-			if(model==null) {
+			if(CollectionUtils.isEmpty(modelList)) {
 				return false;
 			}
 			event = new Event();
-			event.setData(model);
+			event.setData(modelList);
 			// 发送的不再重新进行发送
 			event.setTryCount(0);
-			if(!verifyId(model.getId())) {
+			/*if(!verifyId(model.getId())) {
 				return false;
-			}
-			event.setUUID(String.valueOf(model.getId()));
+			}*/
+			event.setUUID(UUID.randomUUID().toString());
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg",
