@@ -178,11 +178,12 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			CallResult<OrderQueryResult>  cllResult= basic.queryNupayOrderGoodsNum( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", preGoodsId);
 			UserOrderQueryEnum result = cllResult.getBusinessResult().getResult();
 			int takeNum = 0;
-			
+			Long getTakeNum = 0L;
 			if(result!=null&&result
 					.equals(UserOrderQueryEnum.SUCCESS)) {
 				//未支付订单占用库存量
-				takeNum = (Integer) cllResult.getBusinessResult().getResultObject();
+				getTakeNum =  (Long) cllResult.getBusinessResult().getResultObject();
+				takeNum = getTakeNum.intValue();
 				long endTime = System.currentTimeMillis();
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 						+ "milliseconds(毫秒)执行完成!takeNum="+takeNum;
