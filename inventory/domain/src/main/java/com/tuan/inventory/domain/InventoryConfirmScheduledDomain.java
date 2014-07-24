@@ -63,11 +63,13 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					.queryInventoryQueueListByStatus(Double
 							.valueOf(ResultStatusEnum.CONFIRM.getCode()));
 			if (!CollectionUtils.isEmpty(queueList)) {
-				logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列:("+queueList.size()+")条,处理前队列详细信息queueList:("+queueList+")");
+				//logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列:("+queueList.size()+")条,处理前队列详细信息queueList:("+queueList+")");
 				for (GoodsInventoryQueueModel model : queueList) {
 					//队列数据数据按商品id 归集后 发送消息更新数据准备
 					if (verifyId(model.getGoodsId())) {
 						listGoodsIdSends.add(model);
+					}else {
+						logConfirm.info("[商品id不合法]队列详细信息model:("+model+")");
 					}
 					logConfirm.info("[ConfirmJob]处理后队列详细信息listGoodsIdSends:("+listGoodsIdSends+")");
 					
@@ -95,7 +97,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			if(!preHandler()){
 				return CreateInventoryResultEnum.SYS_ERROR;
 			}
-			
+			logConfirm.info("[1,]开始处理:(状态start");
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
 				for (GoodsInventoryQueueModel queueModel : listGoodsIdSends) {
 					long goodsId = queueModel.getGoodsId();
@@ -255,7 +257,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			return null;
 		}
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
-		notifyParam.setGoodsBaseId(goodsInventoryModel.getGoodsBaseId());
+		long goodsBaseId = goodsInventoryModel.getGoodsBaseId();
+		notifyParam.setGoodsBaseId(goodsBaseId);
 		notifyParam.setUserId(goodsInventoryModel.getUserId());
 		notifyParam.setGoodsId(goodsInventoryModel.getGoodsId());
 		notifyParam.setLimitStorage(goodsInventoryModel.getLimitStorage());
@@ -272,10 +275,13 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		if (!CollectionUtils.isEmpty(goodsInventoryModel.getGoodsSuppliersList())) {
 			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(goodsInventoryModel.getGoodsSuppliersList()));
 		}
-		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsInventoryModel.getGoodsBaseId());
-		if(baseInventoryDO!=null){
+		
+		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+		if(baseInventoryDO!=null&&baseInventoryDO.getGoodsBaseId()!=null){
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+		}else {
+			logConfirm.info("[GoodsBaseInventoryDO,非法数据]查询goodsBaseId:("+goodsBaseId+"),redis中所存储baseInventoryDO状态:"+baseInventoryDO);
 		}
 		
 		return notifyParam;

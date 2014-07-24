@@ -189,10 +189,10 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 										inventoryInfoDO);
 								//更新库存基表
-								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseInventoryDO!=null){
+								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseInventoryDO!=null&&goodsBaseId!=null){
 									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseInventoryDO);
 								}
-								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&upBaseDO!=null){
+								if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&upBaseDO!=null&&goodsBaseId!=null){
 									retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, upBaseDO);
 								}
 								

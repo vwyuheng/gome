@@ -71,9 +71,9 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 						 // this.model = model;
 						  if (fillActionEvent(queueLogLists)) {	 //从队列中取事件
 							  long startTime = System.currentTimeMillis();
-								String method = "logsEventHandle.handleEvent,[批量处理日志队列]:("+queueLogLists+"),start";
+								String method = "logsEventHandle.handleEvent";
 								final LogModel lm = LogModel.newLogModel(method);
-								logLogs.info(lm.setMethod(method).addMetaData("start", startTime)
+								logLogs.info(lm.setMethod(method).addMetaData("批量处理日志队列", queueLogLists).addMetaData("start", startTime)
 										.toJson(true));
 								boolean eventResult = logsEventHandle.handleEvent(event);
 								long endTime = System.currentTimeMillis();
@@ -87,7 +87,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 										final LogModel remlm = LogModel.newLogModel(remmethod);
 										//循环删除所有元素
 										Long rem = this.goodsInventoryDomainRepository.lremLogQueue(model);
-										logLogs.info(remlm.setMethod(remmethod).addMetaData("删除结果", rem));
+										logLogs.info(remlm.setMethod(remmethod).addMetaData("日志id", model!=null?model.getId():0).addMetaData("删除结果", rem));
 									}
 									
 								   }

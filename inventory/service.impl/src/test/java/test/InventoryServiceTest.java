@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -425,6 +426,14 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		Message traceMessage = JobUtils.makeTraceMessage(packet);
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
 		goodsInventoryScheduledService.logsQueueConsume(clientIP, clientName, traceMessage);
+	}
+	@Test
+	public void testSaveBase() {
+		GoodsBaseInventoryDO	baseInventoryDO = new GoodsBaseInventoryDO();
+		baseInventoryDO.setGoodsBaseId(8000009999l);
+		baseInventoryDO.setBaseTotalCount(null);
+		baseInventoryDO.setBaseSaleCount(0);
+		goodsInventoryDomainRepository.saveGoodsBaseInventory(8000009999l, baseInventoryDO);
 	}
 	
 	

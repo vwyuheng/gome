@@ -110,11 +110,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
 								if (verifyId(model.getGoodsId())) {
 									this.inventorySendMsg.add(model);
+								}else {
+									logLock.info("[订单状态为已付款时商品id不合法]队列详细信息model:("+model+")");
 								}
 								   
 							}else {
 								if (verifyId(model.getId())) {
 									this.inventoryRollback.add(model);
+								}else {
+									logLock.info("[订单状态为未付款时商品id不合法]队列详细信息model:("+model+")");
 								}
 								   
 							}
@@ -357,9 +361,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(goodsInventoryModel.getGoodsSuppliersList()));
 		}
 		GoodsBaseInventoryDO baseInventoryDO =goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-		if(baseInventoryDO!=null){
+		if(baseInventoryDO!=null&&baseInventoryDO.getGoodsBaseId()!=null){
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+		}else {
+			logLock.info("[GoodsBaseInventoryDO,非法数据]查询goodsBaseId:("+goodsBaseId+"),redis所存储baseInventoryDO状态:"+baseInventoryDO);
 		}
 		
 		return notifyParam;
@@ -399,31 +405,32 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		try {
 			// 回滚库存
 			if (goodsId > 0) {
-				writeJobLog("rollback goodsId=" + (goodsId) + "],"
-						+ "deductNum=" + deductNum);
+				
 				int limtStorgeDeNum = 0;
 				if(limitStorage==1) {
 					limtStorgeDeNum = deductNum;
 				}
+				logLock.info("rollback start goodsId=" + (goodsId) + "goodsBaseId=" + goodsBaseId +"],"
+						+ "deductNum=" + deductNum+ "limtStorgeDeNum=" + limtStorgeDeNum);
 				List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId,goodsBaseId,(limtStorgeDeNum), (deductNum));
 
-				writeJobLog("isRollback after[" + goodsId + "]"
+				logLock.info("isRollback after[" + goodsId + "]"
 						+ ",rollbackAftNum:" + rollbackAftNum);
 			}
 			if (!CollectionUtils.isEmpty(selectionParam)) {
-				writeJobLog("rollback selectionParam=" + selectionParam);
+				logLock.info("rollback start selectionParam=" + selectionParam);
 				boolean rollbackSelAck = this.goodsInventoryDomainRepository
 						.rollbackSelectionInventory(selectionParam);
-				writeJobLog("isRollback selection end[" + selectionParam
+				logLock.info("isRollback selection end[" + selectionParam
 						+ "],rollbackselresult:" + rollbackSelAck);
 			}
 			if (!CollectionUtils.isEmpty(suppliersParam)) {
-				writeJobLog("isRollback suppliers start[" + suppliersParam
+				logLock.info("isRollback suppliers start[" + suppliersParam
 						+ "]");
 				boolean rollbackSuppAck = this.goodsInventoryDomainRepository
 						.rollbackSuppliersInventory(suppliersParam);
-				writeJobLog("isRollback suppliers start[" + suppliersParam
+				logLock.info("isRollback suppliers start[" + suppliersParam
 						+ "],rollbacksuppresult:" + rollbackSuppAck);
 			}
 		} catch (Exception e) {
