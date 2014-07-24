@@ -3,8 +3,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import com.tuan.inventory.domain.support.util.LogUtil;
 public class Test1 {
 	
 	public static void main(String[] args) throws ParseException {
@@ -31,7 +29,7 @@ public class Test1 {
 		selectionIdList.add(29l);
 		selectionIdList.add(30l);
 		
-		System.out.println(LogUtil.formatListLog(selectionIdList));
+		//System.out.println(LogUtil.formatListLog(selectionIdList));
 	}
 	
 	/**

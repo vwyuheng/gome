@@ -10,10 +10,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -184,8 +184,8 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("orderId", orderId);
 		parameterMap.put("num",  String.valueOf(num));
 		parameterMap.put("goodsBaseId", goodsBaseId);
-		parameterMap.put("reqGoodsSuppliers", CollectionUtils.isEmpty(reqGoodsSuppliers)?"":LogUtil.formatListLog(reqGoodsSuppliers));
-		parameterMap.put("reqGoodsSelection", CollectionUtils.isEmpty(reqGoodsSelection)?"":LogUtil.formatListLog(reqGoodsSelection));
+		parameterMap.put("reqGoodsSuppliers", CollectionUtils.isEmpty(reqGoodsSuppliers)?"":JSON.toJSONString(reqGoodsSuppliers));
+		parameterMap.put("reqGoodsSelection", CollectionUtils.isEmpty(reqGoodsSelection)?"":JSON.toJSONString(reqGoodsSelection));
 		super.init(packet.getClient(), packet.getIp());
 		packet.addParameterMap(parameterMap);
 	}

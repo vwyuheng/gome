@@ -11,8 +11,6 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
-import com.tuan.inventory.domain.support.util.JsonUtils;
-import com.tuan.inventory.domain.support.util.LogUtil;
 
 public class Test {
 	private static boolean isGoodsOf;
@@ -32,9 +30,9 @@ public class Test {
 		//jsonObject.accumulate("code", "1000");
 		//jsonObject.accumulate("msg", "success");
 		//jsonObject.accumulate("data", rdo);
-		String objStr = LogUtil.formatObjLog(rdo);
+		//String objStr = JSON.p(rdo);
 		Test test = new Test();
-		GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
+	//	GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
 		//System.out.println("test="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(rdo), Map.class));
 		//System.out.println(JSONObject.fromObject(rdo));
 		System.out.println("11test11="+toHashMap(rdo));

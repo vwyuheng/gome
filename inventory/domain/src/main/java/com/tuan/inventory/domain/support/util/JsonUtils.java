@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.model.param.rest.TestParam;
@@ -30,7 +31,8 @@ public class JsonUtils {
 		}
 		String res = null;
 		try {
-			res = objectMapper.writeValueAsString(object);
+			//res = objectMapper.writeValueAsString(object);
+			res = JSON.toJSONString(object);
 		} catch (Exception e) {
 			logger.error(e.getMessage(), e.fillInStackTrace());
 			throw new RuntimeException("object  conver json exception ");
@@ -61,6 +63,9 @@ public class JsonUtils {
 		}
 		return res;
 	}
+	public static long getRunTime(long startTime){
+		return System.currentTimeMillis() - startTime;
+	}
 	public static void main(String[] args) {
 		List<TestParam> goodsSelection = new ArrayList<TestParam>();
 		for(int i=2;i>0;i--) {
@@ -76,5 +81,6 @@ public class JsonUtils {
 		
 		System.out.println("tet1="+tet1+",size="+tet1.size());
 	}
+	
 	
 }

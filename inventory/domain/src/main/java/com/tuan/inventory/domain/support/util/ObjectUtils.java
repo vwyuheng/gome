@@ -276,7 +276,8 @@ public class ObjectUtils {
 			result = new ArrayList<GoodsInventoryQueueModel>();
 			for(String member:members) {
 //				GoodsInventoryQueueModel memberDO = (GoodsInventoryQueueModel) LogUtil.jsonToObject(member, GoodsInventoryQueueModel.class);
-				GoodsInventoryQueueModel memberDO = JsonUtils.convertStringToObject(member, GoodsInventoryQueueModel.class);
+				//GoodsInventoryQueueModel memberDO = JsonUtils.convertStringToObject(member, GoodsInventoryQueueModel.class);
+				GoodsInventoryQueueModel memberDO = JSON.parseObject(member, GoodsInventoryQueueModel.class);
 				result.add(memberDO);
 			}
 		}
@@ -289,7 +290,8 @@ public class ObjectUtils {
 			//if(!CollectionUtils.isEmpty(elements)){
 				result =  new ArrayList<GoodsInventoryActionModel>();
 				//for(String element:elements) {
-				GoodsInventoryActionModel tmpResult = JsonUtils.convertStringToObject(element, GoodsInventoryActionModel.class);
+				GoodsInventoryActionModel tmpResult = JSON.parseObject(element, GoodsInventoryActionModel.class);
+				//GoodsInventoryActionModel tmpResult = JsonUtils.convertStringToObject(element, GoodsInventoryActionModel.class);
 					if(tmpResult!=null)
 					     result.add(tmpResult);
 				//}

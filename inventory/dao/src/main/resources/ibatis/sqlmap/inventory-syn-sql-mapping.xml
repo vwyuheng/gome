@@ -499,7 +499,7 @@
   	
   <!-- 插入库存日志流水表信息 -->
   	<insert id="insertInventoryQueue" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO" >
-    insert into jeehe_inventory_log 
+    insert ignore into jeehe_inventory_log 
     (id, 
     goods_base_id,
     goods_id, 

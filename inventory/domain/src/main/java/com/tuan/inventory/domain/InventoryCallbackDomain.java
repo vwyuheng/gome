@@ -16,7 +16,6 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.JsonUtils;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
@@ -235,7 +234,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				updateActionDO.setUserId(queueDO.getUserId());
 				updateActionDO.setOrderId(queueDO.getOrderId());
 				updateActionDO
-				.setContent(LogUtil.formatObjLog(queueDO)); // 操作内容
+				.setContent(JsonUtils.convertObjectToString(queueDO)); // 操作内容
 			}else {
 				updateActionDO
 				.setContent(JsonUtils.convertObjectToString(param)); // 操作内容

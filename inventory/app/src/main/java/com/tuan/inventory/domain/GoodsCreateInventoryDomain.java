@@ -10,10 +10,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -349,8 +349,8 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("leftNumber",  String.valueOf(leftNumber));
 	    parameterMap.put("limitStorage",  String.valueOf(limitStorage));
 		parameterMap.put("waterfloodVal",  String.valueOf(waterfloodVal));
-		parameterMap.put("goodsSuppliers", CollectionUtils.isEmpty(goodsSuppliers)?"":LogUtil.formatListLog(goodsSuppliers));
-		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":LogUtil.formatListLog(goodsSelection));
+		parameterMap.put("goodsSuppliers", CollectionUtils.isEmpty(goodsSuppliers)?"":JSON.toJSONString(goodsSuppliers));
+		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":JSON.toJSONString(goodsSelection));
 		packet.addParameterMap(parameterMap);
 		super.init(packet.getClient(), packet.getIp());
 	}

@@ -13,7 +13,7 @@ import com.tuan.inventory.domain.LogOfWaterHandleService;
 import com.tuan.inventory.domain.support.job.event.Event;
 import com.tuan.inventory.domain.support.job.event.EventHandle;
 import com.tuan.inventory.domain.support.logs.LogModel;
-import com.tuan.inventory.domain.support.util.LogUtil;
+import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.result.CallResult;
@@ -70,14 +70,14 @@ public class LogsEventHandle implements EventHandle {
 					.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(),e);
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(),e);
 		}
 		logger.info(lm.addMetaData("event",event)
 				.addMetaData("logModelList",logModelList)
 				.addMetaData("callResult",callResult)
 				.addMetaData("message",message)
 				.addMetaData("endTime", System.currentTimeMillis())
-				.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+				.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
 		return isSuccess;
 	}
 	

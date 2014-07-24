@@ -10,10 +10,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.enu.res.ResultEnum;
@@ -175,8 +175,8 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 		parameterMap.put("id", String.valueOf(id));
 		parameterMap.put("wmsGoodsId", wmsGoodsId);
 	    parameterMap.put("isBeDelivery",  String.valueOf(isBeDelivery));
-		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":LogUtil.formatListLog(goodsSelection));
-		parameterMap.put("goodsIds",  CollectionUtils.isEmpty(goodsIds)?"":LogUtil.formatListLog(goodsIds));
+		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":JSON.toJSONString(goodsSelection));
+		parameterMap.put("goodsIds",  CollectionUtils.isEmpty(goodsIds)?"":JSON.toJSONString(goodsIds));
 		packet.addParameterMap(parameterMap);
 		super.init(packet.getClient(), packet.getIp());
 	}

@@ -15,7 +15,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.LogUtil;
+import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.model.enu.PublicCodeEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.result.CallResult;
@@ -340,7 +340,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					//.addMetaData("callResult",callResult)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -382,7 +382,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					//.addMetaData("callResult",callResult)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -424,7 +424,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					//.addMetaData("callResult",callResult)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -479,7 +479,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					//.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -525,7 +525,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					//.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;	
@@ -569,7 +569,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 		
@@ -614,7 +614,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 		
@@ -652,7 +652,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					.addMetaData("selectionList",selectionList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", LogUtil.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 	}

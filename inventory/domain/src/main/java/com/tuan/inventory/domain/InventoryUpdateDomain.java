@@ -24,7 +24,6 @@ import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
-import com.tuan.inventory.domain.support.util.LogUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -361,7 +360,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 												.addMetaData("tmpSelDO",tmpSelDO)
 												.addMetaData("endTime", System.currentTimeMillis())
 												.addMetaData("message",message)
-												.addMetaData("useTime", LogUtil.getRunTime(startTimeHis)).toJson());
+												.addMetaData("useTime", JsonUtils.getRunTime(startTimeHis)).toJson());
 									}
 								}
 									

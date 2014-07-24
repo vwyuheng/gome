@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.util.LogUtil;
+import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -166,7 +166,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			
 			
 		}
-		System.out.println("goodsSelectionparam="+LogUtil.formatListLog(goodsSelection));
+		System.out.println("goodsSelectionparam="+JsonUtils.convertObjectToString(goodsSelection));
 		param.setGoodsSelection(goodsSelection);
 		
 		RequestPacket packet = new RequestPacket();
@@ -174,7 +174,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		packet.setTraceRootId(UUID.randomUUID().toString());
 		Message traceMessage = JobUtils.makeTraceMessage(packet);
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
-		System.out.println("11param="+LogUtil.formatObjLog(param));
+		System.out.println("11param="+JsonUtils.convertObjectToString(param));
 		goodsInventoryUpdateService.createWmsInventory(clientIP, clientName, param, traceMessage);
 		//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
@@ -293,8 +293,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			goodsSuppliers.add(supmodel);
 			
 		}
-		System.out.println("goodsSelectionparam="+LogUtil.formatListLog(goodsSelection));
-		System.out.println("goodsSuppliersparam="+LogUtil.formatListLog(goodsSuppliers));
+		System.out.println("goodsSelectionparam="+JsonUtils.convertObjectToString(goodsSelection));
+		System.out.println("goodsSuppliersparam="+JsonUtils.convertObjectToString(goodsSuppliers));
 		param.setGoodsSelection(goodsSelection);
 		param.setGoodsSuppliers(goodsSuppliers);
 		
@@ -303,7 +303,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		packet.setTraceRootId(UUID.randomUUID().toString());
 		Message traceMessage = JobUtils.makeTraceMessage(packet);
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
-		System.out.println("11param="+LogUtil.formatObjLog(param));
+		System.out.println("11param="+JsonUtils.convertObjectToString(param));
 		goodsInventoryUpdateService.createInventory(clientIP, clientName, param, traceMessage);
 		//System.out.println(sequenceUtil.getSequence(SEQNAME.seq_log));
 		
@@ -459,7 +459,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			packet.setTraceRootId(UUID.randomUUID().toString());
 			Message traceMessage = JobUtils.makeTraceMessage(packet);
 			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
-			System.out.println("11param="+LogUtil.formatObjLog(param));
+			System.out.println("11param="+JsonUtils.convertObjectToString(param));
 			InventoryCallResult result = goodsInventoryUpdateService.createInventory4GoodsCost(clientIP, clientName, param, traceMessage);
 			System.out.println(" result="+ result);
 			
