@@ -154,24 +154,24 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					long goodsId = queueModel.getGoodsId();
 					long queueId = queueModel.getId();
 					if(loadMessageData(goodsId)) {
+						//发送消息:支付成功此时redis中数据是最新的故直接发送消息删除状态后再更新mysql数据库
+						if(this.sendNotify()) {
+							//已支付成功订单，消息发送后，将队列标记删除
+							logLock.info("[消息发送成功,]删除queueId:("+queueId+"),状态start");
+							if(this.markDeleteAfterSendMsgSuccess(queueId)) {
+								logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+							}else {
+								logLock.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
+							}
+							
+						}
 						//将数据更新到mysql
 						if(this.fillParamAndUpdate()) {
-							  //writeJobLog("[asynUpdateMysqlInventory,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
 							  //订单为已支付的，首先进行数据同步
 					          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 					          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
-					        	//发送消息
-									if(this.sendNotify()) {
-										//已支付成功订单，消息发送后，将队列标记删除
-										logLock.info("[消息发送成功,]删除queueId:("+queueId+"),状态start");
-										if(this.markDeleteAfterSendMsgSuccess(queueId)) {
-											logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
-										}else {
-											logLock.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
-										}
-										
-									}
-									
+					        	
+					        	  logLock.info("[同步数据成功,success],message("+updateDataEnum.getDescription()+")");
 									 
 								}else {
 									logLock.info("[数据同步失败,failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
@@ -192,27 +192,30 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						long goodsBaseId = rollbackModel.getGoodsBaseId();
 						int limitStorage = rollbackModel.getLimitStorage();
 						int  deductNum = rollbackModel.getDeductNum();
+						long orderId = rollbackModel.getOrderId();
 						List<GoodsSelectionAndSuppliersResult> selectionParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSelectionParam());
 						List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList( rollbackModel.getSuppliersParam());
 						//先回滚redis库存，
-						if(this.rollback(goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, suppliersParamResult)){
+						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, suppliersParamResult)){
+							//当redis回滚成功后，立即发送消息,删除状态
+							if(this.sendNotify()) {
+									logLock.info("[rollback,sendmessage successed]queueId:"+queueId+",goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+								    //已支付成功订单，消息发送后，将队列标记删除
+									if(this.markDeleteAfterSendMsgSuccess(queueId)) {
+										logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+									}else {
+										logLock.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
+									}
+								}
+							//再同步mysql数据
 							if(loadMessageData(goodsId)) {
 								if(this.fillParamAndUpdate()) {
 									// writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),goodsBaseId:("+goodsBaseId+")");
 									  //订单为已支付的，首先进行数据同步:再更新mysql库存,
+							          //updateDataEnum =  this.asynRestoreUpdateMysqlInventory(goodsId,goodsBaseId,limitStorage,deductNum,selectionParamResult,suppliersParamResult,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 							          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 							          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
-							        	//发送消息:再发送消息
-											if(this.sendNotify()) {
-												logLock.info("[rollback,sendmessage successed]queueId:"+queueId+",goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
-											    //已支付成功订单，消息发送后，将队列标记删除
-												if(this.markDeleteAfterSendMsgSuccess(queueId)) {
-													logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
-												}else {
-													logLock.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
-												}
-											}
-
+							        	  logLock.info("[回滚库存时同步数据成功,success],message("+updateDataEnum.getDescription()+")");
 										}else {
 											logLock.info("[回滚库存时同步数据失败,failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 										}
@@ -281,6 +284,16 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setLm(lm);
 			return create.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
+		}
+		//异步还商品库存
+		public CreateInventoryResultEnum asynRestoreUpdateMysqlInventory(long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsList) {
+			InventoryInitDomain create = new InventoryInitDomain(goodsId,lm);
+			//create.setGoodsId(goodsId);
+			//注入相关Repository
+			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			create.setLm(lm);
+			return create.asynRestorUpdateInventory(goodsId,goodsBaseId,limitStorage,deductNum,selectionParam,suppliersParam,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 		}
 		/**
 		 * 组装数据并更新
@@ -400,7 +413,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		 //return true;
 	}
 	
-	public boolean rollback(long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
+	public boolean rollback(long orderId,long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
 		boolean success = true;
 		try {
 			// 回滚库存
@@ -410,28 +423,64 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				if(limitStorage==1) {
 					limtStorgeDeNum = deductNum;
 				}
-				logLock.info("rollback start goodsId=" + (goodsId) + "goodsBaseId=" + goodsBaseId +"],"
-						+ "deductNum=" + deductNum+ "limtStorgeDeNum=" + limtStorgeDeNum);
+				long startTime = System.currentTimeMillis();
+				String method = "InventoryLockedScheduledDomain.rollback,订单id:"+String.valueOf(orderId);
+				final LogModel lm = LogModel.newLogModel(method);
+				logLock.info(lm.setMethod(method)
+						.addMetaData("goodsId", goodsId)
+						.addMetaData("goodsBaseId", goodsBaseId)
+						.addMetaData("deductNum", deductNum)
+						.addMetaData("limtStorgeDeNum", limtStorgeDeNum)
+						.addMetaData("selectionParam", selectionParam)
+						.addMetaData("suppliersParam", suppliersParam)
+						.addMetaData("start", startTime)
+						.toJson(true));
 				List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId,goodsBaseId,(limtStorgeDeNum), (deductNum));
 
-				logLock.info("isRollback after[" + goodsId + "]"
-						+ ",rollbackAftNum:" + rollbackAftNum);
+				long endTime = System.currentTimeMillis();
+				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+						+ "milliseconds(毫秒)执行完成!(订单支付状态)rollbackAftNum="+rollbackAftNum;
+				logLock.info(lm.setMethod(method).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult));
 			}
 			if (!CollectionUtils.isEmpty(selectionParam)) {
-				logLock.info("rollback start selectionParam=" + selectionParam);
+				long startTime = System.currentTimeMillis();
+				String method = "InventoryLockedScheduledDomain.rollback,selectionParam订单id:"+String.valueOf(orderId);
+				final LogModel lm = LogModel.newLogModel(method);
+				logLock.info(lm.setMethod(method)
+						.addMetaData("goodsId", goodsId)
+						.addMetaData("goodsBaseId", goodsBaseId)
+						.addMetaData("deductNum", deductNum)
+						.addMetaData("selectionParam", selectionParam)
+						.addMetaData("start", startTime)
+						.toJson(true));
 				boolean rollbackSelAck = this.goodsInventoryDomainRepository
 						.rollbackSelectionInventory(selectionParam);
-				logLock.info("isRollback selection end[" + selectionParam
-						+ "],rollbackselresult:" + rollbackSelAck);
+				long endTime = System.currentTimeMillis();
+				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+						+ "milliseconds(毫秒)执行完成!(订单支付状态)rollbackSelAck="+rollbackSelAck;
+				logLock.info(lm.setMethod(method).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult));
 			}
 			if (!CollectionUtils.isEmpty(suppliersParam)) {
-				logLock.info("isRollback suppliers start[" + suppliersParam
-						+ "]");
+				long startTime = System.currentTimeMillis();
+				String method = "InventoryLockedScheduledDomain.rollback,suppliersParam订单id:"+String.valueOf(orderId);
+				final LogModel lm = LogModel.newLogModel(method);
+				logLock.info(lm.setMethod(method)
+						.addMetaData("goodsId", goodsId)
+						.addMetaData("goodsBaseId", goodsBaseId)
+						.addMetaData("deductNum", deductNum)
+						.addMetaData("suppliersParam", suppliersParam)
+						.addMetaData("start", startTime)
+						.toJson(true));
 				boolean rollbackSuppAck = this.goodsInventoryDomainRepository
 						.rollbackSuppliersInventory(suppliersParam);
-				logLock.info("isRollback suppliers start[" + suppliersParam
-						+ "],rollbacksuppresult:" + rollbackSuppAck);
+				long endTime = System.currentTimeMillis();
+				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+						+ "milliseconds(毫秒)执行完成!(订单支付状态)rollbackSuppAck="+rollbackSuppAck;
+				logLock.info(lm.setMethod(method).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult));
 			}
 		} catch (Exception e) {
 			success = false;

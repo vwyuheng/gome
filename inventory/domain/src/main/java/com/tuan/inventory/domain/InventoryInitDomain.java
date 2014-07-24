@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
@@ -560,6 +561,50 @@ public class InventoryInitDomain extends AbstractDomain{
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg:"+message,
 							"updateMysqlInventory error " + e.getMessage()),false,  e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			log.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("inventoryInfoDO",inventoryInfoDO)
+					.addMetaData("selectionInventoryList",selectionInventoryList)
+					.addMetaData("suppliersInventoryList",suppliersInventoryList)
+					.addMetaData("wmsInventoryList",wmsInventoryList)
+					.addMetaData("message",message)
+					.addMetaData("endTime", System.currentTimeMillis())
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
+		}
+		return CreateInventoryResultEnum.SUCCESS;	
+		
+	}
+	/**
+	 * 异步还库库存
+	 * @param inventoryInfoDO
+	 * @param selectionInventoryList
+	 * @param suppliersInventoryList
+	 */
+	public CreateInventoryResultEnum asynRestorUpdateInventory(long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam,GoodsInventoryDO inventoryInfoDO,List<GoodsSelectionDO> selectionInventoryList,List<GoodsSuppliersDO> suppliersInventoryList,List<GoodsInventoryWMSDO> wmsInventoryList) {
+		
+		CallResult<Boolean> callResult  = null;
+		String message = StringUtils.EMPTY;
+		long startTime = System.currentTimeMillis();
+		try {
+			// 更新商品库存
+			callResult = synInitAndAysnMysqlService.restoreGoodsInventory(goodsId,goodsBaseId,limitStorage,deductNum,selectionParam,suppliersParam,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventoryList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS) {  //
+				// 消息数据不存并且不成功
+				message = "asynRestorUpdateInventory_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsId;
+				return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+			} else {
+				message = "asynRestorUpdateInventory_success[restoreGoodsInventory success]goodsId:" + goodsId;
+			}
+			//} 
+		} catch (Exception e) {
+			this.writeBusJobErrorLog(
+					lm.addMetaData("errorMsg:"+message,
+							"restoreGoodsInventory error " + e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
 			log.info(lm.addMetaData("goodsId",goodsId)
