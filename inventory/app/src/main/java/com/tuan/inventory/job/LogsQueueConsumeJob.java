@@ -13,7 +13,7 @@ import com.tuan.job.util.AbstractJobRunnable;
 import com.tuan.job.util.ExecutorManager;
 
 public class LogsQueueConsumeJob extends AbstractJobRunnable {
-	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
+	private static Log logJob=LogFactory.getLog("LOGS.JOB.LOG");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource

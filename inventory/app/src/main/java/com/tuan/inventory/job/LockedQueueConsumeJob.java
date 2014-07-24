@@ -14,7 +14,7 @@ import com.tuan.job.util.AbstractJobRunnable;
 import com.tuan.job.util.ExecutorManager;
 
 public class LockedQueueConsumeJob extends AbstractJobRunnable {
-	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
+	private static Log logJob=LogFactory.getLog("LOCKED.JOB.LOG");
 	@Resource
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
