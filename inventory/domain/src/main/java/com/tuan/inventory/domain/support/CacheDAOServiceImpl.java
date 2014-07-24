@@ -96,14 +96,13 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		final LogModel lm = LogModel.newLogModel(method);
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
+		Map<String, String> objMap = null;
 		try {
-			Map<String, String> objMap = this.redisCacheUtil
+			 objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
 							+ String.valueOf(goodsId));
 			if (!CollectionUtils.isEmpty(objMap)) {
-				/*return JsonUtils.convertStringToObject(
-						JsonUtils.convertObjectToString(objMap),
-						GoodsInventoryDO.class);*/
+				
 				return JSON.parseObject(JSON.toJSONString(objMap),
 						GoodsInventoryDO.class);
 			}
@@ -111,7 +110,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
@@ -124,8 +123,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		final LogModel lm = LogModel.newLogModel(method);
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
+		Map<String, String> objMap = null;
 		try {
-			Map<String, String> objMap = this.redisCacheUtil
+			 objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
 							+ String.valueOf(selectionId));
 			if (!CollectionUtils.isEmpty(objMap)) {
@@ -141,7 +141,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
@@ -154,8 +154,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		final LogModel lm = LogModel.newLogModel(method);
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
+		Map<String, String> objMap = null;
 		try {
-			Map<String, String> objMap = this.redisCacheUtil
+			 objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
 							+ String.valueOf(suppliersId));
 			if (!CollectionUtils.isEmpty(objMap)) {
@@ -171,7 +172,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
@@ -288,9 +289,10 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
 		GoodsInventoryQueueDO queueDO = null;
+		String member ="";
 		try {
 			// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
-			String member = this.redisCacheUtil
+			 member = this.redisCacheUtil
 					.get(QueueConstant.QUEUE_KEY_MEMBER + ":" + key);
 			if (StringUtils.isNotEmpty(member)) {
 				// queueDO =
@@ -301,7 +303,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("member", member).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return queueDO;
@@ -470,8 +472,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		final LogModel lm = LogModel.newLogModel(method);
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
+		Map<String, String> objMap = null;
 		try {
-			Map<String, String> objMap = this.redisCacheUtil
+			 objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
 							+ wmsGoodsId);
 			if (!CollectionUtils.isEmpty(objMap)) {
@@ -483,7 +486,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
@@ -582,8 +585,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		final LogModel lm = LogModel.newLogModel(method);
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
+		Map<String, String> objMap = null;
 		try {
-			Map<String, String> objMap = this.redisCacheUtil
+			objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
 							+ String.valueOf(goodsBaseId));
 			if (!CollectionUtils.isEmpty(objMap)) {
@@ -595,7 +599,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
 		return null;
