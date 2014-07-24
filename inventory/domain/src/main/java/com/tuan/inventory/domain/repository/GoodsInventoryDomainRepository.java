@@ -511,8 +511,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public void markQueueStatus(String member,int upStatusNum) {
 		this.baseDAOService.markQueueStatus(member, upStatusNum);
 	}
-	public void markQueueStatusAndDeleteCacheMember(String member,int upStatusNum,String delkey) {
-		this.baseDAOService.markQueueStatusAndDeleteCacheMember(member, upStatusNum,delkey);
+	public boolean markQueueStatusAndDeleteCacheMember(String member,int upStatusNum,String delkey) {
+		return this.baseDAOService.markQueueStatusAndDeleteCacheMember(member, upStatusNum,delkey);
 	}
 	
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key) {
@@ -715,8 +715,8 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * 删除日志
 	 * @param model
 	 */
-	public void lremLogQueue(GoodsInventoryActionModel model) {
-		 this.baseDAOService.lremLogQueue(ObjectUtils.toDO(model));
+	public Long lremLogQueue(GoodsInventoryActionModel model) {
+		 return this.baseDAOService.lremLogQueue(ObjectUtils.toDO(model));
 	}
 	/**
 	 * 删除队列member

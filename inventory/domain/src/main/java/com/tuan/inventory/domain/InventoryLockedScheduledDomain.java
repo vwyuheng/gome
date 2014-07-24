@@ -6,6 +6,8 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
@@ -37,6 +39,7 @@ import com.tuan.ordercenter.model.result.CallResult;
 import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryLockedScheduledDomain extends AbstractDomain {
+	private static Log logLock=LogFactory.getLog("LOCKED.JOB.LOG");
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
 	//库存需发更新消息的:需排重
@@ -88,9 +91,20 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 								.getObject(OrderQueryService.class,
 										InventoryConfig.QUERY_URL);
+						long startTime = System.currentTimeMillis();
+						String method = "OrderQueryService.queryOrderPayStatus,订单id:"+String.valueOf(model!=null?model.getOrderId():0);
+						final LogModel lm = LogModel.newLogModel(method);
+						logLock.info(lm.setMethod(method).addMetaData("start", startTime)
+								.toJson(true));
+
 						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
 						if(statEnum!=null) {
+							long endTime = System.currentTimeMillis();
+							String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+									+ "milliseconds(毫秒)执行完成!(订单支付状态)statEnum="+statEnum.getDescription();
+							logLock.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("订单id", model!=null?model.getOrderId():0)
+									.addMetaData("runResult", runResult).addMetaData("message", statEnum.getDescription()).toJson(true));
 							//1.当订单状态为已付款时
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
@@ -109,7 +123,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					
 				}
 			}else {
-				writeJobLog("[LockedTask]获取队列:("+ResultStatusEnum.LOCKED.getDescription()+"),状态为：("+ResultStatusEnum.LOCKED.getCode()+")的队列为空！");
+				logLock.info("[LockedTask]获取队列:("+ResultStatusEnum.LOCKED.getDescription()+"),状态为：("+ResultStatusEnum.LOCKED.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
 			preresult = false;
@@ -138,20 +152,25 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					if(loadMessageData(goodsId)) {
 						//将数据更新到mysql
 						if(this.fillParamAndUpdate()) {
-							  writeJobLog("[asynUpdateMysqlInventory,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
+							  //writeJobLog("[asynUpdateMysqlInventory,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+")");
 							  //订单为已支付的，首先进行数据同步
 					          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 					          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
 					        	//发送消息
 									if(this.sendNotify()) {
 										//已支付成功订单，消息发送后，将队列标记删除
-										this.markDeleteAfterSendMsgSuccess(queueId);
-										 
+										logLock.info("[消息发送成功,]删除queueId:("+queueId+"),状态start");
+										if(this.markDeleteAfterSendMsgSuccess(queueId)) {
+											logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+										}else {
+											logLock.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
+										}
+										
 									}
 									
 									 
 								}else {
-									writeJobLog("[sendmessage,failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+									logLock.info("[数据同步失败,failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 								}
 						}
 					}
@@ -175,19 +194,23 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						if(this.rollback(goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, suppliersParamResult)){
 							if(loadMessageData(goodsId)) {
 								if(this.fillParamAndUpdate()) {
-									 writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),goodsBaseId:("+goodsBaseId+")");
+									// writeJobLog("[rollback,start]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),goodsBaseId:("+goodsBaseId+")");
 									  //订单为已支付的，首先进行数据同步:再更新mysql库存,
 							          updateDataEnum =  this.asynUpdateMysqlInventory(goodsId,inventoryInfoDO, selectionInventoryList, suppliersInventoryList,wmsList);
 							          if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
 							        	//发送消息:再发送消息
 											if(this.sendNotify()) {
-											    writeJobLog("[rollback,sendmessage successed]queueId:"+queueId+",goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
-												//已支付成功订单，消息发送后，将队列标记删除
-												this.markDeleteAfterSendMsgSuccess(queueId);
+												logLock.info("[rollback,sendmessage successed]queueId:"+queueId+",goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+											    //已支付成功订单，消息发送后，将队列标记删除
+												if(this.markDeleteAfterSendMsgSuccess(queueId)) {
+													logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+												}else {
+													logLock.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
+												}
 											}
 
 										}else {
-											 writeJobLog("[rollback,sendmessage failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
+											logLock.info("[回滚库存时同步数据失败,failed]更新goodsId:("+goodsId+"),inventoryInfoDO：("+inventoryInfoDO+"),selectionInventoryList:("+selectionInventoryList+"),wmsList:("+wmsList+"),message("+updateDataEnum.getDescription()+")");
 										}
 					
 								}
@@ -343,26 +366,32 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	// 发送消息成功后将队列标记删除:逻辑删除
-	public void markDeleteAfterSendMsgSuccess(long queueId) {
+	public boolean markDeleteAfterSendMsgSuccess(long queueId) {
 		try {
 			if (verifyId(queueId)) {
 				String member = this.goodsInventoryDomainRepository
 						.queryMember(String.valueOf(queueId));
 				if (!StringUtils.isEmpty(member)) {
 					// 标记删除【队列】,同时将缓存的队列删除
-					this.goodsInventoryDomainRepository
+					return this.goodsInventoryDomainRepository
 							.markQueueStatusAndDeleteCacheMember(member,
 									(delStatus), String.valueOf(queueId));
+				}else {
+					return false;
 				}
 
+			}else {
+				return false;
 			}
-
+          
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(lm.addMetaData("errMsg",
 					"markDeleteAfterSendMsgSuccess error" + e.getMessage()),
 					false, e);
+			 return false;
 
 		}
+		 //return true;
 	}
 	
 	public boolean rollback(long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {

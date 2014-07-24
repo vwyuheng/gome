@@ -6,6 +6,8 @@ import java.util.List;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
@@ -27,6 +29,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 
 public class InventoryConfirmScheduledDomain extends AbstractDomain {
+	private static Log logConfirm=LogFactory.getLog("CONFIRM.JOB.LOG");
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
 	//缓存商品id，并排重，以便归并相同商品的消息发送次数
@@ -60,6 +63,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					.queryInventoryQueueListByStatus(Double
 							.valueOf(ResultStatusEnum.CONFIRM.getCode()));
 			if (!CollectionUtils.isEmpty(queueList)) {
+				logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列:("+queueList.size()+")条");
 				for (GoodsInventoryQueueModel model : queueList) {
 					//队列数据数据按商品id 归集后 发送消息更新数据准备
 					if (verifyId(model.getGoodsId()))
@@ -67,7 +71,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					
 				}
 			}else {
-				writeJobLog("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
+				logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");
 			}
 		} catch (Exception e) {
 			preresult = false;
@@ -108,13 +112,18 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 								// 发消息
 								if(this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
 									// 消息发送完成后将取出的队列标记删除状态
+									logConfirm.info("[消息发送成功,]删除queueId:("+queueId+"),状态start");
 									if(this.verifyId(queueId)) {
-										this.markDelete(queueId);
+										if(this.markDelete(queueId)) {
+											logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+										}else {
+											logConfirm.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
+										}
 									}
 								}
 								
 							} else {
-								writeJobLog("[sendmessage,failed],goodsId:("
+								logConfirm.info("[同步数据失败,failed],goodsId:("
 										+ goodsId + "),inventoryInfoDO：("
 										+ inventoryInfoDO
 										+ "),selectionInventoryList:("
@@ -271,20 +280,22 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	}
 
 	// 将队列标记删除：逻辑删除[队列]\物理删除缓存的member
-	public void markDelete(long queueId) {
+	public boolean markDelete(long queueId) {
 		
 		try {
 			String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
 			if(!StringUtils.isEmpty(member)) {
-			 this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+			return  this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+			}else {
+				return false;
 			}
 			
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(lm
 					.addMetaData("errMsg", "markDelete error"+e.getMessage()),false, e);
-			
+			return false;
 		}
-		
+		//return true;
 	}
 	
 	

@@ -115,7 +115,7 @@ public interface BaseDAOService {
 	public List<Long> adjustSuppliersInventory(Long goodsId,Long suppliersId,int num);
 	
 	public void markQueueStatus(String member, int upStatusNum);
-	public void markQueueStatusAndDeleteCacheMember(String member,  int upStatusNum,String delkey);
+	public boolean markQueueStatusAndDeleteCacheMember(String member,  int upStatusNum,String delkey);
 	
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key);
 	
@@ -129,7 +129,7 @@ public interface BaseDAOService {
 	public Long deleteSelectionInventory(Long selectionId);
 	public Long deleteSuppliersInventory(Long suppliersId);
 	
-	public void lremLogQueue(final GoodsInventoryActionDO logActionDO);
+	public Long lremLogQueue(final GoodsInventoryActionDO logActionDO);
 	
 	public Set<String> queryGoodsSelectionRelation(Long goodsId);
 	public Set<String> queryGoodsSuppliersRelation(Long goodsId);

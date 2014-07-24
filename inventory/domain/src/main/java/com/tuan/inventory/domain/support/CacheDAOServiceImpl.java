@@ -267,7 +267,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 	
 	@Override
-	public void markQueueStatusAndDeleteCacheMember(String member, int upStatusNum,String delkey) {
+	public boolean markQueueStatusAndDeleteCacheMember(String member, int upStatusNum,String delkey) {
 	
 		// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
 		//String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"+ key);
@@ -275,7 +275,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		// Double scoreAck =
 		
 		//this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),member);
-		this.redisCacheUtil.zincrbyAnddel(QueueConstant.QUEUE_SEND_MESSAGE, member,  (upStatusNum), QueueConstant.QUEUE_KEY_MEMBER + ":"+delkey);
+		return this.redisCacheUtil.zincrbyAnddel(QueueConstant.QUEUE_SEND_MESSAGE, member,  (upStatusNum), QueueConstant.QUEUE_KEY_MEMBER + ":"+delkey);
 		
 		
 	}
@@ -354,9 +354,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	}
 
 	@Override
-	public void lremLogQueue(GoodsInventoryActionDO logActionDO) {
+	public Long lremLogQueue(GoodsInventoryActionDO logActionDO) {
 		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
-		this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (1), JSON.toJSONString(logActionDO));
+		return this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (1), JSON.toJSONString(logActionDO));
 	}
 
 	@Override

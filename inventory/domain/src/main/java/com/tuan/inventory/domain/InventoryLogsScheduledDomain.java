@@ -3,6 +3,8 @@ package com.tuan.inventory.domain;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -13,6 +15,7 @@ import com.tuan.inventory.model.GoodsInventoryActionModel;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 
 public class InventoryLogsScheduledDomain extends AbstractDomain {
+	private static Log logLogs=LogFactory.getLog("LOGS.JOB.LOG");
 	private LogModel lm;
 	//private GoodsInventoryActionModel model;
 	private List<GoodsInventoryActionModel> queueLogLists;
@@ -37,13 +40,13 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			//取初始状态队列信息:一次取100条
 			List<GoodsInventoryActionModel> queueLogList =  goodsInventoryDomainRepository.queryFirstInGoodsInventoryAction();
 			if (!CollectionUtils.isEmpty(queueLogList)) {
+				logLogs.info("[LogsJob]获取队列:("+queueLogList.size()+")条");
 				queueLogLists = queueLogList;
 				/*for (GoodsInventoryActionModel model : queueLogList) {
 				  this.model = model;
 				}*/
 			}else {
-				
-				writeJobLog("[LogsTask]获取队列:("+"日志"+")的队列为空！");
+				logLogs.info("[LogsTask]获取队列:("+"日志"+")的队列为空！");
 				return false;
 			}
 		} catch (Exception e) {
@@ -67,11 +70,24 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 					//for (GoodsInventoryActionModel model : queueLogLists) {
 						 // this.model = model;
 						  if (fillActionEvent(queueLogLists)) {	 //从队列中取事件
+							  long startTime = System.currentTimeMillis();
+								String method = "logsEventHandle.handleEvent,[批量处理日志队列]:("+queueLogLists+"),start";
+								final LogModel lm = LogModel.newLogModel(method);
+								logLogs.info(lm.setMethod(method).addMetaData("start", startTime)
+										.toJson(true));
 								boolean eventResult = logsEventHandle.handleEvent(event);
+								long endTime = System.currentTimeMillis();
+								String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+										+ "milliseconds(毫秒)执行完成!,eventResult:"+eventResult;
+								logLogs.info(lm.setMethod(method).addMetaData("endTime", endTime)
+										.addMetaData("runResult", runResult));
 								if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
 									for (GoodsInventoryActionModel model : queueLogLists) {
+										String remmethod = "lremLogQueue,[移除日志队列]:("+model+",eventResult:)"+eventResult;
+										final LogModel remlm = LogModel.newLogModel(remmethod);
 										//循环删除所有元素
-										this.goodsInventoryDomainRepository.lremLogQueue(model);
+										Long rem = this.goodsInventoryDomainRepository.lremLogQueue(model);
+										logLogs.info(remlm.setMethod(remmethod).addMetaData("删除结果", rem));
 									}
 									
 								   }

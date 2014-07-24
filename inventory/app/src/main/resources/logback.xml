@@ -244,11 +244,33 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                     
-	<!-- job调度过程记录 -->                                                                                                                                                                                                                                                                                                    
-    <appender name="INVENTORY-JOB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/job/job-inventory-schedule.log</file>
+	<!-- job调度过程记录:locked -->                                                                                                                                                                                                                                                                                                    
+    <appender name="LOCKED-JOB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/job/job-locked-schedule.log</file>
         	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/job/job-inventory-schedule.log.%d{yyyyMMdd}</fileNamePattern>
+      			<fileNamePattern>${loggingRoot}/job/job-locked-schedule.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
+	<!-- job调度过程记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="CONFIRM-JOB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/job/job-confirm-schedule.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/job/job-confirm-schedule.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
+	<!-- job调度过程记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="LOG-JOB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/job/job-log-schedule.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/job/job-log-schedule.log.%d{yyyyMMdd}</fileNamePattern>
       			<maxHistory>20</maxHistory>
     		</rollingPolicy>
 		<encoder charset="UTF-8">
@@ -372,10 +394,20 @@
 			<level value="INFO"/>
 			<appender-ref ref="TRACE-APPENDER"/>
 	</logger> -->
-	<!-- job调度日志 -->
-	<logger name="INVENTORY.JOB.LOG" additivity="false">
+	<!-- job调度日志:locked -->
+	<logger name="LOCKED.JOB.LOG" additivity="false">
 		<level value="INFO"/>
-		<appender-ref ref="INVENTORY-JOB-APPENDER"/>
+		<appender-ref ref="LOCKED-JOB-APPENDER"/>
+	</logger>
+	<!-- job调度日志 :confirm-->
+	<logger name="CONFIRM.JOB.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="CONFIRM-JOB-APPENDER"/>
+	</logger>
+	<!-- job调度日志:log -->
+	<logger name="LOGS.JOB.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="LOG-JOB-APPENDER"/>
 	</logger>
 	<logger name="INVENTORY.JOB.ERROR.LOG" additivity="false">
 		<level value="INFO"/>
