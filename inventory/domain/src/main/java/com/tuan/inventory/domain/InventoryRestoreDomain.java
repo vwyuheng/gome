@@ -20,26 +20,19 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
-import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
-import com.tuan.ordercenter.backservice.OrderQueryService;
-import com.tuan.ordercenter.model.enu.ClientNameEnum;
-import com.tuan.ordercenter.model.enu.res.UserOrderQueryEnum;
-import com.tuan.ordercenter.model.result.CallResult;
-import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryRestoreDomain extends AbstractDomain {
 	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
-	private static Log loghessian = LogFactory.getLog("INVENTORY.HESSIAN.LOG");
+	///private static Log loghessian = LogFactory.getLog("INVENTORY.HESSIAN.LOG");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -52,6 +45,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryInfoDO4OldGoods;
 	private GoodsInventoryDO inventoryInfoDO4NewGoods;
+	private GoodsBaseInventoryDO inventorybaseDO;
 	//private GoodsBaseInventoryDO baseInventoryDO;
 	private List<GoodsSelectionDO> selectionRelation;
 	private List<GoodsSuppliersDO> suppliersRelation;
@@ -109,40 +103,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
-	
-	/*//接口幂等控制
-	public boolean idemptent() {
-		//根据key取已缓存的tokenid  
-		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.CREATE_INVENTORY + "_"+ String.valueOf(goodsId));
-		if(StringUtils.isEmpty(gettokenid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
-			if(StringUtils.isNotEmpty(tokenid)) {
-				goodsInventoryDomainRepository.setTag(DLockConstants.CREATE_INVENTORY + "_"+ goodsId, DLockConstants.IDEMPOTENT_DURATION_TIME, tokenid);
-			}
-					
-		}else {  //否则比对token值
-			if(StringUtils.isNotEmpty(tokenid)) {
-				if(tokenid.equalsIgnoreCase(gettokenid)) { //重复请求过来，判断是否处理成功
-				//根据处理成功后设置的tag来判断之前http请求处理是否成功
-				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.CREATE_INVENTORY_SUCCESS + "_"+ tokenid);
-				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
-								return true;
-							}
-						}
-					}
-		}
-		return false;
-	}*/
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		try {
-			/*this.tokenid = param.getTokenid();
-			 //幂等控制，已处理成功
-			if (!StringUtils.isEmpty(tokenid)) { // if
-				this.idemptent = idemptent();
-				if(idemptent) {
-					return CreateInventoryResultEnum.SUCCESS;
-				}
-			}*/
 			this.type = StringUtils.isEmpty(param.getType())?"2":param.getType();
 			this.adjustNum = param.getNum();
 			this.orderIds = param.getOrderIds();
@@ -168,46 +131,16 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			if(limitStorage==0) {  //非限制库存商品无需处理 ，0:库存无限制；1：限制库存
 					return CreateInventoryResultEnum.SUCCESS;
 				}
-				
-			//组装新商品信息:改价商品
-			//this.fillNewInventoryDO(0,0,tmp4OldGoods.getWaterfloodVal());  //以供存储
-			//return CreateInventoryResultEnum.SUCCESS;
-			//进行真正的业务处理
-			//走hessian调用取订单支付状态
-			OrderQueryService basic = (OrderQueryService) HessianProxyUtil
-					.getObject(OrderQueryService.class,
-							InventoryConfig.QUERY_URL);
-			//初始化改价前商品进来
-			long startTime = System.currentTimeMillis();
-			String method = "OrderQueryService.queryNupayOrderGoodsNum,preGoodsId:"+preGoodsId;
-			final LogModel lm = LogModel.newLogModel(method);
-			loghessian.info(lm.setMethod(method).addMetaData("start", startTime)
-					.toJson(true));
-			CallResult<OrderQueryResult>  cllResult= basic.queryNupayOrderGoodsNum( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", preGoodsId);
-			UserOrderQueryEnum result = cllResult.getBusinessResult().getResult();
-			int takeNum = 0;
-			Long getTakeNum = 0L;
-			if(result!=null&&result
-					.equals(UserOrderQueryEnum.SUCCESS)) {
-				//未支付订单占用库存量
-				getTakeNum =  (Long) cllResult.getBusinessResult().getResultObject();
-				takeNum = getTakeNum.intValue();
-				long endTime = System.currentTimeMillis();
-				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
-						+ "milliseconds(毫秒)执行完成!takeNum="+takeNum;
-				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
-						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
-			} else {
-				long endTime = System.currentTimeMillis();
-				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
-						+ "milliseconds(毫秒)执行完成!";
-				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
-						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
-				return CreateInventoryResultEnum.FAILED_ORDERQUERYSERVICE;
-			}
 			
 			//加载新商品
 			GoodsInventoryDO	tmp4newGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+			//GoodsBaseInventoryDO baseDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+			if(tmp4newGoods==null) {
+				return CreateInventoryResultEnum.NO_GOODS;
+			}
+			/*if(baseDO==null) {
+				return CreateInventoryResultEnum.NO_GOODSBASE;
+			}*/
 			//组装信息更新该老商品库	
 			this.fillInventoryDO(adjustNum, inventoryDO4OldGoods,tmp4newGoods);
 				
@@ -410,9 +343,11 @@ public class InventoryRestoreDomain extends AbstractDomain {
 
 	//组装改价商品信息
 	public void fillInventoryDO(int restoreNum,GoodsInventoryDO oldDO,GoodsInventoryDO newDO) {
+		//GoodsBaseInventoryDO tmpbaseDO = new GoodsBaseInventoryDO();
 		GoodsInventoryDO preInventoryInfoDO = new GoodsInventoryDO();
 		GoodsInventoryDO newInventoryInfoDO = new GoodsInventoryDO();
 		try {
+			
 			if(restoreNum>oldDO.getLeftNumber()) {//占用库存量大于等于总库存数时,意味着最多只能还leftnumber个
 				oldDO.setLeftNumber(0);
 				oldDO.setTotalNumber(oldDO.getTotalNumber()-oldDO.getLeftNumber());
