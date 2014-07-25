@@ -13,6 +13,7 @@ import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
+import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
@@ -212,4 +213,14 @@ public interface InventoryCenterFacade {
 	 */
 	public InventoryCallResult updateWmsData(
 			final String clientIp, final String clientName,final UpdateWmsDataParam param,Message traceMessage);
+	/**
+	 * 取消订单还库存和删除订单还库存
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	InventoryCallResult restoreInventory(
+			final String clientIp, final String clientName,final RestoreInventoryParam param,Message traceMessage);
 }

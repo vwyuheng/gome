@@ -12,6 +12,7 @@ import com.tuan.inventory.domain.InventoryCallbackDomain;
 import com.tuan.inventory.domain.InventoryCreate4GoodsCostDomain;
 import com.tuan.inventory.domain.InventoryCreateDomain;
 import com.tuan.inventory.domain.InventoryOverrideAdjustDomain;
+import com.tuan.inventory.domain.InventoryRestoreDomain;
 import com.tuan.inventory.domain.InventoryUpdateDomain;
 import com.tuan.inventory.domain.InventoryWmsCreateDomain;
 import com.tuan.inventory.domain.InventoryWmsDataUpdateDomain;
@@ -29,6 +30,7 @@ import com.tuan.inventory.model.param.CallbackParam;
 import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
+import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
@@ -724,6 +726,72 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
 		.addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
+		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
+		return new InventoryCallResult(result.getResultCode(), 
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
+	}
+	@Override
+	public InventoryCallResult restoreInventory(String clientIp,
+			String clientName, RestoreInventoryParam param, Message traceMessage) {
+		long startTime = System.currentTimeMillis();
+		String method = "GoodsInventoryUpdateService.restoreInventory";
+		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
+		TraceMessageUtil.traceMessagePrintS(
+				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "restoreInventory");
+		//构建领域对象
+		final InventoryRestoreDomain inventoryRestoreDomain = new InventoryRestoreDomain(clientIp, clientName, param, lm);
+		//注入仓储对象
+		inventoryRestoreDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryRestoreDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryRestoreDomain.setSequenceUtil(sequenceUtil);
+		inventoryRestoreDomain.setdLock(dLock);
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+			@Override
+			public TuanCallbackResult executeParamsCheck() {
+				CreateInventoryResultEnum resultEnum = inventoryRestoreDomain.checkParam();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeBusiCheck() {
+				
+				CreateInventoryResultEnum resEnum = inventoryRestoreDomain.busiCheck();
+				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resEnum.getCode(), null,resEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeAction() {
+				CreateInventoryResultEnum resultEnum = inventoryRestoreDomain.restoreInventory();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public void executeAfter() {
+				inventoryRestoreDomain.sendNotify();
+			}
+		});
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
+		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
+		.addMetaData("goodsId", inventoryRestoreDomain.getGoodsId()).addMetaData("end", endTime);
 		logSaveAndUpdate.info(lm.toJson(true));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 

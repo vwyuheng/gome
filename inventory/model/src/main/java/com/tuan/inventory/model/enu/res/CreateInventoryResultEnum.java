@@ -44,6 +44,7 @@ public enum CreateInventoryResultEnum {
 	FAILED_ORDERQUERYSERVICE        (1045, "调用订单中心接口失败！"),
 	NO_GOODS       (1046, "商品信息不存在！"),
 	NO_SELECTION       (1047, "选型信息不存在！"),
+	NO_RETORE       (1048, "新老商品id相同,无需还还库存！"),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),

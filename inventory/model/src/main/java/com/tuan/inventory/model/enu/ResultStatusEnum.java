@@ -30,7 +30,7 @@ public enum ResultStatusEnum {
 	UPDATE_WMSDATA   ("22",   " 更新物流相关数据"),
 	ADD_WMSINVENTORY   ("19",   "新增物流库存"),
 	ADJUST_GOODSPRICE   ("23",   "商品改价"),
-	TASK_RESTORE_INVENTORY   ("24",   "商品改价还原库存");
+	TASK_RESTORE_INVENTORY   ("24",   "还原库存");
 	
 	
 	

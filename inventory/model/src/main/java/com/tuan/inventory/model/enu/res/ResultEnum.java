@@ -71,6 +71,7 @@ public enum ResultEnum {
 	FAILED_ORDERQUERYSERVICE        ("1045", "调用订单中心接口失败！"),
 	NO_GOODS       ("1046", "商品信息不存在！"),
 	NO_SELECTION       ("1047", "选型信息不存在！"),
+	NO_RETORE       ("1048", "新老商品id相同,无需还还库存！"),
 	NO_DATA("0","没有可用的数据"),
 	
 	//ERROR_2000	("2000",	"程序运行时错误"),
@@ -283,6 +284,9 @@ public enum ResultEnum {
 		}
 		if(code.equals("1047")){
 			return ResultEnum.NO_SELECTION;
+		}
+		if(code.equals("1048")){
+			return ResultEnum.NO_RETORE;
 		}
 		
 		if(code.equals("2")){
