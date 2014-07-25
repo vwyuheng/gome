@@ -103,19 +103,23 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					long goodsId = queueModel.getGoodsId();
 					//long goodsBaseId = queueModel.getGoodsBaseId();
 					long queueId = queueModel.getId();
-					if (loadMessageData(goodsId)) {  //更加商品id加载数据
-						// 发消息
-						if(this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
-							// 消息发送完成后将取出的队列标记删除状态
-							logConfirm.info("[消息发送成功,]删除queueId:("+queueId+"),状态start");
-							if(this.verifyId(queueId)) {
-								if(this.markDelete(queueId)) {
-									logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
-								}else {
-									logConfirm.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),end");
-								}
-							}
+					//当确保redis中数据是最新的数据后,第一件事应该就是将队列状态标记删除以保证不会被重复处理
+					if(this.verifyId(queueId)) {
+						if(!this.markDelete(queueId)) {
+							logConfirm.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+")!!!");
+						}else {
+							//logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 						}
+					}
+					
+					if (loadMessageData(goodsId)) {  //更加商品id加载数据
+						// 随后才是发消息
+						if(!this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
+							// 消息发送完成后将取出的队列标记删除状态
+							logConfirm.info("[消息发送失败,]queueId:("+queueId+")"+",goodsId:("+goodsId+")");
+							
+						}
+						//第三财是同步数据
 						if (fillParamAndUpdate()) { // 组织数据
 							// 调用数据同步
 							updateDataEnum = this.asynUpdateMysqlInventory(
@@ -123,12 +127,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 									selectionInventoryList,
 									suppliersInventoryList, wmsInventoryList);
 							//if (updateDataEnum != updateDataEnum.SUCCESS) {
-							if (updateDataEnum!=null&&(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
-								
-								logConfirm.info("[同步数据成功,success]"
-										+ ",message("
-										+ updateDataEnum.getDescription() + ")");
-							} else {
+							if (updateDataEnum!=null&&!(updateDataEnum.compareTo(updateDataEnum.SUCCESS) == 0)) {
 								logConfirm.info("[同步数据失败,failed],goodsId:("
 										+ goodsId + "),inventoryInfoDO：("
 										+ inventoryInfoDO
@@ -137,6 +136,11 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 										+ "),wmsInventoryList:("
 										+ wmsInventoryList + "),message("
 										+ updateDataEnum.getDescription() + ")");
+								
+							} else {
+								/*logConfirm.info("[同步数据成功,success]"
+								+ ",message("
+								+ updateDataEnum.getDescription() + ")");*/
 							}
 						}
 					}// if1
