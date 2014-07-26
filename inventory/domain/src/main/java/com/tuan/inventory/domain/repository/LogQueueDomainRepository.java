@@ -41,12 +41,12 @@ public class LogQueueDomainRepository {
 	 * 保存消息内容
 	 * @param queueDomain 
 	 */
-	public void saveLogOfWater(List<GoodsInventoryActionDO> logDOList) {
+	public void saveLogOfWater(List<GoodsInventoryActionDO> logDOList, int handleBatch) {
 		String uniqueSign = null;
 		try {
 			//GoodsInventoryActionDO logQueueDO = logDomain.toLogQueueDO();
 			if(!CollectionUtils.isEmpty(logDOList)) {
-				logOfWaterDAO.insertInventoryQueue(logDOList,logDOList.size());
+				logOfWaterDAO.insertInventoryQueue(logDOList,handleBatch);
 			}
 			
 		} catch (Exception e) {

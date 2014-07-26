@@ -17,6 +17,7 @@
 			<set>
 			     <!--  开发联调-->
 				<!-- <value>10.8.35.3:26379</value> -->
+				<!-- <value>10.8.35.37:26379</value> -->
 				<!-- 线上redis环境 -->
 				<value>${redis212.55tuan.me}</value>
 				<value>${redis213.55tuan.me}</value>

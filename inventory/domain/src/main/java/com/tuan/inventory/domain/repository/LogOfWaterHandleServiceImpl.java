@@ -24,14 +24,14 @@ public class LogOfWaterHandleServiceImpl  extends TuanServiceTemplateImpl implem
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public CallResult<List<GoodsInventoryActionModel>> createLogOfWater(final List<GoodsInventoryActionModel> logList)
+	public CallResult<List<GoodsInventoryActionModel>> createLogOfWater(final List<GoodsInventoryActionModel> logList,final int handleBatch)
 			throws Exception {
 		
 		    TuanCallbackResult callBackResult = super.execute(
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						//LogQueueDomain logDomain = logQueueDomainRepository.createQueueDomain(logModel);
-						logQueueDomainRepository.saveLogOfWater(ObjectUtils.toDOList(logList));
+						logQueueDomainRepository.saveLogOfWater(ObjectUtils.toDOList(logList),handleBatch);
 						return TuanCallbackResult.success(
 								PublicCodeEnum.SUCCESS.getCode(),
 								logList);

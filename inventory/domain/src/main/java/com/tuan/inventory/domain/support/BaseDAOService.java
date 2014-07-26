@@ -120,6 +120,7 @@ public interface BaseDAOService {
 	public GoodsInventoryQueueDO queryInventoryQueueDO(String key);
 	
 	public Long adjustGoodsWaterflood(Long goodsId,int num);
+	public Long queryLogQueueMaxLenth(String key);
 	public Long adjustSelectionWaterflood(Long selectionId,int num);
 	public List<Long> adjustSelectionWaterflood(Long goodsId,Long selectionId,int num);
 	public Long adjustSuppliersWaterflood(Long suppliersId,int num);
@@ -130,6 +131,7 @@ public interface BaseDAOService {
 	public Long deleteSuppliersInventory(Long suppliersId);
 	
 	public Long lremLogQueue(final GoodsInventoryActionDO logActionDO);
+	public Long lremLogQueue1(final GoodsInventoryActionDO logActionDO);
 	
 	public Set<String> queryGoodsSelectionRelation(Long goodsId);
 	public Set<String> queryGoodsSuppliersRelation(Long goodsId);
@@ -145,6 +147,7 @@ public interface BaseDAOService {
 	
 	
 	public String updateFileds(Long goodsId,Map<String, String> hash);
+	public String lpop(final String key);
 	public String updateSelectionFileds(Long selectionId,Map<String, String> hash);
 	
 	public String queryToken(String key);

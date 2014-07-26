@@ -26,13 +26,6 @@ public class GoodsInventoryActionDO extends TuanBaseDO {
 	//private String exception;  //是否异常信息
 	private String remark;  //备注
 	private Long goodsBaseId;  //库存基表ID
-//	private java.lang.Integer leftNumber;// 当前剩余数库存默认值:0
-//	private java.lang.Integer limitStorage; // 0:库存无限制；1：限制库存
-//	private int isAddGoodsSelection;  //商品是否添加配型 0：不添加；1：添加
-//	private int isDirectConsumption; //商品销售是否需要指定分店 0：不指定；1：指定
-//	private java.lang.Integer waterfloodVal;  //注水值
-//	//物流有关的
-//	private int isBeDelivery; //是否发货
 	
 	
 	public Long getId() {

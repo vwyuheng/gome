@@ -242,6 +242,35 @@ public class RedisCacheUtil {
 		});
 		
 	}
+	/**
+	 * 返回列表 key 的长度。
+              如果 key 不存在，则 key 被解释为一个空列表，返回 0 .
+              如果 key 不是列表类型，返回一个错误。
+	 * @param key
+	 * @return
+	 */
+	public Long llen(final String key) {
+		return jedisFactory.withJedisDo(new JWork<Long>() {
+			@Override
+			public Long work(Jedis j) throws Exception {
+				if (j == null)
+					return null;
+				try {
+					return j.llen(key);
+					
+				} catch (Exception e) {
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.llen");
+					log.error(lm.addMetaData("key", key)
+							
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.llen("+key+") error!",e);
+				}
+				
+			}
+		});
+		
+	}
 	/***
 	 * 返回set集合 key 中的所有成员
 	 * 不存在的 key 被视为空集合
@@ -346,6 +375,32 @@ public class RedisCacheUtil {
 							.addMetaData("strings", strings)
 							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
 					throw new CacheRunTimeException("RedisCacheUtil.rpush("+key+","+strings+") error!",e);
+				}
+				
+			}
+		});
+		
+	}
+	/**
+	 * 列表的头元素当 key 不存在时，返回 nil 
+	 * @param key
+	 * @return
+	 */
+	public String lpop(final String key) {
+		return jedisFactory.withJedisDo(new JWork<String>() {
+			@Override
+			public String work(Jedis j) throws Exception {
+				if (j == null)
+					return null;
+				try {
+					return j.lpop(key);
+					
+				} catch (Exception e) {
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.lpop");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.lpop("+key+") error!",e);
 				}
 				
 			}

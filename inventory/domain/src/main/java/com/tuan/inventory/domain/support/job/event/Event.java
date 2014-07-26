@@ -17,7 +17,7 @@ public class Event extends TuanBaseDO {
 	
 	private AtomicInteger tryCount= new AtomicInteger(0);//消息重试次数
 	
-	private long waitTime = 0;// 消息等待发送时间
+	private int handleBatch = 0;//
 	
 	private String UUID;   //消息标识
 
@@ -36,15 +36,15 @@ public class Event extends TuanBaseDO {
 	public void setData(Object data) {
 		this.data = data;
 	}
-	
-	public long getWaitTime() {
-		return waitTime;
+
+	public int getHandleBatch() {
+		return handleBatch;
 	}
 
-	public void setWaitTime(long waitTime) {
-		this.waitTime = waitTime;
+	public void setHandleBatch(int handleBatch) {
+		this.handleBatch = handleBatch;
 	}
-	
+
 	public String getUUID() {
 		return UUID;
 	}
@@ -56,7 +56,7 @@ public class Event extends TuanBaseDO {
 	    StringBuffer eventStr=new StringBuffer("centerevent =[");
 	    eventStr.append("tryCount="+tryCount+";");
 	    eventStr.append("data="+data==null?"":data.toString()+";");
-	    eventStr.append("waitTime="+waitTime+";");
+	    eventStr.append("handleBatch="+handleBatch+";");
 	    eventStr.append("uuid="+UUID+";");
 	    eventStr.append("]");
 		return eventStr.toString();

@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -358,7 +359,7 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	@Override
 	public Long lremLogQueue(GoodsInventoryActionDO logActionDO) {
 		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
-		return this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (1), JSON.toJSONString(logActionDO));
+		return this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (0), JSON.toJSONString(logActionDO));
 	}
 
 	@Override
@@ -608,6 +609,25 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	@Override
 	public List<String> queryFirstInGoodsInventoryAction() {
 		
-		return this.redisCacheUtil.lrange(QueueConstant.QUEUE_LOGS_MESSAGE, (0),(100));
+		return this.redisCacheUtil.lrange(QueueConstant.QUEUE_LOGS_MESSAGE, (0),(499));
+	}
+
+	@Override
+	public Long queryLogQueueMaxLenth(String key) {
+		//
+		return this.redisCacheUtil.llen(QueueConstant.QUEUE_LOGS_MESSAGE);
+	}
+
+	@Override
+	public Long lremLogQueue1(GoodsInventoryActionDO logActionDO) {
+		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
+		return this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (0), JSONObject.toJSONString(logActionDO));
+	}
+
+	@Override
+	public String lpop(String key) {
+
+		return this.redisCacheUtil.lpop(key);
+
 	}
 }

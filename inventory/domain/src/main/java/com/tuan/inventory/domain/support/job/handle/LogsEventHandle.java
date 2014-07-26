@@ -46,9 +46,10 @@ public class LogsEventHandle implements EventHandle {
 		CallResult<List<GoodsInventoryActionModel>> callResult  = null;
 		try {
 			logModelList = (List<GoodsInventoryActionModel>) event.getData();
+			final int handleBatch = event.getHandleBatch();
 			if (!CollectionUtils.isEmpty(logModelList)) {
 				// 消费对列的信息
-				callResult = logOfWaterHandleService.createLogOfWater(logModelList);
+				callResult = logOfWaterHandleService.createLogOfWater(logModelList,handleBatch);
 				PublicCodeEnum publicCodeEnum = callResult
 						.getPublicCodeEnum();
 				

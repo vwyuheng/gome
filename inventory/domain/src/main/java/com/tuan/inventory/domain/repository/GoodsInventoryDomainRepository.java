@@ -718,6 +718,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public Long lremLogQueue(GoodsInventoryActionModel model) {
 		 return this.baseDAOService.lremLogQueue(ObjectUtils.toDO(model));
 	}
+	public Long lremLogQueue1(GoodsInventoryActionModel model) {
+		return this.baseDAOService.lremLogQueue1(ObjectUtils.toDO(model));
+	}
 	/**
 	 * 删除队列member
 	 * @param key
@@ -782,5 +785,14 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	
 	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId){
 		return baseDAOService.queryGoodsBaseById(goodsBaseId);
+	}
+	public Long queryLogQueueMaxLenth(String key) {
+		//
+		return baseDAOService.queryLogQueueMaxLenth(key);
+	}
+	public String lpop(String key) {
+
+		return this.baseDAOService.lpop(key);
+
 	}
 }
