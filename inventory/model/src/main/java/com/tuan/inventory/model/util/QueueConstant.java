@@ -9,7 +9,8 @@ public class QueueConstant {
 	
 	public final static String QUEUE_KEY_MEMBER="queue:key.member";//缓存队列的 key member信息
 	public final static String QUEUE_SEND_MESSAGE="queue:jobs.send";//异步触发发布notifyserver库存信息的队列
-	public final static String QUEUE_LOGS_MESSAGE="queue:jobs.logs";//异步触发记录日志流水的队列名称
+	//public final static String QUEUE_LOGS_MESSAGE="queue:jobs.logs";//异步触发记录日志流水的队列名称
+	public final static String QUEUE_LOGS_MESSAGE="inventory_logs";//新队列名称
 	
 	//库存在redis中存储类型，关联key的前缀表示
 	public final static String GOODS_BASE_INVENTORY_PREFIX="hash_goods_base.inventory";//商品总库存基本信息前缀
