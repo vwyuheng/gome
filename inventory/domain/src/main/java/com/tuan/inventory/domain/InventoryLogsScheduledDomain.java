@@ -20,7 +20,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 	private LogModel lm;
 	/** 每次循环提取的队列数 */
 	private static final int dealStep = 500;
-	private static final int haveRest = 1000 * 1;
+	private static final int haveRest = 100 * 1;
 	private static final int handleBatch = 250;
 	//private List<GoodsInventoryActionModel> queueLogLists;
 	private Event event;
