@@ -88,7 +88,7 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 					break;
 				}
 				try {
-					int rd = (int)(Math.random()*100)%3+1;//1~3秒
+					int rd = (int)(Math.random()*100)%3+1;//100~300毫秒
 					Thread.sleep(rd*haveRest);
 				} catch (Exception e) {
 					logLogs.debug(e.getMessage(), e);
