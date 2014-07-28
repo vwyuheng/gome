@@ -71,7 +71,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					}else {
 						logConfirm.info("[商品id不合法]队列详细信息model:("+model+")");
 					}
-					logConfirm.info("[ConfirmJob]处理后队列详细信息listGoodsIdSends:("+listGoodsIdSends+")");
+					//logConfirm.info("[ConfirmJob]处理后队列详细信息listGoodsIdSends:("+listGoodsIdSends+")");
 					
 				}
 			}else {
