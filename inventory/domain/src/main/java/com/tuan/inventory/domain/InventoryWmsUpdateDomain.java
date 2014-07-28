@@ -175,7 +175,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
-		String method = "InventoryAdjustDomain";
+		String method = "InventoryWmsUpdateDomain.busiCheck";
 		final LogModel lm = LogModel.newLogModel(method);
 		logwms.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
