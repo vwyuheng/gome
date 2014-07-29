@@ -153,6 +153,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 				
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
+				logLock.info("订单状态为已付款队列条数:("+inventorySendMsg.size()+")");
 				if(logLock.isDebugEnabled()) {
 					logLock.info("[订单状态为已付款时商品]队列详细信息inventorySendMsg:("+inventorySendMsg+")");
 				}
@@ -200,6 +201,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			
 			//处理回滚的库存
 			if (!CollectionUtils.isEmpty(inventoryRollback)) {
+				logLock.info("订单状态为未付款需回滚库存队列条数:("+inventoryRollback.size()+")");
 				if(logLock.isDebugEnabled()) {
 					logLock.info("[订单状态为未付款时商品]队列详细信息inventoryRollback:("+inventoryRollback+")");
 				}
