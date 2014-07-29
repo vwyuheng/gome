@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -33,6 +34,7 @@ import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.util.DateUtils;
+import com.tuan.inventory.model.util.QueueConstant;
 import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
 import com.tuan.ordercenter.model.result.CallResult;
@@ -108,14 +110,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							//1.当订单状态为已付款时
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
-								if (verifyId(model.getGoodsId())) {
+								if (verifyId(model.getGoodsId()!=null?model.getGoodsId():0)) {
 									this.inventorySendMsg.add(model);
+									
 								}else {
 									logLock.info("[订单状态为已付款时商品id不合法]队列详细信息model:("+model+")");
 								}
 								   
 							}else {
-								if (verifyId(model.getId())) {
+								if (verifyId(model.getId()!=null?model.getId():0)) {
 									this.inventoryRollback.add(model);
 								}else {
 									logLock.info("[订单状态为未付款时商品id不合法]队列详细信息model:("+model+")");
@@ -150,14 +153,23 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 				
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
+				if(logLock.isDebugEnabled()) {
+					logLock.info("[订单状态为已付款时商品]队列详细信息inventorySendMsg:("+inventorySendMsg+")");
+				}
 				for(GoodsInventoryQueueModel queueModel:inventorySendMsg) {
-					long goodsId = queueModel.getGoodsId();
-					long queueId = queueModel.getId();
-					if(!this.markDeleteAfterSendMsgSuccess(queueId)) {
-						logLock.info("[将队列状态标记为删除及删除缓存的队列状态失败!],queueId:("+queueId+")!!!");
-					}else {
-						//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+					long goodsId = 0;
+					long queueId = 0;
+					if(queueModel!=null) {
+						 goodsId = queueModel.getGoodsId();
+						 queueId = queueModel.getId();
+						 if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(queueModel))) {
+								logLock.info("[将队列状态标记为删除及删除缓存的队列状态失败!],queueId:("+queueId+")!!!");
+							}else {
+								//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
+							}
 					}
+					
+					
 					//再加载数据发送消息
 					if(loadMessageData(goodsId)) {
 						//发送消息:支付成功此时redis中数据是最新的故直接发送消息删除状态后再更新mysql数据库
@@ -182,6 +194,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			
 			//处理回滚的库存
 			if (!CollectionUtils.isEmpty(inventoryRollback)) {
+				if(logLock.isDebugEnabled()) {
+					logLock.info("[订单状态为未付款时商品]队列详细信息inventoryRollback:("+inventoryRollback+")");
+				}
 				for (GoodsInventoryQueueModel rollbackModel : inventoryRollback) {
 				   //this.rollbackAndMarkDelete();
 					if (rollbackModel != null) {
@@ -196,7 +211,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						//先回滚redis库存，
 						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, suppliersParamResult)){
 							//当redis回滚成功后，立即删除缓存的队列状态，以免被重复处理
-							if(!this.markDeleteAfterSendMsgSuccess(queueId)) {
+							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
 								logLock.info("[标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
 							}else {
 								//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
@@ -220,6 +235,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					
 								}
 							}
+						}else {
+							logLock.info("库存回滚失败队列详细信息rollbackModel:("+rollbackModel+")");
 						}
 					}
 				}
@@ -383,7 +400,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	// 发送消息成功后将队列标记删除:逻辑删除
-	public boolean markDeleteAfterSendMsgSuccess(long queueId) {
+	public boolean markDeleteAfterSendMsgSuccess(long queueId,String queuemember) {
 		try {
 			if (verifyId(queueId)) {
 				String member = this.goodsInventoryDomainRepository
@@ -394,13 +411,21 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							.markQueueStatusAndDeleteCacheMember(member,
 									(delStatus), String.valueOf(queueId));
 				}else {
-					return false;
+
+					Double recv= this.goodsInventoryDomainRepository.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (delStatus),queuemember);
+					if(recv== null||recv==0) {
+						logLock.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queueId:("+queueId+")");
+						return true;
+					}else {
+						logLock.info("[获取缓存的队列为null,将队列标记删除成功!]queueId:("+queueId+")");
+						return true;
+					}
 				}
 
 			}else {
-				return false;
+				//return false;
 			}
-          
+			return true;
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(lm.addMetaData("errMsg",
 					"markDeleteAfterSendMsgSuccess error" + e.getMessage()),
@@ -416,7 +441,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		try {
 			// 回滚库存
 			if (goodsId > 0) {
-				
+				logLock.info("rollback start!!!");
 				int limtStorgeDeNum = 0;
 				if(limitStorage==1) {
 					limtStorgeDeNum = deductNum;
@@ -487,48 +512,6 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		}
 		return success;
 	}
-
-	//回滚库存 :暂留
-	/*public boolean rollback(String key) {
-		try {
-			//库存回滚
-			GoodsInventoryQueueDO queueDO = this.goodsInventoryDomainRepository
-					.queryInventoryQueueDO(key);
-			if (queueDO != null) {
-				long goodsId = queueDO.getGoodsId();
-				// 回滚库存
-				if (goodsId > 0) {
-					writeJobLog("rollback goodsId=" + (goodsId) + "],"
-							+ "deductNum=" + queueDO.getDeductNum());
-					List<Long> rollbackAftNum =		this.goodsInventoryDomainRepository.updateGoodsInventory(
-							queueDO.getGoodsId(),queueDO.getGoodsBaseId(), (queueDO.getDeductNum()));
-					writeJobLog("isRollback after[" + goodsId + "]"
-							+ ",rollbackAftNum:" + rollbackAftNum);
-				}
-				if (!CollectionUtils.isEmpty(queueDO.getSelectionParam())) {
-					writeJobLog("rollback selectionParam=" + queueDO.getSelectionParam());
-					boolean rollbackSelAck = 	this.goodsInventoryDomainRepository
-							.rollbackSelectionInventory(queueDO
-									.getSelectionParam());
-					writeJobLog("isRollback selection end,rollbackselresult:" + rollbackSelAck);
-				}
-				if (!CollectionUtils.isEmpty(queueDO.getSuppliersParam())) {
-					writeJobLog("isRollback suppliers start[" + queueDO.getSuppliersParam()
-							+ "]");
-					boolean rollbackSuppAck =	this.goodsInventoryDomainRepository
-							.rollbackSuppliersInventory(queueDO
-									.getSuppliersParam());
-					writeJobLog("isRollback suppliers start,rollbacksuppresult:" + rollbackSuppAck);
-				}
-			}
-		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"rollback error" + e.getMessage()),false, e);
-			return false;
-		}
-		return true;
-	}*/
 	
 	/**
 	 * 校验id
