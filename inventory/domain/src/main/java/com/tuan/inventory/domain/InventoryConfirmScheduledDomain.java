@@ -99,8 +99,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			if(!preHandler()){
 				return CreateInventoryResultEnum.SYS_ERROR;
 			}
-			logConfirm.info("[1,]开始处理:(状态start");
+		
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
+				logConfirm.info("需处理的队列条数:("+listGoodsIdSends.size()+")");
 				for (GoodsInventoryQueueModel queueModel : listGoodsIdSends) {
 					long goodsId = 0;
 					long queueId = 0;
