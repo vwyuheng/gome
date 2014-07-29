@@ -468,7 +468,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 		try {
 			// 回滚库存
 			if (goodsId > 0) {
-				logLock.info("rollback start!!!");
+				logLock.info("rollback start,orderId:"+orderId+",goodsId:"+goodsId+",goodsBaseId:"+goodsBaseId+",deductNum:"+deductNum+",selectionParam:"+selectionParam);
 				int limtStorgeDeNum = 0;
 				if(limitStorage==1) {
 					limtStorgeDeNum = deductNum;
