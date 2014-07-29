@@ -314,12 +314,30 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		try {
 			String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
 			if(!StringUtils.isEmpty(member)) {
-			return  this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+				boolean mark=   this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
+				if(!mark) {
+					Double recv= this.goodsInventoryDomainRepository.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (delStatus),queuemember);
+					if(recv== null) {
+						logConfirm.info("[标记删除队列时失败]queuemember:("+queuemember+")");
+						return false;
+					}else if(recv==0) {
+						logConfirm.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queuemember:("+queuemember+")");
+						return true;
+					}else {
+						logConfirm.info("[获取缓存的队列为null,将队列标记删除成功!]queueId:("+queueId+")");
+						return true;
+					}
+				}else {
+					return mark;
+				}
 			}else {
 				
 				Double recv= this.goodsInventoryDomainRepository.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (delStatus),queuemember);
-				if(recv== null||recv==0) {
-					logConfirm.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queueId:("+queueId+")");
+				if(recv== null) {
+					logConfirm.info("[标记删除队列时失败]queuemember:("+queuemember+")");
+					return false;
+				}else if(recv==0) {
+					logConfirm.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queuemember:("+queuemember+")");
 					return true;
 				}else {
 					logConfirm.info("[获取缓存的队列为null,将队列标记删除成功!]queueId:("+queueId+")");
