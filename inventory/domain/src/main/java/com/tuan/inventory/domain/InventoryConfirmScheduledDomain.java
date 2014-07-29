@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
@@ -27,6 +28,7 @@ import com.tuan.inventory.model.GoodsSuppliersModel;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
+import com.tuan.inventory.model.util.QueueConstant;
 
 public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private static Log logConfirm=LogFactory.getLog("CONFIRM.JOB.LOG");
@@ -66,7 +68,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 				//logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列:("+queueList.size()+")条,处理前队列详细信息queueList:("+queueList+")");
 				for (GoodsInventoryQueueModel model : queueList) {
 					//队列数据数据按商品id 归集后 发送消息更新数据准备
-					if (verifyId(model.getGoodsId())) {
+					if (verifyId(model.getGoodsId()!=null?model.getGoodsId():0)) {
 						listGoodsIdSends.add(model);
 					}else {
 						logConfirm.info("[商品id不合法]队列详细信息model:("+model+")");
@@ -100,12 +102,17 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			logConfirm.info("[1,]开始处理:(状态start");
 			if (!CollectionUtils.isEmpty(listGoodsIdSends)) {
 				for (GoodsInventoryQueueModel queueModel : listGoodsIdSends) {
-					long goodsId = queueModel.getGoodsId();
-					//long goodsBaseId = queueModel.getGoodsBaseId();
-					long queueId = queueModel.getId();
+					long goodsId = 0;
+					long queueId = 0;
+					if(queueModel!=null) {
+						 goodsId = queueModel.getGoodsId()!=null?queueModel.getGoodsId():0;
+						//long goodsBaseId = queueModel.getGoodsBaseId();
+						 queueId = queueModel.getId()!=null?queueModel.getId():0;
+					}
+					
 					//当确保redis中数据是最新的数据后,第一件事应该就是将队列状态标记删除以保证不会被重复处理
 					if(this.verifyId(queueId)) {
-						if(!this.markDelete(queueId)) {
+						if(!this.markDelete(queueId,JSON.toJSONString(queueModel))) {
 							logConfirm.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+")!!!");
 						}else {
 							//logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
@@ -294,14 +301,23 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	}
 
 	// 将队列标记删除：逻辑删除[队列]\物理删除缓存的member
-	public boolean markDelete(long queueId) {
+	public boolean markDelete(long queueId,String queuemember) {
 		
 		try {
 			String member = this.goodsInventoryDomainRepository.queryMember(String.valueOf(queueId));
 			if(!StringUtils.isEmpty(member)) {
 			return  this.goodsInventoryDomainRepository.markQueueStatusAndDeleteCacheMember(member, (delStatus),String.valueOf(queueId));
 			}else {
-				return false;
+				
+				Double recv= this.goodsInventoryDomainRepository.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (delStatus),queuemember);
+				if(recv== null||recv==0) {
+					logConfirm.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queueId:("+queueId+")");
+					return true;
+				}else {
+					logConfirm.info("[获取缓存的队列为null,将队列标记删除成功!]queueId:("+queueId+")");
+					return true;
+				}
+			 
 			}
 			
 		} catch (Exception e) {
@@ -309,7 +325,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					.addMetaData("errMsg", "markDelete error"+e.getMessage()),false, e);
 			return false;
 		}
-		//return true;
+		
 	}
 	
 	
