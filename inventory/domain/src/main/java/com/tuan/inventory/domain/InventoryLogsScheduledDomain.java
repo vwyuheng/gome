@@ -70,8 +70,10 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 									//Long rem = this.goodsInventoryDomainRepository.lremLogQueue(model);
 									String bydelLogMember = this.goodsInventoryDomainRepository.lpop(QueueConstant.QUEUE_LOGS_MESSAGE);
 									
-									//logLogs.info("lremLogQueue,[移除日志队列]日志id:"+ model!=null?model.getId():0+",删除日志详细信息："+bydelLogMember);
-									logLogs.info("从redis中移除的日志:"+bydelLogMember);
+									if(logLogs.isDebugEnabled()) {
+										logLogs.info("从redis中移除的日志:"+bydelLogMember);
+									}
+									
 								}
 								
 							   }

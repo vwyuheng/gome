@@ -630,4 +630,9 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		return this.redisCacheUtil.lpop(key);
 
 	}
+
+	@Override
+	public Double zincrby(String key, double score, String member) {
+		 return this.redisCacheUtil.zincrby(key, score, member);
+	}
 }

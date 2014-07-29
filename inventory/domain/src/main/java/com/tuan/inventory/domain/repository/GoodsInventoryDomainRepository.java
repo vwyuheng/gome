@@ -795,4 +795,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.lpop(key);
 
 	}
+	public Double zincrby(String key, double score, String member) {
+				 return this.baseDAOService.zincrby(key, score, member);
+			}
 }

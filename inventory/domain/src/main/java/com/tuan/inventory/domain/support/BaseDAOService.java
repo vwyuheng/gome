@@ -155,4 +155,5 @@ public interface BaseDAOService {
 	public List<Long> updateGoodsBaseInventory(Long goodBaseId, int saleCount, int totalCount);
 	
 	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId);
+	public Double zincrby(final String key, final double score,final String member);
 }
