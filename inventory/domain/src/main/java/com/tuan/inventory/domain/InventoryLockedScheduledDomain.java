@@ -186,10 +186,16 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								}else {
 									//logLock.info("[同步数据成功,success],message("+updateDataEnum.getDescription()+")");
 								}
+						}else {
+							logLock.info("[fillParamAndUpdate,填充数据失败]goodsId:("+goodsId+")");
 						}
+					}else {
+						logLock.info("[loadMessageData,加载数据失败]goodsId:("+goodsId+")");
 					}
 				}
 				
+			}else {
+				logLock.info("本次调度无确认已付款成功的队列需要处理!!!");
 			}
 			
 			//处理回滚的库存
@@ -240,6 +246,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						}
 					}
 				}
+			}else {
+				logLock.info("本次调度无确认付款未成功,库存需要回滚的队列需要处理!!!");
 			}
 			
 		} catch (Exception e) {

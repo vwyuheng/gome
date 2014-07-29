@@ -117,6 +117,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 						}else {
 							//logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 						}
+					}else {
+						logConfirm.info("[队列id不合法],queueId:("+queueId+")该队列详细信息为queueModel:"+queueModel);
 					}
 					
 					if (loadMessageData(goodsId)) {  //更加商品id加载数据
@@ -149,11 +151,17 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 								+ ",message("
 								+ updateDataEnum.getDescription() + ")");*/
 							}
+						}else {
+							logConfirm.info("[fillParamAndUpdate,填充数据失败]goodsId:("+goodsId+")");
 						}
-					}// if1
+					}else {
+						logConfirm.info("[loadMessageData,加载数据失败]goodsId:("+goodsId+")");
+					}
 				}
 
-			}// if2
+			}else {
+				logConfirm.info("本次调度无已确认队列需要处理!!!");
+			}
 				
 		} catch (Exception e) {
 			this.writeBusJobErrorLog(
