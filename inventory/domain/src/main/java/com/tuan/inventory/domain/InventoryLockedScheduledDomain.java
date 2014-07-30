@@ -161,8 +161,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					long goodsId = 0;
 					long queueId = 0;
 					if(queueModel!=null) {
-						 goodsId = queueModel.getGoodsId();
-						 queueId = queueModel.getId();
+						 goodsId = queueModel.getGoodsId()!=null?queueModel.getGoodsId():0;
+						 queueId = queueModel.getId()!=null?queueModel.getId():0;
 						 if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(queueModel))) {
 								logLock.info("[将队列状态标记为删除及删除缓存的队列状态失败!],queueId:("+queueId+")!!!");
 							}else {
