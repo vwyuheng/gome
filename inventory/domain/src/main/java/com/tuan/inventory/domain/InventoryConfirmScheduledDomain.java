@@ -119,7 +119,16 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 							//logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 						}
 					}else {
-						logConfirm.info("[队列id不合法],queueId:("+queueId+")该队列详细信息为queueModel:"+queueModel);
+						Double recv= this.goodsInventoryDomainRepository.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (delStatus),JSON.toJSONString(queueModel));
+						if(recv== null) {
+							logConfirm.info("[标记删除队列时失败]queuemember:("+JSON.toJSONString(queueModel)+")");
+						}else if(recv==0) {
+							logConfirm.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queuemember:("+JSON.toJSONString(queueModel)+")");
+							
+						}else {
+							logConfirm.info("[队列id不合法],queueId:("+queueId+")该队列详细信息为queueModel:"+queueModel+",的队列标记删除成功!!!");
+						}
+						
 					}
 					
 					if (loadMessageData(goodsId)) {  //更加商品id加载数据
