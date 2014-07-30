@@ -730,7 +730,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			queueDO.setCreateTime(TimeUtil.getNowTimestamp10Long());
 			// 封装库存变化信息到队列
 			queueDO.setOriginalGoodsInventory(originalGoodsInventory);
-			queueDO.setDeductNum(goodsDeductNum);
+			queueDO.setDeductNum(goodsDeductNum==0?param.getNum():goodsDeductNum);
 			queueDO.setSuppliersParam(suppliersParam);
 			queueDO.setSelectionParam(selectionParam);
 
