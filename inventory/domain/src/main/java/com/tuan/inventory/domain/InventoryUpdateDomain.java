@@ -687,9 +687,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		GoodsInventoryQueueDO queueDO = new GoodsInventoryQueueDO();
 		try {
 			Long queueId = sequenceUtil.getSequence(SEQNAME.seq_queue_send);
-			while(queueId==null||queueId==0) {//重试
-				queueId = sequenceUtil.getSequence(SEQNAME.seq_queue_send);
-			}
 			queueDO.setId(queueId);
 			queueDO.setGoodsId(goodsId);
 	        queueDO.setGoodsBaseId(goodsBaseId);

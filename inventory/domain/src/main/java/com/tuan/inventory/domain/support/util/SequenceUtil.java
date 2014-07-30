@@ -23,8 +23,6 @@ import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
  * @date 2014/3/11
  */
 public class SequenceUtil {
-	//private static Logger logger = Logger.getLogger(SequenceUtil.class);
-	//private static Log logger = LogFactory.getLog(SequenceUtil.class);
 	private static Log logger = LogFactory.getLog("INVENTORY.HIS.LOG");
 	private static Set<String> filterTableSet = new HashSet<String>();
 	//维护的一个自增计数器<tableName,AtomicCount>
@@ -35,7 +33,6 @@ public class SequenceUtil {
 
 	public Long getSequence(final SEQNAME seqName) {
 
-		
 		Long result = null;
 		if (seqName == null) {
 			return result;
