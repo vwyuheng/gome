@@ -2,6 +2,7 @@ package com.tuan.inventory.service.impl;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -254,7 +255,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			@Override
 			public void executeAfter() {
 				String queueKeyId = inventoryUpdateDomain.pushSendMsgQueue();
-				queueIdParam.setQueueKeyId(queueKeyId);
+				if(!StringUtils.isEmpty(queueKeyId))
+				      queueIdParam.setQueueKeyId(queueKeyId);
 			}
 		});
 		long endTime = System.currentTimeMillis();

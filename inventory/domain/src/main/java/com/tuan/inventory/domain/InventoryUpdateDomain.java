@@ -553,7 +553,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public String pushSendMsgQueue() {
 		// 填充队列
 		if (fillInventoryQueueDO()) {
-			return this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
+			if(queueDO!=null&&queueDO.getId()!=null&&queueDO.getId()!=0) {
+				return this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
+			}
+			return null;
 		}else {
 			return null;
 		}
@@ -683,7 +686,11 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public boolean fillInventoryQueueDO() {
 		GoodsInventoryQueueDO queueDO = new GoodsInventoryQueueDO();
 		try {
-			queueDO.setId(sequenceUtil.getSequence(SEQNAME.seq_queue_send));
+			Long queueId = sequenceUtil.getSequence(SEQNAME.seq_queue_send);
+			while(queueId==null||queueId==0) {//重试
+				queueId = sequenceUtil.getSequence(SEQNAME.seq_queue_send);
+			}
+			queueDO.setId(queueId);
 			queueDO.setGoodsId(goodsId);
 	        queueDO.setGoodsBaseId(goodsBaseId);
 	        queueDO.setLimitStorage(limitStorage);
