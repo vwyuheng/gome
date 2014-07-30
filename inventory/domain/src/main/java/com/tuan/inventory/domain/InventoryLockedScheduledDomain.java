@@ -452,7 +452,16 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 
 			}else {
-				//return false;
+				Double recv= this.goodsInventoryDomainRepository.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (delStatus),queuemember);
+				if(recv== null) {
+					logLock.info("[标记删除队列时失败]queuemember:("+queuemember+")");
+				}else if(recv==0) {
+					logLock.info("[获取缓存的队列为null,并且标记删除队列时也匹配不上]queuemember:("+queuemember+")");
+					
+				}else {
+					logLock.info("[队列id不合法],queueId:("+queueId+")该队列详细信息为queuemember:"+queuemember+",的队列标记删除成功!!!");
+				}
+				
 			}
 			return true;
 		} catch (Exception e) {
