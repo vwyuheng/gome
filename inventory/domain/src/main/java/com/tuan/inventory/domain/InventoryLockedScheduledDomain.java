@@ -110,19 +110,19 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							//1.当订单状态为已付款时
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
-								if (verifyId(model.getGoodsId()!=null?model.getGoodsId():0)) {
+								//if (verifyId(model.getGoodsId()!=null?model.getGoodsId():0)) {
 									this.inventorySendMsg.add(model);
 									
-								}else {
-									logLock.info("[订单状态为已付款时商品id不合法]队列详细信息model:("+model+")");
-								}
+								//}else {
+									//logLock.info("[订单状态为已付款时商品id不合法]队列详细信息model:("+model+")");
+								//}
 								   
 							}else {
-								if (verifyId(model.getId()!=null?model.getId():0)) {
+								//if (verifyId(model.getId()!=null?model.getId():0)) {
 									this.inventoryRollback.add(model);
-								}else {
-									logLock.info("[订单状态为未付款时商品id不合法]队列详细信息model:("+model+")");
-								}
+								//}else {
+									//logLock.info("[订单状态为未付款时商品id不合法]队列详细信息model:("+model+")");
+								//}
 								   
 							}
 						}//if
