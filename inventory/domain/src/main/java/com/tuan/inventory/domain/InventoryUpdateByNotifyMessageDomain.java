@@ -53,7 +53,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 				//更新jeehe_goods表销量,只需根据商品id即可，因更新的是商品的销量
 				goodUpdateNumberDomainRepository.updataGoodsNum(goodsUpdateNumberDO);
 				
-				log.info(lm.setMethod(method).addMetaData("updatetraget", "GoodsAttributes").toJson());
+				log.info(lm.setMethod(method).addMetaData("updatetraget", goodsUpdateNumberDO).toJson());
 				List<SelectionNotifyMessageParam> selectionRelation =param.getSelectionRelation();
 				if(!CollectionUtils.isEmpty(selectionRelation)){
 					for (SelectionNotifyMessageParam selectionNotifyMessageParam : selectionRelation) {
@@ -68,7 +68,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 							goodUpdateNumberDomainRepository.updataGoodsWmsNumByID(goodsUpdateNumberDO);
 						}
 					}
-					log.info(lm.setMethod(method).addMetaData("updatetraget", "SelectionRelation")
+					log.info(lm.setMethod(method).addMetaData("updatetraget", selectionRelation)
 							.addMetaData("size",selectionRelation.size()).toJson());
 				}
 				List<SuppliersNotifyMessageParam> suppliersRelation =param.getSuppliersRelation();
@@ -80,7 +80,7 @@ public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
 						goodsUpdateNumberDO.setId(suppliersNotifyMessageParam.getId());
 						goodUpdateNumberDomainRepository.updateSuppliersInventoryNumber(goodsUpdateNumberDO);
 					}
-					log.info(lm.setMethod(method).addMetaData("updatetraget", "Suppliers")
+					log.info(lm.setMethod(method).addMetaData("updatetraget", suppliersRelation)
 							.addMetaData("size",suppliersRelation.size()).toJson());
 				}
 				return TuanCallbackResult.success();
