@@ -110,20 +110,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							//1.当订单状态为已付款时
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
-								//if (verifyId(model.getGoodsId()!=null?model.getGoodsId():0)) {
 									this.inventorySendMsg.add(model);
-									
-								//}else {
-									//logLock.info("[订单状态为已付款时商品id不合法]队列详细信息model:("+model+")");
-								//}
-								   
 							}else {
-								//if (verifyId(model.getId()!=null?model.getId():0)) {
 									this.inventoryRollback.add(model);
-								//}else {
-									//logLock.info("[订单状态为未付款时商品id不合法]队列详细信息model:("+model+")");
-								//}
-								   
 							}
 						}//if
 					}
@@ -206,18 +195,18 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					logLock.info("[订单状态为未付款时商品]队列详细信息inventoryRollback:("+inventoryRollback+")");
 				}
 				for (GoodsInventoryQueueModel rollbackModel : inventoryRollback) {
-				   //this.rollbackAndMarkDelete();
+				   
 					if (rollbackModel != null) {
-						long queueId = rollbackModel.getId();
-						long goodsId = rollbackModel.getGoodsId();
-						long goodsBaseId = rollbackModel.getGoodsBaseId();
+						long queueId = rollbackModel.getId()!=null?rollbackModel.getId():0;
+						long goodsId = rollbackModel.getGoodsId()!=null?rollbackModel.getGoodsId():0;
+						long goodsBaseId = rollbackModel.getGoodsBaseId()!=null?rollbackModel.getGoodsBaseId():0;
 						int limitStorage = rollbackModel.getLimitStorage();
 						int  deductNum = rollbackModel.getDeductNum();
 						long orderId = rollbackModel.getOrderId();
 						List<GoodsSelectionAndSuppliersResult> selectionParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSelectionParam());
-						List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList( rollbackModel.getSuppliersParam());
+						//List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSuppliersParam());
 						//先回滚redis库存，
-						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, suppliersParamResult)){
+						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, null)){
 							//当redis回滚成功后，立即删除缓存的队列状态，以免被重复处理
 							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
 								logLock.info("[标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
@@ -486,43 +475,28 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 				long startTime = System.currentTimeMillis();
 				String method = "InventoryLockedScheduledDomain.rollback,订单id:"+String.valueOf(orderId);
-				final LogModel lm = LogModel.newLogModel(method);
-				logLock.info(lm.setMethod(method)
-						.addMetaData("goodsId", goodsId)
-						.addMetaData("goodsBaseId", goodsBaseId)
-						.addMetaData("deductNum", deductNum)
-						.addMetaData("limtStorgeDeNum", limtStorgeDeNum)
-						.addMetaData("selectionParam", selectionParam)
-						.addMetaData("suppliersParam", suppliersParam)
-						.addMetaData("start", startTime)
-						.toJson(true));
+				logLock.info(method+",goodsId:"+goodsId+",goodsBaseId:"+goodsBaseId+",deductNum:"+deductNum+",limtStorgeDeNum:"+limtStorgeDeNum+",selectionParam:"+selectionParam+",startTime:"+startTime);
 				List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId,goodsBaseId,(limtStorgeDeNum), (deductNum));
 
 				long endTime = System.currentTimeMillis();
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 						+ "milliseconds(毫秒)执行完成!(订单支付状态)rollbackAftNum="+rollbackAftNum;
-				logLock.info(lm.setMethod(method).addMetaData("endTime", endTime)
-						.addMetaData("runResult", runResult));
+				logLock.info("endTime:" +endTime+",runResult:"+runResult);
+	
 			}
 			if (!CollectionUtils.isEmpty(selectionParam)) {
 				long startTime = System.currentTimeMillis();
 				String method = "InventoryLockedScheduledDomain.rollback,selectionParam订单id:"+String.valueOf(orderId);
-				final LogModel lm = LogModel.newLogModel(method);
-				logLock.info(lm.setMethod(method)
-						.addMetaData("goodsId", goodsId)
-						.addMetaData("goodsBaseId", goodsBaseId)
-						.addMetaData("deductNum", deductNum)
-						.addMetaData("selectionParam", selectionParam)
-						.addMetaData("start", startTime)
-						.toJson(true));
+				logLock.info(method+",goodsId:"+goodsId+",goodsBaseId:"+goodsBaseId+",deductNum:"+deductNum+",selectionParam:"+selectionParam+",startTime:"+startTime);
+						
 				boolean rollbackSelAck = this.goodsInventoryDomainRepository
 						.rollbackSelectionInventory(selectionParam);
 				long endTime = System.currentTimeMillis();
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 						+ "milliseconds(毫秒)执行完成!(订单支付状态)rollbackSelAck="+rollbackSelAck;
-				logLock.info(lm.setMethod(method).addMetaData("endTime", endTime)
-						.addMetaData("runResult", runResult));
+				logLock.info("endTime:"+ endTime+",runResult:"+runResult);
+		
 			}
 			if (!CollectionUtils.isEmpty(suppliersParam)) {
 				long startTime = System.currentTimeMillis();
