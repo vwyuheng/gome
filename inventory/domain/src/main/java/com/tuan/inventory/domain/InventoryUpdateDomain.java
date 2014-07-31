@@ -718,8 +718,32 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		try {
 			Long queueId = sequenceUtil.getSequence(SEQNAME.seq_queue_send);
 			queueDO.setId(queueId);
-			queueDO.setGoodsId(goodsId);
-	        queueDO.setGoodsBaseId(goodsBaseId);
+			queueDO.setGoodsId((goodsId==null||goodsId==0)?Long.parseLong(param.getGoodsId()):goodsId);
+			long tmpInitGoodsBaseId = 0;
+			if(goodsBaseId==null||goodsBaseId==0) {
+				if(StringUtils.isEmpty(param.getGoodsBaseId())) {  //为了兼容参数goodsbaseid不传的情况
+					GoodsInventoryDO temp = this.goodsInventoryDomainRepository
+							.queryGoodsInventory(queueDO.getGoodsId());
+					if(temp!=null) {
+						tmpInitGoodsBaseId = temp.getGoodsBaseId();
+						if(tmpInitGoodsBaseId==0) {
+							// 初始化商品库存信息
+							CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+									.selectGoodsInventoryByGoodsId(queueDO.getGoodsId());
+							if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+								temp = 	callGoodsInventoryDOResult.getBusinessResult();
+								if(temp!=null) {
+									tmpInitGoodsBaseId = temp.getGoodsBaseId();
+								}
+							}
+						}
+					}
+				}else {
+					tmpInitGoodsBaseId = Long.valueOf(param.getGoodsBaseId());
+				}
+				goodsBaseId = tmpInitGoodsBaseId;
+			}
+			queueDO.setGoodsBaseId(goodsBaseId);
 	        queueDO.setLimitStorage(limitStorage);
 			if(!StringUtils.isEmpty(param.getOrderId())) {
 				queueDO.setOrderId(Long.valueOf(param.getOrderId()));
