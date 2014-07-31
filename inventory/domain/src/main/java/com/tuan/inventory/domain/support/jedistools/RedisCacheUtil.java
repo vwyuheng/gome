@@ -1278,7 +1278,8 @@ public class RedisCacheUtil {
 				try {
 					//开启事务
 					//ts = j.multi(); 
-					 p = j.pipelined();		
+					p = j.pipelined();		
+		
 					//剩余库存更新
 					p.hincrBy(inventoryKey, itField1, itValue1);
 					//销量更新

@@ -32,6 +32,11 @@ public class DLockConstants {
 	
 	
 	//接口幂等key的前缀
+	//库存扣减接口
+	public final static String DEDUCT_INVENTORY = "deduct";
+	//扣减成功后更新的key
+	public final static String DEDUCT_INVENTORY_SUCCESS = "deduct_success";
+	public final static String DEDUCT_QUEUEID = "deduct_success_queueid";
 	//库存创建接口
 	public final static String CREATE_INVENTORY = "create";
 	//创建成功后更新的key

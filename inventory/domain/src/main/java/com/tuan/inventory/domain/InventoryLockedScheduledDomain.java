@@ -28,7 +28,6 @@ import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
 import com.tuan.inventory.model.GoodsSuppliersModel;
-import com.tuan.inventory.model.enu.ClientNameEnum;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
@@ -36,12 +35,14 @@ import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.util.DateUtils;
 import com.tuan.inventory.model.util.QueueConstant;
 import com.tuan.ordercenter.backservice.OrderQueryService;
+import com.tuan.ordercenter.model.enu.ClientNameEnum;
 import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
 import com.tuan.ordercenter.model.result.CallResult;
 import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private static Log logLock=LogFactory.getLog("LOCKED.JOB.LOG");
+	private static Log logerror=LogFactory.getLog("ERROR.QUEUE.LOG");
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
 	//库存需发更新消息的:需排重
@@ -76,6 +77,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	public boolean preHandler() {
 		boolean preresult = true;
 		try {
+			//维护一个过滤相同订单id的队列
+			//Set<Long> filterOrderIdSet = new HashSet<Long>();
 			//用于归集缓存商品id
 			inventorySendMsg = new ConcurrentHashSet<GoodsInventoryQueueModel>();
 			//用于订单支付未成功时，缓存队列id
@@ -159,7 +162,6 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							}
 					}
 					
-					
 					//再加载数据发送消息
 					if(loadMessageData(goodsId)) {
 						//发送消息:支付成功此时redis中数据是最新的故直接发送消息删除状态后再更新mysql数据库
@@ -197,13 +199,35 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				for (GoodsInventoryQueueModel rollbackModel : inventoryRollback) {
 				   
 					if (rollbackModel != null) {
-						long queueId = rollbackModel.getId()!=null?rollbackModel.getId():0;
-						long goodsId = rollbackModel.getGoodsId()!=null?rollbackModel.getGoodsId():0;
-						long goodsBaseId = rollbackModel.getGoodsBaseId()!=null?rollbackModel.getGoodsBaseId():0;
+						long queueId = 0;
+						long goodsId = 0;
+						long goodsBaseId = 0;
+						long orderId = 0;
 						int limitStorage = rollbackModel.getLimitStorage();
 						int  deductNum = rollbackModel.getDeductNum();
-						long orderId = rollbackModel.getOrderId();
-						List<GoodsSelectionAndSuppliersResult> selectionParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSelectionParam());
+						List<GoodsSelectionAndSuppliersResult> selectionParamResult = null;
+						try {
+							queueId = rollbackModel.getId();
+							goodsId = rollbackModel.getGoodsId();
+							orderId = rollbackModel.getOrderId();
+							selectionParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSelectionParam());
+							goodsBaseId = rollbackModel.getGoodsBaseId();
+							
+						} catch (Exception e) {
+							if(goodsBaseId==0&&goodsId!=0) {//重新初始化baseid
+								GoodsInventoryDO tmpDO = goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+								if(tmpDO!=null) {
+									goodsBaseId = tmpDO.getGoodsBaseId();
+								}
+							} 
+							//处理这部分队列
+							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
+							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
+								logerror.info("[标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
+							}else {
+								logerror.info("[标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
+							}
+						}
 						//List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSuppliersParam());
 						//先回滚redis库存，
 						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, null)){
@@ -245,6 +269,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg",
 							"businessHandler error" + e.getMessage()),false, e);
+			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		

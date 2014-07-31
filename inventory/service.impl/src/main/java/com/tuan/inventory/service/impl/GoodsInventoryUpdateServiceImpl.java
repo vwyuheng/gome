@@ -2,7 +2,6 @@ package com.tuan.inventory.service.impl;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -246,6 +245,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			public TuanCallbackResult executeAction() {
 				CreateInventoryResultEnum resultEnum = inventoryUpdateDomain.updateInventory();
 				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					queueIdParam.setQueueKeyId(inventoryUpdateDomain.getQueueKeyId());
 					return TuanCallbackResult.success();
 				}else{
 					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -254,9 +254,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				String queueKeyId = inventoryUpdateDomain.pushSendMsgQueue();
-				if(!StringUtils.isEmpty(queueKeyId))
-				      queueIdParam.setQueueKeyId(queueKeyId);
+				//String queueKeyId = inventoryUpdateDomain.pushSendMsgQueue();
+				//if(!StringUtils.isEmpty(queueKeyId))
+				    //  queueIdParam.setQueueKeyId(queueKeyId);
 			}
 		});
 		long endTime = System.currentTimeMillis();
