@@ -193,11 +193,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			//处理回滚的库存
 			if (!CollectionUtils.isEmpty(inventoryRollback)) {
 				logLock.info("订单状态为未付款需回滚库存队列条数:("+inventoryRollback.size()+")");
-				if(logLock.isDebugEnabled()) {
-					logLock.info("[订单状态为未付款时商品]队列详细信息inventoryRollback:("+inventoryRollback+")");
-				}
 				for (GoodsInventoryQueueModel rollbackModel : inventoryRollback) {
-				   
 					if (rollbackModel != null) {
 						long queueId = 0;
 						long goodsId = 0;
@@ -223,9 +219,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							//处理这部分队列
 							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
 							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
-								logerror.info("[标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
+								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
 							}else {
-								logerror.info("[标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
+								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
 							}
 						}
 						//List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSuppliersParam());
@@ -233,7 +229,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, null)){
 							//当redis回滚成功后，立即删除缓存的队列状态，以免被重复处理
 							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
-								logLock.info("[标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
+								logLock.info("[库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
 							}else {
 								//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 							}
@@ -255,9 +251,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 										}
 					
 								}
+							}else {
+								logLock.info("[loadMessageData,加载数据失败]goodsId:("+goodsId+")");
 							}
 						}else {
-							logLock.info("库存回滚失败队列详细信息rollbackModel:("+rollbackModel+")");
+							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
 						}
 					}
 				}
