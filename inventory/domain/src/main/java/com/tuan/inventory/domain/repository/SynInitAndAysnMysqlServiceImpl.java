@@ -154,7 +154,12 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							GoodsBaseInventoryDO baseInventoryDO = null;
 							GoodsBaseInventoryDO upBaseDO = null;
 							if(inventoryInfoDO!=null) {
-								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+								GoodsInventoryDO tmp = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(inventoryInfoDO.getGoodsId());
+								if(tmp==null) {
+									synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+								}else {
+									synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
+								}
 								baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 								if(baseInventoryDO == null){
 									//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
