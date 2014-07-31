@@ -164,14 +164,14 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				this.fillNewInventoryDO(0,0,tmp4OldGoods.getWaterfloodVal());  //以供存储
 				return CreateInventoryResultEnum.SUCCESS;
 			}
-			int takeNum = 0;
+			
 			//进行真正的业务处理
 			//走hessian调用取订单支付状态
 			OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 					.getObject(OrderQueryService.class,
 							InventoryConfig.QUERY_URL);
 			//初始化改价前商品进来
-			/*long startTime = System.currentTimeMillis();
+			long startTime = System.currentTimeMillis();
 			String method = "OrderQueryService.queryNupayOrderGoodsNum,preGoodsId:"+preGoodsId;
 			final LogModel lm = LogModel.newLogModel(method);
 			loghessian.info(lm.setMethod(method).addMetaData("start", startTime)
@@ -197,7 +197,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				loghessian.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
 						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(true));
 				return CreateInventoryResultEnum.FAILED_ORDERQUERYSERVICE;
-			}*/
+			}
 			//加载goodsbase信息
 			/*baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 			if(baseInventoryDO==null) {
