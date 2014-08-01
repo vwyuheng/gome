@@ -37,6 +37,10 @@ public class DLockConstants {
 	//扣减成功后更新的key
 	public final static String DEDUCT_INVENTORY_SUCCESS = "deduct_success";
 	public final static String DEDUCT_QUEUEID = "deduct_success_queueid";
+	//库存扣减回调接口
+	public final static String CALLBACK_INVENTORY = "callback";
+	//扣减成功后更新的key
+	public final static String CALLBACK_INVENTORY_SUCCESS = "callback_success";
 	//库存创建接口
 	public final static String CREATE_INVENTORY = "create";
 	//创建成功后更新的key
