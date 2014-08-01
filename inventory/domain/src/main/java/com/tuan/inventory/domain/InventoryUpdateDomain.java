@@ -195,13 +195,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	}
 	
-	private boolean calculateInventory() {
+	private CreateInventoryResultEnum calculateInventory() {
 		// 再次查询商品库存信息[确保最新数据]
 		//this.inventoryInfoDO 
 		GoodsInventoryDO	tmpInventory = this.goodsInventoryDomainRepository
 				.queryGoodsInventory(goodsId);
 		if(tmpInventory==null) {
-			return false;
+			return CreateInventoryResultEnum.NO_GOODS;
 		}
 		// 商品本身扣减库存量
 		int deductNum = param.getNum();
@@ -267,8 +267,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			tmpInventory.setGoodsSaleCount(goodsDeductNum);
 			//inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
 			this.inventoryInfoDO  = tmpInventory;
+		}else {
+			return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 		}
-		return true;
+		return CreateInventoryResultEnum.SUCCESS;
 	}
 
 	// 业务检查
@@ -435,12 +437,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}else {
 				this.isSelectionEnough = true;
 			}
-			
-			if(!this.calculateInventory()) {
-				return CreateInventoryResultEnum.NO_GOODS;
+			CreateInventoryResultEnum result =	calculateInventory();
+		
+			if(result!=null&&!(result.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+				return resultEnum;
 			}else {
 				this.isEnough = true;
 			}
+			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
