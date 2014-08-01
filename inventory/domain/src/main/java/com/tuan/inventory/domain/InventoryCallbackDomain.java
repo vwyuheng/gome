@@ -49,6 +49,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 	private SequenceUtil sequenceUtil;
 	private boolean isConfirm;
 	private boolean isRollback;
+	private boolean idemptent = false;
 	
 	public InventoryCallbackDomain(String clientIp, String clientName,
 			CallbackParam param, LogModel lm) {
@@ -83,10 +84,18 @@ public class InventoryCallbackDomain extends AbstractDomain {
 
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
-
+		// 填充参数
+		this.fillParam();
+		// 幂等性检查
+		if (!StringUtils.isEmpty(key)) { // if
+			this.idemptent = idemptent();
+			if (idemptent) {
+				return CreateInventoryResultEnum.SUCCESS;
+			}
+		}else {
+			this.key = param.getKey();
+		}
 		try {
-			// 填充参数
-			this.fillParam();
 			//预处理
 			this.preHandler();
 			// 根据key查询缓存的队列信息
@@ -209,6 +218,13 @@ public class InventoryCallbackDomain extends AbstractDomain {
 							"ackInventory error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
+		//处理成返回前设置tag
+		if (StringUtils.isNotEmpty(key)) {
+			goodsInventoryDomainRepository.setTag(
+					DLockConstants.CALLBACK_INVENTORY_SUCCESS + "_" + key,
+					DLockConstants.IDEMPOTENT_DURATION_TIME,
+					DLockConstants.HANDLER_SUCCESS);
+		}
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -252,6 +268,27 @@ public class InventoryCallbackDomain extends AbstractDomain {
 		return true;
 	}
 
+	public boolean idemptent() {
+		//根据key取已缓存的tokenid  
+		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.CALLBACK_INVENTORY + "_"+ key);
+		if(StringUtils.isEmpty(gettokenid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
+			if(StringUtils.isNotEmpty(key)) {
+				goodsInventoryDomainRepository.setTag(DLockConstants.CALLBACK_INVENTORY + "_"+ key, DLockConstants.IDEMPOTENT_DURATION_TIME, key);
+			}
+					
+		}else {  //否则比对token值
+			if(StringUtils.isNotEmpty(key)) {
+				if(key.equalsIgnoreCase(gettokenid)) { //重复请求过来，判断是否处理成功
+				//根据处理成功后设置的tag来判断之前http请求处理是否成功
+				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.CALLBACK_INVENTORY_SUCCESS + "_"+ key);
+				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
+								return true;
+							}
+						}
+					}
+		}
+		return false;
+	}
 	/**
 	 * 参数检查
 	 * 
