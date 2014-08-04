@@ -457,10 +457,10 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			param.setPreGoodsId(554842l);
 			param.setLimitStorage(1);*/
 			param.setTokenid("1");
-			param.setGoodsBaseId(8000000555334l);
-			param.setGoodsId(555676l);
-			param.setPreGoodsId(555674l);
-			param.setLimitStorage(1);
+			param.setGoodsBaseId(8000000555751l);
+			param.setGoodsId(555754l);
+			param.setPreGoodsId(555751l);
+			param.setLimitStorage(0);
 			
 			
 			RequestPacket packet = new RequestPacket();

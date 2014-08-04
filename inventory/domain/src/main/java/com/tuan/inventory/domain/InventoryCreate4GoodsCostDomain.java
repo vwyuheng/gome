@@ -162,6 +162,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				GoodsInventoryDO	tmp4OldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
 				//组装新商品信息
 				this.fillNewInventoryDO(0,0,tmp4OldGoods.getWaterfloodVal());  //以供存储
+				//this.inventoryInfoDO4OldGoods = tmp4OldGoods;
 				return CreateInventoryResultEnum.SUCCESS;
 			}
 			
@@ -271,14 +272,14 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			if(limitStorage==0) {  //非限制库存商品无需处理 ，0:库存无限制；1：限制库存
-				return CreateInventoryResultEnum.SUCCESS;
+			if(limitStorage==1) {  //非限制库存商品无需处理 ，0:库存无限制；1：限制库存
+				//更新老商品的库存
+				CreateInventoryResultEnum resultEnum = this.updatePreGoodsInventory();
+				if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+					return resultEnum;
+				}
 			}
-			//更新老商品的库存
-			CreateInventoryResultEnum resultEnum = this.updatePreGoodsInventory();
-			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
-				return resultEnum;
-			}
+			
 			
 		} catch (Exception e) {
 			this.writeBusErrorLog(
