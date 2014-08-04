@@ -148,7 +148,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			if (!CollectionUtils.isEmpty(inventorySendMsg)) {
 				logLock.info("订单状态为已付款队列条数:("+inventorySendMsg.size()+")");
 				if(logLock.isDebugEnabled()) {
-					logLock.info("[订单状态为已付款时商品]队列详细信息inventorySendMsg:("+inventorySendMsg+")");
+					logLock.debug("[订单状态为已付款时商品]队列详细信息inventorySendMsg:("+inventorySendMsg+")");
 				}
 				for(GoodsInventoryQueueModel queueModel:inventorySendMsg) {
 					long goodsId = 0;

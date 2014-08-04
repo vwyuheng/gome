@@ -65,16 +65,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					.queryInventoryQueueListByStatus(Double
 							.valueOf(ResultStatusEnum.CONFIRM.getCode()));
 			if (!CollectionUtils.isEmpty(queueList)) {
-				//logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列:("+queueList.size()+")条,处理前队列详细信息queueList:("+queueList+")");
 				for (GoodsInventoryQueueModel model : queueList) {
 					//队列数据数据按商品id 归集后 发送消息更新数据准备
-					//if (verifyId(model.getGoodsId()!=null?model.getGoodsId():0)) {
-						listGoodsIdSends.add(model);
-					///}else {
-					//	logConfirm.info("[商品id不合法]队列详细信息model:("+model+")");
-					//}
-					//logConfirm.info("[ConfirmJob]处理后队列详细信息listGoodsIdSends:("+listGoodsIdSends+")");
-					
+					listGoodsIdSends.add(model);
 				}
 			}else {
 				logConfirm.info("[ConfirmJob]获取队列:("+ResultStatusEnum.CONFIRM.getDescription()+"),状态为：("+ResultStatusEnum.CONFIRM.getCode()+")的队列为空！");

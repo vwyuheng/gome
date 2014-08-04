@@ -65,13 +65,9 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 							
 							if(eventResult) {  //落mysql成功的话,也就是消费日志消息成功
 								for (GoodsInventoryActionModel model : queueLogList) {  //目的就是循环500次移除前500个元素
-									//String remmethod = "lremLogQueue,[移除日志队列]:("+model+",eventResult:)"+eventResult;
-									//循环删除所有元素
-									//Long rem = this.goodsInventoryDomainRepository.lremLogQueue(model);
 									String bydelLogMember = this.goodsInventoryDomainRepository.lpop(QueueConstant.QUEUE_LOGS_MESSAGE);
-									
 									if(logLogs.isDebugEnabled()) {
-										logLogs.info("从redis中移除的日志:"+bydelLogMember);
+										logLogs.debug("从redis中移除的日志:"+bydelLogMember);
 									}
 									
 								}
