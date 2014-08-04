@@ -45,7 +45,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryInfoDO4OldGoods;
 	private GoodsInventoryDO inventoryInfoDO4NewGoods;
-	private GoodsBaseInventoryDO inventorybaseDO;
+	//private GoodsBaseInventoryDO inventorybaseDO;
 	//private GoodsBaseInventoryDO baseInventoryDO;
 	private List<GoodsSelectionDO> selectionRelation;
 	private List<GoodsSuppliersDO> suppliersRelation;
@@ -142,16 +142,14 @@ public class InventoryRestoreDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.NO_GOODSBASE;
 			}*/
 			//组装信息更新该老商品库	
-			this.fillInventoryDO(adjustNum, inventoryDO4OldGoods,tmp4newGoods);
-				
+			return fillInventoryDO(adjustNum, inventoryDO4OldGoods,tmp4newGoods);
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-	
-		return CreateInventoryResultEnum.SUCCESS;
+
 	}
 
 	// 新增库存
@@ -342,13 +340,13 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	}
 
 	//组装改价商品信息
-	public void fillInventoryDO(int restoreNum,GoodsInventoryDO oldDO,GoodsInventoryDO newDO) {
+	public CreateInventoryResultEnum fillInventoryDO(int restoreNum,GoodsInventoryDO oldDO,GoodsInventoryDO newDO) {
 		//GoodsBaseInventoryDO tmpbaseDO = new GoodsBaseInventoryDO();
 		GoodsInventoryDO preInventoryInfoDO = new GoodsInventoryDO();
 		GoodsInventoryDO newInventoryInfoDO = new GoodsInventoryDO();
 		try {
 			
-			if(restoreNum>oldDO.getLeftNumber()) {//占用库存量大于等于总库存数时,意味着最多只能还leftnumber个
+			if((restoreNum>oldDO.getLeftNumber())&&oldDO.getLeftNumber()>0) {//占用库存量大于等于剩余库存数时,意味着最多只能还leftnumber个
 				oldDO.setLeftNumber(0);
 				oldDO.setTotalNumber(oldDO.getTotalNumber()-oldDO.getLeftNumber());
 				oldDO.setUserId(userId);
@@ -359,7 +357,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 				newDO.setUserId(userId);
 				newInventoryInfoDO = newDO;
 				
-			}else {
+			}else if((restoreNum<=oldDO.getLeftNumber())&&oldDO.getLeftNumber()>0) { //当你还的库存数量《=当前的剩余库存,并且当前剩余库存》0的,当剩余库存为0时不再处理
 				oldDO.setLeftNumber(oldDO.getLeftNumber()-restoreNum);
 				oldDO.setTotalNumber(oldDO.getTotalNumber()-restoreNum);
 				oldDO.setUserId(userId);
@@ -369,15 +367,19 @@ public class InventoryRestoreDomain extends AbstractDomain {
 				newDO.setTotalNumber(newDO.getTotalNumber()+restoreNum);
 				newDO.setUserId(userId);
 				newInventoryInfoDO = newDO;
+			}else if(oldDO.getLeftNumber()==0){  //库存已还完时
+				return CreateInventoryResultEnum.HAD_RETORE_COMPLETED;
 			}
 			
 		} catch (Exception e) {
 			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillPreInventoryDO error"+e.getMessage()),false, e);
 			this.inventoryInfoDO4OldGoods = null;
 			this.inventoryInfoDO4NewGoods = null;
+			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		this.inventoryInfoDO4OldGoods = preInventoryInfoDO;
 		this.inventoryInfoDO4NewGoods = newInventoryInfoDO;
+		return CreateInventoryResultEnum.SUCCESS;
 	}
 
 	// 初始化改价前商品
