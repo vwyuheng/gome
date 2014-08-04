@@ -46,7 +46,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	private String wmsGoodsId;  //物流商品的一种编码
 	private List<GoodsSelectionModel> selectionList;
 	private boolean isEnough;
-	private boolean isSelectionEnough = true;
+	private boolean isSelectionEnough = false;
 	// 需扣减的商品库存
 	private int wmsGoodsDeductNum = 0;
 	private int wmsSelectionDeductNum = 0;
@@ -71,7 +71,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	/**
 	 * 处理选型库存
 	 */
-	private void selectionInventoryHandler() {
+	private boolean selectionInventoryHandler() {
 		try {
 		if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // if1
 			this.selectionList = param.getGoodsSelection();
@@ -89,7 +89,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						// 扣减库存并返回扣减标识,计算库存并
 						if ((selectionDO.getLeftNumber() + model.getNum()) <= 0) {
 							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
-							this.isSelectionEnough = false;
+							//this.isSelectionEnough = false;
+							return false;
 						} else {
 							selection = new GoodsWmsSelectionResult();
 							//redis更新用
@@ -104,6 +105,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 							
 						}
 
+					}else if(selectionDO != null
+							&& selectionDO.getLimitStorage() == 0){
+						return true;
 					}
 
 				}// if
@@ -112,21 +116,28 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 		} 
 		} catch (Exception e) {
-			isSelectionEnough = false;
+			//isSelectionEnough = false;
 			this.writeBusWmsUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"selectionInventoryHandler error" + e.getMessage()),false, e);
+			return false;
 			
 		}
+		return true;
 	}
 
 	
 
-	private void calculateInventory() {
+	private CreateInventoryResultEnum calculateInventory() {
 		// 商品本身扣减库存量
 		int deductNum = param.getNum();
 		// 再次查询物流商品库存信息[确保最新数据]
-		this.wmsDO = this.goodsInventoryDomainRepository.queryGoodsInventoryWms(wmsGoodsId);
+		GoodsInventoryWMSDO tmpwmsDO = this.goodsInventoryDomainRepository.queryGoodsInventoryWms(wmsGoodsId);
+		//this.wmsDO = this.goodsInventoryDomainRepository.queryGoodsInventoryWms(wmsGoodsId);
+		if(tmpwmsDO==null) {
+			return CreateInventoryResultEnum.NO_WMS_DATA;
+		}
+		
 		//goodsList
 		if(!CollectionUtils.isEmpty(param.getGoodsIds())) {
 			goodsList = new ArrayList<GoodsInventoryDO>();
@@ -143,17 +154,21 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			
 			
 		}
-		
 		// 原始库存
-		this.orileftnum = wmsDO.getLeftNumber();
-		this.oritotalnum = wmsDO.getTotalNumber();
+		int tmporileftnum = tmpwmsDO.getLeftNumber();
+		int tmporitotalnum = tmpwmsDO.getTotalNumber();
+		
+		this.orileftnum = tmporileftnum;
+		this.oritotalnum = tmporitotalnum;
 		//赋值
 		this.wmsGoodsDeductNum = deductNum;
 		// 扣减库存并返回扣减标识,计算库存并
-		if (oritotalnum+deductNum>=0) {
-			this.isEnough = true;
-			
+		if (tmporitotalnum+deductNum<0) {
+			//this.isEnough = true;
+			return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 		}
+		this.wmsDO = tmpwmsDO;
+		return CreateInventoryResultEnum.SUCCESS;
 	}
 
 	private boolean verifyInventory() {
@@ -193,11 +208,17 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		// 真正的库存更新业务处理
 		try {
 			// 商品选型处理
-			this.selectionInventoryHandler();
+			if(!this.selectionInventoryHandler()) {
+				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+			}else {
+				this.isSelectionEnough = true;
+			}
+			CreateInventoryResultEnum result =	calculateInventory();
 			
-			if(isSelectionEnough) {
-				//商品库存扣减的计算
-				this.calculateInventory();
+			if(result!=null&&!(result.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
+				return resultEnum;
+			}else {
+				this.isEnough = true;
 			}
 			
 		} catch (Exception e) {
@@ -245,12 +266,13 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 								+ wmsGoodsDeductNum);
 					}
 					if (wmsDO != null&&wmsDO.getTotalNumber() < 0) {
-						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 					}
 
 				}else {
 					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isEnough:"+isEnough+",orileftnum:"+orileftnum+",oritotalnum="+oritotalnum+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 					logwms.info(message);
+					return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 				}
 				lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory mysql,start").addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("wmsDO", wmsDO).addMetaData("goodsList", goodsList).addMetaData("selectionParam", selectionParam);
 				writeWmsUpdateLog(lm,true);
@@ -296,7 +318,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 									(-wmsGoodsDeductNum));
 					lm.addMetaData("updateAdjustWmsInventory","rollback redis,end").addMetaData("responseResult", responseResult).addMetaData("responseFlg", responseFlg);
 					writeWmsUpdateLog(lm,true);
-					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+					return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 				}
 				
 				// 更新选型库存
@@ -320,7 +342,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 								.batchrollbackSelectionWms(selectionParam);
 						lm.addMetaData("updateAdjustWmsInventory","rollback redis,end").addMetaData("rollbackResponse", rollbackResponse).addMetaData("rSelResponse", rSelResponse);
 						writeWmsUpdateLog(lm,true);
-						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 					}
 				}
 			} finally{
