@@ -104,6 +104,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 
 						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
+						logLock.info("订单接口返回状态statEnum:"+statEnum+",订单id:"+model.getOrderId());
 						if(statEnum!=null) {
 							long endTime = System.currentTimeMillis();
 							String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
@@ -117,7 +118,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							}else {
 									this.inventoryRollback.add(model);
 							}
-						}//if
+						}
 					}
 					
 				}
