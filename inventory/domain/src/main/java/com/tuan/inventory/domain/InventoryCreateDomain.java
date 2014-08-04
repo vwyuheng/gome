@@ -79,7 +79,7 @@ public class InventoryCreateDomain extends AbstractDomain {
 			// 填充商品选型库信息
 			this.fillSelection();
 			// 填充商品分店库存信息
-			this.fillSuppliers();
+			//this.fillSuppliers();
 		} else { // 商品已存在
 			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // 选型库存
 				addSelection = true;
@@ -202,8 +202,8 @@ public class InventoryCreateDomain extends AbstractDomain {
 	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
 		notifyParam.setUserId(this.userId);
-		notifyParam.setGoodsBaseId(goodsBaseId);
-		notifyParam.setGoodsId(goodsId);
+		notifyParam.setGoodsBaseId(goodsBaseId==0?param.getGoodsBaseId():goodsBaseId);
+		notifyParam.setGoodsId(goodsId==0?Long.parseLong(param.getGoodsId()):goodsId);
 		notifyParam.setLimitStorage(param.getLimitStorage());
 		notifyParam.setWaterfloodVal(param.getWaterfloodVal());
 		notifyParam.setTotalNumber(param.getTotalNumber());
@@ -211,7 +211,7 @@ public class InventoryCreateDomain extends AbstractDomain {
 		//销量
 		notifyParam.setSales(0);
 		//库存基本信息
-		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId==0?param.getGoodsBaseId():goodsBaseId);
 		if(baseInventoryDO!=null) {
 			notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 			notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
@@ -291,12 +291,12 @@ public class InventoryCreateDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getGoodsId())) {
 			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}
-		/*if (param.getGoodsBaseId()==null) {
+		if (param.getGoodsBaseId()==null) {
 			return CreateInventoryResultEnum.INVALID_GOODSBASEID;
 		}
 		if (param.getGoodsBaseId()!=null&&param.getGoodsBaseId()==0) {
 			return CreateInventoryResultEnum.INVALID_GOODSBASEID;
-		}*/
+		}
 
 		return CreateInventoryResultEnum.SUCCESS;
 	}
