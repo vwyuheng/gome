@@ -215,7 +215,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	}
 	public void sendPreGoodsInventoryNotify() {
 		try {
-			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam(preGoodsId,inventoryInfoDO4OldGoods);
+			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam(preGoodsId);
 			goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryCreate4GoodsCostDomain_pre.toString(),JSONObject
 					.fromObject(notifyParam));
 			
@@ -225,7 +225,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	}
 	public void sendAftGoodsInventoryNotify() {
 		try {
-			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam(goodsId,inventoryInfoDO4NewGoods);
+			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam(goodsId);
 			goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryCreate4GoodsCostDomain_aft.toString(),JSONObject
 					.fromObject(notifyParam));
 			
@@ -235,17 +235,22 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	}
 
 	// 填充notifyserver发送参数
-	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(long goodsId,GoodsInventoryDO inventoryInfo) {
+	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam(long goodsId) {
 		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
+		
 		notifyParam.setUserId(this.userId);
-		notifyParam.setGoodsBaseId(goodsBaseId);
 		notifyParam.setGoodsId(goodsId);
-		notifyParam.setLimitStorage(inventoryInfo.getLimitStorage());
-		notifyParam.setWaterfloodVal(inventoryInfo.getWaterfloodVal());
-		notifyParam.setTotalNumber(inventoryInfo.getTotalNumber());
-		notifyParam.setLeftNumber(inventoryInfo.getLeftNumber());
-		//销量
-		notifyParam.setSales(inventoryInfo.getGoodsSaleCount()==null?0:inventoryInfo.getGoodsSaleCount());
+		GoodsInventoryDO inventoryInfo  = goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+		if(inventoryInfo!=null) {
+			notifyParam.setLimitStorage(inventoryInfo.getLimitStorage());
+			notifyParam.setWaterfloodVal(inventoryInfo.getWaterfloodVal());
+			notifyParam.setTotalNumber(inventoryInfo.getTotalNumber());
+			notifyParam.setLeftNumber(inventoryInfo.getLeftNumber());
+			notifyParam.setGoodsBaseId(inventoryInfo.getGoodsBaseId());
+			//销量
+			notifyParam.setSales(inventoryInfo.getGoodsSaleCount()==null?0:inventoryInfo.getGoodsSaleCount());
+		}
+		
 		//库存基本信息
 		GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
 		if(baseInventoryDO!=null) {
