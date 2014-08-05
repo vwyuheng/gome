@@ -132,7 +132,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		// 商品本身扣减库存量
 		int deductNum = param.getNum();
 		// 再次查询物流商品库存信息[确保最新数据]
-		GoodsInventoryWMSDO tmpwmsDO = this.goodsInventoryDomainRepository.queryGoodsInventoryWms(wmsGoodsId);
+		GoodsInventoryWMSDO tmpwmsDO = this.goodsInventoryDomainRepository.queryGoodsInventoryWms(StringUtils.isEmpty(wmsGoodsId)?param.getWmsGoodsId():wmsGoodsId);
 		if(tmpwmsDO==null) {
 			return CreateInventoryResultEnum.NO_WMS_DATA;
 		}
