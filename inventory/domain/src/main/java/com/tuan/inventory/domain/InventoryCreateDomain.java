@@ -30,6 +30,7 @@ import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
+import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryCreateDomain extends AbstractDomain {
 	private LogModel lm;
@@ -124,6 +125,19 @@ public class InventoryCreateDomain extends AbstractDomain {
 				if(idemptent) {
 					return CreateInventoryResultEnum.SUCCESS;
 				}
+			}
+			if(goodsBaseId==null||goodsBaseId==0) {
+				// 初始化商品库存信息
+				CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsInventoryByGoodsId(goodsId);
+				if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+					GoodsInventoryDO tmpInventory = callGoodsInventoryDOResult
+							.getBusinessResult();
+					if (tmpInventory != null) {
+						this.goodsBaseId = tmpInventory.getGoodsBaseId();
+					}
+				}
+			
 			}
 			// 业务检查前的预处理
 			this.preHandler();
