@@ -61,6 +61,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private String id;
 	private String tokenid;  //redis序列,解决接口幂等问题
 	private String businessType;
+	private int limitStorage;  //是否限制库存
 	// 调整前剩余库存
 	private int preleftnum = 0;
 	// 调整前总库存
@@ -117,6 +118,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 				return resultEnum;
 			}
+			
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
@@ -234,22 +236,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 								aftleftnum = 0;
 							}
 						}
-						/*if(afttotalnum>preleftnum) {  //计算剩余库存
-							//调整的剩余库存量
-							int adjustnum =  afttotalnum - preleftnum;
-							//计算剩余库存调整后的数量量
-							aftleftnum = preleftnum+adjustnum;
-						}else {
-							aftleftnum = afttotalnum;
-						}
 						
-						//此时调整后数量检查
-						if(aftleftnum<0) {
-							aftleftnum = 0;
-						}
-						if(afttotalnum<0) {
-							afttotalnum = 0;
-						}*/
 						// 调整后剩余库存数量
 						inventoryDO.setLeftNumber(aftleftnum);
 						// 调整商品总库存数量
@@ -260,10 +247,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						if(goodsBaseId!=null&&goodsBaseId>0) {
 							inventoryDO.setGoodsBaseId(goodsBaseId);
 						}
-						if (inventoryDO.getLimitStorage() == 0&&inventoryDO.getTotalNumber() != 0) {
+						if (limitStorage == 1) {
 							inventoryDO.setLimitStorage(1); // 更新数据库用
-						} else if (inventoryDO.getTotalNumber() == 0
-								&& inventoryDO.getLimitStorage() == 1) {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
+						} else {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
 							inventoryDO.setLimitStorage(0); // 更新数据库用
 							inventoryDO.setLeftNumber(0);
 							inventoryDO.setTotalNumber(0);
@@ -321,7 +307,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						//计算剩余库存调整后的数量量
 						//aftleftnum = adjustnum+preleftnum;
 						
-						if(afttotalnum<=0) {
+						if (limitStorage == 0) {
 							afttotalnum = 0;
 							inventoryDO.setLimitStorage(0);
 							aftleftnum=0;
@@ -409,7 +395,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						if(aftleftnum<0) {
 							aftleftnum = 0;
 						}
-						if(afttotalnum<=0) {
+						if (limitStorage == 0) {
 							afttotalnum = 0;
 							inventoryDO.setLimitStorage(0);
 							aftleftnum=0;
@@ -504,6 +490,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			this.type = param.getType();
 			// 2：可不传 4：选型id 6 分店id
 			this.id = param.getId();
+			this.limitStorage = param.getLimitStorage();
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.afttotalnum = param.getTotalnum();
 			}else if (type
@@ -638,7 +625,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				updateActionDO.setInventoryChange(String.valueOf(aftSelOrSupptotalnum));
 			}
 			
-			updateActionDO.setActionType(ResultStatusEnum.ADJUST_INVENTORY
+			updateActionDO.setActionType(ResultStatusEnum.OR_ADJUST_INVENTORY
 					.getDescription());
 			if(!StringUtils.isEmpty(param.getUserId())) {
 				updateActionDO.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
@@ -648,7 +635,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
 					.setContent(JSON.toJSONString(param)); // 操作内容
-			updateActionDO.setRemark("库存调整");
+			updateActionDO.setRemark("全量调整库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {

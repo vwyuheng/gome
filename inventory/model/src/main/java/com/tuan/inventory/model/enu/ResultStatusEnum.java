@@ -24,14 +24,14 @@ public enum ResultStatusEnum {
 	DEDUCTION_INVENTORY  ("14",   "库存扣减"),
 	ADD_INVENTORY   ("15",   "新增库存"),
 	REFUND_RESTORE_INVENTORY   ("16",   "商品退款还库存"),
-	ADJUST_INVENTORY   ("17",   "手工调整库存"),
+	ADJUST_INVENTORY   ("17",   "增量调整库存"),
 	FAULT_COMPENSATION_INVENTORY   ("18",   "出错补偿还库存"),
 	ADJUST_WMSINVENTORY   ("20",   "物流库存调整"),
 	UPDATE_WMSDATA   ("22",   " 更新物流相关数据"),
 	ADD_WMSINVENTORY   ("19",   "新增物流库存"),
 	ADJUST_GOODSPRICE   ("23",   "商品改价"),
-	TASK_RESTORE_INVENTORY   ("24",   "还原库存");
-	
+	TASK_RESTORE_INVENTORY   ("24",   "还原库存"),
+	OR_ADJUST_INVENTORY   ("25",   "全量库存调整");
 	
 	
 	private String code;

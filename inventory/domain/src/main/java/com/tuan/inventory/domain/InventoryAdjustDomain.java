@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
@@ -511,7 +512,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent(JSONObject.fromObject(param).toString()); // 操作内容
+					.setContent(JSON.toJSONString(param)); // 操作内容
 			if(param.getTask()==QueueConstant.TASK_RESTORE_INVENTORY) {
 				updateActionDO.setRemark("商品改价还原库存");
 			}else {
