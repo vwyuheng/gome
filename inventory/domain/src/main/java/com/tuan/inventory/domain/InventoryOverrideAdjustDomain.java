@@ -638,7 +638,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				updateActionDO.setInventoryChange(String.valueOf(aftSelOrSupptotalnum));
 			}
 			
-			updateActionDO.setActionType(ResultStatusEnum.CALLBACK_CONFIRM
+			updateActionDO.setActionType(ResultStatusEnum.ADJUST_INVENTORY
 					.getDescription());
 			if(!StringUtils.isEmpty(param.getUserId())) {
 				updateActionDO.setUserId(Long.valueOf(param!=null&&StringUtils.isNotEmpty(param.getUserId())?param.getUserId():"0"));
