@@ -681,7 +681,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public GoodsInventoryModel queryAllInventoryDataByGoodsId(long goodsId) {
 		return ObjectUtils.toModel(this.queryGoodsInventory(goodsId)
 				,this.queryGoodsSelectionListByGoodsId(goodsId)
-				,this.queryGoodsSuppliersListByGoodsId(goodsId)
+				,null/*this.queryGoodsSuppliersListByGoodsId(goodsId)*/
 				);
 	}
 	/**
