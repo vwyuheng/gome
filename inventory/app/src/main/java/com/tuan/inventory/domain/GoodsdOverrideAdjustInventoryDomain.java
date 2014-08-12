@@ -28,6 +28,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	private String userId;
 	//2:商品调整，4.选型库存调整 6.分店库存调整
 	private String type;
+	private String limitStorage;
 	private int totalnum;
 	private String goodsBaseId;
 	private LogModel lm;
@@ -36,7 +37,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	private OverrideAdjustInventoryParam param;
 	private UpdateRequestPacket packet;
 	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
-	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String id,String userId,String type,String totalnum,LogModel lm,Message messageRoot,String goodsBaseId){
+	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String id,String userId,String type,String limitStorage,String totalnum,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);
 		this.goodsId = goodsId;
@@ -44,6 +45,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		this.id = id;
 		this.userId = userId;
 		this.type = type;
+		this.limitStorage = JsonStrVerificationUtils.validateStr(limitStorage);
 		this.totalnum = StringUtils.isEmpty(totalnum)?0:Integer.valueOf(totalnum);
 		this.lm = lm;
 		this.messageRoot = messageRoot;
@@ -59,6 +61,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		param.setId(id);
 		param.setUserId(userId);
 		param.setType(type);
+		param.setLimitStorage(Integer.valueOf(limitStorage));
 		param.setTotalnum(totalnum);
 		param.setGoodsBaseId(goodsBaseId);
 		return param;
@@ -70,6 +73,9 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		}
 		if(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(type))){
 			return ResultEnum.INVALID_INVENTORY_TYPE;
+		}
+		if(StringUtils.isEmpty(limitStorage)){
+			return ResultEnum.INVALID_ISLIMIT_STORAGE;
 		}
 		if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())&&StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(id))) {
 			return ResultEnum.INVALID_SELECTIONID;
@@ -125,6 +131,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		parameterMap.put("id", id);
 		parameterMap.put("userId", userId);
 		parameterMap.put("type", type);
+		parameterMap.put("limitStorage", limitStorage);
 		parameterMap.put("goodsBaseId", goodsBaseId);
 		parameterMap.put("totalnum", String.valueOf(totalnum));
 		super.init(packet.getClient(), packet.getIp());

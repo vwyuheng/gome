@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
@@ -27,6 +29,7 @@ import com.tuan.inventory.model.result.CallResult;
  */
 public class InventoryInitDomain extends AbstractDomain{
 	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
+	protected static Log logwms = LogFactory.getLog("WMS.HANDLER.LOG");
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
@@ -687,12 +690,12 @@ public class InventoryInitDomain extends AbstractDomain{
 						} 
 		} catch (Exception e) {
 			//handler = false;
-			this.writeBusUpdateErrorLog(
+			this.writeBusWmsUpdateErrorLog(
 					lm.addMetaData("errorMsg",
 							"updateWmsMysqlInventory:"+message +","+ e.getMessage()),false,  e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("wmsDO",wmsDO)
+			logwms.info(lm.addMetaData("wmsDO",wmsDO)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("selectionList",selectionList)
 					.addMetaData("message",message)

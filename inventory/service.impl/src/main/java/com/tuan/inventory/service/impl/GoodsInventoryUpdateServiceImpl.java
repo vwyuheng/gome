@@ -484,6 +484,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		adjustWmsDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		adjustWmsDomain.setSequenceUtil(sequenceUtil);
 		adjustWmsDomain.setdLock(dLock);
+		adjustWmsDomain.setLm(lm);
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {

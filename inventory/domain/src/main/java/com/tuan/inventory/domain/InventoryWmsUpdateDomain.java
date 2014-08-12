@@ -139,7 +139,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		
 		//goodsList
 		if(!CollectionUtils.isEmpty(param.getGoodsIds())) {
-			goodsList = new ArrayList<GoodsInventoryDO>();
+			List<GoodsInventoryDO> 	goodsListTmp = new ArrayList<GoodsInventoryDO>();
 			for(Long goodsId:param.getGoodsIds()) {
 				GoodsInventoryDO tmpGoodsDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if(tmpGoodsDO!=null) {
@@ -147,10 +147,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						tmpGoodsDO.setLeftNumber(tmpGoodsDO.getLeftNumber()+deductNum);
 						tmpGoodsDO.setTotalNumber(tmpGoodsDO.getTotalNumber()+deductNum);
 					}
-					goodsList.add(tmpGoodsDO);
+					goodsListTmp.add(tmpGoodsDO);
 				}
 			}
-			
+			setGoodsList(goodsListTmp);
 			
 		}
 		// 原始库存
@@ -166,7 +166,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			//this.isEnough = true;
 			return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 		}
-		this.wmsDO = tmpwmsDO;
+		//this.wmsDO = tmpwmsDO;
+		setWmsDO(tmpwmsDO);
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
@@ -190,17 +191,18 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
 		String method = "InventoryWmsUpdateDomain.busiCheck";
-		final LogModel lm = LogModel.newLogModel(method);
-		logwms.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		//final LogModel lm = LogModel.newLogModel(method);
+		lm.addMetaData("method_busiCheck", method).addMetaData("start", startTime)
+				.toJson(true);
+		writeWmsUpdateLog(lm,false);
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
-		logwms.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("wmsGoodsId", wmsGoodsId)
-				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
-		
+		lm.addMetaData("endTime", endTime).addMetaData("wmsGoodsId", wmsGoodsId)
+				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true);
+		writeWmsUpdateLog(lm,false);
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
 		}
@@ -263,6 +265,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 								+ wmsGoodsDeductNum);
 						this.wmsDO.setTotalNumber(this.oritotalnum
 								+ wmsGoodsDeductNum);
+					}else {
+						return CreateInventoryResultEnum.NO_WMS_DATA;
 					}
 					if (wmsDO != null&&wmsDO.getTotalNumber() < 0) {
 						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
@@ -270,7 +274,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 				}else {
 					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isEnough:"+isEnough+",orileftnum:"+orileftnum+",oritotalnum="+oritotalnum+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
-					logwms.info(message);
+					//logwms.info(message);
+					lm.addMetaData("message", message);
+					writeWmsUpdateLog(lm,false);
 					return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 				}
 				//
@@ -507,6 +513,18 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;
+	}
+
+	public void setWmsDO(GoodsInventoryWMSDO wmsDO) {
+		this.wmsDO = wmsDO;
+	}
+
+	public void setGoodsList(List<GoodsInventoryDO> goodsList) {
+		this.goodsList = goodsList;
+	}
+	
+	public void setLm(LogModel lm) {
+		this.lm = lm;
 	}
 
 	

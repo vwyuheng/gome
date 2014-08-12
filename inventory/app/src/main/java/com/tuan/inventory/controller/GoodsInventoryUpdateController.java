@@ -307,7 +307,7 @@ public class GoodsInventoryUpdateController {
 		return adjustWmsDomain.makeResult(resEnum);
 	}
 	/***
-	 * http://localhost:882/rest/j/update/oradjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&tokenid=1&goodsId=1&id=0&totalnum=-1&type=2
+	 * http://localhost:882/rest/j/update/oradjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&tokenid=1&goodsId=1&id=0&totalnum=-1&type=2&limitStorage=1
 	 * 覆盖更新库存量，包括总量和剩余量
 	 * @param packet
 	 * @param goodsId
@@ -320,7 +320,7 @@ public class GoodsInventoryUpdateController {
 	 */
 	@RequestMapping(value = "/oradjusti", method = RequestMethod.POST)
 	public @ModelAttribute("outResp")GoodsInventoryUpdateResp overrideAdjustInventory(@ModelAttribute UpdateRequestPacket packet,
-			String tokenid,String goodsId,String id, String userId,String type, String totalnum, HttpServletRequest request,String goodsBaseId) {
+			String tokenid,String goodsId,String id, String userId,String type,String limitStorage, String totalnum, HttpServletRequest request,String goodsBaseId) {
 		
 		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
 		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
@@ -334,10 +334,11 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("id", id)
 		.addMetaData("userId", userId)
 		.addMetaData("type", type)
+		.addMetaData("limitStorage", limitStorage)
 		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("totalnum", totalnum);
 		GoodsdOverrideAdjustInventoryDomain adjustInventoryDomain = new GoodsdOverrideAdjustInventoryDomain(
-				packet,tokenid,goodsId, id,userId,type,totalnum, lm, messageRoot,goodsBaseId);
+				packet,tokenid,goodsId, id,userId,type,limitStorage,totalnum, lm, messageRoot,goodsBaseId);
 		adjustInventoryDomain
 		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
 		// 接口参数校验

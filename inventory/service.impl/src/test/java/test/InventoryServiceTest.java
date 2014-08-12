@@ -431,7 +431,7 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	public void testSaveBase() {
 		GoodsBaseInventoryDO	baseInventoryDO = new GoodsBaseInventoryDO();
 		baseInventoryDO.setGoodsBaseId(8000009999l);
-		baseInventoryDO.setBaseTotalCount(null);
+		baseInventoryDO.setBaseTotalCount(0);
 		baseInventoryDO.setBaseSaleCount(0);
 		goodsInventoryDomainRepository.saveGoodsBaseInventory(8000009999l, baseInventoryDO);
 	}

@@ -474,23 +474,24 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		logger.info(lm.setMethod(method).addMetaData("start", startTime)
 				.toJson(true));
 		Map<String, String> objMap = null;
+		GoodsInventoryWMSDO wmsdo=null;
 		try {
 			 objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
 							+ wmsGoodsId);
 			if (!CollectionUtils.isEmpty(objMap)) {
 				
-				return JSON.parseObject(JSON.toJSONString(objMap),
+				wmsdo= JSON.parseObject(JSON.toJSONString(objMap),
 						GoodsInventoryWMSDO.class);
 			}
 		} finally {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+			logger.info(lm.setMethod(method).addMetaData("wmsdo", wmsdo).addMetaData("endTime", endTime)
 					.addMetaData("runResult", runResult).toJson(true));
 		}
-		return null;
+		return wmsdo;
 	}
 
 	@Override

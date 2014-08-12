@@ -1756,7 +1756,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (wmsDO == null) {
+						if (wmsDO == null&&CollectionUtils.isEmpty(wmsInventoryList)&&CollectionUtils.isEmpty(selectionList)) {
 							logger.error(this.getClass()+"_create param invalid ,saveGoodsWmsInventory:wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA
@@ -1863,7 +1863,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (wmsDO == null&&CollectionUtils.isEmpty(selectionList)&&CollectionUtils.isEmpty(wmsInventoryList)) {
+						if (wmsDO == null) {
 							logger.error(this.getClass()+"_create param invalid ,batchUpdateGoodsWms:wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA

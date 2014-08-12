@@ -46,6 +46,7 @@ public enum CreateInventoryResultEnum {
 	NO_SELECTION       (1047, "选型信息不存在！"),
 	NO_RETORE       (1048, "新老商品id相同,无需还还库存！"),
 	HAD_RETORE_COMPLETED       (1049, "订单未支付占用库存超过了实际库存,并已还还完毕！"),
+	NO_SUPPORT_ADJUST       (1050, "由于调减量大于调整前剩余库存量,会导致销量剩余库存与总库存不平,故此情况不支持调整！"),
 	INVALID_LOG_PARAM				(1, 	"无效的日志");
 	/**商品库存*//*
 	ADD_INVENTORY_GOODS        (1, "商品总库存"),

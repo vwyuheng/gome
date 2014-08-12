@@ -126,6 +126,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				if(inventoryDO!=null&&inventoryDO.getLimitStorage()==1) {
 					this.preleftnum = inventoryDO.getLeftNumber();
 					this.pretotalnum = inventoryDO.getTotalNumber();
+					
 				}
 			}
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
@@ -219,24 +220,48 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					if (inventoryDO != null) {
 						goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
 						
-						if(afttotalnum == pretotalnum){
+						/*if(afttotalnum == pretotalnum){
 							return CreateInventoryResultEnum.SUCCESS;
 						}else if (afttotalnum > pretotalnum) { // 计算剩余库存
 							// 增量
 							int adjustnum = afttotalnum - pretotalnum;
 							// 剩余库存
 							aftleftnum = preleftnum + adjustnum;
-						}else{
-							//减量
-							int jiannum = pretotalnum - afttotalnum;
-							if(jiannum < preleftnum){
-								//剩余库存
-								aftleftnum = preleftnum - jiannum;
-							}else{
-								aftleftnum = 0;
+						}else{//减量
+							
+							if(preleftnum==0){//调整前剩余库=0时
+								//aftleftnum = afttotalnum;
+								//afttotalnum = afttotalnum+pretotalnum;
+								return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
+							}else if(afttotalnum<preleftnum){//调整后的总量小于调整前的剩余量时
+								//aftleftnum = afttotalnum;
+								//afttotalnum = afttotalnum+((inventoryDO.getGoodsSaleCount()!=null)?inventoryDO.getGoodsSaleCount():0);
+								return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
+							}else if(afttotalnum>=preleftnum){//调整后的总量大于等于调整前的剩余量
+								int jiannum = pretotalnum - afttotalnum;
+								if(jiannum < preleftnum){
+									//剩余库存
+									aftleftnum = preleftnum - jiannum;
+								}else{
+									aftleftnum = 0;
+								}
 							}
+						}*/
+						//先计算调整量[可能为正也可能为负]
+						int adjustnum = afttotalnum-pretotalnum;
+						if(adjustnum==0) {
+							return CreateInventoryResultEnum.SUCCESS;
+						}else if(adjustnum>0) {
+							// 剩余库存
+							aftleftnum = preleftnum + adjustnum;
+						}else { //调减
+							if((-adjustnum)>preleftnum) {
+								return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
+							}else {
+								aftleftnum = preleftnum + adjustnum;//此时adjustnum<0
+							}
+							
 						}
-						
 						// 调整后剩余库存数量
 						inventoryDO.setLeftNumber(aftleftnum);
 						// 调整商品总库存数量
@@ -287,10 +312,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					} 
 					
 					if (selectionInventory != null) {
-						//调整的总量
-						//int adjustnum = aftSelOrSupptotalnum - preselOrSupptotalnum;
-						//计算剩余库存调整后的数量量
-						//aftSelOrSuppleftnum = adjustnum + preselOrSuppleftnum;
 						//此时调整后数量检查
 						if(aftSelOrSuppleftnum<0) {
 							aftSelOrSuppleftnum = 0;

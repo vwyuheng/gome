@@ -235,38 +235,49 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			originLeftNumTmp = tmpInventory.getLeftNumber();
 		}
 		// 原始库存
-		this.originalGoodsInventory = originLeftNumTmp;
-		this.selectionDeductNum = deSelectionNum;
+		//this.originalGoodsInventory = originLeftNumTmp;
+		setOriginalGoodsInventory(originLeftNumTmp);
+		//this.selectionDeductNum = deSelectionNum;
+		setSelectionDeductNum(deSelectionNum);
 		this.suppliersDeductNum = deSuppliersNum;
 		//limitStorage = inventoryInfoDO.getLimitStorage();
 		int limitStorageTmp = tmpInventory.getLimitStorage();
 		
 		if(isSelection&&!isSupplier) {  //只包含选型的
-			this.goodsDeductNum = (selectionDeductNum);
+			//this.goodsDeductNum = (selectionDeductNum);
+			setGoodsDeductNum(selectionDeductNum);
 		}else if(isSupplier&&!isSelection) {  //只包含分店的
-			this.goodsDeductNum = (suppliersDeductNum);
+			//this.goodsDeductNum = (suppliersDeductNum);
+			setGoodsDeductNum(suppliersDeductNum);
 		}else if(isSupplier&&isSelection) {  //分店选型都有的
-			this.goodsDeductNum = (selectionDeductNum + suppliersDeductNum);
+			//this.goodsDeductNum = (selectionDeductNum + suppliersDeductNum);
+			setGoodsDeductNum((selectionDeductNum + suppliersDeductNum));
 		}else {
-			this.goodsDeductNum = (deductNum);
+			//this.goodsDeductNum = (deductNum);
+			setGoodsDeductNum(deductNum);
 		}
 		// 扣减库存并返回扣减标识,计算库存并
 		if (limitStorageTmp==1&&(originalGoodsInventory-goodsDeductNum) >= 0) { //限制库存商品
 			//this.isEnough = true;
-			limitStorage = limitStorageTmp;
+			//limitStorage = limitStorageTmp;
+			setLimitStorage(limitStorageTmp);
+			param.setLimitStorage(limitStorageTmp);
 			// 商品库存扣减后的量
-			limtStorgeDeNum = goodsDeductNum;
+			//limtStorgeDeNum = goodsDeductNum;
+			setLimtStorgeDeNum(goodsDeductNum);
 			tmpInventory.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); 
 			tmpInventory.setGoodsSaleCount(goodsDeductNum);
 			//this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); 
 			//inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
-			this.inventoryInfoDO  = tmpInventory;
+			//this.inventoryInfoDO  = tmpInventory;
+			setInventoryInfoDO(tmpInventory);
 		}else if(limitStorageTmp==0) { //非限制库存商品
 			//this.isEnough = true;
 			//此时要更新leftnum扣减量，以便累加销量
 			tmpInventory.setGoodsSaleCount(goodsDeductNum);
 			//inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
-			this.inventoryInfoDO  = tmpInventory;
+			//this.inventoryInfoDO  = tmpInventory;
+			setInventoryInfoDO(tmpInventory);
 		}else {
 			return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 		}
@@ -277,7 +288,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public CreateInventoryResultEnum busiCheck() {
 		//幂等性检查
 		if (!StringUtils.isEmpty(param.getOrderId())) { // if
-			this.orderId = param.getOrderId();
+			//this.orderId = param.getOrderId();
+			setOrderId(param.getOrderId());
 			this.idemptent = idemptent();
 			if (idemptent) {
 				String queueTag = goodsInventoryDomainRepository.queryToken(DLockConstants.DEDUCT_QUEUEID + "_"+ orderId);
@@ -310,13 +322,13 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				isSelection = true;
 			}
 			//查询商品所属的分店
-			List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
-							.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));
+			/*List<GoodsSuppliersModel> suppResult = goodsInventoryDomainRepository
+							.queryGoodsSuppliersListByGoodsId(Long.valueOf(param.getGoodsId()));*/
 			//这个逻辑比较清晰，首先若存在选型或分店的商品，则该商品所传参数中，选型或分店参数不能为空，否则校验不通过
 			//检查商品所属分店商品
-			if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
+			/*if(!CollectionUtils.isEmpty(suppResult)) { //若商品存在分店，则为分店商品，
 						isSupplier = true;
-					}
+					}*/
 			/*if(isSelection&&!isSupplier) {  //只包含选型的
 				if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
 					return CreateInventoryResultEnum.SELECTION_GOODS;
@@ -612,12 +624,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	// 初始化库存
 	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
-		this.goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+		//this.goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+		setGoodsId(Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId()));
 		if(StringUtils.isEmpty(param.getGoodsBaseId())&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
 			GoodsInventoryDO temp = this.goodsInventoryDomainRepository
 					.queryGoodsInventory(goodsId);
 			if(temp!=null) {
-				this.goodsBaseId = temp.getGoodsBaseId();
+				//this.goodsBaseId = temp.getGoodsBaseId();
+				setGoodsBaseId(temp.getGoodsBaseId());
 				if(goodsBaseId!=null&&goodsBaseId==0) {
 					// 初始化商品库存信息
 					CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
@@ -625,13 +639,15 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
 						temp = 	callGoodsInventoryDOResult.getBusinessResult();
 						if(temp!=null) {
-							this.goodsBaseId = temp.getGoodsBaseId();
+							//this.goodsBaseId = temp.getGoodsBaseId();
+							setGoodsBaseId(temp.getGoodsBaseId());
 						}
 					}
 				}
 			}
 		}else {
-			this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+			//this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+			setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
 		}
 		
 		// 初始化加分布式锁
@@ -705,8 +721,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					.getDescription());
 			if(!StringUtils.isEmpty(param.getUserId())) {
 				this.userId = (Long.valueOf(param.getUserId()));
+				updateActionDO.setUserId(userId);
 			}
-			updateActionDO.setUserId(userId);
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			if(!StringUtils.isEmpty(param.getOrderId())) {
@@ -717,10 +733,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
-			this.updateActionDO = null;
+			//this.updateActionDO = null;
+			setUpdateActionDO(null);
 			return false;
 		}
-		this.updateActionDO = updateActionDO;
+		//this.updateActionDO = updateActionDO;
+		setUpdateActionDO(updateActionDO);
 		return true;
 	}
 
@@ -757,7 +775,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				}else {
 					tmpInitGoodsBaseId = Long.valueOf(param.getGoodsBaseId());
 				}
-				goodsBaseId = tmpInitGoodsBaseId;
+				//goodsBaseId = tmpInitGoodsBaseId;
+				setGoodsBaseId(tmpInitGoodsBaseId);
 			}
 			queueDO.setGoodsBaseId(goodsBaseId);
 	        queueDO.setLimitStorage(limitStorage);
@@ -776,10 +795,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryQueueDO error" +e.getMessage()),false, e);
-			this.queueDO = null;
+			//this.queueDO = null;
+			setQueueDO(null);
 			return false;
 		}
-		this.queueDO = queueDO;
+		//this.queueDO = queueDO;
+		setQueueDO(queueDO);
 		return true;
 	}
 
@@ -859,5 +880,91 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public void setQueueKeyId(String queueKeyId) {
 		this.queueKeyId = queueKeyId;
 	}
+
+	public GoodsInventoryDO getInventoryInfoDO() {
+		return inventoryInfoDO;
+	}
+
+	public void setInventoryInfoDO(GoodsInventoryDO inventoryInfoDO) {
+		this.inventoryInfoDO = inventoryInfoDO;
+	}
+
+	public int getGoodsDeductNum() {
+		return goodsDeductNum;
+	}
+
+	public void setGoodsDeductNum(int goodsDeductNum) {
+		this.goodsDeductNum = goodsDeductNum;
+	}
+
+	public int getSelectionDeductNum() {
+		return selectionDeductNum;
+	}
+
+	public void setSelectionDeductNum(int selectionDeductNum) {
+		this.selectionDeductNum = selectionDeductNum;
+	}
+
+	public int getOriginalGoodsInventory() {
+		return originalGoodsInventory;
+	}
+
+	public void setOriginalGoodsInventory(int originalGoodsInventory) {
+		this.originalGoodsInventory = originalGoodsInventory;
+	}
+
+	public Long getGoodsBaseId() {
+		return goodsBaseId;
+	}
+
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public GoodsInventoryActionDO getUpdateActionDO() {
+		return updateActionDO;
+	}
+
+	public void setUpdateActionDO(GoodsInventoryActionDO updateActionDO) {
+		this.updateActionDO = updateActionDO;
+	}
+
+	public GoodsInventoryQueueDO getQueueDO() {
+		return queueDO;
+	}
+
+	public void setQueueDO(GoodsInventoryQueueDO queueDO) {
+		this.queueDO = queueDO;
+	}
+
+	public int getLimtStorgeDeNum() {
+		return limtStorgeDeNum;
+	}
+
+	public void setLimtStorgeDeNum(int limtStorgeDeNum) {
+		this.limtStorgeDeNum = limtStorgeDeNum;
+	}
+
+	public int getLimitStorage() {
+		return limitStorage;
+	}
+
+	public void setLimitStorage(int limitStorage) {
+		this.limitStorage = limitStorage;
+	}
+
+	public String getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(String orderId) {
+		this.orderId = orderId;
+	}
+	
+	
 
 }

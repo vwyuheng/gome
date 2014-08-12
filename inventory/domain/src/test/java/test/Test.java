@@ -11,6 +11,7 @@ import java.util.Map;
 import net.sf.json.JSONObject;
 
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 
 public class Test {
 	private static boolean isGoodsOf;
@@ -35,7 +36,7 @@ public class Test {
 	//	GoodsSelectionRelationDO do1 = (GoodsSelectionRelationDO) LogUtil.jsonToObject(objStr,GoodsSelectionRelationDO.class);
 		//System.out.println("test="+JsonUtils.convertStringToObject(JsonUtils.convertObjectToString(rdo), Map.class));
 		//System.out.println(JSONObject.fromObject(rdo));
-		System.out.println("11test11="+toHashMap(rdo));
+		//System.out.println("11test11="+toHashMap(rdo));
 //      GoodsSelectionRelationDO rdo1 = new GoodsSelectionRelationDO();
 //		
 //      rdo1.setId(1);
@@ -102,7 +103,13 @@ public class Test {
 		map.put("k", "2");*/
 		//jsonData.put("k", "1");
 		//jsonData.put("k", "2");
-		System.out.println(String.valueOf(-1));
+		//System.out.println(String.valueOf(-1));
+		
+		GoodsBaseInventoryDO	baseInventoryDO = new GoodsBaseInventoryDO();
+		//baseInventoryDO.setGoodsBaseId(8000009999l);
+		//baseInventoryDO.setBaseTotalCount(0);
+		//baseInventoryDO.setBaseSaleCount(0);
+		System.out.println("toHashMap="+toHashMap(baseInventoryDO));
 	}
 	
 	
