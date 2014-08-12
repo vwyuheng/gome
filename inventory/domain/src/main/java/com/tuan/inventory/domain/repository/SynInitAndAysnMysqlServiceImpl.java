@@ -2829,7 +2829,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											.getCode());
 						}
 						if (wmsDO == null&&CollectionUtils.isEmpty(wmsInventoryList)&&CollectionUtils.isEmpty(selectionList)) {
-							logger.error(this.getClass()+"_create param invalid ,wmsDO is null");
+							logger.error(this.getClass()+"_create param invalid ,saveGoodsWmsUpdateInventory,wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA
 											.getCode());
