@@ -235,7 +235,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
 			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
 			return new InventoryCallResult(failureResult.getResultCode(), 
-					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),queueIdParam);
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
 		}
 		
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){

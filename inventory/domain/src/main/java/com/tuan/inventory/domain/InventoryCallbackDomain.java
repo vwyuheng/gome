@@ -151,7 +151,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			lm.addMetaData("isRollback","ackInventory isRollback,start").addMetaData("isRollback[" + (isRollback+":"+goodsId) + "]", goodsId);
 			writeSysDeductLog(lm,false);
 			LockResult<String> lockResult = null;
-			String key = DLockConstants.ROLLBACK_LOCK_KEY+"_goodsId_" + goodsId;
+			String key = DLockConstants.JOB_HANDLER+"_goodsId_" + goodsId;
 			try {
 				lockResult = dLock.lockManualByTimes(key, DLockConstants.ROLLBACK_LOCK_TIME, DLockConstants.ROLLBACK_LOCK_RETRY_TIMES);
 				if (lockResult == null
