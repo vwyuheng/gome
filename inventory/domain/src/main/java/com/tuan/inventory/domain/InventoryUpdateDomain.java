@@ -468,7 +468,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	// 库存系统新增库存
-	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum updateInventory() {
 		logSysDeduct.info("扣减开始>"+",orderId="+orderId+",goodsId="+goodsId+",幂等状态:"+idemptent);
 		if(idemptent) {  //幂等控制，已处理成功
