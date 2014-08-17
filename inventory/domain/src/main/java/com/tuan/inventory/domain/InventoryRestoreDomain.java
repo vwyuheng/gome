@@ -31,7 +31,8 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
 
 public class InventoryRestoreDomain extends AbstractDomain {
-	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	//private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	protected static Log logger = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	///private static Log loghessian = LogFactory.getLog("INVENTORY.HESSIAN.LOG");
 	private LogModel lm;
 	private String clientIp;
@@ -114,6 +115,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			this.goodsBaseId = param.getGoodsBaseId();
 			limitStorage = param.getLimitStorage();
 			this.userId = (param!=null&&param.getUserId()!=null)?param.getUserId():0;
+			
 			// 业务检查前的预处理
 			CreateInventoryResultEnum preHander =	this.preGoodsCostHandler();
 			if(preHander!=null&&!(preHander.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
@@ -138,11 +140,10 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			if(tmp4newGoods==null) {
 				return CreateInventoryResultEnum.NO_GOODS;
 			}
-			/*if(baseDO==null) {
-				return CreateInventoryResultEnum.NO_GOODSBASE;
-			}*/
+			
 			//组装信息更新该老商品库	
 			return fillInventoryDO(adjustNum, inventoryDO4OldGoods,tmp4newGoods);
+			
 		} catch (Exception e) {
 			this.writeBusErrorLog(
 					lm.addMetaData("errorMsg",

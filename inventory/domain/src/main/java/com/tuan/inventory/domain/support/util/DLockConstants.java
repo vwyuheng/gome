@@ -32,6 +32,10 @@ public class DLockConstants {
 	
 	
 	//接口幂等key的前缀
+	//job处理tag锚点
+	public final static String JOB_HANDLER = "pending";
+	//job处理完成后更新的key
+	public final static String JOB_HANDLER_COMPLETED = "completed";
 	//库存扣减接口
 	public final static String DEDUCT_INVENTORY = "deduct";
 	//扣减成功后更新的key
@@ -55,6 +59,8 @@ public class DLockConstants {
 	public final static String UPDATE_WMS_DATA_SUCCESS = "upwmsdata_success";
 	//处理成功的标识
 	public final static String HANDLER_SUCCESS = "success";
-	//缓存的时长
+	//缓存的时长:单位是秒
 	public final static int IDEMPOTENT_DURATION_TIME = 60*15;
+	//job锚点的过期时长:单位是秒
+	public final static long JOB_LOCK_TIME = 3000L;
 }

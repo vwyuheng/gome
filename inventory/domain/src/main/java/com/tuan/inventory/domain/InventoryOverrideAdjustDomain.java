@@ -37,7 +37,8 @@ import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryOverrideAdjustDomain extends AbstractDomain {
-	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	//private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	protected static Log logger = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -118,7 +119,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 				return resultEnum;
 			}
-			
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
@@ -152,6 +152,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					this.preselOrSupptotalnum = suppliersInventory.getTotalNumber();
 				}
 			}
+			
 		} catch (Exception e) {
 			this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
@@ -187,7 +188,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	
 	
 	// 库存系统新增库存 正数：+ 负数：-
-	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum adjustInventory() {
 		String message = StringUtils.EMPTY;
 		try {
@@ -203,7 +203,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			//初始化加分布式锁
 			lm.addMetaData("adjustInventory","adjustInventory,start").addMetaData("goodsId", goodsId).addMetaData("type", type);
 			writeSysUpdateLog(lm,false);
-			LockResult<String> lockResult = null;
+			/*LockResult<String> lockResult = null;
 			String key = DLockConstants.ADJUST_LOCK_KEY+"_goodsId_" + goodsId+"_type_"+type;
 			try {
 				lockResult = dLock.lockManualByTimes(key, DLockConstants.ADJUSTK_LOCK_TIME, DLockConstants.ADJUST_LOCK_RETRY_TIMES);
@@ -215,7 +215,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 									goodsId).addMetaData("type",
 											type).addMetaData("errorMsg",
 													"adjustInventory dlock error"), true);
-				}
+				}*/
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					if (inventoryDO != null) {
 						goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
@@ -470,9 +470,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					}
 
 				}//else SUPPLIERS
-			} finally{
+			/*} finally{
 				dLock.unlockManual(key);
-			}
+			}*/
 			lm.addMetaData("result", "end");
 			writeSysUpdateLog(lm,false);
 		} catch (Exception e) {

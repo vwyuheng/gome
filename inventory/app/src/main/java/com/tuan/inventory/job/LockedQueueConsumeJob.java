@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.inventory.domain.InventoryLockedScheduledDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -19,6 +20,9 @@ public class LockedQueueConsumeJob extends AbstractJobRunnable {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;	
+	@Resource
+	private DLockImpl dLock;//分布式锁
+	
 	//默认间隔时长,与当前时间相比  单位:分种
 	private static final int DEFAULTPERIOD = 5;
 	private int period = 0;
@@ -42,6 +46,7 @@ public class LockedQueueConsumeJob extends AbstractJobRunnable {
 		//注入仓储对象
 		inventoryLockedScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryLockedScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryLockedScheduledDomain.setdLock(dLock);
 		//业务处理
 		inventoryLockedScheduledDomain.businessHandler();
 		long endTime = System.currentTimeMillis();

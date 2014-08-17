@@ -2,10 +2,13 @@ package com.tuan.inventory.service.impl;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.inventory.domain.InventoryAdjustDomain;
 import com.tuan.inventory.domain.InventoryCallbackDomain;
@@ -22,6 +25,7 @@ import com.tuan.inventory.domain.WaterfloodAdjustmentDomain;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.AdjustInventoryParam;
@@ -200,6 +204,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	/**
 	 * 更新库存
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult updateInventory(String clientIp,
 			String clientName, UpdateInventoryParam param, Message traceMessage) {
@@ -220,6 +225,19 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
 		inventoryUpdateDomain.setdLock(dLock);
+		String goodsId = "";
+		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
+			goodsId = param.getGoodsId();
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),queueIdParam);
+		}
+		
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -259,6 +277,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				    //  queueIdParam.setQueueKeyId(queueKeyId);
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -334,6 +353,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult adjustmentInventory(String clientIp,
 			String clientName, AdjustInventoryParam param, Message traceMessage) {
@@ -352,6 +372,18 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
 		inventoryAdjustDomain.setdLock(dLock);
+		String goodsId = "";
+		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
+			goodsId = param.getGoodsId();
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -389,6 +421,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryAdjustDomain.sendNotify();
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -532,6 +565,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult overrideAdjustInventory(String clientIp,
 			String clientName, OverrideAdjustInventoryParam param,
@@ -551,6 +585,18 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
 		inventoryAdjustDomain.setdLock(dLock);
+		String goodsId = "";
+		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
+			goodsId = param.getGoodsId();
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -588,6 +634,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryAdjustDomain.sendNotify();
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -668,6 +715,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	/**
 	 * 新增库存4商品改价
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult createInventory4GoodsCost(String clientIp,
 			String clientName, CreateInventory4GoodsCostParam param, Message traceMessage) {
@@ -687,6 +735,18 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryCreateDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
 		inventoryCreateDomain.setSequenceUtil(sequenceUtil);
 		inventoryCreateDomain.setdLock(dLock);
+		Long goodsId = 0L;
+		if(param != null && param.getGoodsId() != null){
+			goodsId = param.getGoodsId();
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -723,6 +783,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryCreateDomain.sendNotify();
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -734,6 +795,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult restoreInventory(String clientIp,
 			String clientName, RestoreInventoryParam param, Message traceMessage) {
@@ -752,6 +814,18 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryRestoreDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryRestoreDomain.setSequenceUtil(sequenceUtil);
 		inventoryRestoreDomain.setdLock(dLock);
+		Long goodsId = 0L;
+		if(param != null && param.getGoodsId() != null){
+			goodsId = param.getGoodsId();
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -789,6 +863,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				inventoryRestoreDomain.sendNotify();
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";

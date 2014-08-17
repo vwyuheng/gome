@@ -12,6 +12,9 @@ import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.tuan.core.common.lock.eum.LockResultCodeEnum;
+import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -22,6 +25,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -51,7 +55,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private List<GoodsInventoryQueueModel> inventoryRollback = null;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	
+	private DLockImpl dLock;//分布式锁
 	private InventoryScheduledParam param;
 	private final int delStatus = 4;
 	private List<GoodsSelectionDO> selectionInventoryList = null;
@@ -136,7 +140,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 
 	// 业务处理
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "unchecked" })
 	public CreateInventoryResultEnum businessHandler() {
 		try {
 			 CreateInventoryResultEnum  updateDataEnum = null;
@@ -162,7 +166,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 							}
 					}
-					
+					LockResult<String> lockResult = null;
+					String key = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+					try {
+						lockResult = dLock.lockManualByTimes(key, DLockConstants.JOB_LOCK_TIME, 5);
+						if (lockResult == null
+								|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+										.getCode()) {
+							logLock.info("Locked job inventorySendMsg dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
+						}
 					//再加载数据发送消息
 					if(loadMessageData(goodsId)) {
 						//发送消息:支付成功此时redis中数据是最新的故直接发送消息删除状态后再更新mysql数据库
@@ -184,6 +196,10 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						}
 					}else {
 						logLock.info("[loadMessageData,加载数据失败]goodsId:("+goodsId+")");
+					}
+					
+					} finally {
+						dLock.unlockManual(key);
 					}
 				}
 				
@@ -225,7 +241,15 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
 							}
 						}
-						//List<GoodsSelectionAndSuppliersResult> suppliersParamResult = ObjectUtils.toGoodsSelectionAndSuppliersList(rollbackModel.getSuppliersParam());
+						LockResult<String> lockResult = null;
+						String key = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+						try {
+							lockResult = dLock.lockManualByTimes(key, DLockConstants.JOB_LOCK_TIME, 5);
+							if (lockResult == null
+									|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+											.getCode()) {
+								logLock.info("Locked job inventoryRollback dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
+							}
 						//先回滚redis库存，
 						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, null)){
 							//当redis回滚成功后，立即删除缓存的队列状态，以免被重复处理
@@ -257,6 +281,10 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							}
 						}else {
 							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
+						}
+						
+						} finally {
+							dLock.unlockManual(key);
 						}
 					}
 				}
@@ -570,6 +598,10 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
+	}
+	
+	public void setdLock(DLockImpl dLock) {
+		this.dLock = dLock;
 	}
 
 }

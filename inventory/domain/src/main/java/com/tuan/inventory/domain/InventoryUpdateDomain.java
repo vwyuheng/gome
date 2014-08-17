@@ -475,17 +475,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			return CreateInventoryResultEnum.SUCCESS;
 		}
 		//初始化加分布式锁
-		LockResult<String> lockResult = null;
-		String key = DLockConstants.DEDUCT_LOCK_KEY+"_goodsId_" + goodsId;
+		//LockResult<String> lockResult = null;
+		//String key = DLockConstants.DEDUCT_LOCK_KEY+"_goodsId_" + goodsId;
 		try {
-			lockResult = dLock.lockManualByTimes(key, 5000L, 5);
+			/*lockResult = dLock.lockManualByTimes(key, 5000L, 5);
 			if (lockResult == null
 					|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 							.getCode()) {
 				writeSysDeductLog(
 						lm.setMethod("dLock").addMetaData("deduct lock errorMsg",
 								goodsId), true);
-			}
+			}*/
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
@@ -587,9 +587,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					lm.addMetaData("errorMsg",
 							"updateInventory error" + e.getMessage()),false, e);
 			return CreateInventoryResultEnum.SYS_ERROR;
-		}finally{
+		}/*finally{
 			dLock.unlockManual(key);
-		}
+		}*/
 		lm.addMetaData("result", "end");
 		writeSysDeductLog(lm,false);
 		//处理成返回前设置tag

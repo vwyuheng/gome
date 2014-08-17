@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.inventory.domain.InventoryConfirmScheduledDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -18,6 +19,9 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;	
+	@Resource
+	private DLockImpl dLock;//分布式锁
+	
 	@Override
 	public void run() {
 	
@@ -38,6 +42,7 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 		inventoryConfirmScheduledDomain
 				.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryConfirmScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryConfirmScheduledDomain.setdLock(dLock);
 		// 业务处理
 		inventoryConfirmScheduledDomain.businessHandler();
 		long endTime = System.currentTimeMillis();

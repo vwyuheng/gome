@@ -24,6 +24,7 @@ public enum ResultEnum {
 	INVALID_SELECTIONID     ("-12",	"无效的商品选型id"),
 	INCORRECT_UPDATE     ("-13",	"更改超过预期的记录数"),
 	INVALID_TYPE         ("-14", "无效的类型"),
+	DLOCK_ERROR("-98", "获取锁错误"),
 	DB_ERROR					("-99", 	"数据库错误"),
 	SYS_ERROR					("-100", 	"系统错误"),
 	SERVICE_REDIS_FALIURE					("-88", 	"redis数据库错误"),
@@ -296,6 +297,9 @@ public enum ResultEnum {
 		
 		if(code.equals("1050")){
 			return ResultEnum.NO_SUPPORT_ADJUST;
+		}
+		if(code.equals("-98")){
+			return ResultEnum.DLOCK_ERROR;
 		}
 		
 		if(code.equals("2")){

@@ -12,6 +12,9 @@ import org.eclipse.jetty.util.ConcurrentHashSet;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.tuan.core.common.lock.eum.LockResultCodeEnum;
+import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
@@ -20,6 +23,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
@@ -38,7 +42,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	private ConcurrentHashSet<GoodsInventoryQueueModel> listGoodsIdSends;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	
+	private DLockImpl dLock;//分布式锁
 	private List<GoodsSelectionDO> selectionInventoryList = null;
 	private List<GoodsInventoryWMSDO> wmsInventoryList = null;
 	private List<GoodsSuppliersDO> suppliersInventoryList = null;
@@ -83,7 +87,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	}
 
 	// 业务处理
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({ "static-access", "unchecked" })
 	public CreateInventoryResultEnum businessHandler() {
 
 		try {
@@ -123,7 +127,15 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 						}
 						
 					}
-					
+					LockResult<String> lockResult = null;
+					String key = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+					try {
+						lockResult = dLock.lockManualByTimes(key, DLockConstants.JOB_LOCK_TIME, 5);
+						if (lockResult == null
+								|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+										.getCode()) {
+							logConfirm.info("dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
+						}
 					if (loadMessageData(goodsId)) {  //更加商品id加载数据
 						// 随后才是发消息
 						if(!this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
@@ -159,6 +171,10 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 						}
 					}else {
 						logConfirm.info("[loadMessageData,加载数据失败]goodsId:("+goodsId+")");
+					}
+					
+					} finally {
+						dLock.unlockManual(key);
 					}
 				}
 
@@ -356,7 +372,28 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		}
 		
 	}
-	
+	//tag 锚点
+	public void setTag(String value) {
+		//根据key取已缓存的tokenid  
+		//String tagid = goodsInventoryDomainRepository.queryToken(DLockConstants.JOB_HANDLER + "_"+ value);
+		//if(StringUtils.isEmpty(tagid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
+			if(StringUtils.isNotEmpty(value)) {
+				//goodsInventoryDomainRepository.setTag(DLockConstants.JOB_HANDLER + "_"+ value, DLockConstants.JOB_DURATION_TIME, value);
+			}
+					
+		//}else {  //否则比对token值
+			/*if(StringUtils.isNotEmpty(goodsId)) {
+				if(goodsId.equalsIgnoreCase(tagid)) { //重复请求过来，判断是否处理是否完成
+				//根据处理成功后设置的tag来判断之前请求处理是否完成
+				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.JOB_HANDLER_COMPLETED + "_"+ goodsId);
+				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
+								return true;
+							}
+						}
+					}
+		}*/
+		//return false;
+	}
 	
 	/**
 	 * 校验id
@@ -379,6 +416,10 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 	public void setSynInitAndAysnMysqlService(
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
+	}
+	
+	public void setdLock(DLockImpl dLock) {
+		this.dLock = dLock;
 	}
 	
 	

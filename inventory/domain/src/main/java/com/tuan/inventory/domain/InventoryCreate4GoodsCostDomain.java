@@ -151,6 +151,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			this.goodsBaseId = param.getGoodsBaseId();
 			limitStorage = param.getLimitStorage();
 			this.userId = (param!=null&&param.getUserId()!=null)?param.getUserId():0;
+			
 			// 业务检查前的预处理
 			CreateInventoryResultEnum preHander =	this.preGoodsCostHandler();
 			if(preHander!=null&&!(preHander.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
