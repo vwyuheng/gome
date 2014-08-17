@@ -372,29 +372,6 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 		}
 		
 	}
-	//tag 锚点
-	public void setTag(String value) {
-		//根据key取已缓存的tokenid  
-		//String tagid = goodsInventoryDomainRepository.queryToken(DLockConstants.JOB_HANDLER + "_"+ value);
-		//if(StringUtils.isEmpty(tagid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
-			if(StringUtils.isNotEmpty(value)) {
-				//goodsInventoryDomainRepository.setTag(DLockConstants.JOB_HANDLER + "_"+ value, DLockConstants.JOB_DURATION_TIME, value);
-			}
-					
-		//}else {  //否则比对token值
-			/*if(StringUtils.isNotEmpty(goodsId)) {
-				if(goodsId.equalsIgnoreCase(tagid)) { //重复请求过来，判断是否处理是否完成
-				//根据处理成功后设置的tag来判断之前请求处理是否完成
-				String gettag = goodsInventoryDomainRepository.queryToken(DLockConstants.JOB_HANDLER_COMPLETED + "_"+ goodsId);
-				if(!StringUtils.isEmpty(gettag)&&gettag.equalsIgnoreCase(DLockConstants.HANDLER_SUCCESS)) { 
-								return true;
-							}
-						}
-					}
-		}*/
-		//return false;
-	}
-	
 	/**
 	 * 校验id
 	 * @param id
