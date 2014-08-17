@@ -110,6 +110,8 @@ public enum CreateInventoryResultEnum {
 				return NO_WMS_DATA;
 			case -88:
 				return SERVICE_REDIS_FALIURE;
+			case -98:
+				return DLOCK_ERROR;
 			case -99:
 				return DB_ERROR;
 			case -100:
