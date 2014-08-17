@@ -159,12 +159,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 					long queueId = 0;
 					if(queueModel!=null) {
 						 goodsId = queueModel.getGoodsId()!=null?queueModel.getGoodsId():0;
-						 queueId = queueModel.getId()!=null?queueModel.getId():0;
-						 if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(queueModel))) {
-								logLock.info("[将队列状态标记为删除及删除缓存的队列状态失败!],queueId:("+queueId+")!!!");
-							}else {
-								//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
-							}
+						 queueId = queueModel.getId()!=null?queueModel.getId():0;	
 					}
 					LockResult<String> lockResult = null;
 					String key = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
@@ -174,6 +169,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 										.getCode()) {
 							logLock.info("Locked job inventorySendMsg dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
+						}
+					 if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(queueModel))) {
+							logLock.info("[将队列状态标记为删除及删除缓存的队列状态失败!],queueId:("+queueId+")!!!");
+						}else {
+							//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 						}
 					//再加载数据发送消息
 					if(loadMessageData(goodsId)) {

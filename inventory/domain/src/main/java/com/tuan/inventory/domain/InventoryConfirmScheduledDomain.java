@@ -107,7 +107,16 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 						//long goodsBaseId = queueModel.getGoodsBaseId();
 						 queueId = queueModel.getId()!=null?queueModel.getId():0;
 					}
-					
+					//增加分布式锁
+					LockResult<String> lockResult = null;
+					String key = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+					try {
+						lockResult = dLock.lockManualByTimes(key, DLockConstants.JOB_LOCK_TIME, 5);
+						if (lockResult == null
+								|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
+										.getCode()) {
+							logConfirm.info("dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
+						}
 					//当确保redis中数据是最新的数据后,第一件事应该就是将队列状态标记删除以保证不会被重复处理
 					if(this.verifyId(queueId)) {
 						if(!this.markDelete(queueId,JSON.toJSONString(queueModel))) {
@@ -127,15 +136,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 						}
 						
 					}
-					LockResult<String> lockResult = null;
-					String key = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
-					try {
-						lockResult = dLock.lockManualByTimes(key, DLockConstants.JOB_LOCK_TIME, 5);
-						if (lockResult == null
-								|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-										.getCode()) {
-							logConfirm.info("dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
-						}
+					
 					if (loadMessageData(goodsId)) {  //更加商品id加载数据
 						// 随后才是发消息
 						if(!this.sendNotify()) {  //只有消息发成功后才进行队列的标记删除动作
