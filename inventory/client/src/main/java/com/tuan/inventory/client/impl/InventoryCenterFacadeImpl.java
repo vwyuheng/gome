@@ -139,10 +139,11 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 		return goodsInventoryUpdate.restoreInventory(clientIp, clientName, param, traceMessage);
 		}
 	@Override
-	public InventoryCallResult updateInventory4Lottery(String clientIp,
+	public InventoryCallResult incrGoodsSaleCount(String clientIp,
 			String clientName, UpdateLotteryInventoryParam param,
 			Message traceMessage) {
-		return goodsInventoryUpdate.updateInventory4Lottery(clientIp, clientName, param, traceMessage);
+		return goodsInventoryUpdate.incrGoodsSaleCount(clientIp, clientName, param, traceMessage);
+
 	}
 	public GoodsInventoryQueryService getGoodsInventoryQuery() {
 		return goodsInventoryQuery;

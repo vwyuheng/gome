@@ -155,6 +155,6 @@ public interface GoodsInventoryUpdateService {
 	 * @return
 	 */
 	@ProductCode(code = "00011", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
-	InventoryCallResult updateInventory4Lottery(
+	InventoryCallResult incrGoodsSaleCount(
 			final String clientIp, final String clientName,final UpdateLotteryInventoryParam param,Message traceMessage);
 }

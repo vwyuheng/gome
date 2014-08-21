@@ -232,6 +232,7 @@ public interface InventoryCenterFacade {
 	 * @param traceMessage
 	 * @return
 	 */
-	InventoryCallResult updateInventory4Lottery(
+
+	InventoryCallResult incrGoodsSaleCount(
 			final String clientIp, final String clientName,final UpdateLotteryInventoryParam param,Message traceMessage);
 }

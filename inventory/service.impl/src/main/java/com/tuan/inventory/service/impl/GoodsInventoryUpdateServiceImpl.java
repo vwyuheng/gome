@@ -880,7 +880,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public InventoryCallResult updateInventory4Lottery(String clientIp,
+	public InventoryCallResult incrGoodsSaleCount(String clientIp,
 			String clientName, UpdateLotteryInventoryParam param,
 			Message traceMessage) {
 		long startTime = System.currentTimeMillis();

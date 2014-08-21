@@ -366,7 +366,8 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		packet.setTraceRootId(UUID.randomUUID().toString());
 		Message traceMessage = JobUtils.makeTraceMessage(packet);
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
-		goodsInventoryUpdateService.updateInventory4Lottery(clientIP, clientName, param, traceMessage);
+		goodsInventoryUpdateService.incrGoodsSaleCount(clientIP, clientName, param, traceMessage);
+
 	}
 	
 	
