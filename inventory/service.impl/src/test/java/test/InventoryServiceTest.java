@@ -30,7 +30,9 @@ import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
+import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
@@ -350,6 +352,22 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
 		goodsInventoryUpdateService.updateInventory(clientIP, clientName, param, traceMessage);
 	}
+	@Test
+	public void testupdateInventory4Lottery() {
+		UpdateLotteryInventoryParam param = new UpdateLotteryInventoryParam();
+		
+		param.setGoodsId(500255);
+		//param.setLimitStorage(1);
+		param.setSaleCount(1);;
+		param.setObjectId(1);
+		param.setGoodsBaseId(8000000500255l);
+		RequestPacket packet = new RequestPacket();
+		packet.setTraceId(UUID.randomUUID().toString());
+		packet.setTraceRootId(UUID.randomUUID().toString());
+		Message traceMessage = JobUtils.makeTraceMessage(packet);
+		TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+		goodsInventoryUpdateService.updateInventory4Lottery(clientIP, clientName, param, traceMessage);
+	}
 	
 	
 	
@@ -457,10 +475,10 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			param.setPreGoodsId(554842l);
 			param.setLimitStorage(1);*/
 			param.setTokenid("1");
-			param.setGoodsBaseId(8000000555751l);
-			param.setGoodsId(555754l);
-			param.setPreGoodsId(555751l);
-			param.setLimitStorage(0);
+			param.setGoodsBaseId(8000000555700l);
+			param.setGoodsId(555712l);
+			param.setPreGoodsId(555713l);
+			param.setLimitStorage(1);
 			
 			
 			RequestPacket packet = new RequestPacket();
@@ -470,6 +488,44 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
 			System.out.println("11param="+JsonUtils.convertObjectToString(param));
 			InventoryCallResult result = goodsInventoryUpdateService.createInventory4GoodsCost(clientIP, clientName, param, traceMessage);
+			System.out.println(" result="+ result);
+			
+		}
+		//改价测试	
+		@Test
+		public void testRestoreInventory() {
+			/*CreateInventory4GoodsCostParam param = new CreateInventory4GoodsCostParam();
+			
+			Long goodsId = sequenceUtil.getSequence(SEQNAME.seq_inventory);
+			// String goodsId = "2001";
+			 System.out.println("goodsId="+goodsId);
+			param.setGoodsId(goodsId);
+			param.setUserId(2l);
+			param.setPreGoodsId(856851l);
+			param.setGoodsBaseId(8000000856851l);
+			
+			param.setLimitStorage(1);*/
+			RestoreInventoryParam param = new RestoreInventoryParam();
+			/*param.setGoodsBaseId(8000000554836l);
+			param.setGoodsId(554859l);
+			param.setPreGoodsId(554842l);
+			param.setLimitStorage(1);*/
+			param.setOrderIds("40880003450");
+			param.setUserId(100000664l);
+			param.setGoodsBaseId(8000000555700l);
+			param.setGoodsId(555712l);
+			param.setPreGoodsId(555713l);
+			param.setType("2");
+			param.setLimitStorage(0);
+			
+			
+			RequestPacket packet = new RequestPacket();
+			packet.setTraceId(UUID.randomUUID().toString());
+			packet.setTraceRootId(UUID.randomUUID().toString());
+			Message traceMessage = JobUtils.makeTraceMessage(packet);
+			TraceMessageUtil.traceMessagePrintS(traceMessage, MessageTypeEnum.CENTS, "Inventory", "test", "test");
+			System.out.println("11param="+JsonUtils.convertObjectToString(param));
+			InventoryCallResult result = goodsInventoryUpdateService.restoreInventory(clientIP, clientName, param, traceMessage);
 			System.out.println(" result="+ result);
 			
 		}
@@ -535,4 +591,5 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			
 			return updateActionDO;
 		}
+		
 }

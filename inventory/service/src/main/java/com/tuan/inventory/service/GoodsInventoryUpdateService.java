@@ -10,6 +10,7 @@ import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
@@ -145,4 +146,15 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00010", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult restoreInventory(
 			final String clientIp, final String clientName,final RestoreInventoryParam param,Message traceMessage);
+	/**
+	 * 抽奖商品扣减接口
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	@ProductCode(code = "00011", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	InventoryCallResult updateInventory4Lottery(
+			final String clientIp, final String clientName,final UpdateLotteryInventoryParam param,Message traceMessage);
 }

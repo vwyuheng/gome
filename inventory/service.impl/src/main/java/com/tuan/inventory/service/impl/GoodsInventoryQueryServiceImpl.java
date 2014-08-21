@@ -772,7 +772,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		writeBusInitLog(lm,false);
 		LockResult<String> lockResult = null;
 		CreateInventoryResultEnum resultEnum = null;
-		String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
+		String key = DLockConstants.JOB_HANDLER+"_goodsId_" + goodsId;
 			try {
 				lockResult = dLock.lockManualByTimes(key, 5000L, 5);
 				if (lockResult == null
@@ -805,7 +805,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					writeBusInitLog(lm,false);
 					LockResult<String> lockResult = null;
 					CreateInventoryResultEnum resultEnum = null;
-					String key = DLockConstants.INIT_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
+					String key = DLockConstants.JOB_HANDLER+"_wmsGoodsId_" + wmsGoodsId;
 					try {
 						lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
 						if (lockResult == null

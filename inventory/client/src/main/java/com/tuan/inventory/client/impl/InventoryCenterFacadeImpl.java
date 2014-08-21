@@ -18,6 +18,7 @@ import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
@@ -137,7 +138,12 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 			String clientName, RestoreInventoryParam param, Message traceMessage) {
 		return goodsInventoryUpdate.restoreInventory(clientIp, clientName, param, traceMessage);
 		}
-	
+	@Override
+	public InventoryCallResult updateInventory4Lottery(String clientIp,
+			String clientName, UpdateLotteryInventoryParam param,
+			Message traceMessage) {
+		return goodsInventoryUpdate.updateInventory4Lottery(clientIp, clientName, param, traceMessage);
+	}
 	public GoodsInventoryQueryService getGoodsInventoryQuery() {
 		return goodsInventoryQuery;
 	}
@@ -152,6 +158,7 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 			GoodsInventoryUpdateService goodsInventoryUpdate) {
 		this.goodsInventoryUpdate = goodsInventoryUpdate;
 	}
+	
 	
 	
 

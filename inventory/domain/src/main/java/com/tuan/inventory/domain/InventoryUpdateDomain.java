@@ -10,9 +10,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
-import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -345,6 +343,12 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.SEL_SUPP_GOODS;
 				}
 			}*/
+			if (isSelection) { // 只包含选型的
+				if (CollectionUtils.isEmpty(param.getGoodsSelection())) {
+					return CreateInventoryResultEnum.SELECTION_GOODS;
+				}
+			}
+				
 			//校验商品选型id
 			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) {
 				
@@ -653,8 +657,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
 		writeBusInitLog(lm, false);
-		LockResult<String> lockResult = null;
 		CreateInventoryResultEnum resultEnum = null;
+		/*LockResult<String> lockResult = null;
+		
 		String key = DLockConstants.INIT_LOCK_KEY + "_goodsId_" + goodsId;
 		try {
 			lockResult = dLock.lockManualByTimes(key, 5000L, 5);
@@ -664,16 +669,16 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				writeBusInitLog(
 						lm.setMethod("dLock").addMetaData("errorMsg", goodsId),
 						false);
-			}
+			}*/
 			InventoryInitDomain create = new InventoryInitDomain(goodsId, lm);
 			// 注入相关Repository
 		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			resultEnum = create.businessExecute();
-		} finally {
+		/*} finally {
 			dLock.unlockManual(key);
-		}
+		}*/
 		lm.addMetaData("result", resultEnum);
 		lm.addMetaData("result", "end");
 		writeBusInitLog(lm, false);

@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
@@ -143,6 +144,8 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				writeSysDeductLog(lm,true);
 				if(!StringUtils.isEmpty(member)) {
 					this.goodsInventoryDomainRepository.markQueueStatus(member, (upStatusNum));
+				}else if(queueDO!=null){
+					this.goodsInventoryDomainRepository.markQueueStatus(JSON.toJSONString(queueDO), (upStatusNum));
 				}
 				lm.addMetaData("markqueue end isConfirm:["+isConfirm+",key:"+(key) + "]", key).addMetaData("member[" + (member)+",upStatusNum:"+upStatusNum + "]", member);
 				writeSysDeductLog(lm,true);
@@ -198,9 +201,16 @@ public class InventoryCallbackDomain extends AbstractDomain {
 						lm.addMetaData("markqueue start isRollback:[" +isRollback+",key:"+ (key) + "]", key).addMetaData("member[" + (member) + "]", member);
 						writeSysDeductLog(lm,true);
 						if (!StringUtils.isEmpty(member)) {
-							this.goodsInventoryDomainRepository
+							if(!this.goodsInventoryDomainRepository
 									.markQueueStatusAndDeleteCacheMember(
-											member, (upStatusNum), key);
+											member, (upStatusNum), key)){
+								if(queueDO!=null) {
+									this.goodsInventoryDomainRepository
+									.markQueueStatusAndDeleteCacheMember(
+											JSON.toJSONString(queueDO), (upStatusNum), key);
+								}
+								
+							}
 						}
 						lm.addMetaData("markqueue end isRollback:["+isRollback+",key:"+ (key) + "]", key).addMetaData("member[" + (member)+",upStatusNum:"+upStatusNum + "]", member);
 						writeSysDeductLog(lm,true);

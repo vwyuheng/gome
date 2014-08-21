@@ -108,7 +108,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 
 						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
-						logLock.info("订单接口返回状态statEnum:"+statEnum+",订单id:"+model.getOrderId());
+						
 						if(statEnum!=null) {
 							long endTime = System.currentTimeMillis();
 							String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
@@ -121,6 +121,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 									this.inventorySendMsg.add(model);
 							}else {
 									this.inventoryRollback.add(model);
+							}
+						}else {  //statEnum==null
+							logLock.info("订单接口返回状态statEnum:"+statEnum+",订单id:"+model.getOrderId()+",队列详细信息:"+JSON.toJSONString(model));
+							if(!this.markDelete(model.getId(),JSON.toJSONString(model))) {
+								logLock.info("[订单不存在的队列状态标记删除失败!],涉及队列queueId:("+model.getId()+")!!!");
 							}
 						}
 					}
@@ -170,7 +175,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 										.getCode()) {
 							logLock.info("Locked job inventorySendMsg dLock goodsId:"+goodsId+",errorMsg:"+lockResult.getDescription());
 						}
-					 if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(queueModel))) {
+
+					 if(!this.markDelete(queueId,JSON.toJSONString(queueModel))) {
 							logLock.info("[将队列状态标记为删除及删除缓存的队列状态失败!],queueId:("+queueId+")!!!");
 						}else {
 							//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
@@ -235,7 +241,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							} 
 							//处理这部分队列
 							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
-							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
+							if(!this.markDelete(queueId,JSON.toJSONString(rollbackModel))) {
 								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
 							}else {
 								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
@@ -253,7 +259,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						//先回滚redis库存，
 						if(this.rollback(orderId,goodsId, goodsBaseId,limitStorage,deductNum, selectionParamResult, null)){
 							//当redis回滚成功后，立即删除缓存的队列状态，以免被重复处理
-							if(!this.markDeleteAfterSendMsgSuccess(queueId,JSON.toJSONString(rollbackModel))) {
+							if(!this.markDelete(queueId,JSON.toJSONString(rollbackModel))) {
 								logLock.info("[库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
 							}else {
 								//logLock.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
@@ -451,7 +457,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	}
 	
 	// 发送消息成功后将队列标记删除:逻辑删除
-	public boolean markDeleteAfterSendMsgSuccess(long queueId,String queuemember) {
+	public boolean markDelete(long queueId,String queuemember) {
 		try {
 			if (verifyId(queueId)) {
 				String member = this.goodsInventoryDomainRepository

@@ -15,6 +15,7 @@ import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
@@ -223,4 +224,14 @@ public interface InventoryCenterFacade {
 	 */
 	InventoryCallResult restoreInventory(
 			final String clientIp, final String clientName,final RestoreInventoryParam param,Message traceMessage);
+	/**
+	 * 抽奖商品扣减接口
+	 * @param clientIp
+	 * @param clientName
+	 * @param param
+	 * @param traceMessage
+	 * @return
+	 */
+	InventoryCallResult updateInventory4Lottery(
+			final String clientIp, final String clientName,final UpdateLotteryInventoryParam param,Message traceMessage);
 }

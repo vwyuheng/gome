@@ -16,6 +16,7 @@ import com.tuan.inventory.domain.InventoryCreate4GoodsCostDomain;
 import com.tuan.inventory.domain.InventoryCreateDomain;
 import com.tuan.inventory.domain.InventoryOverrideAdjustDomain;
 import com.tuan.inventory.domain.InventoryRestoreDomain;
+import com.tuan.inventory.domain.InventoryUpdate4LotteryDomain;
 import com.tuan.inventory.domain.InventoryUpdateDomain;
 import com.tuan.inventory.domain.InventoryWmsCreateDomain;
 import com.tuan.inventory.domain.InventoryWmsDataUpdateDomain;
@@ -36,6 +37,7 @@ import com.tuan.inventory.model.param.CreaterInventoryParam;
 import com.tuan.inventory.model.param.OverrideAdjustInventoryParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
+import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.param.rest.QueueKeyIdParam;
@@ -236,6 +238,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
 			return new InventoryCallResult(failureResult.getResultCode(), 
 					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+
 		}
 		
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
@@ -874,6 +877,88 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public InventoryCallResult updateInventory4Lottery(String clientIp,
+			String clientName, UpdateLotteryInventoryParam param,
+			Message traceMessage) {
+		long startTime = System.currentTimeMillis();
+		String method = "GoodsInventoryUpdateService.updateInventory4Lottery";
+		final LogModel lm = LogModel.newLogModel(method);
+		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
+				.addMetaData("param", param.toString()).addMetaData("start",startTime);
+		logSaveAndUpdate.info(lm.toJson(true));
+		TraceMessageUtil.traceMessagePrintS(
+				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory4Lottery");
+		//构建领域对象
+		final InventoryUpdate4LotteryDomain inventoryUpdateDomain = new InventoryUpdate4LotteryDomain(clientIp, clientName, param, lm);
+		//构建库存生成的队列id对象
+		final QueueKeyIdParam queueIdParam = new QueueKeyIdParam();
+		//注入仓储对象
+		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
+		inventoryUpdateDomain.setdLock(dLock);
+		String goodsId = "";
+		if(param != null &&param.getGoodsId()!=0){
+			goodsId = String.valueOf(param.getGoodsId());
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
+		
+		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
+			@Override
+			public TuanCallbackResult executeParamsCheck() {
+				CreateInventoryResultEnum resultEnum = inventoryUpdateDomain.checkParam();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeBusiCheck() {
+				CreateInventoryResultEnum resEnum = inventoryUpdateDomain.busiCheck();
+				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resEnum.getCode(), null,resEnum.getDescription());
+				}
+			}
+
+			@Override
+			public TuanCallbackResult executeAction() {
+				CreateInventoryResultEnum resultEnum = inventoryUpdateDomain.updateInventory();
+				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
+					queueIdParam.setQueueKeyId(inventoryUpdateDomain.getQueueKeyId());
+					return TuanCallbackResult.success();
+				}else{
+					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
+				}
+			}
+
+			@Override
+			public void executeAfter() {}
+		});
+		dLock.unlockManual(lockKey);
+		long endTime = System.currentTimeMillis();
+		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+				+ "milliseconds(毫秒)执行完成!";
+		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
+		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
+		.addMetaData("goodsId", inventoryUpdateDomain.getGoodsId()).addMetaData("end", endTime);
+		logSaveAndUpdate.info(lm.toJson(true));
+		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
+		return new InventoryCallResult(result.getResultCode(), 
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),queueIdParam);
 	}
 	
 	

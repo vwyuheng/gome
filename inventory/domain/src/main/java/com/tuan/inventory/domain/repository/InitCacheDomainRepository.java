@@ -81,7 +81,7 @@ public class InitCacheDomainRepository {
 				rsrDo.setTotalNumber(selection.getTotalNumber());
 				rsrDo.setLimitStorage(selection.getLimitStorage());
 				rsrDo.setSuppliersSubId(selection.getSuppliersSubId());
-				rsrDo.setGoodsId(goodsId);
+				rsrDo.setGoodsId(selection.getGoodId()!=null?selection.getGoodId().longValue():goodsId);
 				result.add(rsrDo);
 			}
 		}

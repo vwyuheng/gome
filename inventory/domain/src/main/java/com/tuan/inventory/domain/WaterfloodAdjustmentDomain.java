@@ -376,9 +376,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				//初始化加分布式锁
 				lm.addMetaData("WaterfloodAdjustmentDomain initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
 				writeBusInitLog(lm,false);
-				LockResult<String> lockResult = null;
 				CreateInventoryResultEnum resultEnum = null;
-				String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
+				LockResult<String> lockResult = null;
+				
+				String key = DLockConstants.JOB_HANDLER+"_goodsId_" + goodsId;
 				try {
 					lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
 					if (lockResult == null

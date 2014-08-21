@@ -778,9 +778,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 										if(!CollectionUtils.isEmpty(selList)) {
 											for(GoodsSelectionDO selDO:selList) {
 												if(selDO.getId()!=null&&selDO.getId()>0) {
-													//Long ack =
+													//将商品对应的选型id关系清除
 													goodsInventoryDomainRepository.clearWmsSelRelation(goodsId,
 															String.valueOf(selDO.getId()));
+													//删除redis中保存的选型信息
+													
 												}
 												
 											}

@@ -12,9 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
-import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -23,7 +21,6 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
-import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -432,7 +429,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			return notifyParam;
 		}
 		//初始化库存
-		@SuppressWarnings("unchecked")
+		//@SuppressWarnings("unchecked")
 		public CreateInventoryResultEnum initCheck() {
 			this.fillParam();
 			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
@@ -460,8 +457,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//初始化加分布式锁
 			lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
 			writeBusInitLog(lm,false);
-			LockResult<String> lockResult = null;
 			CreateInventoryResultEnum resultEnum = null;
+			/*LockResult<String> lockResult = null;
+			
 			String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
 			try {
 				lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
@@ -471,16 +469,16 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					writeBusInitLog(
 							lm.setMethod("dLock").addMetaData("errorMsg",
 									goodsId), false);
-				}
+				}*/
 				InventoryInitDomain create = new InventoryInitDomain(goodsId,
 						lm);
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				resultEnum = create.businessExecute();
-			}finally{
+			/*}finally{
 				dLock.unlockManual(key);
-			}
+			}*/
 			lm.addMetaData("result", resultEnum);
 			lm.addMetaData("result", "end");
 			writeBusInitLog(lm,false);

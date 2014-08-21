@@ -52,10 +52,24 @@
 		<url-pattern>/job/*</url-pattern>
     </servlet-mapping>
     
+    <!-- dubbo的dispatcherServlet -->
+
+	<servlet>
+		<servlet-name>dubbo</servlet-name>
+		<servlet-class>com.alibaba.dubbo.remoting.http.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>dubbo</servlet-name>
+		<!-- <url-pattern>/*</url-pattern> -->
+		<url-pattern>/hessian/*</url-pattern>
+	</servlet-mapping>
+	<!-- 	
+	项目web容器中没有上下文路径。此时，这个值为hessian <url-pattern>/hessian/*</url-pattern> -->
      <servlet>
 		<servlet-name>remoting</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-		<load-on-startup>3</load-on-startup>
+		<load-on-startup>4</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>remoting</servlet-name>

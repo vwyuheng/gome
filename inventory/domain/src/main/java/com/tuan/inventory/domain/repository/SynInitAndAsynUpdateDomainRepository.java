@@ -129,8 +129,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDo==null) {
 						//将商品id set到选型中
 						srDO.setGoodsId(goodsId);
-						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
+						
 						this.saveGoodsSelection(srDO);
 					}/*else {//TODO 初始化时无需更新选型数据
 						this.updateGoodsSelection(srDO);
@@ -264,7 +263,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 			for (GoodsSelectionDO srDO : selectionDOList) { // for
 				if (srDO.getId() > 0) { // if选型
 					//将商品id set到选型中
-					srDO.setGoodsId(goodsId);
+					srDO.setGoodsId(goodsId); //@20140814注释调了这个商品id
 					this.updateGoodsSelection(srDO);
 				}
 				
@@ -332,8 +331,6 @@ public class SynInitAndAsynUpdateDomainRepository {
 					GoodsSuppliersDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(suppliersId);
 					if(tmpDO==null) {
 						sDO.setGoodsId(goodsId);
-						//sDO.setTotalNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getTotalNumber());
-						//sDO.setLeftNumber(sDO.getLimitStorage()==0?Integer.MAX_VALUE:sDO.getLeftNumber());
 						this.saveGoodsSuppliers(sDO);
 					}
 					

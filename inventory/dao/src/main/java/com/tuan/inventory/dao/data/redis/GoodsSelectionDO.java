@@ -23,6 +23,7 @@ public class GoodsSelectionDO extends TuanBaseDO{
 	private long suppliersSubId; 	// 分店ID（当商品指定分店同时有配型时此值为分店ID并且suppliers_id为商品所属商家ID）
 	private long suppliersInventoryId; //商家库存表ID(FK)
 	private String wmsGoodsId;  //物流编码
+	private String name;  //物流商品名称
 	public Long getId() {
 		return id;
 	}

@@ -12,9 +12,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
-import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -123,7 +121,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				if(inventoryDO!=null&&inventoryDO.getLimitStorage()==1) {
+				if(inventoryDO!=null&&limitStorage==1) {
 					this.preleftnum = inventoryDO.getLeftNumber();
 					this.pretotalnum = inventoryDO.getTotalNumber();
 					
@@ -203,53 +201,15 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			//初始化加分布式锁
 			lm.addMetaData("adjustInventory","adjustInventory,start").addMetaData("goodsId", goodsId).addMetaData("type", type);
 			writeSysUpdateLog(lm,false);
-			/*LockResult<String> lockResult = null;
-			String key = DLockConstants.ADJUST_LOCK_KEY+"_goodsId_" + goodsId+"_type_"+type;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.ADJUSTK_LOCK_TIME, DLockConstants.ADJUST_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					writeSysUpdateLog(
-							lm.setMethod("adjustInventory").addMetaData("goodsId",
-									goodsId).addMetaData("type",
-											type).addMetaData("errorMsg",
-													"adjustInventory dlock error"), true);
-				}*/
+			
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					if (inventoryDO != null) {
 						goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
 						
-						/*if(afttotalnum == pretotalnum){
-							return CreateInventoryResultEnum.SUCCESS;
-						}else if (afttotalnum > pretotalnum) { // 计算剩余库存
-							// 增量
-							int adjustnum = afttotalnum - pretotalnum;
-							// 剩余库存
-							aftleftnum = preleftnum + adjustnum;
-						}else{//减量
-							
-							if(preleftnum==0){//调整前剩余库=0时
-								//aftleftnum = afttotalnum;
-								//afttotalnum = afttotalnum+pretotalnum;
-								return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
-							}else if(afttotalnum<preleftnum){//调整后的总量小于调整前的剩余量时
-								//aftleftnum = afttotalnum;
-								//afttotalnum = afttotalnum+((inventoryDO.getGoodsSaleCount()!=null)?inventoryDO.getGoodsSaleCount():0);
-								return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
-							}else if(afttotalnum>=preleftnum){//调整后的总量大于等于调整前的剩余量
-								int jiannum = pretotalnum - afttotalnum;
-								if(jiannum < preleftnum){
-									//剩余库存
-									aftleftnum = preleftnum - jiannum;
-								}else{
-									aftleftnum = 0;
-								}
-							}
-						}*/
+						
 						//先计算调整量[可能为正也可能为负]
 						int adjustnum = afttotalnum-pretotalnum;
-						if(adjustnum==0) {
+						if(adjustnum==0&&limitStorage==inventoryDO.getLimitStorage()) {
 							return CreateInventoryResultEnum.SUCCESS;
 						}else if(adjustnum>0) {
 							// 剩余库存
@@ -470,9 +430,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					}
 
 				}//else SUPPLIERS
-			/*} finally{
-				dLock.unlockManual(key);
-			}*/
+			
 			lm.addMetaData("result", "end");
 			writeSysUpdateLog(lm,false);
 		} catch (Exception e) {
@@ -567,7 +525,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			return notifyParam;
 		}
 		//初始化库存
-		@SuppressWarnings("unchecked")
+		//@SuppressWarnings("unchecked")
 		public CreateInventoryResultEnum initCheck() {
 			this.fillParam();
 			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
@@ -595,8 +553,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			//初始化加分布式锁
 			lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
 			writeBusInitLog(lm,false);
-			LockResult<String> lockResult = null;
 			CreateInventoryResultEnum resultEnum = null;
+		/*	LockResult<String> lockResult = null;
+			
 			String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
 			try {
 				lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
@@ -606,7 +565,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 					writeBusInitLog(
 							lm.setMethod("dLock").addMetaData("errorMsg",
 									goodsId), false);
-				}
+				}*/
 				InventoryInitDomain create = new InventoryInitDomain(goodsId,
 						lm);
 				//注入相关Repository
@@ -614,9 +573,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				
 				resultEnum = create.businessExecute();
-			}finally{
+			/*}finally{
 				dLock.unlockManual(key);
-			}
+			}*/
 			lm.addMetaData("result", resultEnum);
 			lm.addMetaData("result", "end");
 			writeBusInitLog(lm,false);

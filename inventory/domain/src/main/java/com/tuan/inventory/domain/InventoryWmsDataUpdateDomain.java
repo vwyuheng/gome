@@ -495,8 +495,9 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				//初始化加分布式锁
 				lm.addMetaData("InventoryWmsDataUpdateDomain initWmsCheck","initWmsCheck,start").addMetaData("initWmsCheck[" + (wmsGoodsId) + "]", wmsGoodsId);
 				writeBusInitLog(lm,false);
-				LockResult<String> lockResult = null;
 				CreateInventoryResultEnum resultEnum = null;
+				LockResult<String> lockResult = null;
+				
 				String key = DLockConstants.INIT_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
 				try {
 					lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
