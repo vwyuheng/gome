@@ -34,7 +34,7 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private AdjustInventoryParam param;
 	private UpdateRequestPacket packet;
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	public GoodsdAdjustInventoryDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.goodsId = goodsId;
@@ -96,7 +96,7 @@ public class GoodsdAdjustInventoryDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logerror.error(lm.addMetaData("errMsg", "GoodsdAdjustInventoryDomain.doBusiness error"+e.getMessage()).toJson(false),e);
+			logupdate.error(lm.addMetaData("errMsg", "GoodsdAdjustInventoryDomain.doBusiness error"+e.getMessage()).toJson(false),e);
 			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;

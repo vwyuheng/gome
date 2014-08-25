@@ -94,20 +94,20 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
-		String method = "InventoryAdjustDomain";
-		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		/*String method = "InventoryAdjustDomain";
+		final LogModel lm = LogModel.newLogModel(method);*/
+		logger.info(lm.addMetaData("init start", startTime)
+				.toJson(false));
 		CreateInventoryResultEnum resultEnum = null;
 		try {
 			//初始化检查
 			resultEnum = this.initCheck();
 			
 			long endTime = System.currentTimeMillis();
-			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+			String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
-					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
+			logger.info(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
 			
 			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 				return resultEnum;
@@ -163,10 +163,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.setMethod("busiCheck").addMetaData("errorMsg",
-							"DB error" + e.getMessage()),false, e);
-			
+							"DB error" + e.getMessage()),false, e);*/
+			logger.error(lm.addMetaData("errorMsg",
+							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -185,20 +186,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			//初始化加分布式锁
 			lm.addMetaData("adjustInventory","adjustInventory,start").addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId).addMetaData("type", type);
-			writeSysUpdateLog(lm,false);
-			/*LockResult<String> lockResult = null;
-			String key = DLockConstants.ADJUST_LOCK_KEY+"_goodsId_" + goodsId+"_type_"+type;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.ADJUSTK_LOCK_TIME, DLockConstants.ADJUST_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					writeSysUpdateLog(
-							lm.setMethod("adjustInventory").addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId",
-									goodsId).addMetaData("type",
-											type).addMetaData("errorMsg",
-													"adjustInventory dlock error"), true);
-				}*/
+			//writeSysUpdateLog(lm,false);
+			logger.info(lm.toJson(false));
+			
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					
 					if (inventoryDO != null) {
@@ -223,7 +213,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					}
 					if(inventoryDO!=null&&goodsId>0) {
 						lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage);
-						writeSysUpdateLog(lm,true);
+						//writeSysUpdateLog(lm,true);
+						logger.info(lm.toJson(false));
 						 // 消费对列的信息
 						
 						CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,this.goodsBaseId,(adjustNum),limitStorage,inventoryDO);
@@ -245,7 +236,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 							this.goodstotalnum = inventoryDO.getTotalNumber();
 						}
 						lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("limitStorage", limitStorage).addMetaData("message", message);
-						writeSysUpdateLog(lm,true);
+						logger.info(lm.toJson(false));
+						//writeSysUpdateLog(lm,true);
 					}
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
@@ -272,7 +264,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					}
 					
 					lm.addMetaData("adjustInventory","adjustInventory mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory);
-					writeSysUpdateLog(lm,true);
+					logger.info(lm.toJson(false));
+					//writeSysUpdateLog(lm,true);
 					
 					CallResult<GoodsSelectionDO> callResult  = null;
 					// 消费对列的信息
@@ -298,7 +291,8 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					}
 					
 					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("selectionInventory", selectionInventory).addMetaData("message", message);
-					writeSysUpdateLog(lm,true);
+					logger.info(lm.toJson(false));
+					//writeSysUpdateLog(lm,true);
 
 				} else if (type
 						.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
@@ -324,7 +318,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					}
 					
 					lm.addMetaData("adjustInventory","adjustInventory suppliers mysql,start").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory);
-					writeSysUpdateLog(lm,true);
+					logger.info(lm.toJson(false));
+					
+					//writeSysUpdateLog(lm,true);
 				
 					CallResult<GoodsSuppliersDO> callResult = synInitAndAysnMysqlService.updateGoodsSuppliers(inventoryDO,origoodstotalnum,adjustNum,suppliersInventory);
 					PublicCodeEnum publicCodeEnum = callResult
@@ -346,18 +342,22 @@ public class InventoryAdjustDomain extends AbstractDomain {
 								.getTotalNumber();
 					}
 					lm.addMetaData("adjustInventory","adjustInventory mysql,end").addMetaData("goodsId", goodsId).addMetaData("type", type).addMetaData("inventoryDO", inventoryDO).addMetaData("suppliersInventory", suppliersInventory).addMetaData("message", message);
-					writeSysUpdateLog(lm,true);
+					logger.info(lm.toJson(false));
+					//writeSysUpdateLog(lm,true);
 				
 				}//else SUPPLIERS
 			/*} finally{
 				dLock.unlockManual(key);
 			}*/
 			lm.addMetaData("result", "end");
-			writeSysUpdateLog(lm,false);
+			logger.info(lm.toJson(false));
+			//writeSysUpdateLog(lm,false);
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"adjustInventory error" + e.getMessage()),false, e);
+							"adjustInventory error" + e.getMessage()),false, e);*/
+			logger.error(lm.addMetaData("errorMsg",
+							"adjustInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -372,8 +372,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 				String paramJson = new Gson().toJson(notifyParam, orderParamType);
 				extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
 			} catch (Exception e) {
-				this.writeBusUpdateErrorLog(
-						lm.setMethod("sendNotify").addMetaData("errorMsg",e.getMessage()),false, e);
+				/*this.writeBusUpdateErrorLog(
+						lm.setMethod("sendNotify").addMetaData("errorMsg",e.getMessage()),false, e);*/
+				logger.error(lm.addMetaData("errorMsg",
+						"sendNotify error" + e.getMessage()).toJson(false), e);
 			}
 		}
 		// 初始化参数
@@ -423,8 +425,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					notifyParam.setSuppliersRelation(suppliersMsg);
 				}
 			} catch (Exception e) {
-				this.writeBusInitErrorLog(
-						lm.setMethod("fillInventoryNotifyMessageParam").addMetaData("errorMsg",e.getMessage()),false, e);
+				/*this.writeBusInitErrorLog(
+						lm.setMethod("fillInventoryNotifyMessageParam").addMetaData("errorMsg",e.getMessage()),false, e);*/
+				logger.error(lm.addMetaData("errorMsg",
+						"fillInventoryNotifyMessageParam error" + e.getMessage()).toJson(false), e);
 			}
 			return notifyParam;
 		}
@@ -456,32 +460,22 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			}
 			//初始化加分布式锁
 			lm.addMetaData("initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
-			writeBusInitLog(lm,false);
+
+			logger.info(lm.toJson(false));
+
 			CreateInventoryResultEnum resultEnum = null;
-			/*LockResult<String> lockResult = null;
-			
-			String key = DLockConstants.INIT_LOCK_KEY+"_goodsId_" + goodsId;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					writeBusInitLog(
-							lm.setMethod("dLock").addMetaData("errorMsg",
-									goodsId), false);
-				}*/
+
+
 				InventoryInitDomain create = new InventoryInitDomain(goodsId,
 						lm);
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				resultEnum = create.businessExecute();
-			/*}finally{
-				dLock.unlockManual(key);
-			}*/
+
 			lm.addMetaData("result", resultEnum);
 			lm.addMetaData("result", "end");
-			writeBusInitLog(lm,false);
+			logger.info(lm.toJson(false));
 			
 			return resultEnum;
 		}
@@ -521,7 +515,9 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
+			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -544,8 +540,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			selMsg.setWmsGoodsId(selectionInventory.getWmsGoodsId());
 			selectionMsg.add(selMsg);
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm.setMethod("fillSelectionMsg")
-					.addMetaData("errMsg", "fillSelectionMsg error"+e.getMessage()),false, e);
+			/*this.writeBusUpdateErrorLog(lm.setMethod("fillSelectionMsg")
+					.addMetaData("errMsg", "fillSelectionMsg error"+e.getMessage()),false, e);*/
+			logger.error(lm.addMetaData("errorMsg",
+					"fillSelectionMsg error" + e.getMessage()).toJson(false), e);
 			this.selectionMsg = null;
 		}
 		this.selectionMsg = selectionMsg;
@@ -564,8 +562,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			supMsg.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
 			suppliersMsg.add(supMsg);
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm
-					.addMetaData("errMsg", "fillSuppliersMsg error"+e.getMessage()),false, e);
+			/*this.writeBusUpdateErrorLog(lm
+					.addMetaData("errMsg", "fillSuppliersMsg error"+e.getMessage()),false, e);*/
+			logger.error(lm.addMetaData("errorMsg",
+					"fillSuppliersMsg error" + e.getMessage()).toJson(false), e);
 			this.suppliersMsg = null;
 		}
 		this.suppliersMsg = suppliersMsg;

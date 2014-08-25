@@ -3,6 +3,8 @@ package com.tuan.inventory.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,7 +41,7 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 @Controller
 @RequestMapping("/query")
 public class GoodsInventoryQueryController {
-
+	private static Log logquery = LogFactory.getLog("SYS.QUERYRESULT.LOG");
 	@Resource
 	GoodsInventoryQueryService  goodsInventoryQueryService;
 
@@ -67,6 +69,7 @@ public class GoodsInventoryQueryController {
 		.addMetaData("goodsId", goodsId)
 		.addMetaData("selectionId", selectionId)
 		.addMetaData("RequestPacket", packet);
+		 logquery.info(lm.toJson(false));
 		GoodsSelectionQueryDomain queryDomain = GoodsSelectionQueryDomain
 				.makeGoodsSelectionQueryDomain(packet, goodsId, selectionId,
 						lm, traceMessage);
@@ -148,6 +151,7 @@ public class GoodsInventoryQueryController {
 		    lm.setMethod("/goods")
 			.addMetaData("goodsId", goodsId)
 			.addMetaData("RequestPacket", packet);
+		    logquery.info(lm.toJson(false));
 		GoodsQueryDomain queryDomain = GoodsQueryDomain.makeGoodsQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
@@ -186,6 +190,7 @@ public class GoodsInventoryQueryController {
 		 lm.setMethod("/gsellist")
 			.addMetaData("goodsId", goodsId)
 			.addMetaData("RequestPacket", packet);
+		 logquery.info(lm.toJson(false));
 		GoodsSelectionListQueryDomain queryDomain = GoodsSelectionListQueryDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
@@ -224,6 +229,7 @@ public class GoodsInventoryQueryController {
 		    lm.setMethod("/sellist")
 			.addMetaData("goodsId", goodsId)
 			.addMetaData("RequestPacket", packet);
+		    logquery.info(lm.toJson(false));
 		GoodsSelectionListQueryBySelIdListDomain queryDomain = GoodsSelectionListQueryBySelIdListDomain.makeGoodsSelectionListQueryDomain(packet,goodsId,selectionIdList,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsSelectionListQueryInnerResp resp = new GoodsSelectionListQueryInnerResp();
@@ -298,6 +304,7 @@ public class GoodsInventoryQueryController {
 		lm.setMethod("/isbedelivery")
 		.addMetaData("wmsGoodsId", wmsGoodsId)
 		.addMetaData("RequestPacket", packet);
+		logquery.info(lm.toJson(false));
 		IsBeDeliveryQueryDomain queryDomain = IsBeDeliveryQueryDomain.makeGoodsSuppliersListQueryDomain(packet,wmsGoodsId,isBeDelivery,lm,traceMessage);
 		if(queryDomain == null){
 			IsBeDeliveryQueryInnerResp resp = new IsBeDeliveryQueryInnerResp();
@@ -340,6 +347,7 @@ public class GoodsInventoryQueryController {
 		lm.setMethod("/salescnt")
 		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("RequestPacket", packet);
+		logquery.info(lm.toJson(false));
 		GoodsBaseQueryDomain queryDomain = 		GoodsBaseQueryDomain
 				.makeGoodsBaseQueryDomain(packet,  goodsBaseId,
 						lm, traceMessage);

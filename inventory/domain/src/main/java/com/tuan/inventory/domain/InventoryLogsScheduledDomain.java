@@ -99,9 +99,9 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			
 			
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"businessHandler error" + e.getMessage()),false, e);
+			logLogs.error(lm.addMetaData("errorMsg",
+							"InventoryLogsScheduledDomain businessHandler error" + e.getMessage()).toJson(false), e);
+			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -120,9 +120,8 @@ public class InventoryLogsScheduledDomain extends AbstractDomain {
 			event.setHandleBatch(handleBatch);
 			event.setUUID(UUID.randomUUID().toString());
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"fillActionEvent error" + e.getMessage()),false, e);
+			logLogs.error(lm.addMetaData("errorMsg",
+					"InventoryLogsScheduledDomain fillActionEvent error" + e.getMessage()).toJson(false), e);
 			return false;
 		}
 		return true;

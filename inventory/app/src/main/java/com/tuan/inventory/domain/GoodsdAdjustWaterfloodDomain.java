@@ -35,7 +35,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 	private AdjustWaterfloodParam param;
 	private UpdateRequestPacket packet;
 	private String goodsBaseId;
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	
 	public GoodsdAdjustWaterfloodDomain(UpdateRequestPacket packet,String goodsId,String id,String userId,String type,String num,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
@@ -98,7 +98,7 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logerror.error(lm.addMetaData("errMsg", "GoodsdAdjustWaterfloodDomain.doBusiness error"+e.getMessage()).toJson(),e);
+			logupdate.error(lm.addMetaData("errMsg", "GoodsdAdjustWaterfloodDomain.doBusiness error"+e.getMessage()).toJson(false),e);
 			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;

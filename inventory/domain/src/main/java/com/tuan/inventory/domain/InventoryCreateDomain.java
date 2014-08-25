@@ -152,9 +152,11 @@ public class InventoryCreateDomain extends AbstractDomain {
 
 			}
 		} catch (Exception e) {
-			this.writeBusErrorLog(
+			/*this.writeBusErrorLog(
 					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);
+							"busiCheck error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -178,9 +180,11 @@ public class InventoryCreateDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
+			/*this.writeBusErrorLog(
 					lm.addMetaData("errorMsg",
-							"createInventory error" + e.getMessage()),false, e);
+							"createInventory error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"createInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		//保存库存
@@ -208,7 +212,9 @@ public class InventoryCreateDomain extends AbstractDomain {
 			 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
 			 */
 		} catch (Exception e) {
-			writeBusErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
+			//writeBusErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"sendNotify error" + e.getMessage()).toJson(false), e);
 		}
 	}
 
@@ -289,7 +295,9 @@ public class InventoryCreateDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
+			//this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -343,9 +351,11 @@ public class InventoryCreateDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
+			/*this.writeBusErrorLog(
 					lm.addMetaData(
-							"errMsg", "fillSelection error"+e.getMessage()),false, e);
+							"errMsg", "fillSelection error"+e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillSelection error" + e.getMessage()).toJson(false), e);
 			this.selectionRelation = null;
 		}
 	}
@@ -378,9 +388,11 @@ public class InventoryCreateDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(
+			/*this.writeBusErrorLog(
 					lm.addMetaData("errMsg",
-							 "fillSuppliers error"+e.getMessage()),false, e);
+							 "fillSuppliers error"+e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillSuppliers error" + e.getMessage()).toJson(false), e);
 			this.suppliersRelation = null;
 		}
 	}
@@ -400,7 +412,9 @@ public class InventoryCreateDomain extends AbstractDomain {
 			inventoryInfoDO.setGoodsSaleCount(sales);
 
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillRedisInventoryDO error"+e.getMessage()),false, e);
+			//this.writeBusErrorLog(lm.addMetaData("errMsg", "fillRedisInventoryDO error"+e.getMessage()),false, e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillRedisInventoryDO error" + e.getMessage()).toJson(false), e);
 			this.inventoryInfoDO = null;
 		}
 		this.inventoryInfoDO = inventoryInfoDO;

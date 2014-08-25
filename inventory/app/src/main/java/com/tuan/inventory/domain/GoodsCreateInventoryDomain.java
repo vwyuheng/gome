@@ -65,7 +65,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 	// 是否分店商品
 	private boolean isSupplier;
 	
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	
 	@SuppressWarnings("unchecked")
 	public GoodsCreateInventoryDomain(UpdateRequestPacket packet,CreaterInventoryRestParam reqparam,LogModel lm,Message messageRoot){
@@ -320,7 +320,7 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logerror.error(lm.addMetaData("errMsg", e.getMessage()).addMetaData("result", resp).toJson(false),e);
+			logupdate.error(lm.addMetaData("errMsg", e.getMessage()).addMetaData("result", resp).toJson(false),e);
 			return ResultEnum.SYS_ERROR;
 		}
 		return ResultEnum.SUCCESS;

@@ -36,7 +36,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	private OverrideAdjustInventoryParam param;
 	private UpdateRequestPacket packet;
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logerror = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	public GoodsdOverrideAdjustInventoryDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String id,String userId,String type,String limitStorage,String totalnum,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);

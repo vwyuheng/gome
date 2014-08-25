@@ -83,7 +83,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			String method = "InventoryCreate4GoodsCostDomain,preGoodsId:"+preGoodsId;
 			final LogModel lm = LogModel.newLogModel(method);
 			logger.info(lm.setMethod(method).addMetaData("start", startTime)
-					.toJson(true));
+					.toJson(false));
 			//初始化检查
 			CreateInventoryResultEnum resultEnum = this.initPreGoodsCostCheck();
 				
@@ -91,7 +91,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 						+ "milliseconds(毫秒)执行完成!";
 				logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("preGoodsId", preGoodsId)
-						.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
+						.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
 				
 				if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 					return resultEnum;
@@ -142,9 +142,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			return fillInventoryDO(adjustNum, inventoryDO4OldGoods,tmp4newGoods);
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+							"InventoryRestoreDomain busiCheck error" + e.getMessage()).toJson(false), e);
+			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 
@@ -172,9 +172,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(
-					lm.addMetaData("errorMsg",
-							"createInventory error" + e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"InventoryRestoreDomain createInventory error" + e.getMessage()).toJson(false), e);
+			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		//保存库存
@@ -208,7 +208,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			writeBusErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"InventoryRestoreDomain sendNotify error" + e.getMessage()).toJson(false), e);
+			//writeBusErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
 		}
 	}
 	public void sendPreGoodsInventoryNotify() {
@@ -218,7 +220,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 					.fromObject(notifyParam));
 			
 		} catch (Exception e) {
-			writeBusErrorLog(lm.addMetaData("errMsg", "sendPreGoodsInventoryNotify error" +e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"InventoryRestoreDomain sendPreGoodsInventoryNotify error" + e.getMessage()).toJson(false), e);
+			//writeBusErrorLog(lm.addMetaData("errMsg", "sendPreGoodsInventoryNotify error" +e.getMessage()),false, e);
 		}
 	}
 	public void sendAftGoodsInventoryNotify() {
@@ -228,7 +232,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 					.fromObject(notifyParam));
 			
 		} catch (Exception e) {
-			writeBusErrorLog(lm.addMetaData("errMsg", "sendAftGoodsInventoryNotify error" +e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"InventoryRestoreDomain sendAftGoodsInventoryNotify error" + e.getMessage()).toJson(false), e);
+			//writeBusErrorLog(lm.addMetaData("errMsg", "sendAftGoodsInventoryNotify error" +e.getMessage()),false, e);
 		}
 	}
 
@@ -294,7 +300,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
+			///this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"InventoryRestoreDomain fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
 			return false;
 		}
@@ -375,7 +383,9 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusErrorLog(lm.addMetaData("errMsg", "fillPreInventoryDO error"+e.getMessage()),false, e);
+			//this.writeBusErrorLog(lm.addMetaData("errMsg", "fillPreInventoryDO error"+e.getMessage()),false, e);
+			logger.error(lm.addMetaData("errorMsg",
+					"InventoryRestoreDomain fillPreInventoryDO error" + e.getMessage()).toJson(false), e);
 			this.inventoryInfoDO4OldGoods = null;
 			this.inventoryInfoDO4NewGoods = null;
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -386,38 +396,24 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	}
 
 	// 初始化改价前商品
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initPreGoodsCostCheck() {
 		// 初始化加分布式锁
 		lm.addMetaData("initPreGoodsCostCheck", "initPreGoodsCostCheck,start").addMetaData(
 				"initPreGoodsCostCheck[" + (preGoodsId) + "]", preGoodsId);
-		writeBusInitLog(lm, false);
+		logger.info(lm.toJson(false));
+
 		CreateInventoryResultEnum resultEnum = null;
-		/*LockResult<String> lockResult = null;
-		
-		String key = DLockConstants.INIT_LOCK_KEY + "_preGoodsId_" + preGoodsId;
-		try {
-			lockResult = dLock.lockManualByTimes(key,
-					DLockConstants.INIT_LOCK_TIME,
-					DLockConstants.INIT_LOCK_RETRY_TIMES);
-			if (lockResult == null
-					|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-							.getCode()) {
-				writeBusInitLog(
-						lm.setMethod("dLock").addMetaData("errorMsg", preGoodsId),
-						false);
-			}*/
+
 			InventoryInitDomain create = new InventoryInitDomain(preGoodsId, lm);
 			// 注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			resultEnum = create.businessExecute();
-		/*} finally {
-			dLock.unlockManual(key);
-		}*/
+
 		lm.addMetaData("result", resultEnum);
 		lm.addMetaData("result", "end");
-		writeBusInitLog(lm, false);
+		logger.info(lm.toJson(false));
 
 		return resultEnum;
 	}

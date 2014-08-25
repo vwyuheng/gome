@@ -6,6 +6,8 @@ import java.util.List;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,6 +48,7 @@ import com.wowotrace.traceEnum.MessageTypeEnum;
 @Controller
 @RequestMapping("/update")
 public class GoodsInventoryUpdateController {
+	private static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	@Resource
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	/**
@@ -68,6 +71,7 @@ public class GoodsInventoryUpdateController {
 		lm.setMethod("/create")
 		.addMetaData("RequestPacket", packet)
 		.addMetaData("param", param);
+		logupdate.info(lm.toJson(false));
 		GoodsCreateInventoryDomain createInventoryDomain = new GoodsCreateInventoryDomain(
 				packet, param, lm, messageRoot);
 		createInventoryDomain
@@ -102,6 +106,7 @@ public class GoodsInventoryUpdateController {
 		lm.setMethod("/up")
 		.addMetaData("RequestPacket", packet)
 		.addMetaData("param", param);
+		logupdate.info(lm.toJson(false));
 		GoodsdUpdateInventoryDomain updateInventoryDomain = new GoodsdUpdateInventoryDomain(
 				packet, param, lm, messageRoot);
 		updateInventoryDomain
@@ -137,6 +142,7 @@ public class GoodsInventoryUpdateController {
 		lm.setMethod("/ack")
 		.addMetaData("RequestPacket", packet)
 		.addMetaData("ack", ack).addMetaData("key", key);
+		logupdate.info(lm.toJson(false));
 		GoodsdAckInventoryDomain ackInventoryDomain = new GoodsdAckInventoryDomain(
 				packet, ack,key, lm, messageRoot);
 		ackInventoryDomain
@@ -180,6 +186,7 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("type", type)
 		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("num", num);
+		logupdate.info(lm.toJson(false));
 		GoodsdAdjustInventoryDomain adjustInventoryDomain = new GoodsdAdjustInventoryDomain(
 				packet,goodsId, id,userId,type,num, lm, messageRoot,goodsBaseId);
 		adjustInventoryDomain
@@ -222,6 +229,7 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("userId", userId)
 		.addMetaData("type", type)
 		.addMetaData("num", num);
+		logupdate.info(lm.toJson(false));
 		GoodsdAdjustWaterfloodDomain adjustWaterfloodDomain = new GoodsdAdjustWaterfloodDomain(
 				packet,goodsId,id,userId,type,num, lm, messageRoot,goodsBaseId);
 		adjustWaterfloodDomain
@@ -256,7 +264,7 @@ public class GoodsInventoryUpdateController {
 		lm.setMethod("/createwms")
 		.addMetaData("RequestPacket", packet)
 		.addMetaData("param", param);
-		
+		logupdate.info(lm.toJson(false));
 		GoodsWmsInventoryCreateDomain createWmsDomain = new GoodsWmsInventoryCreateDomain(
 				packet, param, lm, messageRoot);
 		createWmsDomain
@@ -291,7 +299,7 @@ public class GoodsInventoryUpdateController {
 		lm.setMethod("/adjustwms")
 		.addMetaData("RequestPacket", packet)
 		.addMetaData("param", param);
-		
+		logupdate.info(lm.toJson(false));
 		GoodsWmsInventoryAdjustDomain adjustWmsDomain = new GoodsWmsInventoryAdjustDomain(
 				packet, param, lm, messageRoot);
 		adjustWmsDomain
@@ -337,6 +345,7 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("limitStorage", limitStorage)
 		.addMetaData("goodsBaseId", goodsBaseId)
 		.addMetaData("totalnum", totalnum);
+		logupdate.info(lm.toJson(false));
 		GoodsdOverrideAdjustInventoryDomain adjustInventoryDomain = new GoodsdOverrideAdjustInventoryDomain(
 				packet,tokenid,goodsId, id,userId,type,limitStorage,totalnum, lm, messageRoot,goodsBaseId);
 		adjustInventoryDomain
@@ -381,6 +390,7 @@ public class GoodsInventoryUpdateController {
 		.addMetaData("goodsTypeIds", goodsTypeIds)
 		.addMetaData("goodsSelectionIds", goodsSelectionIds)
 		.addMetaData("goodBaseId", goodsBaseId);
+		logupdate.info(lm.toJson(false));
 		UpdateWmsDataDomain upWmsDataDomain = new UpdateWmsDataDomain(
 				packet,tokenid,goodsId, suppliersId,wmsGoodsId,isBeDelivery,goodsTypeIds,goodsSelectionIds, lm, messageRoot,goodsBaseId);
 		upWmsDataDomain

@@ -15,7 +15,6 @@ public abstract class AbstractDomain {
 	private static Log logBus=LogFactory.getLog("COMMON.BUSINESS");
 	private static Log logInit=LogFactory.getLog("INVENTORY.INIT");
 	protected static Log logSysUpdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
-	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
 	protected static Log logwms = LogFactory.getLog("WMS.HANDLER.LOG");
 	private static Log logJob=LogFactory.getLog("INVENTORY.JOB.LOG");
 	private static Log logJobError=LogFactory.getLog("INVENTORY.JOB.ERROR.LOG");
@@ -30,11 +29,7 @@ public abstract class AbstractDomain {
 			logSysUpdate.info(lm.toJson(purge));
 		}
 	}
-	protected void writeSysDeductLog(LogModel lm, boolean purge) {
-		if (logSysDeduct.isInfoEnabled()) {
-			logSysDeduct.info(lm.toJson(purge));
-		}
-	}
+	
 	
 	protected void writeBusLog(LogModel lm) {
 		if (logBus.isInfoEnabled()) {

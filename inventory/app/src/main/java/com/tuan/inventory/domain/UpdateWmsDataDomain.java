@@ -32,7 +32,7 @@ public class UpdateWmsDataDomain extends AbstractGoodsInventoryDomain{
 	private UpdateWmsDataParam param;
 	private UpdateRequestPacket packet;
 	private String goodsBaseId;
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logerror = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	public UpdateWmsDataDomain(UpdateRequestPacket packet,String tokenid,String goodsId,String suppliersId, String wmsGoodsId,String isBeDelivery,String goodsTypeIds, String goodsSelectionIds,LogModel lm,Message messageRoot,String goodsBaseId){
 		this.packet = packet;
 		this.tokenid = JsonStrVerificationUtils.validateStr(tokenid);

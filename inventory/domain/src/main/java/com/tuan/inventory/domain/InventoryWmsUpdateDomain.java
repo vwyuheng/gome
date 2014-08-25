@@ -117,9 +117,11 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		} 
 		} catch (Exception e) {
 			//isSelectionEnough = false;
-			this.writeBusWmsUpdateErrorLog(
+			/*this.writeBusWmsUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"selectionInventoryHandler error" + e.getMessage()),false, e);
+							"selectionInventoryHandler error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+							"selectionInventoryHandler error" + e.getMessage()).toJson(false), e);
 			return false;
 			
 		}
@@ -190,19 +192,20 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
-		String method = "InventoryWmsUpdateDomain.busiCheck";
+		/*String method = "InventoryWmsUpdateDomain.busiCheck";*/
 		//final LogModel lm = LogModel.newLogModel(method);
-		lm.addMetaData("method_busiCheck", method).addMetaData("start", startTime)
+		lm.addMetaData("init start", startTime)
 				.toJson(true);
-		writeWmsUpdateLog(lm,false);
+		logSysUpdate.info(lm.toJson(false));
+		//writeWmsUpdateLog(lm,false);
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
 		long endTime = System.currentTimeMillis();
-		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
 		lm.addMetaData("endTime", endTime).addMetaData("wmsGoodsId", wmsGoodsId)
-				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true);
-		writeWmsUpdateLog(lm,false);
+				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription());
+		logSysUpdate.info(lm.toJson(false));
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
 		}
@@ -223,9 +226,11 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusWmsUpdateErrorLog(
+			/*this.writeBusWmsUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);
+							"busiCheck error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -244,7 +249,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 			//物流加分布式锁
 			lm.addMetaData("updateAdjustWmsInventory","updateAdjustWmsInventory,start").addMetaData("wmsGoodsId", wmsGoodsId);
-			writeWmsUpdateLog(lm,false);
+			logSysUpdate.info(lm.toJson(false));
 			LockResult<String> lockResult = null;
 			String key = DLockConstants.ADJUST_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
 			try {
@@ -252,10 +257,13 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				if (lockResult == null
 						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 								.getCode()) {
-					writeWmsUpdateLog(
+					logSysUpdate.info(lm.addMetaData("wmsGoodsId",
+							wmsGoodsId).addMetaData("errorMsg",
+									"updateAdjustWmsInventory dlock error").toJson(false));
+					/*writeWmsUpdateLog(
 							lm.setMethod("updateAdjustWmsInventory").addMetaData("wmsGoodsId",
 									wmsGoodsId).addMetaData("errorMsg",
-													"updateAdjustWmsInventory dlock error"), true);
+													"updateAdjustWmsInventory dlock error"), true);*/
 				}
 				// 更新商品库存
 				if (isEnough) {
@@ -276,7 +284,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isEnough:"+isEnough+",orileftnum:"+orileftnum+",oritotalnum="+oritotalnum+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
 					//logwms.info(message);
 					lm.addMetaData("message", message);
-					writeWmsUpdateLog(lm,false);
+					logSysUpdate.info(lm.toJson(false));
 					return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 				}
 				//
@@ -284,7 +292,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				CreateInventoryResultEnum handlerResultEnum = this.synUpdateMysqlInventory(wmsDO,
 						goodsList, selectionParam);
 				if (handlerResultEnum != handlerResultEnum.SUCCESS) {
-					logwms.info("wmsGoodsId:"+ wmsGoodsId+",wmsDO:"+wmsDO+",goodsList:"+goodsList+",selectionParam:"+selectionParam+",handlerResult:"+handlerResultEnum.getDescription().toString());
+					logSysUpdate.info("wmsGoodsId:"+ wmsGoodsId+",wmsDO:"+wmsDO+",goodsList:"+goodsList+",selectionParam:"+selectionParam+",handlerResult:"+handlerResultEnum.getDescription().toString());
 					//writeWmsUpdateLog(lm,true);
 					return handlerResultEnum;
 				}
@@ -303,7 +311,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				}
 				
 				
-				logwms.info("updateAdjustWmsInventory redis,end"+",resultwms:"+resultACK+",resultgoods:"+verifyflg);
+				logSysUpdate.info("updateAdjustWmsInventory redis,end"+",resultwms:"+resultACK+",resultgoods:"+verifyflg);
 				//writeWmsUpdateLog(lm,true);
 				// 校验库存
 				if (!verifyflg) {
@@ -315,7 +323,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					boolean responseFlg = this.goodsInventoryDomainRepository
 							.updateBatchGoodsInventory(goodsList,
 									(-wmsGoodsDeductNum));
-					logwms.info("updateAdjustWmsInventory rollback redis,end,responseResult:"+responseResult+",responseFlg:"+responseFlg);
+					logSysUpdate.info("updateAdjustWmsInventory rollback redis,end,responseResult:"+responseResult+",responseFlg:"+responseFlg);
 					return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 				}
 				
@@ -323,7 +331,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				if (isSelectionEnough&&!CollectionUtils.isEmpty(selectionList)) {
 					resultACK = this.goodsInventoryDomainRepository
 							.batchAdjustSelectionWms(selectionParam);
-					logwms.info("selection mysql,end,resultACK:"+resultACK);
+					logSysUpdate.info("selection mysql,end,resultACK:"+resultACK);
 					// 校验库存
 					if (!verifyInventory()) {
 						// 回滚库存
@@ -333,7 +341,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 										(-wmsGoodsDeductNum));
 						List<Long> rSelResponse = this.goodsInventoryDomainRepository
 								.batchrollbackSelectionWms(selectionParam);
-						logwms.info("rollback redis,end,rollbackResponse:"+ rollbackResponse+",rSelResponse:"+rSelResponse);
+						logSysUpdate.info("rollback redis,end,rollbackResponse:"+ rollbackResponse+",rSelResponse:"+rSelResponse);
 						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 					}
 				}
@@ -341,13 +349,15 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				dLock.unlockManual(key);
 			}
 			lm.addMetaData("result", "end");
-			writeWmsUpdateLog(lm,false);
+			logSysUpdate.info(lm.toJson(false));
 			
 
 		} catch (Exception e) {
-			this.writeBusWmsUpdateErrorLog(
+			/*this.writeBusWmsUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"updateAdjustWmsInventory error" + e.getMessage()),false, e);
+							"updateAdjustWmsInventory error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateAdjustWmsInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -360,7 +370,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			this.wmsGoodsId = param.getWmsGoodsId();
 			//初始化加分布式锁
 			lm.addMetaData("InventoryWmsUpdateDomain initCheck","initCheck,start").addMetaData("initCheck[" + (wmsGoodsId) + "]", wmsGoodsId);
-			writeWmsUpdateLog(lm,false);
+
+			logSysUpdate.info(lm.toJson(false));
+
 			CreateInventoryResultEnum resultEnum = null;
 			LockResult<String> lockResult = null;
 			
@@ -370,9 +382,11 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				if (lockResult == null
 						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 								.getCode()) {
-					writeWmsUpdateLog(
+					logSysUpdate.info(lm.addMetaData("InventoryWmsUpdateDomain initCheck dLock errorMsg",
+							wmsGoodsId).toJson(false));
+					/*writeWmsUpdateLog(
 							lm.addMetaData("InventoryWmsUpdateDomain initCheck dLock errorMsg",
-									wmsGoodsId), true);
+									wmsGoodsId), true);*/
 				}
 				InventoryInitDomain create = new InventoryInitDomain();
 				//注入相关Repository
@@ -388,7 +402,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			}
 			lm.addMetaData("result", resultEnum);
 			lm.addMetaData("result", "end");
-			writeWmsUpdateLog(lm,false);
+			logSysUpdate.info(lm.toJson(false));
 			return resultEnum;
 			}
 	
@@ -436,8 +450,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			updateActionDO.setRemark("物流库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusWmsUpdateErrorLog(lm
-					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
+			/*this.writeBusWmsUpdateErrorLog(lm
+					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
 			return false;
 		}

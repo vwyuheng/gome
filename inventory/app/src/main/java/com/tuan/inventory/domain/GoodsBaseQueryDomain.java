@@ -14,7 +14,7 @@ import com.tuan.inventory.utils.LogModel;
 import com.wowotrace.trace.model.Message;
 
 public class GoodsBaseQueryDomain extends GoodsBaseDomain{
-	private static Log logerror = LogFactory.getLog("HTTPQUERYRESULT.LOG");
+	private static Log logquery = LogFactory.getLog("SYS.QUERYRESULT.LOG");
 	private GoodsBaseQueryInnerResp resp;		//请求验返回对象
 	protected GoodsInventoryQueryService  goodsInventoryQueryService;
 	private GoodsBaseQueryDomain(){}
@@ -28,12 +28,12 @@ public class GoodsBaseQueryDomain extends GoodsBaseDomain{
 	
 	@Override
 	public ResultEnum doBusiness() {
-		writeLog(lm.addMetaData("start", "start"),false);
+		logquery.info(lm.addMetaData("doBusiness", "GoodsBaseQueryDomain.doBusiness").toJson(false));
 		CallResult<GoodsBaseModel> queryCallResult = null;
 		try {
 			queryCallResult = goodsInventoryQueryService.findSalesCountByGoodsBaseId(clientIp, clientName, Long.parseLong(goodsBaseId));
 		} catch (Exception e) {
-			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
+			logquery.error(lm.addMetaData("errorMsg", e.getMessage()).toJson(false), e);
 			return ResultEnum.SYS_ERROR;
 		}
 		try{
@@ -51,7 +51,7 @@ public class GoodsBaseQueryDomain extends GoodsBaseDomain{
 		}
 	
 		}catch(Exception e){
-			logerror.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(false), e);
+			logquery.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("resp", resp).toJson(false), e);
 			return ResultEnum.SYS_ERROR;
 		}
 		writeLog(lm.addMetaData("result", resp).addMetaData("end", "end"),false);

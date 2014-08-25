@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -18,7 +16,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.DataUtil;
@@ -35,10 +32,6 @@ import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryUpdateDomain extends AbstractDomain {
-	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
-	private final static LocalLogger logHis = LocalLogger.getLog("INVENTORY.HIS.LOG");
-	private final static LocalLogger logQueue = LocalLogger.getLog("INVENTORY.QUEUE.LOG");
-	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -137,9 +130,11 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			
-			this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
+			/*this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
 					"selectionInventoryHandler error" + e.getMessage()), false,
-					e);
+					e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"selectionInventoryHandler error" + e.getMessage()).toJson(false), e);
 			return false;
 		}
 		return true;
@@ -185,9 +180,11 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			isSuppliersEnough = false;
-			this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
+			/*this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
 					"suppliersInventoryHandler error" + e.getMessage()), false,
-					e);
+					e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"suppliersInventoryHandler error" + e.getMessage()).toJson(false), e);
 
 		}
 
@@ -296,18 +293,18 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 		}
 		long startTime = System.currentTimeMillis();
-		String method = "InventoryUpdateDomain";
-		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		/*String method = "InventoryUpdateDomain";
+		final LogModel lm = LogModel.newLogModel(method);*/
+		logSysUpdate.info(lm.addMetaData("init start", startTime)
+				.toJson(false));
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
 		
 		long endTime = System.currentTimeMillis();
-		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
-		logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
-				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
+		logSysUpdate.info(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
 		
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
@@ -365,7 +362,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				if(!CollectionUtils.isEmpty(selectionIdlist)) {
 					for(GoodsSelectionModel gsmdoel : param.getGoodsSelection()) {
 						if(!selectionIdlist.contains(gsmdoel.getId())||gsmdoel.getId()<=0) {
-							//TODO 将这个不存在的刷进来，处理历史数据问题
 							//从redis缓存中加载选型信息
 							GoodsSelectionDO tmpSelDO = goodsInventoryDomainRepository.querySelectionRelationById(gsmdoel.getId());
 							if(tmpSelDO!=null) {  //存在
@@ -396,15 +392,17 @@ public class InventoryUpdateDomain extends AbstractDomain {
 											
 										}
 									} catch (Exception e) {
-										logHis.error("errorMsg:"+message+
-												",InventoryUpdateDomain error " + e.getMessage(), e);
+										/*logHis.error("errorMsg:"+message+
+												",InventoryUpdateDomain error " + e.getMessage(), e);*/
+										logSysUpdate.error(lm.addMetaData("errorMsg",
+												"InventoryUpdateDomain error" + e.getMessage()).toJson(false), e);
 										
 									}finally {
-										logHis.info(lm.addMetaData("goodsId",goodsId)
+										logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 												.addMetaData("tmpSelDO",tmpSelDO)
 												.addMetaData("endTime", System.currentTimeMillis())
 												.addMetaData("message",message)
-												.addMetaData("useTime", JsonUtils.getRunTime(startTimeHis)).toJson());
+												.addMetaData("useTime", JsonUtils.getRunTime(startTimeHis)).toJson(false));
 									}
 								}
 									
@@ -462,9 +460,11 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);
+							"busiCheck error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -473,7 +473,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	// 库存系统新增库存
 	public CreateInventoryResultEnum updateInventory() {
-		logSysDeduct.info("扣减开始>"+",orderId="+orderId+",goodsId="+goodsId+",幂等状态:"+idemptent);
+		logSysUpdate.info("扣减开始>"+",orderId="+orderId+",goodsId="+goodsId+",幂等状态:"+idemptent);
 		if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}
@@ -499,24 +499,24 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			// 更新商品库存
 			if (isEnough) {
 				//扣减开始记录日志
-				logSysDeduct.info("扣减>"+",isEnough="+isEnough+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",扣减数量="+goodsDeductNum+",limtStorgeDeNum="+(limtStorgeDeNum!=0?-limtStorgeDeNum:limtStorgeDeNum));
+				logSysUpdate.info("扣减>"+",isEnough="+isEnough+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",扣减数量="+goodsDeductNum+",limtStorgeDeNum="+(limtStorgeDeNum!=0?-limtStorgeDeNum:limtStorgeDeNum));
 				// 扣减库存
 				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId,goodsBaseId, (limtStorgeDeNum!=0?-limtStorgeDeNum:limtStorgeDeNum),(-goodsDeductNum));
-				logSysDeduct.info("扣减结束>"+",resultACK="+resultACK);
+				logSysUpdate.info("扣减结束>"+",resultACK="+resultACK);
 				// 校验库存
 				if (!DataUtil.verifyInventory(resultACK)) {
-					logSysDeduct.info("库存不足回滚库存开始>"+",resultACK="+resultACK+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",回滚扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
+					logSysUpdate.info("库存不足回滚库存开始>"+",resultACK="+resultACK+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",回滚扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
 					// 回滚库存
 					List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId,goodsBaseId, (limtStorgeDeNum),(goodsDeductNum));
-					logSysDeduct.info("库存不足回滚库存结束>"+",rollbackAck="+rollbackAck);
+					logSysUpdate.info("库存不足回滚库存结束>"+",rollbackAck="+rollbackAck);
 					
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}else {
 				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",orderId="+orderId+",originalGoodsInventory:"+originalGoodsInventory+",goodsDeductNum:"+goodsDeductNum+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
-				logSysDeduct.info(message);
+				logSysUpdate.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新选型库存
@@ -524,27 +524,27 @@ public class InventoryUpdateDomain extends AbstractDomain {
 				if(!CollectionUtils.isEmpty(selectionParam)) {
 					//扣减开始记录日志
 					
-					logSysDeduct.info("选型库存扣减开始>"+",isSelectionEnough="+resultACK+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",selectionParam="+selectionParam);
+					logSysUpdate.info("选型库存扣减开始>"+",isSelectionEnough="+resultACK+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",selectionParam="+selectionParam);
 					boolean rACK = this.goodsInventoryDomainRepository
 							.updateSelectionInventory(selectionParam);
-					logSysDeduct.info("选型库存扣减结束>"+",rACK="+rACK);
+					logSysUpdate.info("选型库存扣减结束>"+",rACK="+rACK);
 					// 校验库存
 					if (!rACK) {
 						// 回滚库存
-						logSysDeduct.info("选型库存不足回滚库存开始>"+",rACK="+rACK+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",回滚扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
+						logSysUpdate.info("选型库存不足回滚库存开始>"+",rACK="+rACK+",orderId="+orderId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",回滚扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
 						// 先回滚总的 再回滚选型的
 						List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 								goodsId,goodsBaseId, (limtStorgeDeNum),(goodsDeductNum));
 						boolean rbackACK = this.goodsInventoryDomainRepository
 								.rollbackSelectionInventory(selectionParam);
-						logSysDeduct.info("选型库存不足回滚库存结束>"+",rbackACK="+rbackACK+",selectionParam="+selectionParam+",商品回滚结果="+rollbackAck);
+						logSysUpdate.info("选型库存不足回滚库存结束>"+",rbackACK="+rbackACK+",selectionParam="+selectionParam+",商品回滚结果="+rollbackAck);
 						return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 					}
 				}
 				
 			}else {
 				String message = "InventoryUpdateDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",isSelectionEnough:"+isSelectionEnough+",selectionParam:"+selectionParam+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
-				logSysDeduct.info(message);
+				logSysUpdate.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			// 更新分店库存
@@ -586,15 +586,18 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			     setQueueKeyId(queueKeyId);
 
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"updateInventory error" + e.getMessage()),false, e);
+							"updateInventory error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}/*finally{
 			dLock.unlockManual(key);
 		}*/
 		lm.addMetaData("result", "end");
-		writeSysDeductLog(lm,false);
+		logSysUpdate.info(lm.toJson(false));
+		//writeSysDeductLog(lm,false);
 		//处理成返回前设置tag
 		if (StringUtils.isNotEmpty(orderId)) {
 			goodsInventoryDomainRepository.setTag(
@@ -613,7 +616,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public String pushSendMsgQueue() {
 		// 填充队列
 		if (fillInventoryQueueDO()) {
-			logQueue.info("压入redis的队列详情:"+JSON.toJSONString(queueDO));
+			logSysUpdate.info("压入redis的队列详情:"+JSON.toJSONString(queueDO));
 			if(queueDO!=null&&queueDO.getId()!=null&&queueDO.getId()!=0) {
 				return this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
 			}
@@ -625,7 +628,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	
 	// 初始化库存
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 		//this.goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
 		setGoodsId(Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId()));
@@ -656,7 +659,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		// 初始化加分布式锁
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
-		writeBusInitLog(lm, false);
+
+		logSysUpdate.info(lm.toJson(false));
+
 		CreateInventoryResultEnum resultEnum = null;
 		/*LockResult<String> lockResult = null;
 		
@@ -681,7 +686,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}*/
 		lm.addMetaData("result", resultEnum);
 		lm.addMetaData("result", "end");
-		writeBusInitLog(lm, false);
+		logSysUpdate.info(lm.toJson(false));
+		//writeBusInitLog(lm, false);
 		return resultEnum;
 	}
 	
@@ -736,8 +742,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			updateActionDO.setRemark("扣减库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
-			//this.updateActionDO = null;
+			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			setUpdateActionDO(null);
 			return false;
 		}
@@ -798,8 +805,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			queueDO.setSelectionParam(selectionParam);
 
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryQueueDO error" +e.getMessage()),false, e);
-			//this.queueDO = null;
+			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryQueueDO error" +e.getMessage()),false, e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"fillInventoryQueueDO error" + e.getMessage()).toJson(false), e);
 			setQueueDO(null);
 			return false;
 		}

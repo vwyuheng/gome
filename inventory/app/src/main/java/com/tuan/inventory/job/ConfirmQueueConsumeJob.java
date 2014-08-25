@@ -6,6 +6,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.tuan.core.common.lock.impl.DLockImpl;
+import com.tuan.core.common.sequence.utils.NetUtil;
 import com.tuan.inventory.domain.InventoryConfirmScheduledDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
@@ -29,7 +30,7 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 		String method = "ConfirmQueueConsumeJob.run";
 		final LogModel lm = LogModel.newLogModel(method);
 		logJob.info(lm.setMethod(method)
-				.addMetaData("start",startTime).toJson(true));
+				.addMetaData("start",startTime).toJson(false));
 		
 		// 线程是否终止
 		if (isStop) {
@@ -37,7 +38,7 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 		}
 		// 构建领域对象
 		final InventoryConfirmScheduledDomain inventoryConfirmScheduledDomain = new InventoryConfirmScheduledDomain(
-				"127.0.0.1", "jobCenter:ConfirmQueueConsumeJob", lm);
+				NetUtil.getLocalAddress0(), "jobCenter:ConfirmQueueConsumeJob", lm);
 		// 注入仓储对象
 		inventoryConfirmScheduledDomain
 				.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
@@ -48,7 +49,7 @@ public class ConfirmQueueConsumeJob extends AbstractJobRunnable {
 		long endTime = System.currentTimeMillis();
 		runResult = "[ConfirmQueueTask]业务处理历时" + (startTime - endTime) + "milliseconds(毫秒)执行完成!";
 		logJob.info(lm.setMethod(method)
-				.addMetaData("endTime",endTime).addMetaData("runResult",runResult).toJson(true));	
+				.addMetaData("endTime",endTime).addMetaData("runResult",runResult).toJson(false));	
 		// 完成任务退出，通知任务中心jobcenter
 		ExecutorManager.callBack(logId, runResult, 1);
 	}

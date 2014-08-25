@@ -13,7 +13,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.logs.LocalLogger;
+
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -26,9 +26,9 @@ import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 
 public class InventoryUpdate4LotteryDomain extends AbstractDomain {
-	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
-	private final static LocalLogger logQueue = LocalLogger.getLog("INVENTORY.QUEUE.LOG");
-	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	protected static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
+	//private final static LocalLogger logQueue = LocalLogger.getLog("INVENTORY.QUEUE.LOG");
+	//private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -121,18 +121,18 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			}
 		}*/
 		long startTime = System.currentTimeMillis();
-		String method = "InventoryUpdate4LotteryDomain";
-		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+		/*String method = "InventoryUpdate4LotteryDomain";
+		final LogModel lm = LogModel.newLogModel(method);*/
+		logupdate.info(lm.addMetaData("init start", startTime)
 				.toJson(true));
 		// 初始化检查
 		CreateInventoryResultEnum resultEnum =	this.initCheck();
 		
 		long endTime = System.currentTimeMillis();
-		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
-		logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
-				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
+		logupdate.info(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+				.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
 		
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultEnum;
@@ -149,9 +149,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);
+			logupdate.error(lm.addMetaData("errorMsg",
+							"InventoryUpdate4LotteryDomain busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -160,7 +159,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 
 	// 库存系统新增库存
 	public CreateInventoryResultEnum updateInventory() {
-		logSysDeduct.info("扣减开始>"+",objectId="+objectId+",goodsId="+goodsId+",幂等状态:"+idemptent);
+		logupdate.info("扣减开始>"+",objectId="+objectId+",goodsId="+goodsId+",幂等状态:"+idemptent);
 		if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}
@@ -175,24 +174,24 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			// 更新商品库存
 			if (isEnough) {
 				//扣减开始记录日志
-				logSysDeduct.info("扣减>"+",isEnough="+isEnough+",objectId="+objectId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
+				logupdate.info("扣减>"+",isEnough="+isEnough+",objectId="+objectId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
 				// 扣减库存
 				resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsInventory(goodsId,goodsBaseId, (limtStorgeDeNum!=0?-limtStorgeDeNum:limtStorgeDeNum),(-goodsDeductNum));
-				logSysDeduct.info("扣减结束>"+",resultACK="+resultACK);
+				logupdate.info("扣减结束>"+",resultACK="+resultACK);
 				// 校验库存
 				if (!DataUtil.verifyInventory(resultACK)) {
-					logSysDeduct.info("库存不足回滚库存开始>"+",resultACK="+resultACK+",objectId="+objectId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",回滚扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
+					logupdate.info("库存不足回滚库存开始>"+",resultACK="+resultACK+",objectId="+objectId+",goodsId="+goodsId+",goodsBaseId="+goodsBaseId+",回滚扣减数量="+goodsDeductNum+",limtStorgeDeNum="+limtStorgeDeNum);
 					// 回滚库存
 					List<Long> rollbackAck =	this.goodsInventoryDomainRepository.updateGoodsInventory(
 							goodsId,goodsBaseId, (limtStorgeDeNum),(goodsDeductNum));
-					logSysDeduct.info("库存不足回滚库存结束>"+",rollbackAck="+rollbackAck);
+					logupdate.info("库存不足回滚库存结束>"+",rollbackAck="+rollbackAck);
 					
 					return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 				}
 			}else {
 				String message = "InventoryUpdate4LotteryDomain.updateInventory>isEnough:"+isEnough+",goodsId:"+goodsId+",objectId="+objectId+",originalGoodsInventory:"+originalGoodsInventory+",goodsDeductNum:"+goodsDeductNum+",message:"+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
-				logSysDeduct.info(message);
+				logupdate.info(message);
 				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
 			}
 			
@@ -202,13 +201,13 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			     setQueueKeyId(queueKeyId);
 
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"updateInventory error" + e.getMessage()),false, e);
+			logupdate.error(lm.addMetaData("errorMsg",
+					"InventoryUpdate4LotteryDomain updateInventory error" + e.getMessage()).toJson(false), e);
+			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		lm.addMetaData("result", "end");
-		writeSysDeductLog(lm,false);
+		logupdate.info(lm.toJson(false));
 		//处理成返回前设置tag
 		/*if (StringUtils.isNotEmpty(orderId)) {
 			goodsInventoryDomainRepository.setTag(
@@ -227,7 +226,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 	public String pushSendMsgQueue() {
 		// 填充队列
 		if (fillInventoryQueueDO()) {
-			logQueue.info("压入redis的队列详情:"+JSON.toJSONString(queueDO));
+			logupdate.info("压入redis的队列详情:"+JSON.toJSONString(queueDO));
 			if(queueDO!=null&&queueDO.getId()!=null&&queueDO.getId()!=0) {
 				return this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
 			}
@@ -239,7 +238,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 
 	
 	// 初始化库存
-	@SuppressWarnings("unchecked")
+	//@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 		setGoodsId(param.getGoodsId());
 		setObjectId(String.valueOf(param.getObjectId()));
@@ -267,32 +266,19 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		// 初始化加分布式锁
 		lm.addMetaData("initCheck", "initCheck,start").addMetaData(
 				"initCheck[" + (goodsId) + "]", goodsId);
-		writeBusInitLog(lm, false);
+		logupdate.info(lm.toJson(false));
 		CreateInventoryResultEnum resultEnum = null;
-		/*LockResult<String> lockResult = null;
 		
-		String key = DLockConstants.INIT_LOCK_KEY + "_goodsId_" + goodsId;
-		try {
-			lockResult = dLock.lockManualByTimes(key, 5000L, 5);
-			if (lockResult == null
-					|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-							.getCode()) {
-				writeBusInitLog(
-						lm.setMethod("dLock").addMetaData("errorMsg", goodsId),
-						false);
-			}*/
 			InventoryInitDomain create = new InventoryInitDomain(goodsId, lm);
 			// 注入相关Repository
 		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			resultEnum = create.businessExecute();
-		/*} finally {
-			dLock.unlockManual(key);
-		}*/
+		
 		lm.addMetaData("result", resultEnum);
 		lm.addMetaData("result", "end");
-		writeBusInitLog(lm, false);
+		logupdate.info(lm.toJson(false));
 		return resultEnum;
 	}
 	
@@ -324,8 +310,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			updateActionDO.setRemark("抽奖商品扣减库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
-			//this.updateActionDO = null;
+			logupdate.error(lm.addMetaData("errorMsg",
+					"InventoryUpdate4LotteryDomain fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			setUpdateActionDO(null);
 			return false;
 		}
@@ -382,8 +368,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			
 
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryQueueDO error" +e.getMessage()),false, e);
-			//this.queueDO = null;
+			logupdate.error(lm.addMetaData("errorMsg",
+					"InventoryUpdate4LotteryDomain fillInventoryQueueDO error" + e.getMessage()).toJson(false), e);
 			setQueueDO(null);
 			return false;
 		}

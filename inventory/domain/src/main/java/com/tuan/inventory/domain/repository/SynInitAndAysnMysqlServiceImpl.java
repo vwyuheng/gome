@@ -34,7 +34,8 @@ import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl implements SynInitAndAysnMysqlService {
-	private static final Log logger = LogFactory.getLog("SYSERROR.LOG");
+	private static final Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
+	protected static Log logQuery = LogFactory.getLog("SYS.QUERYRESULT.LOG");
 	@Resource
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
 	@Resource
@@ -92,7 +93,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -112,7 +113,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (wmsDO == null&&CollectionUtils.isEmpty(selectionList)) {
-							logger.error(this.getClass()+"_create param invalid ,param is null");
+							logupdate.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -245,7 +246,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -265,13 +266,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsId<=0) {
-							logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+							logupdate.error(this.getClass()+"_create param invalid ,goodsId is invalid");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.INVALID_GOODSID
 											.getCode());
 						}
 						if (inventoryInfoDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,inventoryInfoDO is null");
+							logupdate.error(this.getClass()+"_create param invalid ,inventoryInfoDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
@@ -421,7 +422,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							 
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -441,13 +442,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsId<=0) {
-							logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+							logupdate.error(this.getClass()+"_create param invalid ,goodsId is invalid");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.INVALID_GOODSID
 											.getCode());
 						}
 						if (inventoryInfoDO == null) {
-							 logger.error(this.getClass()+"_create param invalid ,goodsInfo is null");
+							 logupdate.error(this.getClass()+"_create param invalid ,goodsInfo is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
@@ -499,7 +500,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -519,7 +520,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsDO == null) {
-						logger.error(this.getClass()+"_create param invalid ,goodsinfo is null");
+						logupdate.error(this.getClass()+"_create param invalid ,goodsinfo is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_GOODS
 										.getCode());
@@ -537,107 +538,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 }
 
-	/*@SuppressWarnings("unchecked")
-	@Override
-	public CallResult<List<GoodsSelectionDO>> saveBatchGoodsSelection(
-			final long goodsId, final List<GoodsSelectionDO> selectionInventoryList)
-			throws Exception {
-		
-	    TuanCallbackResult callBackResult = super.execute(
-			new TuanServiceCallback() {
-				public TuanCallbackResult executeAction() {
-					
-					try {
-						synInitAndAsynUpdateDomainRepository
-								.saveBatchGoodsSelection(goodsId,
-										selectionInventoryList);
-					}  catch (Exception e) {
-						logger.error(
-								"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsSelection error occured!"
-										+ e.getMessage(), e);
-						if (e instanceof DataIntegrityViolationException) {// 消息数据重复
-							throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
-									"Duplicate entry '" + goodsId
-											+ "' for key 'goodsId'", e);
-						}
-						throw new TuanRuntimeException(
-								QueueConstant.SERVICE_DATABASE_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsSelection error occured!",
-								e);
-						
-					}
-					return TuanCallbackResult.success(
-							PublicCodeEnum.SUCCESS.getCode(),
-							selectionInventoryList);
-				}
-				public TuanCallbackResult executeCheck() {
-					if (CollectionUtils.isEmpty(selectionInventoryList)) {
-						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSelectionDO> is null");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					
-					return TuanCallbackResult.success();
-					
-				}
-			}, null);
-	final int resultCode = callBackResult.getResultCode();
-	return new CallResult<List<GoodsSelectionDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(List<GoodsSelectionDO>)callBackResult.getBusinessObject(),
-			callBackResult.getThrowable());
-
-}
-*/
-	/*@SuppressWarnings("unchecked")
-	@Override
-	public CallResult<List<GoodsSuppliersDO>> saveBatchGoodsSuppliers(
-			final long goodsId, final List<GoodsSuppliersDO> suppliersInventoryList)
-			throws Exception {
-		
-	    TuanCallbackResult callBackResult = super.execute(
-			new TuanServiceCallback() {
-				public TuanCallbackResult executeAction() {
-					try {
-						synInitAndAsynUpdateDomainRepository.saveBatchGoodsSuppliers(goodsId, suppliersInventoryList);
-					} catch (Exception e) {
-						logger.error(
-								"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsSuppliers error occured!"
-										+ e.getMessage(), e);
-						if (e instanceof DataIntegrityViolationException) {// 消息数据重复
-							throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
-									"Duplicate entry '" + goodsId
-											+ "' for key 'goodsId'", e);
-						}
-						throw new TuanRuntimeException(
-								QueueConstant.SERVICE_DATABASE_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.saveBatchGoodsSuppliers error occured!",
-								e);
-						
-					}
-					return TuanCallbackResult.success(
-							PublicCodeEnum.SUCCESS.getCode(),
-							suppliersInventoryList);
-				}
-				public TuanCallbackResult executeCheck() {
-					if (CollectionUtils.isEmpty(suppliersInventoryList)) {
-						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSuppliersDO> is null");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					
-					return TuanCallbackResult.success();
-					
-				}
-			}, null);
-	final int resultCode = callBackResult.getResultCode();
-	return new CallResult<List<GoodsSuppliersDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(List<GoodsSuppliersDO>)callBackResult.getBusinessObject(),
-			callBackResult.getThrowable());
-
-}
-*/
 	@Override
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(final Long goodsId, final Long goodBaseId,final int adjustNum,final int limitStorage,
 			final GoodsInventoryDO inventoryInfoDO) throws Exception {
@@ -668,11 +568,11 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							.adjustGoodsInventory(goodsId, goodBaseId,(adjustNum),
 									limitStorage);
 					if(!DataUtil.verifyInventory(resultACK)) {  //已更新的库存回滚
-						logger.info("rollback start resultACK:"+resultACK);
+						logupdate.info("rollback start resultACK:"+resultACK);
 						List<Long> rollbackResponeResult =	goodsInventoryDomainRepository
 								.adjustGoodsInventory(goodsId,goodBaseId,
 										(-adjustNum), (-limitStorage));
-						logger.info("rollback end rollbackResponeResult:"+rollbackResponeResult.toString());
+						logupdate.info("rollback end rollbackResponeResult:"+rollbackResponeResult.toString());
 						throw new TuanRuntimeException(
 								QueueConstant.FAIL_ADJUST_INVENTORY,
 								"SynInitAndAysnMysqlServiceImpl.adjustGoodsInventory to redis error occured!",
@@ -680,7 +580,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -700,7 +600,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (inventoryInfoDO == null) {
-						 logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_GOODS
 										.getCode());
@@ -808,7 +708,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								
 							}
 						} catch (Exception e) {
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -828,13 +728,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsId<=0) {
-							logger.error(this.getClass()+"_create param invalid , goodsId  is invalid");
+							logupdate.error(this.getClass()+"_create param invalid , goodsId  is invalid");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.INVALID_GOODSID
 											.getCode());
 						}
 						if (inventoryInfoDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO   is null");
+							logupdate.error(this.getClass()+"_create param invalid ,GoodsInventoryDO   is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
@@ -869,7 +769,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							
 						} catch (Exception e) {
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -889,13 +789,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsId<=0) {
-							logger.error(this.getClass()+"_create param invalid , goodsId  is invalid");
+							logupdate.error(this.getClass()+"_create param invalid , goodsId  is invalid");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.INVALID_GOODSID
 											.getCode());
 						}
 						if (inventoryInfoDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO  is null");
+							logupdate.error(this.getClass()+"_create param invalid ,GoodsInventoryDO  is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
@@ -973,7 +873,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 								
 						} catch (Exception e) {
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -993,13 +893,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsId<=0) {
-							logger.error(this.getClass()+"_create param invalid ,goodsId  is invalid");
+							logupdate.error(this.getClass()+"_create param invalid ,goodsId  is invalid");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.INVALID_GOODSID
 											.getCode());
 						}
 						if (inventoryInfoDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO  is null");
+							logupdate.error(this.getClass()+"_create param invalid ,GoodsInventoryDO  is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_GOODS
 											.getCode());
@@ -1041,7 +941,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								new Exception());
 					}
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateBatchGoodsSelection error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -1061,13 +961,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId<=0) {
-						logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+						logupdate.error(this.getClass()+"_create param invalid ,goodsId is invalid");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
 					}
 					if (CollectionUtils.isEmpty(selectionDOList)) {
-						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSelectionDO> is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,List<GoodsSelectionDO> is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_SELECTION
 										.getCode());
@@ -1084,54 +984,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 }
 
-	/*@SuppressWarnings("unchecked")
-	@Override
-	public CallResult<List<GoodsSuppliersDO>> updateBatchGoodsSuppliers(
-			final Long goodsId, final List<GoodsSuppliersDO> suppliersDOList)
-			throws Exception {
-		
-	    TuanCallbackResult callBackResult = super.execute(
-			new TuanServiceCallback() {
-				public TuanCallbackResult executeAction() {
-					try {
-					synInitAndAsynUpdateDomainRepository.updateBatchGoodsSuppliers(goodsId, suppliersDOList);
-					} catch (Exception e) {
-						logger.error(
-								"SynInitAndAysnMysqlServiceImpl.updateBatchGoodsSuppliers error occured!"
-										+ e.getMessage(), e);
-						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
-							throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
-									"update invalid '" + goodsId
-											+ "' for key 'goodsId'", e);
-						}
-						throw new TuanRuntimeException(
-								QueueConstant.SERVICE_DATABASE_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.updateBatchGoodsSuppliers error occured!",
-								e);
-						
-					}
-					return TuanCallbackResult.success(
-							PublicCodeEnum.SUCCESS.getCode(),
-							suppliersDOList);
-				}
-				public TuanCallbackResult executeCheck() {
-					if (CollectionUtils.isEmpty(suppliersDOList)) {
-						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSuppliersDO>  is null");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					
-					return TuanCallbackResult.success();
-					
-				}
-			}, null);
-	final int resultCode = callBackResult.getResultCode();
-	return new CallResult<List<GoodsSuppliersDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(List<GoodsSuppliersDO>)callBackResult.getBusinessObject(),
-			callBackResult.getThrowable());
 
-}*/
 
 	@Override
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(final GoodsInventoryDO goodsDO,final int pretotalnum,
@@ -1209,7 +1062,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -1229,7 +1082,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsDO==null) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsDO param is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,goodsDO param is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_GOODS
 										.getCode());
@@ -1262,7 +1115,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 					
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSuppliers error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -1282,7 +1135,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (suppliersDO == null) {
-						 logger.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -1310,7 +1163,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						inventoryInfoDO = initCacheDomainRepository.getInventoryInfoByGoodsId(goodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryByGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1330,7 +1183,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId <= 0) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
@@ -1359,7 +1212,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						selectionInventoryList = initCacheDomainRepository.querySelectionByGoodsId(goodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionListByGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1379,7 +1232,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId <= 0) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
@@ -1408,7 +1261,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						suppliersInventoryList = initCacheDomainRepository.selectGoodsSuppliersInventoryByGoodsId(goodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsSuppliersListByGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1428,7 +1281,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId <= 0) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -1445,137 +1298,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 }
 
-	/*@Override
-	public CallResult<Integer> deleteGoodsInventory(final long goodsId) throws Exception {
-		
-	    TuanCallbackResult callBackResult = super.execute(
-			new TuanServiceCallback() {
-				public TuanCallbackResult executeAction() {
-					Integer result = 0;
-					try {
-						result = synInitAndAsynUpdateDomainRepository.deleteGoodsInventory(goodsId);
-					} catch (Exception e) {
-						logger.error(
-								"SynInitAndAysnMysqlServiceImpl.deleteGoodsInventory error occured!"
-										+ e.getMessage(), e);
-						
-						throw new TuanRuntimeException(
-								QueueConstant.SERVICE_DATABASE_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.deleteGoodsInventory error occured!",
-								e);
-						
-					}
-					return TuanCallbackResult.success(
-							PublicCodeEnum.SUCCESS.getCode(),
-							result);
-				}
-				public TuanCallbackResult executeCheck() {
-					if (goodsId <= 0) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					
-					return TuanCallbackResult.success();
-					
-				}
-			}, null);
-	final int resultCode = callBackResult.getResultCode();
-	return new CallResult<Integer>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(Integer)callBackResult.getBusinessObject(),
-			callBackResult.getThrowable());
-
-}*/
-
-	/*@SuppressWarnings("unchecked")
-	@Override
-	public CallResult<List<GoodsSelectionDO>> deleteBatchGoodsSelection(final
-			List<GoodsSelectionDO> selectionDOList) throws Exception {
-		
-	    TuanCallbackResult callBackResult = super.execute(
-			new TuanServiceCallback() {
-				public TuanCallbackResult executeAction() {
-					try {
-					synInitAndAsynUpdateDomainRepository.batchDelGoodsSelection(selectionDOList);
-					} catch (Exception e) {
-						logger.error(
-								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSelection error occured!"
-										+ e.getMessage(), e);
-						
-						throw new TuanRuntimeException(
-								QueueConstant.SERVICE_DATABASE_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSelection error occured!",
-								e);
-						
-					}
-					return TuanCallbackResult.success(
-							PublicCodeEnum.SUCCESS.getCode(),
-							selectionDOList);
-				}
-				public TuanCallbackResult executeCheck() {
-					if (CollectionUtils.isEmpty(selectionDOList)) {
-						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSelectionDO> is null");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					
-					return TuanCallbackResult.success();
-					
-				}
-			}, null);
-	final int resultCode = callBackResult.getResultCode();
-	return new CallResult<List<GoodsSelectionDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(List<GoodsSelectionDO>)callBackResult.getBusinessObject(),
-			callBackResult.getThrowable());
-
-}*/
-
-	/*@SuppressWarnings("unchecked")
-	@Override
-	public CallResult<List<GoodsSuppliersDO>> deleteBatchGoodsSuppliers(final
-			List<GoodsSuppliersDO> suppliersDOList) throws Exception {
-		
-	    TuanCallbackResult callBackResult = super.execute(
-			new TuanServiceCallback() {
-				public TuanCallbackResult executeAction() {
-					try {
-					synInitAndAsynUpdateDomainRepository.batchDeleteGoodsSuppliers(suppliersDOList);
-					} catch (Exception e) {
-						logger.error(
-								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSuppliers error occured!"
-										+ e.getMessage(), e);
-						
-						throw new TuanRuntimeException(
-								QueueConstant.SERVICE_DATABASE_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.deleteBatchGoodsSuppliers error occured!",
-								e);
-						
-					}
-					return TuanCallbackResult.success(
-							PublicCodeEnum.SUCCESS.getCode(),
-							suppliersDOList);
-				}
-				public TuanCallbackResult executeCheck() {
-					if (CollectionUtils.isEmpty(suppliersDOList)) {
-						 logger.error(this.getClass()+"_create param invalid ,List<GoodsSuppliersDO>  is null");
-						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
-										.getCode());
-					}
-					
-					return TuanCallbackResult.success();
-					
-				}
-			}, null);
-	final int resultCode = callBackResult.getResultCode();
-	return new CallResult<List<GoodsSuppliersDO>>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
-			(List<GoodsSuppliersDO>)callBackResult.getBusinessObject(),
-			callBackResult.getThrowable());
-
-}
-*/
+	
 	@Override
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(final
 			String wmsGoodsId,final Integer isBeDelivery) {
@@ -1587,7 +1310,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						wmsDO = initCacheDomainRepository.selectGoodsInventoryWMS(wmsGoodsId,isBeDelivery);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryWMSByWmsGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1607,7 +1330,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (StringUtils.isEmpty(wmsGoodsId)) {
-						 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_WMSGOODSID
 										.getCode());
@@ -1635,7 +1358,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						wmsDO = initCacheDomainRepository.selectIsOrNotGoodsWMS(goodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectIsOrNotGoodsWMSByGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1655,7 +1378,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId<=0) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
@@ -1739,7 +1462,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -1759,7 +1482,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (wmsDO == null&&CollectionUtils.isEmpty(wmsInventoryList)&&CollectionUtils.isEmpty(selectionList)) {
-							logger.error(this.getClass()+"_create param invalid ,saveGoodsWmsInventory:wmsDO is null");
+							logupdate.error(this.getClass()+"_create param invalid ,saveGoodsWmsInventory:wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA
 											.getCode());
@@ -1786,7 +1509,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						selList = initCacheDomainRepository.selectSelectionByGoodsTypeIds(goodsTypeIdList);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectSelectionByGoodsTypeIds error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1806,7 +1529,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (CollectionUtils.isEmpty(goodsTypeIdList)) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsTypeIdList is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,goodsTypeIdList is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -1846,7 +1569,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsWms error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -1866,7 +1589,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (wmsDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,batchUpdateGoodsWms:wmsDO is null");
+							logupdate.error(this.getClass()+"_create param invalid ,batchUpdateGoodsWms:wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA
 											.getCode());
@@ -1894,7 +1617,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						goodsInventoryList = initCacheDomainRepository.selectInventory4Wms(wmsGoodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectIsOrNotGoodsWMSByGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -1914,7 +1637,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (StringUtils.isEmpty(wmsGoodsId)) {
-						 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_WMSGOODSID
 										.getCode());
@@ -1955,7 +1678,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliers error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -1975,7 +1698,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (suppliersDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,param is null");
+							logupdate.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -2040,7 +1763,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}*/
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -2060,13 +1783,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (selectionDO == null) {
-						 logger.error(this.getClass()+"_create param invalid ,GoodsSelectionDO is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,GoodsSelectionDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_SELECTION
 										.getCode());
 					}
 					if (goodsDO==null) {
-						logger.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
+						logupdate.error(this.getClass()+"_create param invalid ,GoodsInventoryDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_GOODS
 										.getCode());
@@ -2092,7 +1815,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							goodsBaseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
 						} catch (Exception e) {
-							logger.error(
+							logQuery.error(
 									"SynInitAndAysnMysqlServiceImpl.selectGoodsBaseInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -2112,7 +1835,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsBaseId==null) {
-							 logger.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
+							logQuery.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -2159,7 +1882,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -2179,7 +1902,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (baseInventoryDO == null) {
-							logger.error(this.getClass()+"_create param invalid ,param is null");
+							logupdate.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -2205,7 +1928,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							goodsBaseInventoryDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
 						} catch (Exception e) {
-							logger.error(
+							logQuery.error(
 									"SynInitAndAysnMysqlServiceImpl.selectInventoryBase4Init error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -2225,7 +1948,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsBaseId==null) {
-							 logger.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
+							logQuery.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -2321,7 +2044,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSelection error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -2341,7 +2064,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (selectionDO == null&&goodsDO==null) {
-						 logger.error(this.getClass()+"_create param invalid ,all param is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,all param is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -2438,7 +2161,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 						}
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsSuppliers error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -2458,7 +2181,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (suppliersDO == null) {
-						 logger.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -2554,7 +2277,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -2574,7 +2297,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId==0||(goodsDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
-						 logger.error(this.getClass()+"_create param invalid ,param is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,param is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -2601,7 +2324,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						wmsDO = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryWMSDO(wmsGoodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryWMSByWmsGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -2621,7 +2344,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (StringUtils.isEmpty(wmsGoodsId)) {
-						 logger.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.PARAM_INVALID
 										.getCode());
@@ -2650,7 +2373,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						inventoryInfoDO = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(goodsId);
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsInventoryByGoodsId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -2670,7 +2393,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId <= 0) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
@@ -2699,7 +2422,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						try {
 							goodsBaseInventoryDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(goodsBaseId);
 						} catch (Exception e) {
-							logger.error(
+							logQuery.error(
 									"SynInitAndAysnMysqlServiceImpl.selectSelfInventoryBaseInit error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -2719,7 +2442,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsBaseId==null) {
-							 logger.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
+							logQuery.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.PARAM_INVALID
 											.getCode());
@@ -2805,7 +2528,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsUpdateInventory error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -2825,13 +2548,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					}
 					public TuanCallbackResult executeCheck() {
 						if (goodsId <=0) {
-							logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+							logupdate.error(this.getClass()+"_create param invalid ,goodsId is invalid");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.INVALID_GOODSID
 											.getCode());
 						}
 						if (wmsDO == null&&CollectionUtils.isEmpty(wmsInventoryList)&&CollectionUtils.isEmpty(selectionList)) {
-							logger.error(this.getClass()+"_create param invalid ,saveGoodsWmsUpdateInventory,wmsDO is null");
+							logupdate.error(this.getClass()+"_create param invalid ,saveGoodsWmsUpdateInventory,wmsDO is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_WMS_DATA
 											.getCode());
@@ -2860,7 +2583,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					try {
 						selectionInventory = initCacheDomainRepository.getCacheSelectionRelationInfoById(selId.intValue());
 					} catch (Exception e) {
-						logger.error(
+						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionBySelId error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof DataRetrievalFailureException) {// 获取数据失败，如找不到对应主键的数据，使用了错误的列索引等
@@ -2880,7 +2603,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (selId <= 0) {
-						 logger.error(this.getClass()+"_create param invalid ,selId is invalid!");
+						logQuery.error(this.getClass()+"_create param invalid ,selId is invalid!");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_SELECTIONID
 										.getCode());
@@ -2922,7 +2645,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							
 						} catch (Exception e) {
 							
-							logger.error(
+							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.updateGoodsWmsSel error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
@@ -2943,7 +2666,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeCheck() {
 						
 						if (selection == null) {
-							logger.error(this.getClass()+"_create param invalid ,selection is null");
+							logupdate.error(this.getClass()+"_create param invalid ,selection is null");
 							return TuanCallbackResult
 									.failure(PublicCodeEnum.NO_SELECTION
 											.getCode());
@@ -3068,7 +2791,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -3088,7 +2811,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsDO == null) {
-						logger.error(this.getClass()+"_create param invalid ,goodsinfo is null");
+						logupdate.error(this.getClass()+"_create param invalid ,goodsinfo is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_GOODS
 										.getCode());
@@ -3158,7 +2881,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 						
 					} catch (Exception e) {
-						logger.error(
+						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateGoodsInventory error occured!"
 										+ e.getMessage(), e);
 						if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
@@ -3178,13 +2901,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				}
 				public TuanCallbackResult executeCheck() {
 					if (goodsId==0) {
-						logger.error(this.getClass()+"_create param invalid ,goodsId is invalid");
+						logupdate.error(this.getClass()+"_create param invalid ,goodsId is invalid");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
 					}
 					if (goodsDO == null) {
-						 logger.error(this.getClass()+"_create param invalid ,goodsDO is null");
+						 logupdate.error(this.getClass()+"_create param invalid ,goodsDO is null");
 						return TuanCallbackResult
 								.failure(PublicCodeEnum.NO_GOODS
 										.getCode());

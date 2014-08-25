@@ -78,9 +78,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			preresult = false;
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"preHandler error" + e.getMessage()),false, e);
+			logConfirm.error(lm.addMetaData("errorMsg",
+							"InventoryConfirmScheduledDomain preHandler error" + e.getMessage()).toJson(false), e);
 		}
 		
 		return preresult;
@@ -184,9 +183,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 				
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"businessHandler error" + e.getMessage()),false, e);
+			logConfirm.error(lm.addMetaData("errorMsg",
+					"InventoryConfirmScheduledDomain businessHandler error" + e.getMessage()).toJson(false), e);
+			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -201,9 +200,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			return false;
 		}
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"loadMessageData error" + e.getMessage()),false, e);
+			logConfirm.error(lm.addMetaData("errorMsg",
+					"InventoryConfirmScheduledDomain loadMessageData error" + e.getMessage()).toJson(false), e);
 			return false;
 		}
 		return true;
@@ -268,9 +266,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 				}
 			}
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"fillParamAndUpdate error" + e.getMessage()),false, e);
+			logConfirm.error(lm.addMetaData("errorMsg",
+					"InventoryConfirmScheduledDomain fillParamAndUpdate error" + e.getMessage()).toJson(false), e);
+
 			return false;
 		}
 		return true;
@@ -286,7 +284,9 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
+			logConfirm.error(lm.addMetaData("errorMsg",
+					"InventoryConfirmScheduledDomain sendNotify error" + e.getMessage()).toJson(false), e);
+			//writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
 			return false;
 		}
 		return true;
@@ -367,8 +367,8 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(lm
-					.addMetaData("errMsg", "markDelete error"+e.getMessage()),false, e);
+			logConfirm.error(lm.addMetaData("errorMsg",
+					"InventoryConfirmScheduledDomain markDelete error" + e.getMessage()).toJson(false), e);
 			return false;
 		}
 		

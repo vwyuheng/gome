@@ -46,7 +46,6 @@ import com.tuan.ordercenter.model.result.OrderQueryResult;
 
 public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private static Log logLock=LogFactory.getLog("LOCKED.JOB.LOG");
-	private static Log logerror=LogFactory.getLog("ERROR.QUEUE.LOG");
 	private LogModel lm;
 	private GoodsInventoryModel goodsInventoryModel;
 	//库存需发更新消息的:需排重
@@ -104,7 +103,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						String method = "OrderQueryService.queryOrderPayStatus,订单id:"+String.valueOf(model!=null?model.getOrderId():0);
 						final LogModel lm = LogModel.newLogModel(method);
 						logLock.info(lm.setMethod(method).addMetaData("start", startTime)
-								.toJson(true));
+								.toJson(false));
 
 						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
 						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
@@ -114,7 +113,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 							String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 									+ "milliseconds(毫秒)执行完成!(订单支付状态)statEnum="+statEnum.getDescription();
 							logLock.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("订单id", model!=null?model.getOrderId():0)
-									.addMetaData("runResult", runResult).addMetaData("message", statEnum.getDescription()).toJson(true));
+									.addMetaData("runResult", runResult).addMetaData("message", statEnum.getDescription()).toJson(false));
 							//1.当订单状态为已付款时
 							if (statEnum
 									.equals(OrderInfoPayStatusEnum.PAIED)) {
@@ -136,9 +135,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			preresult = false;
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"preHandler error" + e.getMessage()),false, e);
+			logLock.error(lm.addMetaData("errorMsg",
+							"InventoryLockedScheduledDomain preHandler error" + e.getMessage()).toJson(false), e);
 		}
 		return preresult;
 		
@@ -240,11 +238,17 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								}
 							} 
 							//处理这部分队列
+<<<<<<< HEAD
 							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
 							if(!this.markDelete(queueId,JSON.toJSONString(rollbackModel))) {
 								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
+=======
+							logLock.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
+							if(!this.markDelete(queueId,JSON.toJSONString(rollbackModel))) {
+								logLock.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
+
 							}else {
-								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
+								logLock.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
 							}
 						}
 						LockResult<String> lockResult = null;
@@ -286,7 +290,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								logLock.info("[loadMessageData,加载数据失败]goodsId:("+goodsId+")");
 							}
 						}else {
-							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
+							logLock.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
 						}
 						
 						} finally {
@@ -299,10 +303,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"businessHandler error" + e.getMessage()),false, e);
-			
+			logLock.error(lm.addMetaData("errorMsg",
+					"InventoryLockedScheduledDomain businessHandler error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		
@@ -317,9 +319,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			return false;
 		}
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg",
-							"loadMessageData error" + e.getMessage()),false, e);
+			logLock.error(lm.addMetaData("errorMsg",
+					"InventoryLockedScheduledDomain loadMessageData error" + e.getMessage()).toJson(false), e);
 			return false;
 		}
 		return true;
@@ -341,7 +342,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
 			 */
 		} catch (Exception e) {
-			writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
+			logLock.error(lm.addMetaData("errorMsg",
+					"InventoryLockedScheduledDomain sendNotify error" + e.getMessage()).toJson(false), e);
+			//writeBusJobErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
 			return false;
 		}
 		return true;
@@ -415,9 +418,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				}
 				
 			} catch (Exception e) {
-				this.writeBusJobErrorLog(
-						lm.addMetaData("errorMsg",
-								"fillParamAndUpdate error" + e.getMessage()),false, e);
+				logLock.error(lm.addMetaData("errorMsg",
+						"InventoryLockedScheduledDomain fillParamAndUpdate error" + e.getMessage()).toJson(false), e);
 				return false;
 			}
 			return true;
@@ -512,13 +514,12 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 			return true;
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(lm.addMetaData("errMsg",
-					"markDeleteAfterSendMsgSuccess error" + e.getMessage()),
-					false, e);
+			logLock.error(lm.addMetaData("errorMsg",
+					"InventoryLockedScheduledDomain markDelete error" + e.getMessage()).toJson(false), e);
 			 return false;
 
 		}
-		 //return true;
+	
 	}
 	
 	public boolean rollback(long orderId,long goodsId,long goodsBaseId,int limitStorage,int  deductNum,List<GoodsSelectionAndSuppliersResult> selectionParam,List<GoodsSelectionAndSuppliersResult> suppliersParam) {
@@ -577,8 +578,8 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			success = false;
-			this.writeBusJobErrorLog(lm
-					.addMetaData("errMsg", "rollback error"+e.getMessage()),false, e);
+			logLock.error(lm.addMetaData("errorMsg",
+					"InventoryLockedScheduledDomain rollback error" + e.getMessage()).toJson(false), e);
 		}
 		return success;
 	}

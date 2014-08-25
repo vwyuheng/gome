@@ -143,7 +143,6 @@ public class InventoryCenterFacadeImpl implements InventoryCenterFacade {
 			String clientName, UpdateLotteryInventoryParam param,
 			Message traceMessage) {
 		return goodsInventoryUpdate.incrGoodsSaleCount(clientIp, clientName, param, traceMessage);
-
 	}
 	public GoodsInventoryQueryService getGoodsInventoryQuery() {
 		return goodsInventoryQuery;

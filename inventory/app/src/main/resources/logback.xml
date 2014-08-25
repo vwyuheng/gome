@@ -169,81 +169,31 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>   
-	<!-- 库存初始化日志 -->   
-	<appender name="INVENTORY-INIT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/init/inventory-init-default.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/init/inventory-init-default.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>    
 	
 	<!--  query --> 
-    <appender name="HTTP-QUERY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/http/common-http-query.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/http/common-http-query.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                                 
     <appender name="SYS-QUERY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/read/business-sys-query.log</file>
+		<file>${loggingRoot}/service/business-sys-query.log</file>
         	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/read/business-sys-query.log.%d{yyyyMMdd}</fileNamePattern>
+      			<fileNamePattern>${loggingRoot}/service/business-sys-query.log.%d{yyyyMMdd}</fileNamePattern>
       			<maxHistory>20</maxHistory>
     		</rollingPolicy>
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                     
-	<!--  update --> 
-    <appender name="HTTP-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/http/common-http-update.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/http/common-http-update.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                     
+	</appender>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
     <appender name="SYS-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/write/business-sys-update.log</file>
+		<file>${loggingRoot}/service/business-sys-update.log</file>
         	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/write/business-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
+      			<fileNamePattern>${loggingRoot}/service/business-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
       			<maxHistory>20</maxHistory>
     		</rollingPolicy>
 		<encoder charset="UTF-8">
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
 		</encoder>
 	</appender> 
-    <appender name="WMS-UPDATE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/wms/wms-sys-update.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/wms/wms-sys-update.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
-		</encoder>
-	</appender> 
-	<!-- 库存扣减过程记录 -->                                                                                                                                                                                                                                                                                                    
-    <appender name="INVENTORY-DEDUCT-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/write/business-inventory-deduct.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/write/business-inventory-deduct.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}/%X{userId}/%X{orderId}/%X{goodsId}/%X{selectionId}/%X{suppliersId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                     
+    
+	                                                                                                                                                                                                                                                                                    
 	<!-- job调度过程记录:locked -->                                                                                                                                                                                                                                                                                                    
     <appender name="LOCKED-JOB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/job/job-locked-schedule.log</file>
@@ -277,16 +227,7 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                     
-    <appender name="INVENTORY-JOB-ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/job/job-inventory-schedule-error.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/job/job-inventory-schedule-error.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                   
 	<!-- 补偿调度过程记录 -->                                                                                                                                                                                                                                                                                                    
     <appender name="COMPENSATION-NOTIFY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/notifymessage/notify-compensation-inventory.log</file>
@@ -309,39 +250,7 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                        
-	<!-- hessian日志记录 -->                                                                                                                                                                                                                                                                                                    
-    <appender name="INVENTORY-HESSIAN-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/hessian/inventory-hessian.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/hessian/inventory-hessian.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                        
-	<!-- 队列日志记录 -->                                                                                                                                                                                                                                                                                                    
-    <appender name="INVENTORY-QUEUE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/queue/inventory-queue.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/queue/inventory-queue.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                        
-	<!-- 错误队列日志记录 -->                                                                                                                                                                                                                                                                                                    
-    <appender name="ERROR-QUEUE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/error_queue/inventory-queue-error.log</file>
-        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      			<fileNamePattern>${loggingRoot}/error_queue/inventory-queue-error.log.%d{yyyyMMdd}</fileNamePattern>
-      			<maxHistory>20</maxHistory>
-    		</rollingPolicy>
-		<encoder charset="UTF-8">
-			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
-		</encoder>
-	</appender>                                                                                                                                                                                                                                                                                                        
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 	<!-- history日志记录 -->                                                                                                                                                                                                                                                                                                    
     <appender name="INVENTORY-HIS-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<file>${loggingRoot}/his/inventory-hist.log</file>
@@ -431,38 +340,17 @@
 		<level value="INFO"/>
 		<appender-ref ref="LOG-JOB-APPENDER"/>
 	</logger>
-	<logger name="INVENTORY.JOB.ERROR.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="INVENTORY-JOB-ERROR-APPENDER"/>
-	</logger>
-	<!-- 库存扣减过程记录 -->
-	<logger name="INVENTORY.DEDUCT.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="INVENTORY-DEDUCT-APPENDER"/>
-	</logger>
-	<!-- 记录更新写入的 -->
-	 <logger name="HTTP.UPDATE.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="HTTP-UPDATE-APPENDER"/>
-	</logger>
+	
 	<logger name="SYS.UPDATERESULT.LOG" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="SYS-UPDATE-APPENDER"/>
 	</logger>
 	<!-- 记录查询接口 -->
-	 <logger name="HTTPRESULT.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="HTTP-QUERY-APPENDER"/>
-	</logger>
 	 <logger name="SYS.QUERYRESULT.LOG" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="SYS-QUERY-APPENDER"/>
 	</logger>
-	<!-- 库存初始化日志 -->
-	<logger name="INVENTORY.INIT" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="INVENTORY-INIT-APPENDER"/>
-	</logger>
+	
 	<!-- redis util log-->
 	<logger name="CACHE.ERROR" additivity="false">
 		<level value="INFO"/>
@@ -498,21 +386,7 @@
 		<level value="INFO"/>
 		<appender-ref ref="INVENTORY-DESERILIZABLE-APPENDER"/>
 	</logger>
-	<!-- hessian接口日志 -->
-	<logger name="INVENTORY.HESSIAN.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="INVENTORY-HESSIAN-APPENDER"/>
-	</logger>
-	<!-- 压入redis的队列详细信息日志 -->
-	<logger name="INVENTORY.QUEUE.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="INVENTORY-QUEUE-APPENDER"/>
-	</logger>
-	<!-- 异常队列详细信息日志 -->
-	<logger name="ERROR.QUEUE.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="ERROR-QUEUE-APPENDER"/>
-	</logger>
+	
 	<!-- 历史数据修正日志 -->
 	<logger name="INVENTORY.HIS.LOG" additivity="false">
 		<level value="INFO"/>

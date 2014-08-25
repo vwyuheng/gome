@@ -38,7 +38,8 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.result.CallResult;
 
 public class WaterfloodAdjustmentDomain extends AbstractDomain {
-	private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	//private static Log logger = LogFactory.getLog("INVENTORY.INIT");
+	private static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;
@@ -96,19 +97,19 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
-		String method = "WaterfloodAdjustmentDomain";
-		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		/*String method = "WaterfloodAdjustmentDomain";
+		final LogModel lm = LogModel.newLogModel(method);*/
+		logupdate.info(lm.addMetaData("init start", startTime)
+				.toJson(false));
 		CreateInventoryResultEnum resultEnum = null;
 		try {
 			// 初始化检查
 			resultEnum = this.initCheck();
 			long endTime = System.currentTimeMillis();
-			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+			String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
-					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(true));
+			logupdate.info(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
 				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
@@ -148,9 +149,11 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				} 
 			}
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("WaterfloodAdjustmentDomain errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);
+							"busiCheck error" + e.getMessage()),false, e);*/
+			logupdate.error(lm.addMetaData("WaterfloodAdjustmentDomain errorMsg",
+							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
@@ -179,7 +182,8 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					return CreateInventoryResultEnum.AFT_ADJUST_WATERFLOOD;
 				}
 				lm.addMetaData("adjustWaterfloodVal","adjustWaterfloodVal start").addMetaData("goodsId", goodsId).addMetaData("inventoryDO", inventoryDO);
-				writeSysUpdateLog(lm,true);
+				logupdate.info(lm.toJson(false));
+				//writeSysUpdateLog(lm,true);
 				if(goodsId>0&&inventoryDO!=null) {
 					CallResult<GoodsInventoryDO> callResult = synInitAndAysnMysqlService.updateGoodsInventory(goodsId,adjustNum,inventoryDO);
 					PublicCodeEnum publicCodeEnum = callResult
@@ -195,10 +199,10 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 							this.goodswfval = inventoryDO.getWaterfloodVal();
 						}
 						lm.addMetaData("adjustWaterfloodVal","adjustWaterfloodVal start").addMetaData("goodsId", goodsId).addMetaData("inventoryDO", inventoryDO).addMetaData("adjustNum", adjustNum).addMetaData("message", message);
-						writeSysUpdateLog(lm,true);
+						logupdate.info(lm.toJson(false));
 				}
 				lm.addMetaData("adjustWaterfloodVal","adjustWaterfloodVal end").addMetaData("message", message);
-				writeSysUpdateLog(lm,true);
+				logupdate.info(lm.toJson(false));
 				
 			}else if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION.getCode())) {
 				if(selectionInventory!=null) {
@@ -276,9 +280,11 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"adjustWaterfloodVal error" + e.getMessage()),false, e);
+							"adjustWaterfloodVal error" + e.getMessage()),false, e);*/
+			logupdate.error(lm.addMetaData("errorMsg",
+					"adjustWaterfloodVal error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -308,7 +314,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				String paramJson = new Gson().toJson(notifyParam, orderParamType);
 				extensionService.sendNotifyServer(paramJson, lm.getTraceId());*/
 			} catch (Exception e) {
-				writeBusUpdateErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
+				logupdate.error(lm.addMetaData("errorMsg",
+						"sendNotify error" + e.getMessage()).toJson(false), e);
+				//writeBusUpdateErrorLog(lm.addMetaData("errMsg", "sendNotify error"+e.getMessage()),false, e);
 			}
 		}
 		
@@ -375,7 +383,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				}
 				//初始化加分布式锁
 				lm.addMetaData("WaterfloodAdjustmentDomain initCheck","initCheck,start").addMetaData("initCheck[" + (goodsId) + "]", goodsId);
-				writeBusInitLog(lm,false);
+
+				logupdate.info(lm.toJson(false));
+
 				CreateInventoryResultEnum resultEnum = null;
 				LockResult<String> lockResult = null;
 				
@@ -385,9 +395,11 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 					if (lockResult == null
 							|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 									.getCode()) {
-						writeBusInitLog(
+						/*writeBusInitLog(
 								lm.setMethod("WaterfloodAdjustmentDomain initCheck dLock").addMetaData("errorMsg",
-										goodsId), false);
+										goodsId), false);*/
+						logupdate.info(lm.addMetaData("dLock errorMsg",
+								goodsId).toJson(false));
 					}
 					
 					InventoryInitDomain create = new InventoryInitDomain(
@@ -401,7 +413,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				}
 				lm.addMetaData("result", resultEnum);
 				lm.addMetaData("result", "end");
-				writeBusInitLog(lm,false);
+				logupdate.info(lm.toJson(false));
 				
 				return resultEnum;
 			}
@@ -433,21 +445,17 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm
-					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
+			/*this.writeBusUpdateErrorLog(lm
+					.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);*/
+			logupdate.error(lm.addMetaData("errorMsg",
+					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
 			return false;
 		}
 		this.updateActionDO = updateActionDO;
 		return true;
 	}
-	/*private boolean verifyWaterflood() {
-		if(resultACK>=0) {
-			return true;
-		}else {
-			return false;
-		}
-	}*/
+	
 	private boolean verifyselOrsuppWf() {
 		boolean ret = true;
 		//if(resultACK) {
@@ -503,8 +511,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			gsModel.setWaterfloodVal((int)resultACK);
 			selectionMsg.add(gsModel);
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm
-					.addMetaData("errMsg", "fillSelectionMsg error"+e.getMessage()),false, e);
+			
+			logupdate.error(lm.addMetaData("errorMsg",
+					"fillSelectionMsg error" + e.getMessage()).toJson(false), e);
 			this.selectionMsg = null;
 		}
 		this.selectionMsg = selectionMsg;
@@ -523,8 +532,9 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			gsModel.setWaterfloodVal((int)resultACK);
 			suppliersMsg.add(gsModel);
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(lm
-					.addMetaData("errMsg", "fillSuppliersMsg error"+e.getMessage()),false, e);
+			
+			logupdate.error(lm.addMetaData("errorMsg",
+					"fillSuppliersMsg error" + e.getMessage()).toJson(false), e);
 			this.suppliersMsg = null;
 		}
 		this.suppliersMsg = suppliersMsg;

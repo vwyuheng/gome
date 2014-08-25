@@ -64,6 +64,15 @@ public class NetUtil {
         return null;
     }
 	
+    public static String getLocalIp(){
+		String ip = NetUtil.getLocalAddress0();
+		if(ip == null){
+			ip = "127.0.0.1";
+		}
+		
+		return ip;
+	}
+    
 	private static boolean isValidAddress(InetAddress address) {
         if (address == null || address.isLoopbackAddress())
             return false;

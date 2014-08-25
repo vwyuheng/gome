@@ -51,7 +51,7 @@ public class GoodsWmsInventoryCreateDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logerror = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	
 	@SuppressWarnings("unchecked")
 	public GoodsWmsInventoryCreateDomain(UpdateRequestPacket packet,WmsInventoryRestParam reqparam,LogModel lm,Message messageRoot){

@@ -56,7 +56,8 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 	private Message messageRoot;
 	private GoodsInventoryUpdateService goodsInventoryUpdateService;
 	
-	private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	//private static Log logerror = LogFactory.getLog("HTTP.UPDATE.LOG");
+	private static Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	@SuppressWarnings("unchecked")
 	public GoodsdUpdateInventoryDomain(UpdateRequestPacket packet,UpdateInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {
@@ -147,7 +148,7 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 				return ResultEnum.getResultStatusEnum(String.valueOf(resp.getCode()));
 			}
 		} catch (Exception e) {
-			logerror.error(lm.addMetaData("errMsg", "doBusiness error"+e.getMessage()).toJson(false),e);
+			logupdate.error(lm.addMetaData("errMsg", "doBusiness error"+e.getMessage()).toJson(false),e);
 			return ResultEnum.SYS_ERROR;
 		}
 		QueueKeyIdParam queueKeyParam = (QueueKeyIdParam) resp.getBusinessResult();

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
@@ -15,7 +13,6 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.logs.LocalLogger;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -28,8 +25,7 @@ import com.tuan.inventory.model.result.CallResult;
  * @date 2014/4/23
  */
 public class InventoryInitDomain extends AbstractDomain{
-	private final static LocalLogger log = LocalLogger.getLog("COMMON.BUSINESS");
-	protected static Log logwms = LogFactory.getLog("WMS.HANDLER.LOG");
+	
 	private LogModel lm;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
@@ -191,9 +187,11 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		} catch (Exception e) {
 			this.isInitWms = false;
-			this.writeBusInitErrorLog(
+			/*this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
-							"initCheck4Wms error" + e.getMessage()),false, e);
+							"initCheck4Wms error" + e.getMessage()),false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"initCheck4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -299,9 +297,11 @@ public class InventoryInitDomain extends AbstractDomain{
 				return CreateInventoryResultEnum.INVALID_GOODSID;
 			}
 		} catch (Exception e) {
-			this.writeBusInitErrorLog(
+			/*this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
-							"initCheck error" + e.getMessage()), false, e);
+							"initCheck error" + e.getMessage()), false, e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"initCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -333,18 +333,19 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 			}
 		} catch (Exception e) {
-			this.writeBusInitErrorLog(
+			/*this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
-							"init4Wms error" + e.getMessage()),false,  e);
+							"init4Wms error" + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"init4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("wmsUpate",wmsUpate)
+			logSysUpdate.info(lm.addMetaData("wmsUpate",wmsUpate)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("selWmsList",selWmsList)
-					//.addMetaData("callResult",callResult)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -375,18 +376,19 @@ public class InventoryInitDomain extends AbstractDomain{
 							
 						}
 		} catch (Exception e) {
-			this.writeBusInitErrorLog(
+			/*this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
-							"init4Wms error" + e.getMessage()),false,  e);
+							"init4Wms error" + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"init4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("wmsUpate",wmsUpate)
+			logSysUpdate.info(lm.addMetaData("wmsUpate",wmsUpate)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("selWmsList",selWmsList)
-					//.addMetaData("callResult",callResult)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -416,19 +418,20 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 			}
 		} catch (Exception e) {
-			this.writeBusInitErrorLog(
+			/*this.writeBusInitErrorLog(
 					lm.addMetaData("errorMsg",
-							"init error" + e.getMessage()),false,  e);
+							"init error" + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"init error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("goodsId",goodsId)
+			logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 					.addMetaData("inventoryInfoDO",inventoryInfoDO)
 					.addMetaData("selectionInventoryList",selectionInventoryList)
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
-					//.addMetaData("callResult",callResult)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -471,19 +474,20 @@ public class InventoryInitDomain extends AbstractDomain{
 				}
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"createInventory error" + e.getMessage()),false,  e);
+							"createInventory error" + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+							"createInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("goodsId",goodsId)
+			logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 					.addMetaData("inventoryInfoDO",inventoryInfoDO)
 					.addMetaData("selectionInventoryList",selectionInventoryList)
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
-					//.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson());
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -519,17 +523,18 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 			
 		} catch (Exception e) {
-			this.writeBusUpdateErrorLog(
+			/*this.writeBusUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"createWmsInventory error" + e.getMessage()),false,  e);
+							"createWmsInventory error" + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"createWmsInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("wmsDO",wmsDO)
+			logSysUpdate.info(lm.addMetaData("wmsDO",wmsDO)
 					.addMetaData("selectionList",selectionList)
-					//.addMetaData("callResult",callResult)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;	
@@ -561,19 +566,21 @@ public class InventoryInitDomain extends AbstractDomain{
 					}
 				//} 
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
+			/*this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg:"+message,
-							"updateMysqlInventory error " + e.getMessage()),false,  e);
+							"updateMysqlInventory error " + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateMysqlInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("goodsId",goodsId)
+			logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 					.addMetaData("inventoryInfoDO",inventoryInfoDO)
 					.addMetaData("selectionInventoryList",selectionInventoryList)
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 		
@@ -605,19 +612,21 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 			//} 
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
+			/*this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg:"+message,
-							"restoreGoodsInventory error " + e.getMessage()),false,  e);
+							"restoreGoodsInventory error " + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"restoreGoodsInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("goodsId",goodsId)
+			logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 					.addMetaData("inventoryInfoDO",inventoryInfoDO)
 					.addMetaData("selectionInventoryList",selectionInventoryList)
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 		
@@ -651,18 +660,20 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 			//} 
 		} catch (Exception e) {
-			this.writeBusJobErrorLog(
+			/*this.writeBusJobErrorLog(
 					lm.addMetaData("errorMsg:"+message,
-							"updateInventory4GoodsCost error " + e.getMessage()),false,  e);
+							"updateInventory4GoodsCost error " + e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateInventory4GoodsCost error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			log.info(lm.addMetaData("goodsId",goodsId)
+			logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 					.addMetaData("inventoryInfoDO",inventoryInfoDO)
 					.addMetaData("selectionInventoryList",selectionInventoryList)
 					.addMetaData("suppliersInventoryList",suppliersInventoryList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 		
@@ -690,17 +701,19 @@ public class InventoryInitDomain extends AbstractDomain{
 						} 
 		} catch (Exception e) {
 			//handler = false;
-			this.writeBusWmsUpdateErrorLog(
+			/*this.writeBusWmsUpdateErrorLog(
 					lm.addMetaData("errorMsg",
-							"updateWmsMysqlInventory:"+message +","+ e.getMessage()),false,  e);
+							"updateWmsMysqlInventory:"+message +","+ e.getMessage()),false,  e);*/
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateWmsMysqlInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			logwms.info(lm.addMetaData("wmsDO",wmsDO)
+			logSysUpdate.info(lm.addMetaData("wmsDO",wmsDO)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("selectionList",selectionList)
 					.addMetaData("message",message)
 					.addMetaData("endTime", System.currentTimeMillis())
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(true));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 	}
