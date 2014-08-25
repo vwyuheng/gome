@@ -238,15 +238,9 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 								}
 							} 
 							//处理这部分队列
-<<<<<<< HEAD
-							logerror.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
-							if(!this.markDelete(queueId,JSON.toJSONString(rollbackModel))) {
-								logerror.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
-=======
 							logLock.info("库存回滚失败队列详细信息rollbackModel:("+JSON.toJSONString(rollbackModel)+")");
 							if(!this.markDelete(queueId,JSON.toJSONString(rollbackModel))) {
 								logLock.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列失败!],涉及队列queueId:("+queueId+")!!!");
-
 							}else {
 								logLock.info("[Exception库存回滚标记队列状态为删除和删除缓存的队列成功!],涉及队列queueId:("+queueId+")!!!");
 							}
