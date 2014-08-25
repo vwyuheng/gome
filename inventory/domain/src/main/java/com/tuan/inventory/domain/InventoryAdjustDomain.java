@@ -416,14 +416,21 @@ public class InventoryAdjustDomain extends AbstractDomain {
 					
 
 				}
-				this.fillSelectionMsg();
-				if(!CollectionUtils.isEmpty(selectionMsg)){
-					notifyParam.setSelectionRelation(selectionMsg);
+				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
+						.getCode()) && selectionInventory != null) {
+					this.fillSelectionMsg();
+					if(!CollectionUtils.isEmpty(selectionMsg)){
+						notifyParam.setSelectionRelation(selectionMsg);
+					}
 				}
-				this.fillSuppliersMsg();
-				if(!CollectionUtils.isEmpty(suppliersMsg)){
-					notifyParam.setSuppliersRelation(suppliersMsg);
+				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
+						.getCode()) && suppliersInventory != null) {
+					this.fillSuppliersMsg();
+					if(!CollectionUtils.isEmpty(suppliersMsg)){
+						notifyParam.setSuppliersRelation(suppliersMsg);
+					}
 				}
+				
 			} catch (Exception e) {
 				/*this.writeBusInitErrorLog(
 						lm.setMethod("fillInventoryNotifyMessageParam").addMetaData("errorMsg",e.getMessage()),false, e);*/

@@ -343,16 +343,23 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 						notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
 						notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
 					}
-					this.fillSelectionMsg();
-					if(!CollectionUtils.isEmpty(selectionMsg)){
-						
-						notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionMsg));
+					if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELECTION
+							.getCode()) && selectionInventory != null) {
+						this.fillSelectionMsg();
+						if(!CollectionUtils.isEmpty(selectionMsg)){
+							
+							notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionMsg));
+						}
 					}
-					this.fillSuppliersMsg();
-					if(!CollectionUtils.isEmpty(suppliersMsg)){
-						
-						notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(suppliersMsg));
+					if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SUPPLIERS
+							.getCode()) && suppliersInventory != null) {
+						this.fillSuppliersMsg();
+						if(!CollectionUtils.isEmpty(suppliersMsg)){
+							
+							notifyParam.setSuppliersRelation(ObjectUtils.toSuppliersMsgList(suppliersMsg));
+						}
 					}
+					
 					return notifyParam;
 				}
 	
