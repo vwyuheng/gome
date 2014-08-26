@@ -57,7 +57,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	// 领域中缓存选型和分店原始库存和扣减库存的list
 	private List<GoodsWmsSelectionResult> selectionParam;
 	// 当前库存
-	private List<Long> resultACK;
+	//private List<Long> resultACK;
 	private SequenceUtil sequenceUtil;
 
 	public InventoryWmsUpdateDomain(String clientIp, String clientName,
@@ -191,7 +191,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	private boolean verifyInventory() {
+	/*private boolean verifyInventory() {
 		boolean ret = true;
 		if(!CollectionUtils.isEmpty(resultACK)) {
 			for(long result:resultACK) {
@@ -205,7 +205,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			return true;
 		}
 		return ret;
-	}
+	}*/
 
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
@@ -339,10 +339,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				if(!StringUtils.isEmpty(ackOk)&&ackOk.equalsIgnoreCase("ok")) {
 					 verifyflg = this.goodsInventoryDomainRepository
 								.updateBatchGoodsInventory(goodsList, wmsGoodsDeductNum);
-					 verifyflg = verifyInventory();
+					 //verifyflg = verifyInventory();
 				}
 				
-				logSysUpdate.info("updateAdjustWmsInventory redis,end"+",resultwms:"+resultACK+",resultgoods:"+verifyflg);
+				logSysUpdate.info("updateAdjustWmsInventory redis,end"+",resultwms:"+ackOk+",resultgoods:"+verifyflg);
 				//writeWmsUpdateLog(lm,true);
 				// 校验库存
 				if (!verifyflg) {
