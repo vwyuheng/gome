@@ -156,4 +156,5 @@ public interface BaseDAOService {
 	
 	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId);
 	public Double zincrby(final String key, final double score,final String member);
+	public Long clearQueueData(final double start,final double end);
 }

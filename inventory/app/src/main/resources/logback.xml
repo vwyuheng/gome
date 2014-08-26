@@ -227,6 +227,17 @@
 			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
 		</encoder>
 	</appender>                                                                                                                                                                                                                                                                                                     
+	<!-- job调度过程记录 -->                                                                                                                                                                                                                                                                                                    
+    <appender name="CLEAR-JOB-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${loggingRoot}/job/job-clear-schedule.log</file>
+        	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      			<fileNamePattern>${loggingRoot}/job/job-clear-schedule.log.%d{yyyyMMdd}</fileNamePattern>
+      			<maxHistory>20</maxHistory>
+    		</rollingPolicy>
+		<encoder charset="UTF-8">
+			<pattern>%d [%t] %-5p %c{2} [%X{traceRootId}] - [%m]%n</pattern>
+		</encoder>
+	</appender>                                                                                                                                                                                                                                                                                                     
                                                                                                                                                                                                                                                                                    
 	<!-- 补偿调度过程记录 -->                                                                                                                                                                                                                                                                                                    
     <appender name="COMPENSATION-NOTIFY-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -339,6 +350,11 @@
 	<logger name="LOGS.JOB.LOG" additivity="false">
 		<level value="INFO"/>
 		<appender-ref ref="LOG-JOB-APPENDER"/>
+	</logger>
+	<!-- job调度日志:log -->
+	<logger name="CLEAR.JOB.LOG" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="CLEAR-JOB-APPENDER"/>
 	</logger>
 	
 	<logger name="SYS.UPDATERESULT.LOG" additivity="false">

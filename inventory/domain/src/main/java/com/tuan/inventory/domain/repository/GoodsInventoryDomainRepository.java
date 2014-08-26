@@ -798,4 +798,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	public Double zincrby(String key, double score, String member) {
 				 return this.baseDAOService.zincrby(key, score, member);
 			}
+	public Long clearQueueData(final double start,final double end) {
+		return this.baseDAOService.clearQueueData(start, end);
+	}
 }

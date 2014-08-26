@@ -1323,7 +1323,37 @@ public class RedisCacheUtil {
 		});
 		
 	}
-	
-	
+	/**
+	 * 移除有序集 key 中，所有 score 值介于 min 和 max 之间(包括等于 min 或 max )的成员。
+	 * @param key
+	 * @param start
+	 * @param end
+	 * @return
+	 */
+	 public Long zremrangeByScore(final String key, final double start,
+			    final double end) {
+		return jedisFactory.withJedisDo(new JWork<Long>() {
+			@Override
+			public Long work(Jedis j) throws Exception {
+			
+				if (j == null)
+					return null;
+				try {
+					return j.zremrangeByScore(key,start,end);
+					
+				} catch (Exception e) {
+				//异常发生时记录日志
+				LogModel lm = LogModel.newLogModel("RedisCacheUtil.zremrangeByScore");
+				log.error(lm.addMetaData("key", key)
+						    .addMetaData("start", start)
+						    .addMetaData("end", end)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.zremrangeByScore("+key+","+start+","+end+") error!",e);
+				}
+				
+			}
+		});
+
+	}
 	
 }

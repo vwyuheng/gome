@@ -636,4 +636,10 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	public Double zincrby(String key, double score, String member) {
 		 return this.redisCacheUtil.zincrby(key, score, member);
 	}
+
+	@Override
+	public Long clearQueueData(double start, double end) {
+		
+		return this.redisCacheUtil.zremrangeByScore(QueueConstant.QUEUE_SEND_MESSAGE, start, end);
+	}
 }
