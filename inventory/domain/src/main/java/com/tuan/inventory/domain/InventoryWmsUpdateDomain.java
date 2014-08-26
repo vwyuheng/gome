@@ -345,7 +345,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				logSysUpdate.info("updateAdjustWmsInventory redis,end"+",resultwms:"+ackOk+",resultgoods:"+verifyflg);
 				//writeWmsUpdateLog(lm,true);
 				// 校验库存
-				if (!verifyflg) {
+				if (!verifyflg&&!CollectionUtils.isEmpty(goodsList)) {
 					// 回滚库存
 					List<Long> responseResult =	this.goodsInventoryDomainRepository
 							.updateGoodsWmsInventory(wmsGoodsId,
