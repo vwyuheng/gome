@@ -87,23 +87,34 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					if (selectionDO != null
 							&& selectionDO.getLimitStorage() == 1) { //为了计算销量 不管是否限制库存的都要扣减
 						// 扣减库存并返回扣减标识,计算库存并
-						if ((selectionDO.getLeftNumber() + model.getNum()) <= 0) {
+						/*if ((selectionDO.getLeftNumber() + model.getNum()) <= 0) {
 							// 该处为了保证只要有一个选型商品库存不足则返回库存不足
 							//this.isSelectionEnough = false;
 							return false;
-						} else {
+						} else {*/
 							selection = new GoodsWmsSelectionResult();
 							//redis更新用
 							selection.setId(model.getId());
 							//mysql更新用
 							selection.setGoodTypeId(model.getGoodTypeId());
 							// 扣减的库存量
-							selection.setLeftNum(model.getNum());
-							selection.setTotalNum(model.getNum());
+							if ((selectionDO.getLeftNumber() + model.getNum()) < 0) {
+								selection.setLeftNum(0);
+							}else {
+								selection.setLeftNum(selectionDO.getLeftNumber() + model.getNum());
+							}
+							if ((selectionDO.getTotalNumber() + model.getNum()) < 0) {
+								selection.setLeftNum(0);
+								selection.setTotalNum(0);
+							}else {
+								selection.setTotalNum(selectionDO.getTotalNumber() + model.getNum());
+							}
+							
+							
 							// 选型库存，并且是库存充足时用
 							this.selectionParam.add(selection);
 							
-						}
+						//}
 
 					}else if(selectionDO != null
 							&& selectionDO.getLimitStorage() == 0){
@@ -145,9 +156,16 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			for(Long goodsId:param.getGoodsIds()) {
 				GoodsInventoryDO tmpGoodsDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
 				if(tmpGoodsDO!=null) {
-					if (((tmpGoodsDO.getLeftNumber()+deductNum) >= 0)||(tmpGoodsDO.getTotalNumber()+deductNum>=0)) {
+					if (((tmpGoodsDO.getLeftNumber()+deductNum) >= 0)) {
 						tmpGoodsDO.setLeftNumber(tmpGoodsDO.getLeftNumber()+deductNum);
+					}else {
+						tmpGoodsDO.setLeftNumber(0);
+					}
+					if ((tmpGoodsDO.getTotalNumber()+deductNum>=0)) {
 						tmpGoodsDO.setTotalNumber(tmpGoodsDO.getTotalNumber()+deductNum);
+					}else {
+						tmpGoodsDO.setLeftNumber(0);
+						tmpGoodsDO.setTotalNumber(0);
 					}
 					goodsListTmp.add(tmpGoodsDO);
 				}
@@ -164,10 +182,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		//赋值
 		this.wmsGoodsDeductNum = deductNum;
 		// 扣减库存并返回扣减标识,计算库存并
-		if (tmporitotalnum+deductNum<0) {
+		/*if (tmporitotalnum+deductNum<0) {
 			//this.isEnough = true;
 			return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
-		}
+		}*/
 		//this.wmsDO = tmpwmsDO;
 		setWmsDO(tmpwmsDO);
 		return CreateInventoryResultEnum.SUCCESS;
@@ -213,7 +231,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		try {
 			// 商品选型处理
 			if(!this.selectionInventoryHandler()) {
-				return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
+				return CreateInventoryResultEnum.SYS_ERROR;
 			}else {
 				this.isSelectionEnough = true;
 			}
@@ -269,16 +287,30 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				if (isEnough) {
 					if (wmsDO != null) {
 						// 更新inventoryInfoDO对象的库存属性值
-						this.wmsDO.setLeftNumber(this.orileftnum
-								+ wmsGoodsDeductNum);
-						this.wmsDO.setTotalNumber(this.oritotalnum
-								+ wmsGoodsDeductNum);
+						if(this.orileftnum
+								+ wmsGoodsDeductNum<0) {
+							this.wmsDO.setLeftNumber(0);
+						}else {
+							this.wmsDO.setLeftNumber(this.orileftnum
+									+ wmsGoodsDeductNum);
+						}
+						if(this.oritotalnum
+								+ wmsGoodsDeductNum<0) {
+							this.wmsDO.setLeftNumber(0);
+							this.wmsDO.setTotalNumber(0);
+						}else {
+							this.wmsDO.setTotalNumber(this.oritotalnum
+									+ wmsGoodsDeductNum);
+						}
+						
+						
+						
 					}else {
 						return CreateInventoryResultEnum.NO_WMS_DATA;
 					}
-					if (wmsDO != null&&wmsDO.getTotalNumber() < 0) {
+					/*if (wmsDO != null&&wmsDO.getTotalNumber() < 0) {
 						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
-					}
+					}*/
 
 				}else {
 					String message = "InventoryWmsUpdateDomain.updateAdjustWmsInventory>isEnough:"+isEnough+",orileftnum:"+orileftnum+",oritotalnum="+oritotalnum+",wmsGoodsDeductNum="+wmsGoodsDeductNum+",message="+CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY.getDescription();
@@ -299,17 +331,16 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				
 				//redis
 				// 调整物流库存
-				resultACK = this.goodsInventoryDomainRepository
+				/*resultACK = this.goodsInventoryDomainRepository
 						.updateGoodsWmsInventory(wmsGoodsId,
-								(wmsGoodsDeductNum));
+								(wmsGoodsDeductNum));*/
+				String ackOk = goodsInventoryDomainRepository.saveAndUpdateGoodsWmsInventory(wmsDO);
 				boolean verifyflg = false;
-				if(!CollectionUtils.isEmpty(goodsList)&&verifyInventory()) {
+				if(!StringUtils.isEmpty(ackOk)&&ackOk.equalsIgnoreCase("ok")) {
 					 verifyflg = this.goodsInventoryDomainRepository
-							.updateBatchGoodsInventory(goodsList, wmsGoodsDeductNum);
-				}else {
+								.updateBatchGoodsInventory(goodsList, wmsGoodsDeductNum);
 					 verifyflg = verifyInventory();
 				}
-				
 				
 				logSysUpdate.info("updateAdjustWmsInventory redis,end"+",resultwms:"+resultACK+",resultgoods:"+verifyflg);
 				//writeWmsUpdateLog(lm,true);

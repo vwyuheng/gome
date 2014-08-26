@@ -372,8 +372,12 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO goodsDO: goodsIds) {
 				long goodsId = goodsDO.getGoodsId();
-				List<Long> result = this.baseDAOService.updateInventory(goodsId, num);
-				success = DataUtil.verifyInventory(result);
+				//List<Long> result = this.baseDAOService.updateInventory(goodsId, num);
+				String ackOk = this.baseDAOService.saveInventory(goodsId, goodsDO);
+				if(StringUtils.isEmpty(ackOk)||!ackOk.equalsIgnoreCase("ok")) {
+					return false;
+				}
+				success = true;
 			}
 		}
 		return success;
