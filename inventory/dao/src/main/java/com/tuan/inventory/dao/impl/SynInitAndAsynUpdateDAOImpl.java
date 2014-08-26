@@ -1,5 +1,8 @@
 package com.tuan.inventory.dao.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
 
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
@@ -89,8 +92,15 @@ public class SynInitAndAsynUpdateDAOImpl  extends SqlMapClientDaoSupport  implem
 	}
 
 	@Override
-	public GoodsSuppliersDO selectGoodsSuppliersDO(long suppliersId) {
-		return (GoodsSuppliersDO) super.getSqlMapClientTemplate().queryForObject("selectSuppliersInventoryBySuppId", suppliersId);
+	public GoodsSuppliersDO selectGoodsSuppliersDO(long goodsId,long suppliersId) {
+		Map<String, Object> paramMap = new HashMap<String, Object>();
+		if (goodsId!=0) {
+			paramMap.put("goodsId", goodsId);
+		}
+		paramMap.put("suppliersId", suppliersId);
+		return (GoodsSuppliersDO) super.getSqlMapClientTemplate().
+				queryForObject("selectSuppliersInventoryBySuppId", paramMap);
+		//return (GoodsSuppliersDO) super.getSqlMapClientTemplate().queryForObject("selectSuppliersInventoryBySuppId", suppliersId);
 	}
 
 	@Override

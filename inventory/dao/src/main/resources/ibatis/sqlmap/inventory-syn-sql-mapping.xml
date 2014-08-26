@@ -102,7 +102,7 @@
 	jeehe_inventory_wms wms WHERE wms.wms_goods_id =#wmsGoodsId:VARCHAR#
 	</select>
 	 <!-- 根据分店id获取商品分店库存信息  -->	
-	<select id="selectSuppliersInventoryBySuppId" resultMap="GoodsSuppliersResult"  parameterClass="java.lang.Long">
+	<select id="selectSuppliersInventoryBySuppId" resultMap="GoodsSuppliersResult"  parameterClass="java.util.Map">
 	SELECT 
 	supp.id,
 	supp.goods_id,
@@ -113,8 +113,10 @@
 	supp.attach_sale
 	
 	FROM jeehe_inventory_suppliers supp
-	WHERE
-	supp.suppliers_id = #suppliersId:INTEGER#
+	WHERE supp.goods_id = #goodsId:BIGINT# 
+	 <isNotNull prepend="and" property="suppliersId" >  
+      supp.suppliers_id = #suppliersId:INTEGER#
+      </isNotNull> 
 	</select>
 	 <!-- 根据选型id获取商品选型库存信息  -->	
 	<select id="selectSelectionInventoryBySelId" resultMap="goodsSelectionResult"  parameterClass="java.lang.Long">

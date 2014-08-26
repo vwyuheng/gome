@@ -30,8 +30,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 	public GoodsSelectionDO selectGoodsSelectionDO(long selectionId) {
 		return this.synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
 	}
-	public GoodsSuppliersDO selectGoodsSuppliersDO(long suppliersId) {
-		return this.synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(suppliersId);
+	public GoodsSuppliersDO selectGoodsSuppliersDO(long goodsId,long suppliersId) {
+		return this.synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(goodsId,suppliersId);
 	}
 	public GoodsInventoryWMSDO selectGoodsInventoryWMSDO(String wmsGoodsId) {
 		return this.synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
@@ -326,13 +326,15 @@ public class SynInitAndAsynUpdateDomainRepository {
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
 				
 				if (sDO.getSuppliersId() > 0) { // if分店
-					//sDO.setId(sequenceUtil.getSequence(SEQNAME.seq_suppliers)); 
-					long suppliersId = sDO.getSuppliersId();
-					GoodsSuppliersDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(suppliersId);
-					if(tmpDO==null) {
-						sDO.setGoodsId(goodsId);
-						this.saveGoodsSuppliers(sDO);
-					}
+					//@TODO @2014/8/26 屏蔽分店数据的初始化
+					
+					
+					//long suppliersId = sDO.getSuppliersId();
+					//GoodsSuppliersDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(goodsId,suppliersId);
+					//if(tmpDO==null) {
+					//	sDO.setGoodsId(goodsId);
+						//this.saveGoodsSuppliers(sDO);
+					//}
 					
 				}
 				

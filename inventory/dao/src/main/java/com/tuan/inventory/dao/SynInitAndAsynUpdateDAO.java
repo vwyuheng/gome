@@ -23,7 +23,7 @@ public interface  SynInitAndAsynUpdateDAO {
 	void updateGoodsSelectionDO(GoodsSelectionDO selectionDO);
 	int deleteGoodsSelectionDO(long selectionId);
 	 
-	public GoodsSuppliersDO selectGoodsSuppliersDO(long suppliersId);
+	public GoodsSuppliersDO selectGoodsSuppliersDO(long goodsId,long suppliersId);
 	void insertGoodsSuppliersDO(GoodsSuppliersDO suppliersDO);
 	void updateGoodsSuppliersDO(GoodsSuppliersDO suppliersDO);
 	int deleteGoodsSuppliersDO(long suppliersId);
