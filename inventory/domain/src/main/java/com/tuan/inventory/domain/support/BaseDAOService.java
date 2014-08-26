@@ -111,6 +111,7 @@ public interface BaseDAOService {
 	public List<Long> updateSelectionInventory(Long selectionId,String wmsGoodsId,int num);
 	public List<Long> adjustSelectionInventory(Long goodsId,Long selectionId,int num);
 	public List<Long> adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum);
+	public String overrivedSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum);
 	public Long updateSuppliersInventory(Long suppliersId,int num);
 	public List<Long> adjustSuppliersInventory(Long goodsId,Long suppliersId,int num);
 	

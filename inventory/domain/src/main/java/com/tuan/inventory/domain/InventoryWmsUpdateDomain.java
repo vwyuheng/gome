@@ -360,12 +360,10 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				
 				// 更新选型库存
 				if (isSelectionEnough&&!CollectionUtils.isEmpty(selectionList)) {
-					resultACK = this.goodsInventoryDomainRepository
+					String aCKok = this.goodsInventoryDomainRepository
 							.batchAdjustSelectionWms(selectionParam);
-					logSysUpdate.info("selection mysql,end,resultACK:"+resultACK);
-					// 校验库存
-					if (!verifyInventory()) {
-						// 回滚库存
+					logSysUpdate.info("selection mysql,end,resultACK:"+aCKok);
+					if(!StringUtils.isEmpty(aCKok)&&!aCKok.equalsIgnoreCase("ok")) {
 						// 先回滚总的 再回滚选型的
 						List<Long> rollbackResponse = this.goodsInventoryDomainRepository
 								.updateGoodsWmsInventory(wmsGoodsId,
@@ -373,8 +371,13 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						List<Long> rSelResponse = this.goodsInventoryDomainRepository
 								.batchrollbackSelectionWms(selectionParam);
 						logSysUpdate.info("rollback redis,end,rollbackResponse:"+ rollbackResponse+",rSelResponse:"+rSelResponse);
-						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
 					}
+					// 校验库存
+					/*if (!verifyInventory()) {
+						// 回滚库存
+						
+						return CreateInventoryResultEnum.AFT_ADJUST_INVENTORY;
+					}*/
 				}
 			} finally{
 				dLock.unlockManual(key);

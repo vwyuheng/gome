@@ -463,17 +463,16 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	 * @param selectionList
 	 * @return
 	 */
-	public List<Long> batchAdjustSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
-		List<Long> result = null;
+	public String batchAdjustSelectionWms(List<GoodsWmsSelectionResult> selectionList) {
 		if (!CollectionUtils.isEmpty(selectionList)) { // if1
 	
 			for (GoodsWmsSelectionResult param : selectionList) { // for
 				if (param.getId() > 0) { // if分店
-					result = this.baseDAOService.adjustSelectionWmsInventory(param.getId(), (param.getLeftNum()),(param.getTotalNum()));
+					return this.baseDAOService.overrivedSelectionWmsInventory(param.getId(), (param.getLeftNum()),(param.getTotalNum()));
 				}
 			}
 		}
-		return result;
+		return null;
 		
 	}
 	

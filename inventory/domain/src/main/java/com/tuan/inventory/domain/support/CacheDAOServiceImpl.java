@@ -1,5 +1,6 @@
 package com.tuan.inventory.domain.support;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -641,5 +642,19 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 	public Long clearQueueData(double start, double end) {
 		
 		return this.redisCacheUtil.zremrangeByScore(QueueConstant.QUEUE_SEND_MESSAGE, start, end);
+	}
+
+	@Override
+	public String overrivedSelectionWmsInventory(Long selectionId,
+			int adjustLeftNum, int adjustTotalNum) {
+		 Map<String, String> hash = new HashMap<String, String>();
+		hash.put(HashFieldEnum.leftNumber.toString(), String.valueOf(adjustLeftNum));
+		hash.put(HashFieldEnum.totalNumber.toString(), String.valueOf(adjustTotalNum));
+		return this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId), hash);
+		/*return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), adjustTotalNum,(adjustLeftNum));*/
 	}
 }
