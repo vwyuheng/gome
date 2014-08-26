@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -402,6 +403,12 @@ public class InventoryInitDomain extends AbstractDomain{
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
 		try {
+			if(inventoryInfoDO!=null) {
+				if(logSysUpdate.isInfoEnabled()) {
+					logSysUpdate.info("初始化商品详情[" + goodsId + "],resultContent=[" + JSON.toJSONString(inventoryInfoDO) + "]");
+				}
+				
+			}
 		     // 保存商品库存
 			callResult = synInitAndAysnMysqlService.saveGoodsInventory(goodsId,inventoryInfoDO,selectionInventoryList,suppliersInventoryList,wmsInventory,wmsInventory4wmsGoodsId);
 			PublicCodeEnum publicCodeEnum = callResult
