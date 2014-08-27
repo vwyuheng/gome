@@ -151,7 +151,7 @@ public class GoodsInventoryQueryController {
 		    lm.setMethod("/goods")
 			.addMetaData("goodsId", goodsId)
 			.addMetaData("RequestPacket", packet);
-		    logquery.info(lm.toJson(false));
+		    //logquery.info(lm.toJson(false));
 		GoodsQueryDomain queryDomain = GoodsQueryDomain.makeGoodsQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();
