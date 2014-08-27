@@ -49,7 +49,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	private boolean isSelectionEnough = false;
 	// 需扣减的商品库存
 	private int wmsGoodsDeductNum = 0;
-	private int wmsSelectionDeductNum = 0;
+	private int wmsSelectionDeductNum;
 	// 原剩余库存
 	private int orileftnum = 0;
 	// 原总库存
@@ -92,6 +92,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 							//this.isSelectionEnough = false;
 							return false;
 						} else {*/
+						   
+						    setWmsSelectionDeductNum(model.getNum());
 							selection = new GoodsWmsSelectionResult();
 							//redis更新用
 							selection.setId(model.getId());
@@ -180,7 +182,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 		this.orileftnum = tmporileftnum;
 		this.oritotalnum = tmporitotalnum;
 		//赋值
-		this.wmsGoodsDeductNum = deductNum;
+		//this.wmsGoodsDeductNum = deductNum;
+		setWmsGoodsDeductNum(deductNum);
 		// 扣减库存并返回扣减标识,计算库存并
 		/*if (tmporitotalnum+deductNum<0) {
 			//this.isEnough = true;
@@ -461,7 +464,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						.valueOf(orileftnum)+",totalnum:"+String
 						.valueOf(oritotalnum));
 				
-				updateActionDO.setInventoryChange(StringUtil.strHandler(wmsGoodsDeductNum, wmsSelectionDeductNum, 0));
+				updateActionDO.setInventoryChange(StringUtil.strHandler(wmsGoodsDeductNum, getWmsSelectionDeductNum(), 0));
 			}
 			if (!CollectionUtils.isEmpty(selectionList)) {
 				updateActionDO.setBusinessType(StringUtils.isEmpty(updateActionDO.getBusinessType())?ResultStatusEnum.GOODS_WMS_SELECTION
@@ -576,6 +579,22 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	
 	public void setLm(LogModel lm) {
 		this.lm = lm;
+	}
+
+	public int getWmsGoodsDeductNum() {
+		return wmsGoodsDeductNum;
+	}
+
+	public void setWmsGoodsDeductNum(int wmsGoodsDeductNum) {
+		this.wmsGoodsDeductNum = wmsGoodsDeductNum;
+	}
+
+	public int getWmsSelectionDeductNum() {
+		return wmsSelectionDeductNum;
+	}
+
+	public void setWmsSelectionDeductNum(int wmsSelectionDeductNum) {
+		this.wmsSelectionDeductNum = wmsSelectionDeductNum;
 	}
 
 	
