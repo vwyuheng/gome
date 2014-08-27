@@ -155,12 +155,25 @@ public class StringUtil {
 				if (ogsm.getId()!= null
 						&& ogsm.getId()> 0) { //商品选型的id,多个选型id以空格间隔的字符串
 					sb.append(ogsm.getId());
-					//sb.append(":");
-					//sb.append(ogsm.getCount().intValue());
+					sb.append(",[调整数量:"+ogsm.getNum()+"]");
 					sb.append(String.valueOf((char) 29));
 				}
 				
 			}
+		
+		return sb.toString();
+	}
+	public static String getGoodsIds(List<Long> goodsIds) {
+		StringBuffer sb  = new StringBuffer();
+		
+		for(Long goodsId:goodsIds) {  
+			if (goodsId!= null
+					&& goodsId> 0) { //商品id,多个id以空格间隔的字符串
+				sb.append(goodsId);
+				sb.append(String.valueOf((char) 29));
+			}
+			
+		}
 		
 		return sb.toString();
 	}
