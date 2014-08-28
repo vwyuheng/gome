@@ -15,6 +15,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectUpdateSemanticsDataAccessException;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.TuanRuntimeException;
 import com.tuan.core.common.service.TuanCallbackResult;
 import com.tuan.core.common.service.TuanServiceCallback;
@@ -342,6 +343,9 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsInventory4wmsGoodsId);
 							}
 						if(inventoryInfoDO!=null) {
+							if(logupdate.isInfoEnabled()) {
+								logupdate.info("saveGoodsInventory初始化商品详情[" + goodsId + "],resultContent=[" + JSON.toJSONString(inventoryInfoDO) + "]");
+							}
 							String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 									inventoryInfoDO);
 							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseDO!=null&&baseId!=null&&baseId!=0){

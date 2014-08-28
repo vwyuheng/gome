@@ -10,6 +10,8 @@ import java.util.Set;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -33,7 +35,7 @@ import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
 import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 
 public class ObjectUtils {
-	
+	private static final Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	
 	public static List<SelectionNotifyMessageParam> toSelectionMsgList(List<GoodsSelectionModel> list) {
 		List<SelectionNotifyMessageParam> result = null;
@@ -441,13 +443,14 @@ public class ObjectUtils {
 	public static Map<String,String> toHashMap(Object object) {
 		Map<String,String> data = new HashMap<String, String>();
 		  JSONObject jsonObject = toJSONObject(object);
+		  logupdate.info("1object详情:"+jsonObject.toString());
 		  Iterator it = jsonObject.keys();
 		  while (it.hasNext()) {
 		   String key = String.valueOf(it.next());
 		   String value = jsonObject.get(key).toString();
 		   data.put(key, value);
 		  }
-
+		  logupdate.info("2toHashMap详情:"+JSON.toJSONString(data));
 		  return data;
 		 }
 
