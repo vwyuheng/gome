@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.domain.base.AbstractGoodsInventoryDomain;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
@@ -114,7 +115,8 @@ public class GoodsdAdjustWaterfloodDomain extends AbstractGoodsInventoryDomain{
 			resp.setErrorCode(resultStatusEnum.getCode());
 			resp.setErrorMsg(resultStatusEnum.getDescription());
 		}
-	
+		lm.addMetaData("库存注水响应结果", JSON.toJSONString(resp));
+		logupdate.info(lm.toJson(false));
 		return resp;
 	}
 	

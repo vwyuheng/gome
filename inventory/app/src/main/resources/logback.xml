@@ -322,48 +322,41 @@
 		<level value="INFO"/>
 		<appender-ref ref="UCORE-BUSINESS-RESULT-APPENDER"/>
 	</logger>
-	<!-- 物流调整日志 -->
-	<logger name="WMS.HANDLER.LOG" additivity="false">
-		<level value="INFO"/>
-		<appender-ref ref="WMS-UPDATE-APPENDER"/>
-	</logger>
+	
 		<!-- 补偿调度日志 -->
 	<logger name="COMPENSATION.NOTIFY.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="COMPENSATION-NOTIFY-APPENDER"/>
 	</logger>
-	<!-- <logger name="com.wowotrace.trace.model" additivity="false">
-			<level value="INFO"/>
-			<appender-ref ref="TRACE-APPENDER"/>
-	</logger> -->
+	
 	<!-- job调度日志:locked -->
 	<logger name="LOCKED.JOB.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="LOCKED-JOB-APPENDER"/>
 	</logger>
 	<!-- job调度日志 :confirm-->
 	<logger name="CONFIRM.JOB.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="CONFIRM-JOB-APPENDER"/>
 	</logger>
 	<!-- job调度日志:log -->
 	<logger name="LOGS.JOB.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="LOG-JOB-APPENDER"/>
 	</logger>
 	<!-- job调度日志:log -->
 	<logger name="CLEAR.JOB.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="CLEAR-JOB-APPENDER"/>
 	</logger>
 	
 	<logger name="SYS.UPDATERESULT.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="SYS-UPDATE-APPENDER"/>
 	</logger>
 	<!-- 记录查询接口 -->
 	 <logger name="SYS.QUERYRESULT.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="SYS-QUERY-APPENDER"/>
 	</logger>
 	
@@ -374,7 +367,7 @@
 	</logger>
 	<!-- notifyserver -->
 	<logger name="NOTIFYSERVER.USER" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="NOTIFY-MESSAGE-APPENDER"/>
 	</logger>
 
@@ -399,13 +392,13 @@
 	</logger>
 	<!-- 序列号日志 -->
 	<logger name="INVENTORY.DESERILIZABLE.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="INVENTORY-DESERILIZABLE-APPENDER"/>
 	</logger>
 	
 	<!-- 历史数据修正日志 -->
 	<logger name="INVENTORY.HIS.LOG" additivity="false">
-		<level value="INFO"/>
+		<level value="${loggingLevel}"/>
 		<appender-ref ref="INVENTORY-HIS-APPENDER"/>
 	</logger>
 	<!-- ===================================================================== -->

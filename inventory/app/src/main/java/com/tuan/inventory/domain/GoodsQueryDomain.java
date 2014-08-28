@@ -3,6 +3,7 @@ package com.tuan.inventory.domain;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.domain.base.GoodsDomain;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.enu.res.ResultEnum;
@@ -28,7 +29,7 @@ public class GoodsQueryDomain extends GoodsDomain{
 	
 	@Override
 	public ResultEnum doBusiness() {
-		logquery.info(lm.addMetaData("doBusiness", "doBusiness").toJson(false));
+		
 		CallResult<GoodsInventoryModel> queryCallResult = null;
 		try {
 			//
@@ -54,6 +55,9 @@ public class GoodsQueryDomain extends GoodsDomain{
 			logquery.error(lm.addMetaData("errorMsg", e.getMessage()).addMetaData("result", resp).toJson(false), e);
 			return ResultEnum.SYS_ERROR;
 		}
+		 if(logquery.isDebugEnabled()) {
+			 logquery.debug(lm.addMetaData("end", System.currentTimeMillis()).addMetaData("查询响应结果详情", JSON.toJSONString(resp)).toJson(false));
+		 }
 		
 		return ResultEnum.SUCCESS;
 	}
@@ -66,6 +70,7 @@ public class GoodsQueryDomain extends GoodsDomain{
 		if(this.resp != null){
 			resp.setGoodsInventory(this.resp.getGoodsInventory());
 		}
+		
 		return (resp);
 	}
 

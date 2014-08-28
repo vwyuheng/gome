@@ -343,8 +343,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsInventory4wmsGoodsId);
 							}
 						if(inventoryInfoDO!=null) {
-							if(logupdate.isInfoEnabled()) {
-								logupdate.info("saveGoodsInventory初始化商品详情[" + goodsId + "],resultContent=[" + JSON.toJSONString(inventoryInfoDO) + "]");
+							if(logupdate.isDebugEnabled()) {
+								logupdate.debug("saveGoodsInventory初始化商品详情[" + goodsId + "],resultContent=[" + JSON.toJSONString(inventoryInfoDO) + "]");
 							}
 							String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 									inventoryInfoDO);
@@ -425,7 +425,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						}
 							 
 						} catch (Exception e) {
-							
 							logupdate.error(
 									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory error occured!"
 											+ e.getMessage(), e);

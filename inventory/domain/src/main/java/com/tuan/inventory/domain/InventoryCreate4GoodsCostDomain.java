@@ -331,7 +331,6 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 		} catch (Exception e) {
 			logupdate.error(lm.addMetaData("errorMsg",
 					"InventoryCreate4GoodsCostDomain sendPreGoodsInventoryNotify error" + e.getMessage()).toJson(false), e);
-			//writeBusErrorLog(lm.addMetaData("errMsg", "sendPreGoodsInventoryNotify error" +e.getMessage()),false, e);
 		}
 	}
 	public void sendAftGoodsInventoryNotify() {
@@ -414,7 +413,6 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
-			//this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
 			logupdate.error(lm.addMetaData("errorMsg",
 					"InventoryCreate4GoodsCostDomain fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
@@ -499,7 +497,6 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			inventoryInfoDO.setGoodsSaleCount(0);
 
 		} catch (Exception e) {
-			//this.writeBusErrorLog(lm.addMetaData("errMsg", "fillInventoryDO error"+e.getMessage()),false, e);
 			logupdate.error(lm.addMetaData("errorMsg",
 					"InventoryCreate4GoodsCostDomain fillInventoryDO error" + e.getMessage()).toJson(false), e);
 			this.inventoryInfoDO4NewGoods = null;

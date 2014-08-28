@@ -96,8 +96,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "queryGoodsInventory";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		Map<String, String> objMap = null;
 		try {
 			 objMap = this.redisCacheUtil
@@ -112,8 +115,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return null;
 	}
@@ -123,8 +129,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "querySelectionRelationById";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		Map<String, String> objMap = null;
 		try {
 			 objMap = this.redisCacheUtil
@@ -143,8 +152,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return null;
 	}
@@ -288,8 +300,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "queryInventoryQueueDO";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		GoodsInventoryQueueDO queueDO = null;
 		String member ="";
 		try {
@@ -305,8 +320,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("member", member).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("member", member).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return queueDO;
 	}
@@ -472,8 +490,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "queryWmsInventoryById";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		Map<String, String> objMap = null;
 		GoodsInventoryWMSDO wmsdo=null;
 		try {
@@ -489,8 +510,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("wmsdo", wmsdo).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("wmsdo", wmsdo).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return wmsdo;
 	}
@@ -586,8 +610,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "queryGoodsBaseById";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		Map<String, String> objMap = null;
 		try {
 			objMap = this.redisCacheUtil
@@ -602,8 +629,11 @@ public class CacheDAOServiceImpl implements BaseDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return null;
 	}

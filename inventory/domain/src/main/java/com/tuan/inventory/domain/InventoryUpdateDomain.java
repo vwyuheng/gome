@@ -8,7 +8,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.inventory.dao.data.GoodsSelectionAndSuppliersResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -38,7 +37,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private UpdateInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -129,10 +127,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 			}
 		} catch (Exception e) {
-			
-			/*this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
-					"selectionInventoryHandler error" + e.getMessage()), false,
-					e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"selectionInventoryHandler error" + e.getMessage()).toJson(false), e);
 			return false;
@@ -180,9 +174,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 		} catch (Exception e) {
 			isSuppliersEnough = false;
-			/*this.writeBusUpdateErrorLog(lm.addMetaData("errorMsg",
-					"suppliersInventoryHandler error" + e.getMessage()), false,
-					e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"suppliersInventoryHandler error" + e.getMessage()).toJson(false), e);
 
@@ -230,22 +221,16 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			originLeftNumTmp = tmpInventory.getLeftNumber();
 		}
 		// 原始库存
-		//this.originalGoodsInventory = originLeftNumTmp;
 		setOriginalGoodsInventory(originLeftNumTmp);
-		//this.selectionDeductNum = deSelectionNum;
 		setSelectionDeductNum(deSelectionNum);
 		this.suppliersDeductNum = deSuppliersNum;
-		//limitStorage = inventoryInfoDO.getLimitStorage();
 		int limitStorageTmp = tmpInventory.getLimitStorage();
 		
 		if(isSelection&&!isSupplier) {  //只包含选型的
-			//this.goodsDeductNum = (selectionDeductNum);
 			setGoodsDeductNum(selectionDeductNum);
 		}else if(isSupplier&&!isSelection) {  //只包含分店的
-			//this.goodsDeductNum = (suppliersDeductNum);
 			setGoodsDeductNum(suppliersDeductNum);
 		}else if(isSupplier&&isSelection) {  //分店选型都有的
-			//this.goodsDeductNum = (selectionDeductNum + suppliersDeductNum);
 			setGoodsDeductNum((selectionDeductNum + suppliersDeductNum));
 		}else {
 			//this.goodsDeductNum = (deductNum);
@@ -253,25 +238,16 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 		// 扣减库存并返回扣减标识,计算库存并
 		if (limitStorageTmp==1&&(originalGoodsInventory-goodsDeductNum) >= 0) { //限制库存商品
-			//this.isEnough = true;
-			//limitStorage = limitStorageTmp;
 			setLimitStorage(limitStorageTmp);
 			param.setLimitStorage(limitStorageTmp);
 			// 商品库存扣减后的量
-			//limtStorgeDeNum = goodsDeductNum;
 			setLimtStorgeDeNum(goodsDeductNum);
 			tmpInventory.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); 
 			tmpInventory.setGoodsSaleCount(goodsDeductNum);
-			//this.inventoryInfoDO.setLeftNumber(this.originalGoodsInventory - goodsDeductNum); 
-			//inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
-			//this.inventoryInfoDO  = tmpInventory;
 			setInventoryInfoDO(tmpInventory);
 		}else if(limitStorageTmp==0) { //非限制库存商品
-			//this.isEnough = true;
 			//此时要更新leftnum扣减量，以便累加销量
 			tmpInventory.setGoodsSaleCount(goodsDeductNum);
-			//inventoryInfoDO.setGoodsSaleCount(goodsDeductNum);
-			//this.inventoryInfoDO  = tmpInventory;
 			setInventoryInfoDO(tmpInventory);
 		}else {
 			return CreateInventoryResultEnum.SHORTAGE_STOCK_INVENTORY;
@@ -392,8 +368,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 											
 										}
 									} catch (Exception e) {
-										/*logHis.error("errorMsg:"+message+
-												",InventoryUpdateDomain error " + e.getMessage(), e);*/
 										logSysUpdate.error(lm.addMetaData("errorMsg",
 												"InventoryUpdateDomain error" + e.getMessage()).toJson(false), e);
 										
@@ -460,9 +434,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -477,18 +448,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}
-		//初始化加分布式锁
-		//LockResult<String> lockResult = null;
-		//String key = DLockConstants.DEDUCT_LOCK_KEY+"_goodsId_" + goodsId;
+		
 		try {
-			/*lockResult = dLock.lockManualByTimes(key, 5000L, 5);
-			if (lockResult == null
-					|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-							.getCode()) {
-				writeSysDeductLog(
-						lm.setMethod("dLock").addMetaData("deduct lock errorMsg",
-								goodsId), true);
-			}*/
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
 				return CreateInventoryResultEnum.INVALID_LOG_PARAM;
@@ -586,18 +547,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			     setQueueKeyId(queueKeyId);
 
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"updateInventory error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"updateInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
-		}/*finally{
-			dLock.unlockManual(key);
-		}*/
-		lm.addMetaData("result", "end");
-		logSysUpdate.info(lm.toJson(false));
-		//writeSysDeductLog(lm,false);
+		}
 		//处理成返回前设置tag
 		if (StringUtils.isNotEmpty(orderId)) {
 			goodsInventoryDomainRepository.setTag(
@@ -871,10 +824,6 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	public void setSynInitAndAysnMysqlService(
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
-	}
-
-	public void setdLock(DLockImpl dLock) {
-		this.dLock = dLock;
 	}
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {

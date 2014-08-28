@@ -229,18 +229,9 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 				
 			}
 		}
-		long startTime = System.currentTimeMillis();
-		/*String method = "InventoryWmsDataUpdateDomain";
-		final LogModel lm = LogModel.newLogModel(method);*/
-		logupdate.info(lm.addMetaData("init start", startTime)
-				.toJson(false));
+		
 		//初始化
 		CreateInventoryResultEnum resultWmsEnum = this.initWmsCheck(goodsId,wmsGoodsId,isBeDelivery,goodsTypeIdList, lm);
-		long endTime = System.currentTimeMillis();
-		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
-				+ "milliseconds(毫秒)执行完成!";
-		logupdate.info(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId).addMetaData("wmsGoodsId", wmsGoodsId).addMetaData("isBeDelivery", isBeDelivery).addMetaData("goodsTypeIdList", goodsTypeIdList)
-				.addMetaData("runResult", runResult).addMetaData("message", resultWmsEnum.getDescription()).toJson(false));
 		
 		if(resultWmsEnum!=null&&!(resultWmsEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 			return resultWmsEnum;
@@ -268,9 +259,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			
 			
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);*/
 			logupdate.error(lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -296,9 +284,6 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			if (lockResult == null
 					|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
 							.getCode()) {
-				/*writeSysDeductLog(
-						lm.setMethod("dLock").addMetaData("updateAndInsertWmsData lock errorMsg",
-								goodsId), true);*/
 				logupdate.info(lm.addMetaData("updateAndInsertWmsData lock errorMsg",
 						goodsId).toJson(false));
 			}

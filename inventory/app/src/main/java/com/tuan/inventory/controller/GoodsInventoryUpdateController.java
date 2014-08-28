@@ -103,7 +103,7 @@ public class GoodsInventoryUpdateController {
 				"Inventory-app", "GoodsInventoryUpdateController",
 				"createInventory");
 		LogModel lm = (LogModel) request.getAttribute("lm");
-		lm.setMethod("/up")
+		lm.setMethod("up_updateInventory_"+System.currentTimeMillis())
 		.addMetaData("RequestPacket", packet)
 		.addMetaData("param", param);
 		logupdate.info(lm.toJson(false));

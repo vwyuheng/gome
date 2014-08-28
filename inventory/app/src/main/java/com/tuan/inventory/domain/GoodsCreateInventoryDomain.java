@@ -336,7 +336,8 @@ public class GoodsCreateInventoryDomain extends AbstractGoodsInventoryDomain{
 			resp.setErrorCode(resultStatusEnum.getCode());
 			resp.setErrorMsg(resultStatusEnum.getDescription());
 		}
-	
+		lm.addMetaData("新增库存响应结果", JSON.toJSONString(resp));
+		logupdate.info(lm.toJson(false));
 		return resp;
 	}
 	

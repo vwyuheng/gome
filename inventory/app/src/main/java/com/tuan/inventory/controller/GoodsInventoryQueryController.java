@@ -148,10 +148,13 @@ public class GoodsInventoryQueryController {
 					"Inventory-app", "GoodsInventoryQueryController",
 					"goods");
 		    LogModel lm = (LogModel)request.getAttribute("lm");
-		    lm.setMethod("/goods")
+		    lm.setMethod("goodsInventoryQuery_"+System.currentTimeMillis())
 			.addMetaData("goodsId", goodsId)
 			.addMetaData("RequestPacket", packet);
-		    //logquery.info(lm.toJson(false));
+		    if(logquery.isDebugEnabled()) {
+		    	logquery.debug(lm.toJson(false));
+		    }
+		    
 		GoodsQueryDomain queryDomain = GoodsQueryDomain.makeGoodsQueryDomain(packet,goodsId,lm,traceMessage);
 		if(queryDomain == null){
 			GoodsQueryInnerResp resp = new GoodsQueryInnerResp();

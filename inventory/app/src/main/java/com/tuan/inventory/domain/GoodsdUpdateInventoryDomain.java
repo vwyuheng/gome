@@ -171,7 +171,8 @@ public class GoodsdUpdateInventoryDomain extends AbstractGoodsInventoryDomain{
 			resp.setErrorCode(resultStatusEnum.getCode());
 			resp.setErrorMsg(resultStatusEnum.getDescription());
 		}
-	
+		lm.addMetaData("库存扣减的响应结果", JSON.toJSONString(resp));
+		logupdate.info(lm.toJson(false));
 		return resp;
 	}
 	

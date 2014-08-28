@@ -161,6 +161,8 @@ public class GoodsWmsInventoryCreateDomain extends AbstractGoodsInventoryDomain{
 			resp.setErrorCode(resultStatusEnum.getCode());
 			resp.setErrorMsg(resultStatusEnum.getDescription());
 		}
+		lm.addMetaData("物流商品新建响应结果", JSON.toJSONString(resp));
+		logerror.info(lm.toJson(false));
 	
 		return resp;
 	}

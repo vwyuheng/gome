@@ -211,7 +211,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	public InventoryCallResult updateInventory(String clientIp,
 			String clientName, UpdateInventoryParam param, Message traceMessage) {
 		long startTime = System.currentTimeMillis();
-		String method = "GoodsInventoryUpdateService.updateInventory";
+		String method = "GoodsInventoryUpdateService.updateInventory_"+startTime;
 		final LogModel lm = LogModel.newLogModel(method);
 		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("start",startTime);
@@ -226,7 +226,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
-		inventoryUpdateDomain.setdLock(dLock);
 		String goodsId = "";
 		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
 			goodsId = param.getGoodsId();
@@ -506,7 +505,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 	public InventoryCallResult adjustWmsInventory(String clientIp,
 			String clientName, WmsInventoryParam param, Message traceMessage) {
 		long startTime = System.currentTimeMillis();
-		String method = "GoodsInventoryUpdateService.adjustWmsInventory";
+		String method = "GoodsInventoryUpdateService.adjustWmsInventory_"+startTime;
 		final LogModel lm = LogModel.newLogModel(traceMessage == null?method:traceMessage.getTraceHeader().getRootId());
 		lm.setMethod(method).addMetaData("clientIp", clientIp).addMetaData("clientName", clientName)
 				.addMetaData("param", param.toString()).addMetaData("start",startTime);
@@ -645,7 +644,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				+ "milliseconds(毫秒)执行完成!";
 		lm.setMethod(method).addMetaData("resultCode", result.getResultCode()).addMetaData("runResult", runResult)
 		.addMetaData("description", CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name())
-		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId()).addMetaData("end", endTime);
+		.addMetaData("goodsId", inventoryAdjustDomain.getGoodsId())
+		.addMetaData("是否发送消息", inventoryAdjustDomain.isSendMsg()==false?"发消息":"库存没有调整故无需发送消息")
+		.addMetaData("end", endTime);
 		logSaveAndUpdate.info(lm.toJson(false));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
