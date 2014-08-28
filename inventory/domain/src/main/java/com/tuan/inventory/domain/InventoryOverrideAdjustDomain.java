@@ -83,7 +83,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private long suppliersId;
 	private String goodsSelectionIds = "";
 	boolean idemptent = false;
-	protected boolean isSendMsg = false;
+	public boolean isSendMsg = false;
 	
 	public InventoryOverrideAdjustDomain(String clientIp, String clientName,
 			OverrideAdjustInventoryParam param, LogModel lm) {
