@@ -12,7 +12,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -43,7 +42,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private OverrideAdjustInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private DLockImpl dLock;//分布式锁
+	//private DLockImpl dLock;//分布式锁
 	
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
@@ -84,6 +83,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private long suppliersId;
 	private String goodsSelectionIds = "";
 	boolean idemptent = false;
+	protected boolean isSendMsg = false;
 	
 	public InventoryOverrideAdjustDomain(String clientIp, String clientName,
 			OverrideAdjustInventoryParam param, LogModel lm) {
@@ -213,6 +213,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						//先计算调整量[可能为正也可能为负]
 						int adjustnum = afttotalnum-pretotalnum;
 						if(adjustnum==0&&limitStorage==inventoryDO.getLimitStorage()) {
+							//不调整时消息也不能发
+							setSendMsg(true);
 							return CreateInventoryResultEnum.SUCCESS;
 						}else if(adjustnum>0) {
 							// 剩余库存
@@ -712,9 +714,6 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 
-	public void setdLock(DLockImpl dLock) {
-		this.dLock = dLock;
-	}
 	public void setGoodsInventoryDomainRepository(
 			GoodsInventoryDomainRepository goodsInventoryDomainRepository) {
 		this.goodsInventoryDomainRepository = goodsInventoryDomainRepository;
@@ -730,6 +729,12 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	
 	public Long getGoodsId() {
 		return goodsId;
+	}
+	public boolean isSendMsg() {
+		return isSendMsg;
+	}
+	public void setSendMsg(boolean isSendMsg) {
+		this.isSendMsg = isSendMsg;
 	}
 
 }
