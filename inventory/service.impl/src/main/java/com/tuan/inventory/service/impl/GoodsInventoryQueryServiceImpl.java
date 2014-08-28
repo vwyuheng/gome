@@ -238,7 +238,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		  .addMetaData("goodsId", goodsId)
 		  .addMetaData("start", startTime);
 		boolean isShow = false;
-		if(!clientName.equals("partner-api")) {
+		if(!"partner-api".equals(clientName)||StringUtils.isEmpty(clientName)) {
 			  isShow=true;
 		  }
         if(isShow) {
@@ -252,12 +252,15 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						long startTime = System.currentTimeMillis();
 						/*String method = "findGoodsInventoryByGoodsId";
 						final LogModel lm = LogModel.newLogModel(method);*/
-						
-						 if(!clientName.equals("partner-api")) {
-							 logQuery.info(lm.addMetaData("init start", startTime)
-										.toJson(false));
+						boolean isShows = false;
+						if(!"partner-api".equals(clientName)||StringUtils.isEmpty(clientName)) {
+							isShows = true;
 						 }
-						
+						  if(isShows) {
+							  logQuery.info(lm.addMetaData("init start", startTime)
+										.toJson(false));
+						  }
+						 
 						InventoryQueryEnum enumRes = null;
 				
 						// 初始化检查
@@ -266,7 +269,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 								+ "milliseconds(毫秒)执行完成!";
-						 if(!clientName.equals("partner-api")) {
+						if(isShows) {
 							 logQuery.info(lm.addMetaData("init endTime", endTime).addMetaData("goodsId", goodsId)
 										.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
 						 }
