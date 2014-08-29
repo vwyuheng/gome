@@ -325,7 +325,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					String aCKok = this.goodsInventoryDomainRepository
 							.batchAdjustSelectionWms(selectionParam);
 					logSysUpdate.info("selection mysql,end,resultACK:"+aCKok);
-					if(!StringUtils.isEmpty(aCKok)&&!aCKok.equalsIgnoreCase("ok")) {
+					if(StringUtils.isEmpty(aCKok)||!StringUtils.isEmpty(aCKok)&&!aCKok.equalsIgnoreCase("ok")) {
 						// 先回滚总的 再回滚选型的
 						List<Long> rollbackResponse = this.goodsInventoryDomainRepository
 								.updateGoodsWmsInventory(wmsGoodsId,
@@ -354,10 +354,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	       //初始化物流编码
 			this.wmsGoodsId = param.getWmsGoodsId();
 			//初始化加分布式锁
-			lm.addMetaData("InventoryWmsUpdateDomain initCheck","initCheck,start").addMetaData("initCheck[" + (wmsGoodsId) + "]", wmsGoodsId);
-			if(logSysUpdate.isDebugEnabled()) {
-				logSysUpdate.debug(lm.toJson(false));
-			}
 			CreateInventoryResultEnum resultEnum = null;
 			LockResult<String> lockResult = null;
 			
@@ -382,12 +378,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			} finally{
 				dLock.unlockManual(key);
 			}
-			lm.addMetaData("result", resultEnum);
-			lm.addMetaData("result", "end");
-			if(logSysUpdate.isDebugEnabled()) {
-				logSysUpdate.debug(lm.toJson(false));
-			}
-			
 			return resultEnum;
 			}
 	

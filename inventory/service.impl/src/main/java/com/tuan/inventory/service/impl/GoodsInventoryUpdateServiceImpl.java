@@ -373,7 +373,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
-		inventoryAdjustDomain.setdLock(dLock);
+		//inventoryAdjustDomain.setdLock(dLock);
 		String goodsId = "";
 		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
 			goodsId = param.getGoodsId();
@@ -420,7 +420,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				inventoryAdjustDomain.sendNotify();
+				if(!inventoryAdjustDomain.isSendMsg()) {
+					inventoryAdjustDomain.sendNotify();
+				}
+				
 			}
 		});
 		dLock.unlockManual(lockKey);
