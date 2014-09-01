@@ -38,7 +38,7 @@ public class QueueConstant {
 
 	public static final int QUEUE_MAX_CONSUME_COUNT = 8;//最大消费次数
 */	
-	public static final Double MARK_QUEUE_DELETE_STATUS = 7d;//队列删除状态
+	public static final double MARK_QUEUE_DELETE_STATUS = 7;//队列删除状态
 	
 	/** 系统异常常数 */
 	public static final int NO_GOODS = 1046;// 没有可用的商品数据
