@@ -16,7 +16,6 @@ import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
-import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.WmsInventoryParam;
@@ -245,9 +244,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			if(!CollectionUtils.isEmpty(param.getGoodsIds())&&param.getGoodsIds().size()==1) {
 				updateActionDO.setGoodsId(param.getGoodsIds().get(0));
 			}
-			if(!CollectionUtils.isEmpty(param.getGoodsIds())) {
+			/*if(!CollectionUtils.isEmpty(param.getGoodsIds())) {
 				updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"商品id:"+StringUtil.getGoodsIds(param.getGoodsIds())+"[调整数量:"+param.getNum()+"]":updateActionDO.getRemark()+",商品id:"+StringUtil.getGoodsIds(param.getGoodsIds())+"[调整数量:"+param.getNum()+"]");
-			}
+			}*/
 			if(!StringUtils.isEmpty(param.getWmsGoodsId())) {
 				updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"物流编码:"+param.getWmsGoodsId()+"[调整数量:"+param.getNum()+"]":updateActionDO.getRemark()+",物流编码:"+param.getWmsGoodsId()+"[调整数量:"+param.getNum()+"]");
 			}
@@ -268,8 +267,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			
-			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
-			updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"物流库存调整":updateActionDO.getRemark()+",物流库存调整");
+			updateActionDO.setContent("param:"+JsonUtils.convertObjectToString(param)); // 操作内容
+			updateActionDO.setRemark("InventoryWmsUpdateDomain:物流库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",

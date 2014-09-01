@@ -214,7 +214,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			updateActionDO.setId(sequenceUtil.getSequence(SEQNAME.seq_log));
 			updateActionDO.setGoodsId(goodsId);
 			if(!StringUtils.isEmpty(wmsGoodsId)) {
-				updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"物流编码:"+wmsGoodsId:updateActionDO.getRemark()+",物流编码:"+wmsGoodsId);
+				updateActionDO.setContent(StringUtils.isEmpty(updateActionDO.getContent())?"物流编码:"+wmsGoodsId:updateActionDO.getContent()+",物流编码:"+wmsGoodsId);
 			}
 			
 			if (!CollectionUtils.isEmpty(selectionList)) {
@@ -234,8 +234,8 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			
-			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
-			updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"物流库存调整":updateActionDO.getRemark()+",物流库存调整");
+			updateActionDO.setContent(StringUtils.isEmpty(updateActionDO.getContent())?"param:"+JsonUtils.convertObjectToString(param):updateActionDO.getContent()+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
+			updateActionDO.setRemark("物流选型库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
