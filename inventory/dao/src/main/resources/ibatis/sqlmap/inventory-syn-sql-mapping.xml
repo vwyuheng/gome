@@ -575,9 +575,13 @@
 	</select>
     <!-- 通过基本id获取库存基本信息[库存中心表] -->	
 	<select id="selectSelfInventoryBaseInit" resultMap="GoodsBaseResult"  parameterClass="java.lang.Long">
-	SELECT goods_base_id ,IFNULL(SUM(base_sale_count),0) AS
+	<!-- SELECT goods_base_id ,IFNULL(SUM(base_sale_count),0) AS
 	base_sale_count,IFNULL(SUM(base_total_count),0) AS base_total_count FROM jeehe_inventory_base 
-	WHERE goods_base_id =  #goodsBaseId:BIGINT#
+	WHERE goods_base_id =  #goodsBaseId:BIGINT# -->
+	SELECT ga.goods_base_id ,IFNULL(SUM(ga.`goods_sale_count`),0) AS
+	base_sale_count,IFNULL(SUM(ga.total_num),0) AS base_total_count FROM
+	jeehe_inventory_attribute ga
+	WHERE  ga.goods_base_id =  #goodsBaseId:BIGINT#
 	</select>
 	
 	

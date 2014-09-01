@@ -317,7 +317,7 @@ public class GoodsInventoryUpdateController {
 		return adjustWmsDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:8787/rest/j/update/ajtwmssel?goodsId=8&goodsSelection=[{"goodTypeId":8434224,"id":1000654,"leftNumber":0,"limitStorage":0,"num":8,"totalNumber":0}]&t=1407466939&client=openapi&wmsGoodsId=G00100000004&ip=10.8.210.4
+	 * http://localhost:8787/rest/j/update/ajtwmssel?goodsId=861477&goodsSelection=[{"goodTypeId":8434224,"id":1000654,"leftNumber":0,"limitStorage":0,"num":8,"totalNumber":0}]&t=1407466939&client=openapi&wmsGoodsId=G00100000004&ip=10.8.210.4
 	 * @param packet
 	 * @param param
 	 * @param request
