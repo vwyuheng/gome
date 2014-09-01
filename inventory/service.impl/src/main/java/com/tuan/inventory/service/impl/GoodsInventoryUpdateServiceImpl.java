@@ -923,7 +923,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
-		inventoryUpdateDomain.setdLock(dLock);
+		//inventoryUpdateDomain.setdLock(dLock);
 		String goodsId = "";
 		if(param != null &&param.getGoodsId()!=0){
 			goodsId = String.valueOf(param.getGoodsId());

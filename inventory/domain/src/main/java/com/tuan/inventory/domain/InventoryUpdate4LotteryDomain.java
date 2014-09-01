@@ -8,12 +8,10 @@ import org.apache.commons.logging.LogFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -35,7 +33,6 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 	private UpdateLotteryInventoryParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
 	private GoodsInventoryDO inventoryInfoDO;
@@ -426,10 +423,6 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 	public void setSynInitAndAysnMysqlService(
 			SynInitAndAysnMysqlService synInitAndAysnMysqlService) {
 		this.synInitAndAysnMysqlService = synInitAndAysnMysqlService;
-	}
-
-	public void setdLock(DLockImpl dLock) {
-		this.dLock = dLock;
 	}
 
 	public void setSequenceUtil(SequenceUtil sequenceUtil) {
