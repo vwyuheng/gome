@@ -8,7 +8,7 @@
 						http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
 						default-autowire="byName">
 						
-	<dubbo:application name="inventory" owner="yushuqiang" />
+	<!-- <dubbo:application name="inventory" owner="yushuqiang" />      
 	<dubbo:registry protocol="zookeeper"
 		address="zk1-1.55tuan.me:2181,zk1-2.55tuan.me:2181,zk1-3.55tuan.me:2181"
 		file="/data/application/dubbo/inventory.dubbo.cache" />
@@ -16,8 +16,8 @@
 	<dubbo:protocol name="hessian" port="8787" server="servlet"
 		contextpath="hessian"/>
 	
-	<!-- 使Dubbo在Spring容器初始化完后，再暴露服务 -->
-	<dubbo:provider delay="-1" />
+	使Dubbo在Spring容器初始化完后，再暴露服务
+	<dubbo:provider delay="-1" /> -->
 	
   	<bean id="inventoryCenterFacade" class="com.tuan.inventory.client.impl.InventoryCenterFacadeImpl"/>
 	<dubbo:reference id="goodsInventoryQuery"

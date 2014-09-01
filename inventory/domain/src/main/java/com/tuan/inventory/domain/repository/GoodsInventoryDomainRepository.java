@@ -367,7 +367,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return this.baseDAOService.updateGoodsInventory(goodsId,goodsBaseId,leftnum, num);
 	}
 	//to
-	public boolean updateBatchGoodsInventory(List<GoodsInventoryDO> goodsIds, int num) {
+	public boolean updateBatchGoodsInventory(List<GoodsInventoryDO> goodsIds) {
 		boolean success = false;
 		if(!CollectionUtils.isEmpty(goodsIds)) {
 			for(GoodsInventoryDO goodsDO: goodsIds) {

@@ -1551,8 +1551,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	
 	@Override
 	public CallResult<Boolean> batchUpdateGoodsWms(final GoodsInventoryWMSDO wmsDO,
-			final List<GoodsInventoryDO> wmsInventoryList,
-			final List<GoodsWmsSelectionResult> selectionList)
+			final List<GoodsInventoryDO> wmsInventoryList)
 			throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
@@ -1562,13 +1561,47 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(wmsDO!=null) {
 								 synInitAndAsynUpdateDomainRepository.updateGoodsInventoryWMS(wmsDO);
 							}
-							if (!CollectionUtils.isEmpty(selectionList)) { // if1
+							/*if (!CollectionUtils.isEmpty(selectionList)) { // if1
 								synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(selectionList);
-							}
+							}*/
 							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
 								synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
 							}
 							
+							if(wmsDO!=null) {
+								String ackOk = goodsInventoryDomainRepository.saveAndUpdateGoodsWmsInventory(wmsDO);
+								if(StringUtils.isEmpty(ackOk)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsWms to redis error occured!",
+											new Exception());
+								}
+								if(!ackOk.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsWms to redis error occured!",
+											new Exception());
+								}
+							}
+							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
+								for(GoodsInventoryDO goodsDO: wmsInventoryList) {
+									long goodsId = goodsDO.getGoodsId();
+									String ackOk =  goodsInventoryDomainRepository.saveGoodsInventory(goodsId, goodsDO);
+									if(StringUtils.isEmpty(ackOk)) {
+										throw new TuanRuntimeException(
+												QueueConstant.SERVICE_REDIS_FALIURE,
+												"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsWms to redis error occured!",
+												new Exception());
+									}
+									if(!ackOk.equalsIgnoreCase("ok")) {
+										throw new TuanRuntimeException(
+												QueueConstant.SERVICE_REDIS_FALIURE,
+												"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsWms to redis error occured!",
+												new Exception());
+									}
+								}
+								
+							}
 							
 						} catch (Exception e) {
 							
@@ -2926,4 +2959,54 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			callBackResult.getThrowable());
 
 }
+
+
+	@Override
+	public CallResult<Boolean> batchUpdateGoodsSeletion(final long goodsId,
+			final List<GoodsWmsSelectionResult> selectionList) throws Exception {
+		
+		TuanCallbackResult callBackResult = super.execute(
+				new TuanServiceCallback() {
+					public TuanCallbackResult executeAction() {
+						try {
+							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(goodsId,selectionList);
+						
+						} catch (Exception e) {
+							
+							logupdate.error(
+									"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsSeletion error occured!"
+											+ e.getMessage(), e);
+							if (e instanceof IncorrectUpdateSemanticsDataAccessException) {// 更新时超出了更新的记录数等
+								throw new TuanRuntimeException(QueueConstant.INCORRECT_UPDATE,
+										"update invalid '" + selectionList
+												+ "' for key 'selectionList'", e);
+							}
+							throw new TuanRuntimeException(
+									QueueConstant.SERVICE_DATABASE_FALIURE,
+									"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsSeletion error occured!",
+									e);
+							
+						}
+						return TuanCallbackResult.success(
+								PublicCodeEnum.SUCCESS.getCode(),
+								true);
+					}
+					public TuanCallbackResult executeCheck() {
+						if (goodsId<=0||CollectionUtils.isEmpty(selectionList)) {
+							logupdate.error(this.getClass()+"_create param invalid!");
+							return TuanCallbackResult
+									.failure(goodsId<=0?PublicCodeEnum.INVALID_GOODSID.getCode():PublicCodeEnum.INVALID_SELECTIONID
+											.getCode());
+						}
+						
+						return TuanCallbackResult.success();
+						
+					}
+				}, null);
+		final int resultCode = callBackResult.getResultCode();
+		return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+				(Boolean)callBackResult.getBusinessObject(),
+				callBackResult.getThrowable());
+		
+	}
 }

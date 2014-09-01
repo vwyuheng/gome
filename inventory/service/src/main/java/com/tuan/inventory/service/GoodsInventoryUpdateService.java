@@ -12,6 +12,7 @@ import com.tuan.inventory.model.param.RestoreInventoryParam;
 import com.tuan.inventory.model.param.UpdateInventoryParam;
 import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.param.UpdateWmsDataParam;
+import com.tuan.inventory.model.param.WmsAdjustSelectionParam;
 import com.tuan.inventory.model.param.WmsInventoryParam;
 import com.tuan.inventory.model.result.InventoryCallResult;
 import com.wowotrace.trace.model.Message;
@@ -109,6 +110,7 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00007", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult adjustWmsInventory(
 			final String clientIp, final String clientName,final WmsInventoryParam param,Message traceMessage);
+	
 	/*@ProductCode(code = "00006", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult deleteInventory(
 			final String clientIp, final String clientName,final DeleteInventoryParam param,Message traceMessage);*/
@@ -157,4 +159,7 @@ public interface GoodsInventoryUpdateService {
 	@ProductCode(code = "00011", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
 	InventoryCallResult incrGoodsSaleCount(
 			final String clientIp, final String clientName,final UpdateLotteryInventoryParam param,Message traceMessage);
+	@ProductCode(code = "00012", version = "1.0", logLevel=ProductLogLevelEnum.INFO)
+	InventoryCallResult adjustWmsSelectionInventory(
+			final String clientIp, final String clientName,final WmsAdjustSelectionParam param,Message traceMessage);
 }

@@ -15,6 +15,8 @@ public class GoodsWmsSelectionResult extends TuanBaseDO {
 	private static final long serialVersionUID = 1L;
 	//选型id
 	private Long id ;
+	//商品id
+	private Long goodsId ;
 	//选型id
 	private Long goodTypeId;
 	//调整的剩余库存量
@@ -45,6 +47,12 @@ public class GoodsWmsSelectionResult extends TuanBaseDO {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Long getGoodsId() {
+		return goodsId;
+	}
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 	
 	

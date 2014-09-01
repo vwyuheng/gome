@@ -18,6 +18,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tuan.inventory.domain.GoodsCreateInventoryDomain;
 import com.tuan.inventory.domain.GoodsWmsInventoryAdjustDomain;
 import com.tuan.inventory.domain.GoodsWmsInventoryCreateDomain;
+import com.tuan.inventory.domain.GoodsWmsSelectionAdjustDomain;
 import com.tuan.inventory.domain.GoodsdAckInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustInventoryDomain;
 import com.tuan.inventory.domain.GoodsdAdjustWaterfloodDomain;
@@ -30,6 +31,7 @@ import com.tuan.inventory.model.param.rest.RestTestParam;
 import com.tuan.inventory.model.param.rest.TestParam;
 import com.tuan.inventory.model.param.rest.UpdateInventoryRestParam;
 import com.tuan.inventory.model.param.rest.WmsInventoryRestParam;
+import com.tuan.inventory.model.param.rest.WmsSelectionInventoryRestParam;
 import com.tuan.inventory.resp.inner.UpdateRequestPacket;
 import com.tuan.inventory.resp.outer.GoodsInventoryUpdateResp;
 import com.tuan.inventory.service.GoodsInventoryUpdateService;
@@ -280,7 +282,7 @@ public class GoodsInventoryUpdateController {
 		return createWmsDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:882/rest/j/update/adjustwms?&ip==127.0.0.1&client=ordercenter&t=123456789&id=1&wmsGoodsId=1&isBeDelivery=1&num=1&goodsIds=[173552,217335]&goodsSelection=[{"goodTypeId":18,"id":18,"num":1}]
+	 * http://localhost:8787/rest/j/update/adjustwms?id=11903&num=8&goodsIds=[861477]&t=1407466939&client=openapi&isBeDelivery=1&wmsGoodsId=G00100000004&ip=10.8.210.4
 	 * 物流库存调整接口 不发消息
 	 * @param packet
 	 * @param param
@@ -313,6 +315,40 @@ public class GoodsInventoryUpdateController {
 		resEnum = adjustWmsDomain.doBusiness();
 		// 返回结果
 		return adjustWmsDomain.makeResult(resEnum);
+	}
+	/**
+	 * http://localhost:8787/rest/j/update/ajtwmssel?goodsId=8&goodsSelection=[{"goodTypeId":8434224,"id":1000654,"leftNumber":0,"limitStorage":0,"num":8,"totalNumber":0}]&t=1407466939&client=openapi&wmsGoodsId=G00100000004&ip=10.8.210.4
+	 * @param packet
+	 * @param param
+	 * @param request
+	 * @return
+	 */
+	@RequestMapping(value = "/ajtwmssel", method = RequestMethod.POST)
+	public @ModelAttribute("outResp")GoodsInventoryUpdateResp adjustWmsSelectionInventory(@ModelAttribute UpdateRequestPacket packet,
+			@ModelAttribute WmsSelectionInventoryRestParam param, HttpServletRequest request) {
+		
+		Message messageRoot = (Message) request.getAttribute("messageRoot"); // trace根
+		TraceMessageUtil.traceMessagePrintS(messageRoot, MessageTypeEnum.OUTS,
+				"Inventory-app", "GoodsInventoryUpdateController",
+				"adjustWmsSelectionInventory");
+		LogModel lm = (LogModel) request.getAttribute("lm");
+		lm.setMethod("/ajtwmssel")
+		.addMetaData("RequestPacket", packet)
+		.addMetaData("param", param);
+		logupdate.info(lm.toJson(false));
+		GoodsWmsSelectionAdjustDomain adjustWmsSelDomain = new GoodsWmsSelectionAdjustDomain(
+				packet, param, lm, messageRoot);
+		adjustWmsSelDomain
+		.setGoodsInventoryUpdateService(goodsInventoryUpdateService);
+		// 接口参数校验
+		ResultEnum resEnum = adjustWmsSelDomain.checkParameter();
+		if (resEnum.compareTo(ResultEnum.SUCCESS) != 0) {
+			return adjustWmsSelDomain.makeResult(resEnum);
+		}
+		// 调用合作方接口
+		resEnum = adjustWmsSelDomain.doBusiness();
+		// 返回结果
+		return adjustWmsSelDomain.makeResult(resEnum);
 	}
 	/***
 	 * http://localhost:882/rest/j/update/oradjusti?&ip==127.0.0.1&client=ordercenter&t=123456789&tokenid=1&goodsId=1&id=0&totalnum=-1&type=2&limitStorage=1

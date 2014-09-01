@@ -272,13 +272,13 @@ public class SynInitAndAsynUpdateDomainRepository {
 			
 	
 	}
-	public void updateBatchGoodsSelectionWms(List<GoodsWmsSelectionResult> selectionResultList) throws Exception{
+	public void updateBatchGoodsSelectionWms(long goodsId,List<GoodsWmsSelectionResult> selectionResultList) throws Exception{
 		
 		if (!CollectionUtils.isEmpty(selectionResultList)) { // if1
 			for (GoodsWmsSelectionResult result : selectionResultList) { // for
 				if (result.getGoodTypeId() > 0) { // if选型
 					//将商品id set到选型中
-					//srDO.setGoodsId(goodsId);
+					result.setGoodsId(goodsId);
 					this.updateGoodsSelectionWms(result);
 				}
 				

@@ -203,13 +203,17 @@
       update jeehe_inventory_selection
       <dynamic prepend="set" >
         <isNotNull prepend="," property="totalNum">
-			total_num = total_num + #totalNum:INTEGER#
+			total_num =  #totalNum:INTEGER#
 		</isNotNull>
-		<isNotNull prepend="," property="leftNum">
-			left_num = left_num + #leftNum:INTEGER#
+        <isNotNull prepend="," property="totalNum">
+			total_num =  #totalNum:INTEGER#
+		</isNotNull>
+		<isNotNull prepend="," property="goodTypeId">
+			good_type_id = #goodTypeId:BIGINT#
 		</isNotNull>
       </dynamic>
-      where good_type_id = #goodTypeId:BIGINT#
+      where id = #id:BIGINT#
+<!--       where good_type_id = #goodTypeId:BIGINT# -->
     </update>
 	
 	

@@ -693,13 +693,13 @@ public class InventoryInitDomain extends AbstractDomain{
 		
 	}
 	//更新物流的库存信息
-	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList,List<GoodsWmsSelectionResult> selectionList) {
+	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList) {
 		String message = StringUtils.EMPTY;
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
 		try {
 			// 更新商品库存
-			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,wmsInventoryList, selectionList);
+			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,wmsInventoryList);
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
 						
@@ -721,6 +721,42 @@ public class InventoryInitDomain extends AbstractDomain{
 			if(logSysUpdate.isDebugEnabled()) {
 				logSysUpdate.debug(lm.addMetaData("wmsDO",wmsDO)
 						.addMetaData("wmsInventoryList",wmsInventoryList)
+						.addMetaData("message",message)
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
+			}
+			
+		}
+		return CreateInventoryResultEnum.SUCCESS;	
+	}
+	//更新物流的库存信息
+	public CreateInventoryResultEnum updateWmsAdjustSeltion(long goodsId,List<GoodsWmsSelectionResult> selectionList) {
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
+		try {
+			// 更新商品库存
+			callResult = synInitAndAysnMysqlService.batchUpdateGoodsSeletion(goodsId,selectionList);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				message = "updateBatchGoodsWms2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]goodsId:" + goodsId+",selectionList:"+selectionList;
+				return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+				
+			} else {
+				message = "updateMysqlInventory2mysql_success[save2mysql success]goodsId:" + goodsId+",selectionList:"+selectionList;
+			} 
+		} catch (Exception e) {
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateWmsMysqlInventory error" + e.getMessage()).toJson(false), e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			if(logSysUpdate.isDebugEnabled()) {
+				logSysUpdate.debug(lm.addMetaData("goodsId",goodsId)
 						.addMetaData("selectionList",selectionList)
 						.addMetaData("message",message)
 						.addMetaData("endTime", System.currentTimeMillis())
