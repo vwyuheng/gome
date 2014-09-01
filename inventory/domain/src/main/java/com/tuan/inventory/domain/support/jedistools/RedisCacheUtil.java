@@ -564,6 +564,38 @@ public class RedisCacheUtil {
 
 	}
 	/**
+	 * 将 key 的值设为 value ，当且仅当 key 不存在
+	 * 若给定的 key 已经存在，则 SETNX 不做任何动作。
+	 * SETNX 是『SET if Not eXists』(如果不存在，则 SET)的简写
+	 * @param key
+	 * @param value
+	 * @return
+	 * 设置成功，返回 1 。
+		设置失败，返回 0 
+	 */
+	public String getSet(final String key, final String value) {
+		return jedisFactory.withJedisDo(new JWork<String>() {
+			@Override
+			public String work(Jedis j) throws Exception {
+				if (j == null)
+					return null;
+				try {
+					return j.getSet(key,value);
+					
+				} catch (Exception e) {
+					//异常发生时记录日志
+					LogModel lm = LogModel.newLogModel("RedisCacheUtil.value");
+					log.error(lm.addMetaData("key", key)
+							.addMetaData("value", value)
+							.addMetaData("time", System.currentTimeMillis()).toJson(),e);
+					throw new CacheRunTimeException("RedisCacheUtil.get("+key+","+value+") error!",e);
+				}
+				
+			}
+		});
+		
+	}
+	/**
 	 * 为有序集 key 的成员 member 的 score 值加上增量 score
 	 * @param key
 	 * @param score

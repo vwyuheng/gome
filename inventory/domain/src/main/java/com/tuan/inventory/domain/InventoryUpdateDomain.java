@@ -770,7 +770,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	}
 
 	public boolean idemptent() {
-		//根据key取已缓存的tokenid  
+		//根据key取已缓存的tokenid    非原子性的操作maybe有问题，以后再剥离出来
 		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.DEDUCT_INVENTORY + "_"+ orderId);
 		if(StringUtils.isEmpty(gettokenid)) {  //如果为空则任务是初始的http请求过来，将tokenid缓存起来
 			if(StringUtils.isNotEmpty(orderId)) {
