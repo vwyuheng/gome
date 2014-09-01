@@ -1566,6 +1566,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}*/
 							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
 								synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
+								
 							}
 							
 							if(wmsDO!=null) {
@@ -3009,4 +3010,100 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				callBackResult.getThrowable());
 		
 	}
+
+
+	@Override
+	public CallResult<Boolean> saveAndUpdateGoodsBaseInfo(final long goodsBaseId)
+			throws Exception {
+		
+	    TuanCallbackResult callBackResult = super.execute(
+			new TuanServiceCallback() {
+				public TuanCallbackResult executeAction() {
+					try {
+						GoodsBaseInventoryDO baseDO =  null;
+						GoodsBaseInventoryDO upBaseDO =  null;
+					   //检查goodsbase信息是否存在
+						GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
+						if(tmpDo==null) {  //常态化初上线时是1vs1的关系,故直接取
+							//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
+							baseDO = synInitAndAsynUpdateDomainRepository.selectInventoryBase4Init(goodsBaseId);
+							if(baseDO!=null) {
+								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseDO);
+							}
+							
+						}else {  //相同baseid 不同的商品id时
+							//计算库存总数:暂时去掉
+							upBaseDO = synInitAndAsynUpdateDomainRepository.selectSelfInventoryBaseInit(goodsBaseId);
+							synInitAndAsynUpdateDomainRepository.updateGoodsBaseInventoryDO(upBaseDO);
+						}
+					
+						if(baseDO!=null){
+							String retAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, baseDO);
+							 if(StringUtils.isEmpty(retAck)) {
+								 throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+											new Exception());
+							 }
+							if(!retAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+										new Exception());
+							}
+						}
+						if(upBaseDO!=null){
+							String upRetAck =	goodsInventoryDomainRepository.saveGoodsBaseInventory(goodsBaseId, upBaseDO);
+							if(StringUtils.isEmpty(upRetAck)) {
+								 throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+											new Exception());
+							 }
+							if(!upRetAck.equalsIgnoreCase("ok")) {
+								throw new TuanRuntimeException(
+										QueueConstant.SERVICE_REDIS_FALIURE,
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInventory to redis error occured!",
+										new Exception());
+							}
+						}
+					
+						 
+					} catch (Exception e) {
+						logupdate.error(
+								"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInfo error occured!"
+										+ e.getMessage(), e);
+						if (e instanceof DataIntegrityViolationException) {// 消息数据重复
+							throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
+									"Duplicate entry '" + goodsBaseId
+											+ "' for key 'goodsBaseId'", e);
+						}
+						throw new TuanRuntimeException(
+								QueueConstant.SERVICE_DATABASE_FALIURE,
+								"SynInitAndAysnMysqlServiceImpl.saveGoodsBaseInfo error occured!",
+								e);
+						
+					}
+					return TuanCallbackResult.success(
+							PublicCodeEnum.SUCCESS.getCode(),
+							true);
+				}
+				public TuanCallbackResult executeCheck() {
+					if (goodsBaseId<=0) {
+						logupdate.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid");
+						return TuanCallbackResult
+								.failure(PublicCodeEnum.INVALID_GOODSBASEID
+										.getCode());
+					}
+					
+					return TuanCallbackResult.success();
+					
+				}
+			}, null);
+	final int resultCode = callBackResult.getResultCode();
+	return new CallResult<Boolean>(callBackResult.isSuccess(),PublicCodeEnum.valuesOf(resultCode),
+			(Boolean)callBackResult.getBusinessObject(),
+			callBackResult.getThrowable());
+
+}
 }

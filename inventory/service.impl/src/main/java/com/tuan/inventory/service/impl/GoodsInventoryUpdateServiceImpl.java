@@ -558,7 +558,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				
+				//更新base信息
+				adjustWmsDomain.aftUpdateGoodsBaseInfo(adjustWmsDomain.getGoodsBaseIdsList());
 			}
 		});
 		long endTime = System.currentTimeMillis();

@@ -729,6 +729,42 @@ public class InventoryInitDomain extends AbstractDomain{
 		}
 		return CreateInventoryResultEnum.SUCCESS;	
 	}
+	//更新base库存信息
+	public CreateInventoryResultEnum updateWmsBaseInventory(long goodsBaseId) {
+		String message = StringUtils.EMPTY;
+		CallResult<Boolean> callResult  = null;
+		long startTime = System.currentTimeMillis();
+		try {
+			// 更新商品库存
+			callResult = synInitAndAysnMysqlService.saveAndUpdateGoodsBaseInfo(goodsBaseId);
+			PublicCodeEnum publicCodeEnum = callResult
+					.getPublicCodeEnum();
+			
+			if (publicCodeEnum != PublicCodeEnum.SUCCESS
+					/*&& publicCodeEnum.equals(PublicCodeEnum.DATA_EXISTED)*/) {  //当数据已经存在时返回true,为的是删除缓存中的队列数据
+				// 消息数据不存并且不成功
+				message = "updateWmsBaseInventory2Mysql_error[" + publicCodeEnum.getMessage()
+						+ "]goodsBaseId:" + goodsBaseId;
+				return CreateInventoryResultEnum.valueOfEnum(publicCodeEnum.getCode());
+				
+			} else {
+				message = "updateWmsBaseInventory2mysql_success[save2mysql success]goodsBaseId:" + goodsBaseId;
+			} 
+		} catch (Exception e) {
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					"updateWmsBaseInventory error" + e.getMessage()).toJson(false), e);
+			return CreateInventoryResultEnum.SYS_ERROR;
+		}finally {
+			if(logSysUpdate.isDebugEnabled()) {
+				logSysUpdate.debug(lm.addMetaData("goodsBaseId",goodsBaseId)
+						.addMetaData("message",message)
+						.addMetaData("endTime", System.currentTimeMillis())
+						.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
+			}
+			
+		}
+		return CreateInventoryResultEnum.SUCCESS;	
+	}
 	//更新物流的库存信息
 	public CreateInventoryResultEnum updateWmsAdjustSeltion(long goodsId,List<GoodsWmsSelectionResult> selectionList) {
 		String message = StringUtils.EMPTY;
