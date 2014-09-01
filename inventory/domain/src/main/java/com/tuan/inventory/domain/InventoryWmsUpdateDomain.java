@@ -177,17 +177,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			/*LockResult<String> lockResult = null;
-			String key = DLockConstants.JOB_HANDLER+"_wmsGoodsId_" + wmsGoodsId;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.ADJUSTK_LOCK_TIME, DLockConstants.ADJUST_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					logSysUpdate.info(lm.addMetaData("wmsGoodsId",
-							wmsGoodsId).addMetaData("errorMsg",
-									"updateAdjustWmsInventory dlock error").toJson(false));
-				}*/
 				// 更新商品库存
 				CreateInventoryResultEnum handlerResultEnum = this.synUpdateMysqlInventory(wmsDO,
 						goodsList);
@@ -195,10 +184,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					logSysUpdate.info("wmsGoodsId:"+ wmsGoodsId+",wmsDO:"+wmsDO+",goodsList:"+goodsList+",handlerResult:"+handlerResultEnum.getDescription().toString());
 					return handlerResultEnum;
 				}
-				
-			/*} finally{
-				dLock.unlockManual(key);
-			}*/
 
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
@@ -214,29 +199,17 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			setWmsGoodsId(param.getWmsGoodsId());
 			//初始化加分布式锁
 			CreateInventoryResultEnum resultEnum = null;
-			/*LockResult<String> lockResult = null;
 			
-			String key = DLockConstants.INIT_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					logSysUpdate.info(lm.addMetaData("InventoryWmsUpdateDomain initCheck dLock errorMsg",
-							wmsGoodsId).toJson(false));
-				}*/
-				InventoryInitDomain create = new InventoryInitDomain();
-				//注入相关Repository
-				create.setWmsGoodsId(wmsGoodsId);
-				create.setLm(lm);
-				create.setGoodsTypeIdList(selGoodsTypeIds);
-				//create.setSelIds(selIds);
-				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				resultEnum = create.business4WmsExecute();
-			/*} finally{
-				dLock.unlockManual(key);
-			}*/
+			InventoryInitDomain create = new InventoryInitDomain();
+			//注入相关Repository
+			create.setWmsGoodsId(wmsGoodsId);
+			create.setLm(lm);
+			create.setGoodsTypeIdList(selGoodsTypeIds);
+			//create.setSelIds(selIds);
+			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			resultEnum = create.business4WmsExecute();
+			
 			return resultEnum;
 			}
 	

@@ -37,7 +37,6 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 	private String wmsGoodsId;  //物流商品的一种编码
 	private long goodsId;  //商品id
 	private List<GoodsSelectionModel> selectionList;
-	private boolean isSelectionEnough = false;
 	// 需扣减的商品库存
 	private int wmsGoodsDeductNum = 0;
 	private int wmsSelectionDeductNum;
@@ -141,8 +140,6 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			// 商品选型处理
 			if(!this.selectionInventoryHandler()) {
 				return CreateInventoryResultEnum.SYS_ERROR;
-			}else {
-				this.isSelectionEnough = true;
 			}
 			
 		} catch (Exception e) {
@@ -164,41 +161,13 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			/*LockResult<String> lockResult = null;
-			String key = DLockConstants.JOB_HANDLER+"_wmsGoodsId_" + wmsGoodsId;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.ADJUSTK_LOCK_TIME, DLockConstants.ADJUST_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					logSysUpdate.info(lm.addMetaData("wmsGoodsId",
-							wmsGoodsId).addMetaData("errorMsg",
-									"updateAdjustWmsInventory dlock error").toJson(false));
-				}*/
 				// 更新商品选型库存
-				CreateInventoryResultEnum handlerResultEnum = this.synUpdateMysqlInventory(selectionParam);
-				if (handlerResultEnum != handlerResultEnum.SUCCESS) {
-					logSysUpdate.info("wmsGoodsId:"+ wmsGoodsId+",goodsId:"+goodsId+",selectionParam:"+selectionParam+",handlerResult:"+handlerResultEnum.getDescription().toString());
-					return handlerResultEnum;
-				}
+			CreateInventoryResultEnum handlerResultEnum = this.synUpdateMysqlInventory(selectionParam);
+			if (handlerResultEnum != handlerResultEnum.SUCCESS) {
+				logSysUpdate.info("wmsGoodsId:"+ wmsGoodsId+",goodsId:"+goodsId+",selectionParam:"+selectionParam+",handlerResult:"+handlerResultEnum.getDescription().toString());
+				return handlerResultEnum;
+			}
 				
-				//redis
-				// 更新选型库存
-				if (isSelectionEnough&&!CollectionUtils.isEmpty(selectionList)) {
-					String aCKok = this.goodsInventoryDomainRepository
-							.batchAdjustSelectionWms(selectionParam);
-					logSysUpdate.info("selection inventory adjust end,aCKok:"+aCKok);
-					if(StringUtils.isEmpty(aCKok)||!StringUtils.isEmpty(aCKok)&&!aCKok.equalsIgnoreCase("ok")) {
-						// 先回滚总的 再回滚选型的
-						List<Long> rSelResponse = this.goodsInventoryDomainRepository
-								.batchrollbackSelectionWms(selectionParam);
-						logSysUpdate.info("rollback redis end,rSelResponse:"+rSelResponse);
-					}
-					
-				}
-			/*} finally{
-				dLock.unlockManual(key);
-			}*/
 
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
@@ -216,28 +185,16 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			setGoodsId(param.getGoodsId());
 			//初始化加分布式锁
 			CreateInventoryResultEnum resultEnum = null;
-			/*LockResult<String> lockResult = null;
+		
+			InventoryInitDomain create = new InventoryInitDomain();
+			//注入相关Repository
+			create.setWmsGoodsId(wmsGoodsId);
+			create.setLm(lm);
+			create.setGoodsTypeIdList(selGoodsTypeIds);
+			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
+			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			resultEnum = create.business4WmsExecute();
 			
-			String key = DLockConstants.INIT_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
-			try {
-				lockResult = dLock.lockManualByTimes(key, DLockConstants.INIT_LOCK_TIME, DLockConstants.INIT_LOCK_RETRY_TIMES);
-				if (lockResult == null
-						|| lockResult.getCode() != LockResultCodeEnum.SUCCESS
-								.getCode()) {
-					logSysUpdate.info(lm.addMetaData("InventoryWmsUpdateDomain initCheck dLock errorMsg",
-							wmsGoodsId).toJson(false));
-				}*/
-				InventoryInitDomain create = new InventoryInitDomain();
-				//注入相关Repository
-				create.setWmsGoodsId(wmsGoodsId);
-				create.setLm(lm);
-				create.setGoodsTypeIdList(selGoodsTypeIds);
-				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
-				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-				resultEnum = create.business4WmsExecute();
-			/*} finally{
-				dLock.unlockManual(key);
-			}*/
 			return resultEnum;
 			}
 	
@@ -329,6 +286,8 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 				return CreateInventoryResultEnum.INVALID_SELIDANDGOODSTYPEID;
 			}
 
+		}else {
+			return CreateInventoryResultEnum.SELECTION_GOODS;
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;

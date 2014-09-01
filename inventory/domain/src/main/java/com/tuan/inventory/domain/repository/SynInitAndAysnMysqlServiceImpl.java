@@ -1561,9 +1561,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(wmsDO!=null) {
 								 synInitAndAsynUpdateDomainRepository.updateGoodsInventoryWMS(wmsDO);
 							}
-							/*if (!CollectionUtils.isEmpty(selectionList)) { // if1
-								synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(selectionList);
-							}*/
+							
 							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
 								synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
 								
@@ -2971,6 +2969,21 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					public TuanCallbackResult executeAction() {
 						try {
 							synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelectionWms(goodsId,selectionList);
+							// 更新选型redis库存
+								String aCKok = goodsInventoryDomainRepository
+										.batchAdjustSelectionWms(selectionList);
+								if(StringUtils.isEmpty(aCKok)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.batchAdjustSelectionWms to redis error occured!",
+											new Exception());
+								}
+								if(!aCKok.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.batchAdjustSelectionWms to redis error occured!",
+											new Exception());
+								}
 						
 						} catch (Exception e) {
 							
