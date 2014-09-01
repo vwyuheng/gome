@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lock.eum.LockResultCodeEnum;
 import com.tuan.core.common.lock.impl.DLockImpl;
@@ -506,6 +507,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult adjustWmsInventory(String clientIp,
 			String clientName, WmsInventoryParam param, Message traceMessage) {
@@ -523,8 +525,20 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		adjustWmsDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		adjustWmsDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		adjustWmsDomain.setSequenceUtil(sequenceUtil);
-		adjustWmsDomain.setdLock(dLock);
+		//adjustWmsDomain.setdLock(dLock);
 		adjustWmsDomain.setLm(lm);
+		String goodsId = "";
+		if(param != null &&!CollectionUtils.isEmpty(param.getGoodsIds())) {
+			goodsId = String.valueOf(param.getGoodsIds().get(0)!=null?param.getGoodsIds().get(0):0);
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -562,6 +576,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				adjustWmsDomain.aftUpdateGoodsBaseInfo(adjustWmsDomain.getGoodsBaseIdsList());
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -969,6 +984,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		return new InventoryCallResult(result.getResultCode(), 
 				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),queueIdParam);
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public InventoryCallResult adjustWmsSelectionInventory(String clientIp,
 			String clientName, WmsAdjustSelectionParam param,
@@ -987,8 +1003,20 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		adjustWmsDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		adjustWmsDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		adjustWmsDomain.setSequenceUtil(sequenceUtil);
-		adjustWmsDomain.setdLock(dLock);
+		//adjustWmsDomain.setdLock(dLock);
 		adjustWmsDomain.setLm(lm);
+		String goodsId = "";
+		if(param != null &&param.getGoodsId()!=null&&param.getGoodsId()!=0){
+			goodsId = String.valueOf(param.getGoodsId());
+		}
+		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
+		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
+		if(lockResult == null || lockResult.getCode() != LockResultCodeEnum.SUCCESS.getCode()){//获取锁失败
+			CreateInventoryResultEnum enumRes = CreateInventoryResultEnum.DLOCK_ERROR;
+			TuanCallbackResult failureResult = TuanCallbackResult.failure(enumRes.getCode(), null, enumRes.getDescription());
+			return new InventoryCallResult(failureResult.getResultCode(), 
+					CreateInventoryResultEnum.valueOfEnum(failureResult.getResultCode()).name(),null);
+		}
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
@@ -1025,6 +1053,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				
 			}
 		});
+		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";

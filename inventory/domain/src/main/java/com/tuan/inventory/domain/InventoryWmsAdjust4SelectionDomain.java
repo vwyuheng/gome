@@ -7,15 +7,11 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.eum.LockResultCodeEnum;
-import com.tuan.core.common.lock.impl.DLockImpl;
-import com.tuan.core.common.lock.res.LockResult;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
-import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.JsonUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
@@ -33,7 +29,6 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 	private WmsAdjustSelectionParam param;
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
-	private DLockImpl dLock;//分布式锁
 	private GoodsInventoryActionDO updateActionDO;
 	//选型商品类型的id列表
 	private List<Long> selGoodsTypeIds;
@@ -160,7 +155,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 	}
 
 	// 库存系统新增库存
-	@SuppressWarnings({ "unchecked", "static-access" })
+	@SuppressWarnings("static-access")
 	public CreateInventoryResultEnum updateAdjustWmsInventory() {
 		try {
 			// 首先填充日志信息
@@ -169,7 +164,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			LockResult<String> lockResult = null;
+			/*LockResult<String> lockResult = null;
 			String key = DLockConstants.JOB_HANDLER+"_wmsGoodsId_" + wmsGoodsId;
 			try {
 				lockResult = dLock.lockManualByTimes(key, DLockConstants.ADJUSTK_LOCK_TIME, DLockConstants.ADJUST_LOCK_RETRY_TIMES);
@@ -179,7 +174,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 					logSysUpdate.info(lm.addMetaData("wmsGoodsId",
 							wmsGoodsId).addMetaData("errorMsg",
 									"updateAdjustWmsInventory dlock error").toJson(false));
-				}
+				}*/
 				// 更新商品选型库存
 				CreateInventoryResultEnum handlerResultEnum = this.synUpdateMysqlInventory(selectionParam);
 				if (handlerResultEnum != handlerResultEnum.SUCCESS) {
@@ -201,9 +196,9 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 					}
 					
 				}
-			} finally{
+			/*} finally{
 				dLock.unlockManual(key);
-			}
+			}*/
 
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
@@ -214,7 +209,6 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 	}
 	
 	//初始化库存
-	@SuppressWarnings("unchecked")
 	public CreateInventoryResultEnum initCheck() {
 	       //初始化物流编码
 			//this.wmsGoodsId = param.getWmsGoodsId();
@@ -222,7 +216,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			setGoodsId(param.getGoodsId());
 			//初始化加分布式锁
 			CreateInventoryResultEnum resultEnum = null;
-			LockResult<String> lockResult = null;
+			/*LockResult<String> lockResult = null;
 			
 			String key = DLockConstants.INIT_LOCK_KEY+"_wmsGoodsId_" + wmsGoodsId;
 			try {
@@ -232,7 +226,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 								.getCode()) {
 					logSysUpdate.info(lm.addMetaData("InventoryWmsUpdateDomain initCheck dLock errorMsg",
 							wmsGoodsId).toJson(false));
-				}
+				}*/
 				InventoryInitDomain create = new InventoryInitDomain();
 				//注入相关Repository
 				create.setWmsGoodsId(wmsGoodsId);
@@ -241,9 +235,9 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				resultEnum = create.business4WmsExecute();
-			} finally{
+			/*} finally{
 				dLock.unlockManual(key);
-			}
+			}*/
 			return resultEnum;
 			}
 	
@@ -354,10 +348,6 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 		this.sequenceUtil = sequenceUtil;
 	}
 
-	public void setdLock(DLockImpl dLock) {
-		this.dLock = dLock;
-	}
-	
 	public void setLm(LogModel lm) {
 		this.lm = lm;
 	}

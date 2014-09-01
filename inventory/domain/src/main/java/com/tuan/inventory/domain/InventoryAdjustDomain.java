@@ -34,7 +34,6 @@ import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class InventoryAdjustDomain extends AbstractDomain {
-	//private static Log logger = LogFactory.getLog("INVENTORY.INIT");
 	protected static Log logger = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	private LogModel lm;
 	private String clientIp;
