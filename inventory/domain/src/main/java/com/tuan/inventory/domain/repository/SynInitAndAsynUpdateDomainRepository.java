@@ -508,10 +508,5 @@ public class SynInitAndAsynUpdateDomainRepository {
 		return synInitAndAsynUpdateDAO.selectSelfInventoryBaseInit(goodsBaseId);
 	}
 	
-	public void updateGoodsInventoryDO4SalesCount(GoodsInventoryDO goodsDO) {
-		this.synInitAndAsynUpdateDAO.updateGoodsInventoryDO4SalesCount(goodsDO);
-	}
-	public void updateGoodsInventoryBaseDO4Sales(GoodsBaseInventoryDO baseDO) {
-		this.synInitAndAsynUpdateDAO.updateGoodsInventoryBaseDO4Sales(baseDO);
-	}
+
 }
