@@ -755,13 +755,13 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		TraceMessageUtil.traceMessagePrintS(
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "createInventory4GoodsCost");
 		//构建领域对象
-		final InventoryCreate4GoodsCostDomain inventoryCreateDomain = new InventoryCreate4GoodsCostDomain(clientIp, clientName, param, lm);
+		final InventoryCreate4GoodsCostDomain inventoryCosetDomain = new InventoryCreate4GoodsCostDomain(clientIp, clientName, param, lm);
 		//注入仓储对象
-		inventoryCreateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
-		inventoryCreateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-		inventoryCreateDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
-		inventoryCreateDomain.setSequenceUtil(sequenceUtil);
-		inventoryCreateDomain.setdLock(dLock);
+		inventoryCosetDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
+		inventoryCosetDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+		inventoryCosetDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
+		inventoryCosetDomain.setSequenceUtil(sequenceUtil);
+		//inventoryCreateDomain.setdLock(dLock);
 		Long goodsId = 0L;
 		if(param != null && param.getGoodsId() != null){
 			goodsId = param.getGoodsId();
@@ -777,7 +777,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		TuanCallbackResult result = this.inventoryServiceTemplate.execute(new InventoryUpdateServiceCallback(){
 			@Override
 			public TuanCallbackResult executeParamsCheck() {
-				CreateInventoryResultEnum resultEnum = inventoryCreateDomain.checkParam();
+				CreateInventoryResultEnum resultEnum = inventoryCosetDomain.checkParam();
 				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
 					return TuanCallbackResult.success();
 				}else{
@@ -787,7 +787,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public TuanCallbackResult executeBusiCheck() {
-				CreateInventoryResultEnum resEnum = inventoryCreateDomain.busiCheck();
+				CreateInventoryResultEnum resEnum = inventoryCosetDomain.busiCheck();
 				if (resEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0) {
 					return TuanCallbackResult.success();
 				}else{
@@ -797,7 +797,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public TuanCallbackResult executeAction() {
-				CreateInventoryResultEnum resultEnum = inventoryCreateDomain.createInventory();
+				CreateInventoryResultEnum resultEnum = inventoryCosetDomain.createInventory();
 				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
 					return TuanCallbackResult.success();
 				}else{
@@ -807,7 +807,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 
 			@Override
 			public void executeAfter() {
-				inventoryCreateDomain.sendNotify();
+				inventoryCosetDomain.sendNotify();
 			}
 		});
 		dLock.unlockManual(lockKey);
@@ -840,7 +840,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryRestoreDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryRestoreDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryRestoreDomain.setSequenceUtil(sequenceUtil);
-		inventoryRestoreDomain.setdLock(dLock);
+		//inventoryRestoreDomain.setdLock(dLock);
 		Long goodsId = 0L;
 		if(param != null && param.getGoodsId() != null){
 			goodsId = param.getGoodsId();

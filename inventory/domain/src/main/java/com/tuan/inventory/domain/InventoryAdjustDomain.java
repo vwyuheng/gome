@@ -93,8 +93,11 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	// 业务检查
 	public CreateInventoryResultEnum busiCheck() {
 		long startTime = System.currentTimeMillis();
-		logger.info(lm.addMetaData("init start", startTime)
-				.toJson(false));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.addMetaData("init start", startTime)
+					.toJson(false));
+		}
+		
 		CreateInventoryResultEnum resultEnum = null;
 		try {
 			//初始化检查
@@ -103,8 +106,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
-					.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.addMetaData("endTime", endTime).addMetaData("goodsBaseId", goodsBaseId).addMetaData("goodsId", goodsId)
+						.addMetaData("runResult", runResult).addMetaData("message", resultEnum.getDescription()).toJson(false));
+			}
 			
 			if(resultEnum!=null&&!(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0)){
 				return resultEnum;
@@ -477,7 +482,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
-			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error"+e.getMessage()),false, e);
 			logger.error(lm.addMetaData("errorMsg",
 					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
@@ -491,7 +495,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		List<SelectionNotifyMessageParam> selectionMsg = new ArrayList<SelectionNotifyMessageParam>();
 		SelectionNotifyMessageParam selMsg = new SelectionNotifyMessageParam();
 		try {
-			//selMsg.setGoodTypeId(selectionInventory.getGoodTypeId());
 			selMsg.setGoodsId(goodsId);
 			selMsg.setId(selectionId);
 			selMsg.setLeftNumber(this.selOrSuppleftnum);  //调整后的库存值
@@ -502,8 +505,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			selMsg.setWmsGoodsId(selectionInventory.getWmsGoodsId());
 			selectionMsg.add(selMsg);
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(lm.setMethod("fillSelectionMsg")
-					.addMetaData("errMsg", "fillSelectionMsg error"+e.getMessage()),false, e);*/
 			logger.error(lm.addMetaData("errorMsg",
 					"fillSelectionMsg error" + e.getMessage()).toJson(false), e);
 			this.selectionMsg = null;
@@ -514,7 +515,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 		List<SuppliersNotifyMessageParam> suppliersMsg = new ArrayList<SuppliersNotifyMessageParam>();
 		SuppliersNotifyMessageParam supMsg = new SuppliersNotifyMessageParam();
 		try {
-			//supMsg.setSuppliersId(suppliersInventory.getSuppliersId());
 			supMsg.setGoodsId(goodsId);
 			supMsg.setId(suppliersId);
 			supMsg.setLeftNumber(this.selOrSuppleftnum);  //调整后的库存值
@@ -524,8 +524,6 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			supMsg.setWaterfloodVal(suppliersInventory.getWaterfloodVal());
 			suppliersMsg.add(supMsg);
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(lm
-					.addMetaData("errMsg", "fillSuppliersMsg error"+e.getMessage()),false, e);*/
 			logger.error(lm.addMetaData("errorMsg",
 					"fillSuppliersMsg error" + e.getMessage()).toJson(false), e);
 			this.suppliersMsg = null;
