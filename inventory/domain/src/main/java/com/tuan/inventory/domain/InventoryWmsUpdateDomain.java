@@ -256,8 +256,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						.getDescription());
 				updateActionDO.setOriginalInventory("prewmsleftnum:"+String
 						.valueOf(wmsOrileftnum)+",prewmstotalnum:"+String
-						.valueOf(wmsOritotalnum)+",preGoodsList:"+JSON.toJSONString(preGoodsList));
-				updateActionDO.setInventoryChange("wmsast_aftinfo:"+JSON.toJSONString(wmsDO)+",goodsast_aftinfo:"+JSON.toJSONString(goodsList));
+						.valueOf(wmsOritotalnum)+",preGoodsList:"+JSON.toJSONString(CollectionUtils.isEmpty(preGoodsList)?"NO_GOODS":preGoodsList));
+				updateActionDO.setInventoryChange("wmsast_aftinfo:"+JSON.toJSONString(wmsDO)+",goodsast_aftinfo:"+JSON.toJSONString(CollectionUtils.isEmpty(goodsList)?"NO_GOODS":goodsList));
 			}
 			
 			
@@ -338,9 +338,9 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 				}
 			}
 			
-		}else {
+		}/*else {  //存在尚未绑定商品的物流编码和选型，故暂不校验商品id不传的情况
 			return CreateInventoryResultEnum.INVALID_GOODSID;
-		}
+		}*/
 		return CreateInventoryResultEnum.SUCCESS;
 	}
 

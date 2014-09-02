@@ -4,13 +4,19 @@ import java.beans.BeanInfo;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.util.CollectionUtils;
 
 import net.sf.json.JSONObject;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
+import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 
 public class Test {
@@ -109,7 +115,11 @@ public class Test {
 		//baseInventoryDO.setGoodsBaseId(8000009999l);
 		//baseInventoryDO.setBaseTotalCount(0);
 		//baseInventoryDO.setBaseSaleCount(0);
-		System.out.println("toHashMap="+toHashMap(baseInventoryDO));
+		System.out.println(JSON.toJSONString("NO_GOODS"));
+		List<GoodsWmsSelectionResult> tmpSelectionParam = new ArrayList<GoodsWmsSelectionResult>();
+		System.out.println(CollectionUtils.isEmpty(tmpSelectionParam));
+		
+		
 	}
 	
 	
