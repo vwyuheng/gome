@@ -95,11 +95,11 @@ public class GoodsWmsSelectionAdjustDomain extends AbstractGoodsInventoryDomain{
 		if(StringUtils.isEmpty(wmsGoodsId)){
 			return ResultEnum.INVALID_WMSGOODSID;
 		}
-		if(goodsId==null){
+		/*if(goodsId==null){
 			return ResultEnum.INVALID_GOODSID;
 		}else if(goodsId!=null&&goodsId<=0){
 			return ResultEnum.INVALID_GOODSID;
-		}
+		}*/
 
 		ResultEnum checkPackEnum = packet.checkParameter();
 		if(checkPackEnum.compareTo(ResultEnum.SUCCESS) != 0){

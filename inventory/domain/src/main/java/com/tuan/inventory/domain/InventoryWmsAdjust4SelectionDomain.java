@@ -67,7 +67,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			//this.selectionParam = new ArrayList<GoodsWmsSelectionResult>();
 			List<GoodsWmsSelectionResult> tmpSelectionParam = new ArrayList<GoodsWmsSelectionResult>();
 
-			for (GoodsSelectionModel model : selectionList) { // for
+			for (GoodsSelectionModel model : tmpSelectionList) { // for
 				if (model.getId() != null && model.getId() > 0) { // if选型
 					GoodsWmsSelectionResult selection = null;
 					Long selectionId = Long.valueOf(model.getId());
@@ -266,6 +266,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 		if (StringUtils.isEmpty(param.getWmsGoodsId())) {
 			return CreateInventoryResultEnum.INVALID_WMSGOODSID;
 		}
+		//存在尚未绑定商品的物流编码和选型，故暂不校验商品id不传的情况
 		/*if (param.getGoodsId()==null) {
 			return CreateInventoryResultEnum.INVALID_GOODSID;
 		}else if(param.getGoodsId()<=0){

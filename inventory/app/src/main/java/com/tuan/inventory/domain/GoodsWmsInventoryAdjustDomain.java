@@ -85,10 +85,6 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 		param.setId(id);
 		param.setWmsGoodsId(wmsGoodsId);
 		param.setNum(num);
-		
-		//param.setGoodsSupplier(goodsSupplier);
-		//param.setLeftNumber(leftNumber);
-		//param.setTotalNumber(totalNumber);
 		param.setIsBeDelivery(isBeDelivery);
 		
 		if(!CollectionUtils.isEmpty(reqGoodsSelection)) {
