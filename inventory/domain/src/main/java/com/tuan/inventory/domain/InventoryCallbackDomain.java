@@ -118,9 +118,6 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -154,8 +151,6 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				logSysUpdate.info(lm.toJson(false));
 			}
 			//回滚操作增加分布式锁
-			lm.addMetaData("isRollback","ackInventory isRollback,start").addMetaData("isRollback[" + (isRollback+":"+goodsId) + "]", goodsId);
-			logSysUpdate.info(lm.toJson(false));
 			LockResult<String> lockResult = null;
 			String key = DLockConstants.JOB_HANDLER+"_goodsId_" + goodsId;
 			try {
@@ -165,59 +160,87 @@ public class InventoryCallbackDomain extends AbstractDomain {
 								.getCode()) {
 					logSysUpdate.info(lm.addMetaData("ackInventory","ackInventory").addMetaData("dLock rollback errorMsg",
 							goodsId).toJson(false));
-					/*writeSysDeductLog(
-							lm.addMetaData("ackInventory","ackInventory").addMetaData("dLock rollback errorMsg",
-									goodsId), false);*/
 				}
 				//回滚:即变状态，同时将缓存删除
 				if (isRollback) {
-					lm.addMetaData("isRollback","ackInventory isRollback,start").addMetaData("isRollback[" + (isRollback+":"+goodsId) + "]", goodsId);
-					logSysUpdate.info(lm.toJson(false));
 					// 回滚库存
 					if (goodsId != null && goodsId > 0) {
-						lm.addMetaData("isRollback goods[" + (isRollback+":"+goodsId) + "]", goodsId+",deductNum:"+deductNum);
+						lm.addMetaData("ackInventory isRollback,start goods["
+								+ (isRollback + ":" + goodsId) + "]", goodsId
+								+ ",deductNum:" + deductNum);
 						logSysUpdate.info(lm.toJson(false));
 						List<Long> rollbackAftNum = this.goodsInventoryDomainRepository
-								.updateGoodsInventory(goodsId,goodsBaseId,(limtStorgeDeNum), (deductNum));
-					lm.addMetaData("isRollback after[" + (isRollback+":"+goodsId) + "]", goodsId+",rollbackAftNum:"+rollbackAftNum+",goodsBaseId:"+goodsBaseId);
-					logSysUpdate.info(lm.toJson(false));
+								.updateGoodsInventory(goodsId, goodsBaseId,
+										(limtStorgeDeNum), (deductNum));
+						lm.addMetaData("isRollback after["
+								+ (isRollback + ":" + goodsId) + "]", goodsId
+								+ ",rollbackAftNum:" + rollbackAftNum
+								+ ",goodsBaseId:" + goodsBaseId);
+						logSysUpdate.info(lm.toJson(false));
 					}
 					if (!CollectionUtils.isEmpty(selectionParam)) {
-						lm.addMetaData("isRollback selection start[" + (isRollback+":"+selectionParam.toString()) + "]", selectionParam);
+						lm.addMetaData(
+								"isRollback selection start["
+										+ (isRollback + ":" + selectionParam
+												.toString()) + "]",
+								selectionParam);
 						logSysUpdate.info(lm.toJson(false));
 						boolean rollbackSelAck = this.goodsInventoryDomainRepository
 								.rollbackSelectionInventory(selectionParam);
-						lm.addMetaData("isRollback selection end[" + (isRollback+":"+selectionParam.toString()) + "]", selectionParam+",rollbackselresult:"+rollbackSelAck);
+						lm.addMetaData(
+								"isRollback selection end["
+										+ (isRollback + ":" + selectionParam
+												.toString()) + "]",
+								selectionParam + ",rollbackselresult:"
+										+ rollbackSelAck);
 						logSysUpdate.info(lm.toJson(false));
 					}
 					if (!CollectionUtils.isEmpty(suppliersParam)) {
-						lm.addMetaData("isRollback suppliers start[" + (isRollback+":"+suppliersParam.toString()) + "]", suppliersParam);
+						lm.addMetaData(
+								"isRollback suppliers start["
+										+ (isRollback + ":" + suppliersParam
+												.toString()) + "]",
+								suppliersParam);
 						logSysUpdate.info(lm.toJson(false));
-						boolean rollbackSuppAck =this.goodsInventoryDomainRepository
+						boolean rollbackSuppAck = this.goodsInventoryDomainRepository
 								.rollbackSuppliersInventory(suppliersParam);
-						lm.addMetaData("isRollback suppliers end[" + (isRollback+":"+suppliersParam.toString()) + "]", suppliersParam+",rollbacksuppresult:"+rollbackSuppAck);
+						lm.addMetaData(
+								"isRollback suppliers end["
+										+ (isRollback + ":" + suppliersParam
+												.toString()) + "]",
+								suppliersParam + ",rollbacksuppresult:"
+										+ rollbackSuppAck);
 						logSysUpdate.info(lm.toJson(false));
 					}
 					if (queueDO != null) {
 						// 将队列标记删除
-						
+
 						String member = this.goodsInventoryDomainRepository
 								.queryMember(key);
-						lm.addMetaData("markqueue start isRollback:[" +isRollback+",key:"+ (key) + "]", key).addMetaData("member[" + (member) + "]", member);
+						lm.addMetaData(
+								"markqueue start isRollback:[" + isRollback
+										+ ",key:" + (key) + "]", key)
+								.addMetaData("member[" + (member) + "]", member);
 						logSysUpdate.info(lm.toJson(false));
 						if (!StringUtils.isEmpty(member)) {
-							if(!this.goodsInventoryDomainRepository
+							if (!this.goodsInventoryDomainRepository
 									.markQueueStatusAndDeleteCacheMember(
-											member, (upStatusNum), key)){
-								if(queueDO!=null) {
+											member, (upStatusNum), key)) {
+								if (queueDO != null) {
 									this.goodsInventoryDomainRepository
-									.markQueueStatusAndDeleteCacheMember(
-											JSON.toJSONString(queueDO), (upStatusNum), key);
+											.markQueueStatusAndDeleteCacheMember(
+													JSON.toJSONString(queueDO),
+													(upStatusNum), key);
 								}
-								
+
 							}
 						}
-						lm.addMetaData("markqueue end isRollback:["+isRollback+",key:"+ (key) + "]", key).addMetaData("member[" + (member)+",upStatusNum:"+upStatusNum + "]", member);
+						lm.addMetaData(
+								"markqueue end isRollback:[" + isRollback
+										+ ",key:" + (key) + "]", key)
+								.addMetaData(
+										"member[" + (member) + ",upStatusNum:"
+												+ upStatusNum + "]", member);
 						logSysUpdate.info(lm.toJson(false));
 					}
 
@@ -225,12 +248,8 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			} finally{
 				dLock.unlockManual(key);
 			}
-			lm.addMetaData("result", "end");
-			logSysUpdate.info(lm.toJson(false));
+			
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"ackInventory error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"ackInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -277,7 +296,6 @@ public class InventoryCallbackDomain extends AbstractDomain {
 			updateActionDO.setRemark("回调确认");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" +e.getMessage()),false, e);
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
