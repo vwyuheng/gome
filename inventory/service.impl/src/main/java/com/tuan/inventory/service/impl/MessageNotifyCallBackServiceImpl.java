@@ -61,6 +61,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 		String goodsId = inventoryRecordParam.getGoods_id();
 		String action=inventoryRecordParam.getActions();
 		LinkedHashMap<String, String> data=inventoryRecordParam.getData();
+		log.info(lm.addMetaData("data", data).toJson(false));
 		updateInventory(tokenId,goodsId,action,data,lm);
 		return true;
 	}
