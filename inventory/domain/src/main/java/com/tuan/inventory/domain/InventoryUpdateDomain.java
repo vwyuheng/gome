@@ -450,7 +450,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}
-		
+
 		try {
 			// 首先填充日志信息
 			if (!fillInventoryUpdateActionDO()) {
@@ -552,6 +552,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"updateInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
+
 		}
 		//处理成返回前设置tag
 		if (StringUtils.isNotEmpty(orderId)) {

@@ -51,9 +51,8 @@
 		<servlet-name>job</servlet-name>
 		<url-pattern>/job/*</url-pattern>
     </servlet-mapping>
-    
-    <!-- dubbo的dispatcherServlet -->
 
+    <!-- dubbo的dispatcherServlet -->
 	<servlet>
 		<servlet-name>dubbo</servlet-name>
 		<servlet-class>com.alibaba.dubbo.remoting.http.servlet.DispatcherServlet</servlet-class>

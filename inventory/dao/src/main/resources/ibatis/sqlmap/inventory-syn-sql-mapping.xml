@@ -395,7 +395,7 @@
      
 	  <!-- 插入商品选型库存信息 -->
   	<insert id="insertGoodsSelection" parameterClass="com.tuan.inventory.dao.data.redis.GoodsSelectionDO" >
-    insert into jeehe_inventory_selection 
+    insert ignore into jeehe_inventory_selection 
     (id,
     goods_id,
     suppliers_id,

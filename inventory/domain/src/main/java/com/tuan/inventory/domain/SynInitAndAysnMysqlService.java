@@ -13,7 +13,8 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.model.result.CallResult;
 
 public interface SynInitAndAysnMysqlService {
-	public CallResult<Boolean> batchUpdateGoodsWms(final GoodsInventoryWMSDO wmsDO,final List<GoodsInventoryDO> wmsInventoryList) throws Exception;
+
+	public CallResult<Boolean> batchUpdateGoodsWms(final GoodsInventoryWMSDO wmsDO,final GoodsInventoryDO goodsInventoryInfo) throws Exception;
 	public CallResult<Boolean> batchUpdateGoodsSeletion(long goodsId,final List<GoodsWmsSelectionResult> selectionList) throws Exception;
 	//public CallResult<Boolean> updateBatchGoodsWms(final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) throws Exception;
 	public CallResult<Boolean> saveGoodsWmsInventory(final GoodsInventoryWMSDO wmsDO,final List<GoodsSelectionDO> selectionList) throws Exception ;

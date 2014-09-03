@@ -282,7 +282,7 @@ public class GoodsInventoryUpdateController {
 		return createWmsDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:8787/rest/j/update/adjustwms?id=11903&num=8&goodsIds=[861477]&t=1407466939&client=openapi&isBeDelivery=1&wmsGoodsId=G00100000004&ip=10.8.210.4
+	 * http://localhost:8787/rest/j/update/adjustwms?id=11903&num=8&goodsId=861477&t=1407466939&client=openapi&isBeDelivery=1&wmsGoodsId=G00100000004&ip=10.8.210.4&isexistgoods=1
 	 * 物流库存调整接口 不发消息
 	 * @param packet
 	 * @param param
@@ -317,7 +317,7 @@ public class GoodsInventoryUpdateController {
 		return adjustWmsDomain.makeResult(resEnum);
 	}
 	/**
-	 * http://localhost:8787/rest/j/update/ajtwmssel?goodsId=861477&goodsSelection=[{"goodTypeId":8434224,"id":1000654,"leftNumber":0,"limitStorage":0,"num":8,"totalNumber":0}]&t=1407466939&client=openapi&wmsGoodsId=G00100000004&ip=10.8.210.4
+	 * http://localhost:8787/rest/j/update/ajtwmssel?goodsId=861477&goodsSelection=[{"goodTypeId":8434224,"id":1000654,"leftNumber":0,"limitStorage":0,"num":8,"totalNumber":0}]&t=1407466939&client=openapi&wmsGoodsId=G00100000004&ip=10.8.210.4&isexistgoods=1
 	 * @param packet
 	 * @param param
 	 * @param request

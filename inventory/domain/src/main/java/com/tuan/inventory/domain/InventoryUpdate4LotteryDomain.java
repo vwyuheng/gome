@@ -205,8 +205,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
-		lm.addMetaData("result", "end");
-		logupdate.info(lm.toJson(false));
+
 		//处理成返回前设置tag
 		/*if (StringUtils.isNotEmpty(orderId)) {
 			goodsInventoryDomainRepository.setTag(

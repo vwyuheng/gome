@@ -13,6 +13,8 @@ public class WmsAdjustSelectionParam extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;// 主键id
+	//商品id是否存在:1代表存在 | 0：代表不存在
+	private String isexistgoods;
 	private Long goodsId;// 商品ID(FK)
 	private String wmsGoodsId;  //物流商品的一种编码
 	private String goodsSupplier;  //供货商
@@ -106,8 +108,14 @@ public class WmsAdjustSelectionParam extends TuanBaseDO {
 		this.goodsId = goodsId;
 	}
 
-	
-	
-	
+	public String getIsexistgoods() {
+		return isexistgoods;
+	}
+
+	public void setIsexistgoods(String isexistgoods) {
+		this.isexistgoods = isexistgoods;
+	}
+
+
 	
 }

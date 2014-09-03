@@ -376,7 +376,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
-		//inventoryAdjustDomain.setdLock(dLock);
+
 		String goodsId = "";
 		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
 			goodsId = param.getGoodsId();
@@ -527,9 +527,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		adjustWmsDomain.setSequenceUtil(sequenceUtil);
 		//adjustWmsDomain.setdLock(dLock);
 		adjustWmsDomain.setLm(lm);
-		String goodsId = "";
-		if(param != null &&!CollectionUtils.isEmpty(param.getGoodsIds())) {
-			goodsId = String.valueOf(param.getGoodsIds().get(0)!=null?param.getGoodsIds().get(0):0);
+		Long goodsId = 0L;
+		if(param != null && param.getGoodsId() != null){
+			goodsId = param.getGoodsId();
 		}
 		String lockKey = DLockConstants.JOB_HANDLER + "_goodsId_" + goodsId;
 		LockResult<String> lockResult = dLock.lockManualByTimes(lockKey, DLockConstants.JOB_LOCK_TIME, DLockConstants.DEDUCT_LOCK_RETRY_TIMES);
@@ -573,7 +573,8 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			@Override
 			public void executeAfter() {
 				//更新base信息
-				adjustWmsDomain.aftUpdateGoodsBaseInfo(adjustWmsDomain.getGoodsBaseIdsList());
+				if(adjustWmsDomain.getGoodsBaseId()!=null&&adjustWmsDomain.getGoodsBaseId()!=0)  
+				             adjustWmsDomain.aftUpdateGoodsBaseInfo(adjustWmsDomain.getGoodsBaseId());
 			}
 		});
 		dLock.unlockManual(lockKey);
@@ -607,7 +608,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryAdjustDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryAdjustDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryAdjustDomain.setSequenceUtil(sequenceUtil);
-		//inventoryAdjustDomain.setdLock(dLock);
+
 		String goodsId = "";
 		if(param != null &&!StringUtils.isEmpty(param.getGoodsId())){
 			goodsId = param.getGoodsId();
@@ -761,7 +762,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryCosetDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryCosetDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
 		inventoryCosetDomain.setSequenceUtil(sequenceUtil);
-		//inventoryCreateDomain.setdLock(dLock);
+
 		Long goodsId = 0L;
 		if(param != null && param.getGoodsId() != null){
 			goodsId = param.getGoodsId();
@@ -840,7 +841,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryRestoreDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryRestoreDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryRestoreDomain.setSequenceUtil(sequenceUtil);
-		//inventoryRestoreDomain.setdLock(dLock);
+
 		Long goodsId = 0L;
 		if(param != null && param.getGoodsId() != null){
 			goodsId = param.getGoodsId();

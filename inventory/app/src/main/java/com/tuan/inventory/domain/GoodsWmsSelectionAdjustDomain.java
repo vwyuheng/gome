@@ -32,6 +32,8 @@ public class GoodsWmsSelectionAdjustDomain extends AbstractGoodsInventoryDomain{
 	//选型类型
 	private static Type typeSelection = new TypeToken<List<AdjustGoodsSelectionWmsParam>>(){}.getType();
 	private String wmsGoodsId;  //物流商品的一种编码
+	//商品id是否存在:1代表存在 | 0：代表不存在
+	private String isexistgoods;
 	//物流商品id
 	private Long goodsId;
 	//选型
@@ -52,6 +54,7 @@ public class GoodsWmsSelectionAdjustDomain extends AbstractGoodsInventoryDomain{
 		if(reqparam!=null) {
 			
 			this.wmsGoodsId = JsonStrVerificationUtils.validateStr(reqparam.getWmsGoodsId()); 
+			this.isexistgoods = JsonStrVerificationUtils.validateStr(reqparam.getIsexistgoods());
 			String goodsId = reqparam.getGoodsId();
 			this.goodsId = StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(goodsId))?0l:Long.parseLong(goodsId);
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
@@ -70,6 +73,7 @@ public class GoodsWmsSelectionAdjustDomain extends AbstractGoodsInventoryDomain{
 	
 	public WmsAdjustSelectionParam fillCreateParam() {
 		WmsAdjustSelectionParam param = new WmsAdjustSelectionParam();
+		param.setIsexistgoods(isexistgoods);
 		param.setGoodsId(goodsId);
 		param.setWmsGoodsId(wmsGoodsId);
 		if(!CollectionUtils.isEmpty(reqGoodsSelection)) {
@@ -95,11 +99,6 @@ public class GoodsWmsSelectionAdjustDomain extends AbstractGoodsInventoryDomain{
 		if(StringUtils.isEmpty(wmsGoodsId)){
 			return ResultEnum.INVALID_WMSGOODSID;
 		}
-		/*if(goodsId==null){
-			return ResultEnum.INVALID_GOODSID;
-		}else if(goodsId!=null&&goodsId<=0){
-			return ResultEnum.INVALID_GOODSID;
-		}*/
 
 		ResultEnum checkPackEnum = packet.checkParameter();
 		if(checkPackEnum.compareTo(ResultEnum.SUCCESS) != 0){
@@ -148,6 +147,7 @@ public class GoodsWmsSelectionAdjustDomain extends AbstractGoodsInventoryDomain{
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("wmsGoodsId", wmsGoodsId);
 		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":JSON.toJSONString(goodsSelection));
+		parameterMap.put("isexistgoods",  isexistgoods);
 		parameterMap.put("goodsId",  String.valueOf(goodsId));
 		packet.addParameterMap(parameterMap);
 		super.init(packet.getClient(), packet.getIp());

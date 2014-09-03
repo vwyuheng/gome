@@ -31,19 +31,22 @@ import com.wowotrace.trace.model.Message;
 public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 	//选型类型
 	private static Type typeSelection = new TypeToken<List<AdjustGoodsSelectionWmsParam>>(){}.getType();
-	private static Type type = new TypeToken<List<Long>>(){}.getType();
+	//private static Type type = new TypeToken<List<Long>>(){}.getType();
 	//物流库存主键
 	private Long id;// 主键id
+	//物流商品id列表
+	private Long goodsId;
 	private String wmsGoodsId;  //物流商品的一种编码
 	private int isBeDelivery;
 	private int num;
+	//商品id是否存在:1代表存在 | 0：代表不存在
+	private String isexistgoods;
 	//选型
 	private List<GoodsSelectionModel> goodsSelection;
 	
 	//选型
 	private List<AdjustGoodsSelectionWmsParam> reqGoodsSelection;
-	//物流商品id列表
-	private List<Long> goodsIds;
+	
 	private UpdateRequestPacket packet;
 	private WmsInventoryParam param;		
 	private LogModel lm;
@@ -56,20 +59,19 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 	public GoodsWmsInventoryAdjustDomain(UpdateRequestPacket packet,WmsInventoryRestParam reqparam,LogModel lm,Message messageRoot){
 		if(reqparam!=null) {
 			String id = reqparam.getId();
+			this.isexistgoods = JsonStrVerificationUtils.validateStr(reqparam.getIsexistgoods());
+			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(reqparam.getGoodsId()))) {
+				this.goodsId = Long.parseLong(reqparam.getGoodsId());
+			}
 			this.id = Long.valueOf(StringUtils.isEmpty(JsonStrVerificationUtils.validateStr(id))?"0":id);
 			this.wmsGoodsId = JsonStrVerificationUtils.validateStr(reqparam.getWmsGoodsId()); 
 			this.num = reqparam.getNum();
+			
 			this.isBeDelivery = reqparam.getIsBeDelivery();
 			String jsonSelectionResult =  reqparam.getGoodsSelection();
-			String jsonGoodsIdsResult = reqparam.getGoodsIds();
 			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonSelectionResult))) {
 				this.reqGoodsSelection =  (List<AdjustGoodsSelectionWmsParam>)new Gson().fromJson(jsonSelectionResult, typeSelection);
 			}
-			List<Long> goodsIdTmpList = null;
-			if(StringUtils.isNotEmpty(JsonStrVerificationUtils.validateStr(jsonGoodsIdsResult))) {
-				goodsIdTmpList =  new Gson().fromJson(jsonGoodsIdsResult, type);
-			}
-			this.goodsIds = goodsIdTmpList;
 			
 		}
 		this.packet = packet;
@@ -86,29 +88,22 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 		param.setWmsGoodsId(wmsGoodsId);
 		param.setNum(num);
 		param.setIsBeDelivery(isBeDelivery);
-		
+		param.setIsexistgoods(isexistgoods);
 		if(!CollectionUtils.isEmpty(reqGoodsSelection)) {
 			goodsSelection = new ArrayList<GoodsSelectionModel> ();
 			for(AdjustGoodsSelectionWmsParam rparam:reqGoodsSelection) {
 				GoodsSelectionModel gsModel = new GoodsSelectionModel();
-				//gsModel.setGoodsId(rparam.getGoodsId());
 				gsModel.setId(rparam.getId());
 				gsModel.setGoodTypeId(rparam.getGoodTypeId());
 				gsModel.setNum(rparam.getNum());
-				//gsModel.setLeftNumber(rparam.getLeftNumber());
 				gsModel.setLimitStorage(rparam.getLimitStorage());
-				//gsModel.setSuppliersInventoryId(rparam.getSuppliersInventoryId());
-				//gsModel.setTotalNumber(rparam.getTotalNumber());
-				//gsModel.setWaterfloodVal(rparam.getWaterfloodVal());
-				//gsModel.setUserId(rparam.getUserId());
 				goodsSelection.add(gsModel);
 			}
 		}
+		param.setGoodsId(goodsId);
 		if(!CollectionUtils.isEmpty(goodsSelection))
 		       param.setGoodsSelection(goodsSelection);
-		if(!CollectionUtils.isEmpty(goodsIds))
-			   param.setGoodsIds(goodsIds);
-		
+	
 		return param;
 		
 	}
@@ -171,9 +166,10 @@ public class GoodsWmsInventoryAdjustDomain extends AbstractGoodsInventoryDomain{
 	public void makeParameterMap(SortedMap<String, String> parameterMap) {
 		parameterMap.put("id", String.valueOf(id));
 		parameterMap.put("wmsGoodsId", wmsGoodsId);
+		parameterMap.put("isexistgoods",isexistgoods);
 	    parameterMap.put("isBeDelivery",  String.valueOf(isBeDelivery));
 		parameterMap.put("goodsSelection",  CollectionUtils.isEmpty(goodsSelection)?"":JSON.toJSONString(goodsSelection));
-		parameterMap.put("goodsIds",  CollectionUtils.isEmpty(goodsIds)?"":JSON.toJSONString(goodsIds));
+		parameterMap.put("goodsId",  String.valueOf(goodsId));
 		packet.addParameterMap(parameterMap);
 		super.init(packet.getClient(), packet.getIp());
 	}

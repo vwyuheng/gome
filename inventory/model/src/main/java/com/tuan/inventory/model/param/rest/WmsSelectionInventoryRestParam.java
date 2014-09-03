@@ -13,6 +13,9 @@ public class WmsSelectionInventoryRestParam extends TuanBaseDO {
 	//选型:这是一个json串 如：[{"limit":0,"id":2},{"limit":0,"id":1}] [List<CreaterGoodsSelectionParam>]
 	private String goodsSelection;
 	private String goodsId; //商品id
+	//商品id是否存在:1代表存在 | 0：代表不存在
+	private String isexistgoods;
+	
 	public String getWmsGoodsId() {
 		return wmsGoodsId;
 	}
@@ -30,6 +33,12 @@ public class WmsSelectionInventoryRestParam extends TuanBaseDO {
 	}
 	public void setGoodsId(String goodsId) {
 		this.goodsId = goodsId;
+	}
+	public String getIsexistgoods() {
+		return isexistgoods;
+	}
+	public void setIsexistgoods(String isexistgoods) {
+		this.isexistgoods = isexistgoods;
 	}
 	
 	

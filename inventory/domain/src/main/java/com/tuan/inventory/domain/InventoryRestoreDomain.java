@@ -28,7 +28,9 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.RestoreInventoryParam;
 
 public class InventoryRestoreDomain extends AbstractDomain {
+
 	protected static Log logger = LogFactory.getLog("SYS.UPDATERESULT.LOG");
+
 	private LogModel lm;
 	private String clientIp;
 	private String clientName;

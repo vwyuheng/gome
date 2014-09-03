@@ -75,6 +75,7 @@ public enum ResultEnum {
 	NO_RETORE       ("1048", "新老商品id相同,无需还还库存！"),
 	HAD_RETORE_COMPLETED       ("1049", "订单未支付占用库存超过了实际库存,并已还还完毕！"),
 	NO_SUPPORT_ADJUST       ("1050", "由于调减量大于调整前剩余库存量,会导致销量剩余库存与总库存不平,故此情况不支持调整！"),
+	ISGOODSIDEXIST_INVALID       ("1051", "商品id是否存在标识无效!"),
 	NO_DATA("0","没有可用的数据"),
 	
 	//ERROR_2000	("2000",	"程序运行时错误"),
@@ -298,6 +299,11 @@ public enum ResultEnum {
 		if(code.equals("1050")){
 			return ResultEnum.NO_SUPPORT_ADJUST;
 		}
+
+		if(code.equals("1051")){
+			return ResultEnum.ISGOODSIDEXIST_INVALID;
+		}
+
 		if(code.equals("-98")){
 			return ResultEnum.DLOCK_ERROR;
 		}

@@ -21,10 +21,9 @@ public class QueueConstant {
 	public final static String SELECTION_INVENTORY_PREFIX="hash_selection.inventory";//选型商品库存前缀
 	public final static String SUPPLIERS_INVENTORY_PREFIX="hash_suppliers.inventory";//分店商品库存前缀
 	public final static String WMS_INVENTORY_PREFIX="hash_wms.inventory";//物流商品库存前缀
-	//队列状态
-	//public final static String ACTIVE = "1";  // 1:正常：有效可处理（active）
-	//public final static String LOCKED = "3";  //3：初始状态（locked）
-	//public final static String EXCEPTION = "5"; //5：标记可以被用作异常队列处(exception)
+	//是否存在商品id
+	public final static String GOODSIDISEXISTED = "1";  // 1:商品id存在
+	public final static String GOODSIDISNOTEXISTED = "0";  //0：商品id不存在
 	
 	
 	//库存扣减返回参数：生成的队列主键id值的key名称定义

@@ -226,10 +226,14 @@ public class SynInitAndAsynUpdateDomainRepository {
 		
 		if (!CollectionUtils.isEmpty(selectionDOList)) { // if1
 			for (GoodsSelectionDO srDO : selectionDOList) { // for
-				if (srDO.getId() > 0) { // if选型
+				long selectionId = srDO.getId();
+				if (selectionId > 0) { // if选型
+					//GoodsSelectionDO tmpSelDO = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
+					//if(tmpSelDO==null) {
 					//将商品id set到选型中
 					//srDO.setGoodsId(goodsId);
-					this.saveGoodsSelection(srDO);
+						this.saveGoodsSelection(srDO);
+					//}
 				}
 				
 			}//for
@@ -326,9 +330,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 			for (GoodsSuppliersDO sDO : suppliersDOList) { // for
 				
 				if (sDO.getSuppliersId() > 0) { // if分店
+
 					//@TODO @2014/8/26 屏蔽分店数据的初始化
-					
-					
 					//long suppliersId = sDO.getSuppliersId();
 					//GoodsSuppliersDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsSuppliersDO(goodsId,suppliersId);
 					//if(tmpDO==null) {

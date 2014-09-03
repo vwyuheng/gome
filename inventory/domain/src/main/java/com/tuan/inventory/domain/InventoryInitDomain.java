@@ -163,13 +163,14 @@ public class InventoryInitDomain extends AbstractDomain{
 					this.selWmsList = callSelListResult.getBusinessResult();
 				}
 				
-				if(!CollectionUtils.isEmpty(selWmsList)) {
+				if(!CollectionUtils.isEmpty(selWmsList)) {/*
 					selWmsList4GoodsTypeId = new ArrayList<GoodsSelectionDO>();
 						for(GoodsSelectionDO selDO:selWmsList) {
 							selDO.setGoodsId(goodsId);
 							selDO.setWmsGoodsId(wmsGoodsId);
 							selWmsList4GoodsTypeId.add(selDO);			
-						}
+						}*/
+						this.isInitWms = true;
 					
 				}else {
 					this.isInitWms = false;
@@ -180,17 +181,14 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 			
 			//当物流商品已存在，但是后台调整了其下的选型，兼容物流选型更新时的情况
-			if(!isInitWms&&!CollectionUtils.isEmpty(selWmsList4GoodsTypeId)) {
-				wmsUpate = null; //置空，以免冲突
+			//if(!isInitWms&&!CollectionUtils.isEmpty(selWmsList4GoodsTypeId)) {
+			//	wmsUpate = null; //置空，以免冲突
 				// 初始化库存
-				this.isInitWms = true;
-			}
+			//	this.isInitWms = true;
+			//}
 			
 		} catch (Exception e) {
 			this.isInitWms = false;
-			/*this.writeBusInitErrorLog(
-					lm.addMetaData("errorMsg",
-							"initCheck4Wms error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"initCheck4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -671,9 +669,6 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 			//} 
 		} catch (Exception e) {
-			/*this.writeBusJobErrorLog(
-					lm.addMetaData("errorMsg:"+message,
-							"updateInventory4GoodsCost error " + e.getMessage()),false,  e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"updateInventory4GoodsCost error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -693,13 +688,15 @@ public class InventoryInitDomain extends AbstractDomain{
 		
 	}
 	//更新物流的库存信息
-	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, List<GoodsInventoryDO> wmsInventoryList) {
+
+	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, GoodsInventoryDO goodsInventoryInfo) {
 		String message = StringUtils.EMPTY;
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
 		try {
 			// 更新商品库存
-			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,wmsInventoryList);
+			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,goodsInventoryInfo);
+
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
 						
@@ -720,7 +717,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		}finally {
 			if(logSysUpdate.isDebugEnabled()) {
 				logSysUpdate.debug(lm.addMetaData("wmsDO",wmsDO)
-						.addMetaData("wmsInventoryList",wmsInventoryList)
+						.addMetaData("goodsInventoryInfo",goodsInventoryInfo)
 						.addMetaData("message",message)
 						.addMetaData("endTime", System.currentTimeMillis())
 						.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));

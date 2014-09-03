@@ -34,6 +34,7 @@ import com.tuan.inventory.model.result.CallResult;
 import com.tuan.inventory.model.util.QueueConstant;
 
 public class InventoryAdjustDomain extends AbstractDomain {
+
 	protected static Log logger = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	private LogModel lm;
 	private String clientIp;
@@ -184,7 +185,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
-			
+
 				if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					
 					if (inventoryDO != null) {
@@ -331,7 +332,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 								.getTotalNumber();
 					}
 				}//else SUPPLIERS
-			
+
 		} catch (Exception e) {
 			logger.error(lm.addMetaData("errorMsg",
 							"adjustInventory error" + e.getMessage()).toJson(false), e);

@@ -80,7 +80,6 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 		try {
 			// 业务检查前的预处理
 			this.preHandler();
-
 			if (addSelection) { // 选型库存
 				// 填充物流商品选型库库存信息
 				this.fillWmsSelection();
@@ -88,9 +87,6 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 			}
 			
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -112,9 +108,7 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.addMetaData("errorMsg",
-							"createWmsInventory error" + e.getMessage()),false, e);*/
+
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"createWmsInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -133,8 +127,6 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 		return create.createWmsInventory(wmsDO, selectionRelation);
 	}
 	
-
-
 	// 填充日志信息
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
@@ -170,7 +162,6 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 			updateActionDO.setRemark("新增物流库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
-			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillInventoryUpdateActionDO error" + e.getMessage()),false, e);
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"fillInventoryUpdateActionDO error" + e.getMessage()).toJson(false), e);
 			this.updateActionDO = null;
@@ -197,30 +188,17 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 		try {
 			selectionList = param.getGoodsSelection();
 			if (!CollectionUtils.isEmpty(selectionList)) {
+				addSelection = true;
 				selectionRelation = new ArrayList<GoodsSelectionDO>();
 				for (GoodsSelectionModel model : selectionList) {
 					if (model.getId() != null && model.getId() > 0) {
 						GoodsSelectionDO selection = new GoodsSelectionDO();
-						//long goodsId = 0;
-						//在根据商品选型类型找到商品id
-						/*//CallResult<Long> goodsIdResult =synInitAndAysnMysqlService.selectGoodsId(model.getGoodTypeId());
-						if (goodsIdResult == null || !goodsIdResult.isSuccess()) {
-							return CreateInventoryResultEnum.QUERY_ERROR;
-						}else {
-							goodsId = 	goodsIdResult.getBusinessResult();
-						}
-						//将商品id set到选型中
-						if(goodsId>0) {
-							selection.setGoodsId(goodsId);
-						}*/
 						//注，物流那边插入时无法拿到商品id
 						selection.setId(model.getId());
 						selection.setLeftNumber(model.getLeftNumber());
 						selection.setTotalNumber(model.getTotalNumber());
 						selection.setLimitStorage(model.getLimitStorage());
-						//selection.setWaterfloodVal(model.getWaterfloodVal());
 						selection.setGoodTypeId(model.getGoodTypeId());
-						//selection.setUserId(userId);
 						selectionRelation.add(selection);
 					}
 
@@ -229,9 +207,6 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 			}
 
 		} catch (Exception e) {
-			/*this.writeBusUpdateErrorLog(
-					lm.setMethod("fillWmsSelection").addMetaData(
-							"errMsg", e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"fillWmsSelection error" + e.getMessage()).toJson(false), e);
 			this.selectionRelation = null;
@@ -251,12 +226,10 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 			wmsDO.setGoodsName(param.getGoodsName());
 			wmsDO.setGoodsSupplier(param.getGoodsSupplier());
 			wmsDO.setIsBeDelivery(param.getIsBeDelivery());
-			//wmsDO.setLimitStorage(param.getLimitStorage());
-			//wmsDO.setUserId(userId);
 			
 
 		} catch (Exception e) {
-			//this.writeBusUpdateErrorLog(lm.addMetaData("errMsg", "fillGoodsWmsDO error" +e.getMessage()),false, e);
+
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"fillGoodsWmsDO error" + e.getMessage()).toJson(false), e);
 			this.wmsDO = null;
@@ -265,44 +238,34 @@ public class InventoryWmsCreateDomain extends AbstractDomain {
 	}
 
 	// 发送库存新增消息
-		public void sendNotify() {
-			try {
-				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
-				goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsCreateDomain.toString(),JSONObject
-						.fromObject(notifyParam));
-				/*
-				 * Type orderParamType = new
-				 * TypeToken<NotifyCardOrder4ShopCenterParam>(){}.getType(); String
-				 * paramJson = new Gson().toJson(notifyParam, orderParamType);
-				 * extensionService.sendNotifyServer(paramJson, lm.getTraceId());
-				 */
-			} catch (Exception e) {
-				logSysUpdate.error(lm.addMetaData("errorMsg",
-						"sendNotify error" + e.getMessage()).toJson(false), e);
-				//writeBusUpdateErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
-			}
+	public void sendNotify() {
+		try {
+			InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
+			goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryWmsCreateDomain.toString(),JSONObject
+					.fromObject(notifyParam));
+		} catch (Exception e) {
+			writeBusUpdateErrorLog(lm.addMetaData("errMsg", "sendNotify error" +e.getMessage()),false, e);
+
 		}
+	}
 
 		// 填充notifyserver发送参数
-		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
-			InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
-			//notifyParam.setUserId();
-			//notifyParam.setGoodsId(goodsId);
-			//notifyParam.setLimitStorage(param.getLimitStorage());
-			//notifyParam.setWaterfloodVal(param.getWaterfloodVal());
-			notifyParam.setTotalNumber(param.getTotalNumber());
-			notifyParam.setLeftNumber(param.getLeftNumber());
-			//库存总数 减 库存剩余
-			//int sales = param.getTotalNumber()-param.getLeftNumber();
-			//销量
-			notifyParam.setSales(0);
-			
-			if (!CollectionUtils.isEmpty(selectionList)) {
-				notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
-			}
-			
-			return notifyParam;
+	private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() {
+		InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
+		
+		notifyParam.setTotalNumber(param.getTotalNumber());
+		notifyParam.setLeftNumber(param.getLeftNumber());
+		//库存总数 减 库存剩余
+		//int sales = param.getTotalNumber()-param.getLeftNumber();
+		//销量
+		notifyParam.setSales(0);
+		
+		if (!CollectionUtils.isEmpty(selectionList)) {
+			notifyParam.setSelectionRelation(ObjectUtils.toSelectionMsgList(selectionList));
 		}
+		
+		return notifyParam;
+	}
 	
 	
 	public void setGoodsInventoryDomainRepository(

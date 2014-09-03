@@ -115,7 +115,8 @@ public class Test {
 		//baseInventoryDO.setGoodsBaseId(8000009999l);
 		//baseInventoryDO.setBaseTotalCount(0);
 		//baseInventoryDO.setBaseSaleCount(0);
-		System.out.println(JSON.toJSONString("NO_GOODS"));
+
+		System.out.println("InventoryWmsUpdateDomain:物流库存调整t".getBytes().length);
 		List<GoodsWmsSelectionResult> tmpSelectionParam = new ArrayList<GoodsWmsSelectionResult>();
 		System.out.println(CollectionUtils.isEmpty(tmpSelectionParam));
 		

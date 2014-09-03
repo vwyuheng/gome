@@ -1551,7 +1551,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	
 	@Override
 	public CallResult<Boolean> batchUpdateGoodsWms(final GoodsInventoryWMSDO wmsDO,
-			final List<GoodsInventoryDO> wmsInventoryList)
+			final GoodsInventoryDO goodsInventoryInfo)
 			throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
@@ -1562,9 +1562,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								 synInitAndAsynUpdateDomainRepository.updateGoodsInventoryWMS(wmsDO);
 							}
 							
-							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
-								synInitAndAsynUpdateDomainRepository.updateBatchGoodsInventory(wmsInventoryList);
-								
+							if (goodsInventoryInfo!=null) { // if1
+								synInitAndAsynUpdateDomainRepository.updateGoodsInventory(goodsInventoryInfo);
 							}
 							
 							if(wmsDO!=null) {
@@ -1582,10 +1581,10 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 											new Exception());
 								}
 							}
-							if (!CollectionUtils.isEmpty(wmsInventoryList)) { // if1
-								for(GoodsInventoryDO goodsDO: wmsInventoryList) {
-									long goodsId = goodsDO.getGoodsId();
-									String ackOk =  goodsInventoryDomainRepository.saveGoodsInventory(goodsId, goodsDO);
+
+							if (goodsInventoryInfo!=null) { // if1
+									long goodsId = goodsInventoryInfo.getGoodsId();
+									String ackOk =  goodsInventoryDomainRepository.saveGoodsInventory(goodsId, goodsInventoryInfo);
 									if(StringUtils.isEmpty(ackOk)) {
 										throw new TuanRuntimeException(
 												QueueConstant.SERVICE_REDIS_FALIURE,
@@ -1598,7 +1597,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 												"SynInitAndAysnMysqlServiceImpl.batchUpdateGoodsWms to redis error occured!",
 												new Exception());
 									}
-								}
 								
 							}
 							
@@ -3006,8 +3004,8 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								true);
 					}
 					public TuanCallbackResult executeCheck() {
-						if (goodsId<=0||CollectionUtils.isEmpty(selectionList)) {
-							logupdate.error(this.getClass()+"_create param invalid!");
+						if (CollectionUtils.isEmpty(selectionList)) {
+							logupdate.error(this.getClass()+"_create batchUpdateGoodsSeletion param invalid!");
 							return TuanCallbackResult
 									.failure(goodsId<=0?PublicCodeEnum.INVALID_GOODSID.getCode():PublicCodeEnum.INVALID_SELECTIONID
 											.getCode());

@@ -13,7 +13,8 @@ public class WmsInventoryParam extends TuanBaseDO {
 
 	private static final long serialVersionUID = 1L;
 	private Long id;// 主键id
-	//private Long goodsId;// 商品ID(FK)
+	//商品id是否存在:1代表存在 | 0：代表不存在
+	private String isexistgoods;
 	private String wmsGoodsId;  //物流商品的一种编码
 	private String goodsSupplier;  //供货商
 	private String goodsName;    //商品名称
@@ -26,7 +27,7 @@ public class WmsInventoryParam extends TuanBaseDO {
 	//选型
 	private List<GoodsSelectionModel> goodsSelection;
 	//物流商品id列表
-	private List<Long> goodsIds;
+	private Long goodsId;//商品id
 	public Long getId() {
 		return id;
 	}
@@ -99,12 +100,20 @@ public class WmsInventoryParam extends TuanBaseDO {
 		this.num = num;
 	}
 
-	public List<Long> getGoodsIds() {
-		return goodsIds;
+	public Long getGoodsId() {
+		return goodsId;
 	}
 
-	public void setGoodsIds(List<Long> goodsIds) {
-		this.goodsIds = goodsIds;
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
+	}
+
+	public String getIsexistgoods() {
+		return isexistgoods;
+	}
+
+	public void setIsexistgoods(String isexistgoods) {
+		this.isexistgoods = isexistgoods;
 	}
 	
 	
