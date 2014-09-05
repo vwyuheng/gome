@@ -5,8 +5,11 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.SynInitAndAsynUpdateDAO;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
@@ -21,8 +24,11 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
  * @date 2014/4/24
  */
 public class SynInitAndAsynUpdateDomainRepository {
+	private static final Log logupdate = LogFactory.getLog("SYS.UPDATERESULT.LOG");
 	@Resource
 	private SynInitAndAsynUpdateDAO synInitAndAsynUpdateDAO;
+	@Resource
+	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	
 	public GoodsInventoryDO selectGoodsInventoryDO(long goodsId) {
 		return this.synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);
@@ -59,12 +65,20 @@ public class SynInitAndAsynUpdateDomainRepository {
 						//
 						this.saveGoodsInventory(goodsDO);
 						if(goodsBaseId>0) {  //常态化刚上线时是1:1的,故可以直接取
-							GoodsBaseInventoryDO tmpDo = synInitAndAsynUpdateDAO.selectGoodBaseBygoodsId(goodsBaseId);
-							if(tmpDo==null) {
+							GoodsBaseInventoryDO tmpBase =	goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+							if(tmpBase==null) { //判断redis中是否存在
 								//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
 								GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
 								if(baseDO!=null) {
 									synInitAndAsynUpdateDAO.insertGoodsBaseInventoryDO(baseDO);
+									String retAck = goodsInventoryDomainRepository
+											.saveGoodsBaseInventory(
+													goodsBaseId, baseDO);
+									if (StringUtils.isEmpty(retAck)
+											|| !retAck
+													.equalsIgnoreCase("ok")) {
+										logupdate.info("保存redis失败(SynInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory:baseDO):"+JSON.toJSONString(baseDO));
+									}
 								}
 							}else {
 								//计算库存总数:暂时去掉
@@ -73,6 +87,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 									synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(upBaseDO);
 								}
 							}
+							
 						}
 					}
 					

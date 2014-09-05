@@ -85,7 +85,7 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						}else {
 							
 							CallResult<GoodsBaseInventoryDO> callResult = this.synInitAndAysnMysqlService
-									.selectInventoryBase4Init(goodsBaseId);
+									.selectSelfInventoryBaseInit(goodsBaseId);
 							if (callResult != null&&callResult.isSuccess()) {
 								GoodsBaseInventoryDO baseDO = 	callResult.getBusinessResult();
 								if(baseDO!=null) {

@@ -285,7 +285,7 @@
 	 
 	  <!-- 插入物流商品库存信息 -->
   	<insert id="insertGoodsInventoryWMS" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO" >
-    insert into jeehe_inventory_wms 
+    insert ignore into jeehe_inventory_wms 
     (id,
     wms_goods_id,
     goods_supplier,
@@ -470,7 +470,7 @@
 	 
 	   <!-- 插入商品 库存信息 -->
   	<insert id="insertGoodsInventory" parameterClass="com.tuan.inventory.dao.data.redis.GoodsInventoryDO" >
-    insert into jeehe_inventory_attribute 
+    insert ignore into jeehe_inventory_attribute 
     (
     goods_id, 
     goods_base_id,
@@ -543,7 +543,7 @@
       
   	<!-- 插入商品库存基表 信息 -->
   	<insert id="insertGoodsBaseInventory" parameterClass="com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO" >
-    insert into jeehe_inventory_base 
+    insert ignore into jeehe_inventory_base 
     (
     goods_base_id, 
     base_sale_count,
