@@ -1,0 +1,694 @@
+package com.tuan.inventory.domain.support;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.util.CollectionUtils;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
+import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
+import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
+import com.tuan.inventory.domain.support.enu.GoodBaseHashFieldEnum;
+import com.tuan.inventory.domain.support.enu.HashFieldEnum;
+import com.tuan.inventory.domain.support.jedistools.RedisCacheUtil;
+import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
+import com.tuan.inventory.model.util.QueueConstant;
+
+public class CacheDAOServiceImpl implements BaseDAOService {
+	private static final Log logger = LogFactory.getLog("INVENTORY.DESERILIZABLE.LOG");
+	@Resource
+	RedisCacheUtil redisCacheUtil;
+	
+	@Override
+	public boolean isExists(Long goodsId) {
+		//已存在返回false,不存在返回true
+		return this.redisCacheUtil.exists(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId))?false:true;
+	}
+
+	@Override
+	public void pushLogQueues(GoodsInventoryActionDO logActionDO) {
+		// 将库存日志队列信息压入到redis list
+		this.redisCacheUtil.rpush(QueueConstant.QUEUE_LOGS_MESSAGE, JSON.toJSONString(logActionDO));
+		
+	}
+
+	@Override
+	public String saveInventory(Long goodsId,GoodsInventoryDO inventoryInfoDO) {
+		return this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),
+				ObjectUtils.toHashMap(inventoryInfoDO));
+
+	}
+
+	@Override
+	public boolean saveGoodsSelectionInventory(Long goodsId, GoodsSelectionDO selectionDO) {
+		
+		return this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId), QueueConstant.SELECTION_INVENTORY_PREFIX
+				+ ":" + String.valueOf(selectionDO.getId()), String.valueOf(selectionDO.getId()), ObjectUtils.toHashMap(selectionDO));
+	}
+
+	@Override
+	public boolean saveGoodsSuppliersInventory(Long goodsId, GoodsSuppliersDO suppliersDO) {
+		
+		
+		return this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
+						+ String.valueOf(goodsId), QueueConstant.SUPPLIERS_INVENTORY_PREFIX
+				+ ":" + String.valueOf(suppliersDO.getSuppliersId()), String.valueOf(suppliersDO.getSuppliersId()), ObjectUtils.toHashMap(suppliersDO));
+
+	}
+
+	@Override
+	public boolean isGoodsExists(Long goodsId, String field) {  //存在返回false 不存在返回true
+		return this.redisCacheUtil.hexists(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),field)?false:true;
+	}
+
+	@Override
+	public boolean isSelectionExists(Long selectionId, String field) {
+		return this.redisCacheUtil.hexists(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),field)?false:true;
+	}
+
+	@Override
+	public boolean isSupplierExists(Long suppliesId, String field) {
+		return this.redisCacheUtil.hexists(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(suppliesId),field)?false:true;
+	}
+
+	@Override
+	public GoodsInventoryDO queryGoodsInventory(Long goodsId) {
+		long startTime = System.currentTimeMillis();
+		String method = "queryGoodsInventory";
+		final LogModel lm = LogModel.newLogModel(method);
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
+		Map<String, String> objMap = null;
+		try {
+			 objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+							+ String.valueOf(goodsId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsInventoryDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
+		}
+		return null;
+	}
+
+	@Override
+	public GoodsSelectionDO querySelectionRelationById(Long selectionId) {
+		long startTime = System.currentTimeMillis();
+		String method = "querySelectionRelationById";
+		final LogModel lm = LogModel.newLogModel(method);
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
+		Map<String, String> objMap = null;
+		try {
+			 objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+							+ String.valueOf(selectionId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				/*
+				 * return JsonUtils.convertStringToObject(
+				 * JsonUtils.convertObjectToString(objMap),
+				 * GoodsSelectionDO.class);
+				 */
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsSelectionDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
+		}
+		return null;
+	}
+
+	@Override
+	public GoodsSuppliersDO querySuppliersInventoryById(Long suppliersId) {
+		long startTime = System.currentTimeMillis();
+		String method = "querySuppliersInventoryById";
+		final LogModel lm = LogModel.newLogModel(method);
+		logger.info(lm.setMethod(method).addMetaData("start", startTime)
+				.toJson(true));
+		Map<String, String> objMap = null;
+		try {
+			 objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+							+ String.valueOf(suppliersId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				/*
+				 * return JsonUtils.convertStringToObject(
+				 * JsonUtils.convertObjectToString(objMap),
+				 * GoodsSuppliersDO.class);
+				 */
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsSuppliersDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			logger.info(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+					.addMetaData("runResult", runResult).toJson(true));
+		}
+		return null;
+	}
+
+	@Override
+	public List<Long> updateInventory(Long goodsId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public List<Long> updateGoodsInventory(Long goodsId, Long goodBaseId,int leftnum,int num) {
+		return this.redisCacheUtil.hincrBy2Key(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+						+ String.valueOf(goodBaseId), 
+				HashFieldEnum.leftNumber.toString(),
+				HashFieldEnum.goodsSaleCount.toString(),
+				GoodBaseHashFieldEnum.baseSaleCount.toString(),
+				(leftnum),(-num),(-num));
+	}
+
+	@Override
+	public List<Long> updateSelectionInventory(Long selectionId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+						HashFieldEnum.totalNumber.toString(),
+						HashFieldEnum.leftNumber.toString(), (num));
+	}
+	@Override
+	public List<Long> updateSelectionInventory(Long selectionId, String wmsGoodsId,int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				QueueConstant.WMS_INVENTORY_PREFIX + ":"
+						+ wmsGoodsId,
+				//HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public Long updateSuppliersInventory(Long suppliersId, int num) {
+		return this.redisCacheUtil.hincrBy(QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(suppliersId),
+				//HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public String pushQueueSendMsg(GoodsInventoryQueueDO queueDO) {
+		// 将库存更新队列信息压入到redis zset集合 便于统计
+		// job程序中会每次将score为1的元素取出，做库存消息更新的处理，处理完根据key score
+		// member(因id都是唯一的，因此每个member都是不一样的)立即清空源集合中的相关元素，并重复操作
+		// 如下 可以指定score值取值 ZADD salary 2500 jack
+		// ZRANGEBYSCORE salary 2500 2500 WITHSCORES
+		// ，2取到相应member后，按照member及其删除 [ZREM key member]
+		// 删除指定score的元素 ZREMRANGEBYSCORE salary 2500 2500
+		//String jsonMember = JSONObject.fromObject(queueDO).toString();
+		// 缓存队列的key、member信息 一年失效
+		//this.redisCacheUtil.setex(QueueConstant.QUEUE_KEY_MEMBER + ":"
+			//	+ String.valueOf(queueDO.getId()), 3600*24*365, jsonMember);
+		// zset key score value 其中score作为status用
+		//this.redisCacheUtil.zadd(QueueConstant.QUEUE_SEND_MESSAGE,
+				//Double.valueOf(ResultStatusEnum.LOCKED.getCode()),
+				//Double.valueOf(ResultStatusEnum.CONFIRM.getCode()),  //测试用
+				//jsonMember);
+		//boolean success = false;
+		String queueKeyId = String.valueOf(queueDO.getId());
+		//if(StringUtils.isNotEmpty(queueKeyId)) {
+		boolean	success = this.redisCacheUtil.setexAndzadd(QueueConstant.QUEUE_KEY_MEMBER + ":"+ queueKeyId, 
+					QueueConstant.QUEUE_SEND_MESSAGE, queueDO);
+		//}
+		if(success) {
+			return queueKeyId;
+		}else {
+			return null;
+		}
+	}
+
+	
+	@Override
+	public void markQueueStatus(String member, int upStatusNum) {
+		// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
+		//String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"
+			//	+ key);
+		// 将消息发送队列状态更新为:ResultStatusEnum 对应的队列状态值
+		// Double scoreAck =
+		this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),
+				member);
+		
+		
+	}
+	
+	@Override
+	public boolean markQueueStatusAndDeleteCacheMember(String member, int upStatusNum,String delkey) {
+	
+		// 根据key取出缓存的对象，仅系统运行正常时有用，因为其有有效期默认是60分钟
+		//String member = this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"+ key);
+		// 将消息发送队列状态更新为:ResultStatusEnum 对应的队列状态值
+		// Double scoreAck =
+		
+		//this.redisCacheUtil.zincrby(QueueConstant.QUEUE_SEND_MESSAGE, (upStatusNum),member);
+		return this.redisCacheUtil.zincrbyAnddel(QueueConstant.QUEUE_SEND_MESSAGE, member,  (upStatusNum), QueueConstant.QUEUE_KEY_MEMBER + ":"+delkey);
+		
+		
+	}
+
+	@Override
+	public GoodsInventoryQueueDO queryInventoryQueueDO(String key) {
+		long startTime = System.currentTimeMillis();
+		String method = "queryInventoryQueueDO";
+		final LogModel lm = LogModel.newLogModel(method);
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
+		GoodsInventoryQueueDO queueDO = null;
+		String member ="";
+		try {
+			// 根据key取出缓存的对象，仅系统运行正常时[能正常调用该接口时]有用，因为其有有效期默认是60分钟
+			 member = this.redisCacheUtil
+					.get(QueueConstant.QUEUE_KEY_MEMBER + ":" + key);
+			if (StringUtils.isNotEmpty(member)) {
+				// queueDO =
+				// JsonUtils.convertStringToObject(member,GoodsInventoryQueueDO.class);
+				queueDO = JSON.parseObject(member, GoodsInventoryQueueDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("member", member).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
+		}
+		return queueDO;
+	}
+
+	@Override
+	public Long adjustGoodsWaterflood(Long goodsId, int num) {
+		// hincrby返回的是field更新后的值
+		return this.redisCacheUtil.hincrBy(QueueConstant.GOODS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(goodsId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
+	}
+
+	@Override
+	public Long adjustSelectionWaterflood(Long selectionId, int num) {
+		return this.redisCacheUtil.hincrBy(QueueConstant.SELECTION_INVENTORY_PREFIX
+				+ ":"+String.valueOf(selectionId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
+	}
+
+	@Override
+	public Long adjustSuppliersWaterflood(Long suppliersId, int num) {
+		return this.redisCacheUtil.hincrBy(QueueConstant.SUPPLIERS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(suppliersId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
+	}
+
+	@Override
+	public Long deleteGoodsInventory(Long goodsId) {
+		// 根据选型id删除选型库存信息
+		return this.redisCacheUtil.del(QueueConstant.GOODS_INVENTORY_PREFIX
+						+ ":"
+						+ String.valueOf(goodsId));
+	}
+
+	@Override
+	public Long deleteSelectionInventory(Long selectionId) {
+		
+		return this.redisCacheUtil.del(QueueConstant.SELECTION_INVENTORY_PREFIX
+				+ ":"
+				+ String.valueOf(selectionId));
+	}
+
+	@Override
+	public Long deleteSuppliersInventory(Long suppliersId) {
+		
+		return this.redisCacheUtil.del(QueueConstant.SUPPLIERS_INVENTORY_PREFIX
+				+ ":"
+				+ String.valueOf(suppliersId));
+	}
+
+	@Override
+	public Long lremLogQueue(GoodsInventoryActionDO logActionDO) {
+		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
+		return this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (0), JSON.toJSONString(logActionDO));
+	}
+
+	@Override
+	public Set<String> queryGoodsSelectionRelation(Long goodsId) {
+		
+		return this.redisCacheUtil.smembers(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
+						+ String.valueOf(goodsId));
+	}
+
+	@Override
+	public Set<String> queryGoodsSuppliersRelation(Long goodsId) {
+		
+		return this.redisCacheUtil.smembers(QueueConstant.GOODS_SUPPLIERS_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId));
+	}
+
+	@Override
+	public Set<String> queryInventoryQueueListByStatus(
+			Double status) {
+		return this.redisCacheUtil.zrangeByScore(QueueConstant.QUEUE_SEND_MESSAGE, status, status);
+	}
+
+	@Override
+	public String queryLastIndexGoodsInventoryAction() {
+		
+		return this.redisCacheUtil.lindex(QueueConstant.QUEUE_LOGS_MESSAGE, (-1));
+	}
+
+	@Override
+	public Long deleteQueueMember(String key) {
+		// 根据选型id删除选型库存信息
+		return this.redisCacheUtil.del(QueueConstant.QUEUE_KEY_MEMBER + ":"
+						+ key);
+	}
+
+	@Override
+	public String queryMember(String key) {
+		
+		return  this.redisCacheUtil.get(QueueConstant.QUEUE_KEY_MEMBER + ":"+ key);
+	}
+	/**
+	 * 商品库存调整
+	 */
+	@Override
+	public List<Long> adjustGoodsInventory(Long goodsId, Long goodBaseId,int num,int limitStorage) {
+
+		return this.redisCacheUtil.hincrByAndhincrBy(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),
+				QueueConstant.GOODS_BASE_INVENTORY_PREFIX+ ":"
+						+ String.valueOf(goodBaseId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), 
+				HashFieldEnum.limitStorage.toString(),
+				GoodBaseHashFieldEnum.baseTotalCount.toString(),
+				(num),(limitStorage));
+	
+	}
+
+	@Override
+	public List<Long> adjustSelectionInventory(Long goodsId,Long selectionId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4sel(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public List<Long> adjustSuppliersInventory(Long goodsId,Long suppliersId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4supp(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId),QueueConstant.SUPPLIERS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(suppliersId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), (num));
+	}
+
+	@Override
+	public List<Long> adjustSelectionWaterflood(Long goodsId, Long selectionId,
+			int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.GOODS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(goodsId),QueueConstant.SELECTION_INVENTORY_PREFIX
+				+ ":"+String.valueOf(selectionId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
+	}
+
+	@Override
+	public List<Long> adjustSuppliersWaterflood(Long goodsId, Long suppliersId,
+			int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wf(QueueConstant.GOODS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(goodsId),QueueConstant.SUPPLIERS_INVENTORY_PREFIX
+				+ ":"+String.valueOf(suppliersId),
+				HashFieldEnum.waterfloodVal.toString(), (num));
+	}
+
+	@Override
+	public String saveGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
+		
+      /* this.redisCacheUtil.saddAndhmset(QueueConstant.GOODS_WMS_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId), QueueConstant.WMS_INVENTORY_PREFIX
+		+ ":" + wmsDO.getWmsGoodsId(), wmsDO.getWmsGoodsId(), ObjectUtils.toHashMap(wmsDO));*/
+       
+       return this.redisCacheUtil.hmset(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+				+ wmsDO.getWmsGoodsId(), ObjectUtils.toHashMap(wmsDO));
+ 
+     }
+
+	@Override
+	public GoodsInventoryWMSDO queryWmsInventoryById(String wmsGoodsId) {
+		long startTime = System.currentTimeMillis();
+		String method = "queryWmsInventoryById";
+		final LogModel lm = LogModel.newLogModel(method);
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
+		Map<String, String> objMap = null;
+		GoodsInventoryWMSDO wmsdo=null;
+		try {
+			 objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+							+ wmsGoodsId);
+			if (!CollectionUtils.isEmpty(objMap)) {
+				
+				wmsdo= JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsInventoryWMSDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("wmsdo", wmsdo).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
+		}
+		return wmsdo;
+	}
+
+	@Override
+	public List<Long> updateGoodsWms(String wmsGoodsId, int num) {
+		return this.redisCacheUtil.hincrByAndhincrBy(
+				QueueConstant.WMS_INVENTORY_PREFIX + ":"
+				+ wmsGoodsId,
+				HashFieldEnum.leftNumber.toString(),
+				HashFieldEnum.totalNumber.toString(),
+				(num));
+	}
+
+	@Override
+	public List<Long> adjustSelectionWmsInventory(Long selectionId,int adjustLeftNum,int adjustTotalNum) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), adjustTotalNum,(adjustLeftNum));
+	}
+
+	@Override
+	public boolean isWmsExists(String wmsGoodsId) {
+		//已存在返回false,不存在返回true
+		return this.redisCacheUtil.exists(QueueConstant.WMS_INVENTORY_PREFIX + ":"
+				+ wmsGoodsId)?false:true;
+	}
+
+	@Override
+	public String saveGoodsSelectionWmsInventory(GoodsSelectionDO selectionDO) {
+        return this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX
+		+ ":" + String.valueOf(selectionDO.getId()),ObjectUtils.toHashMap(selectionDO));
+    }
+
+	@Override
+	public String setTag(String tag,int seconds, String tagValue) {
+		return this.redisCacheUtil.setex(tag, seconds, tagValue);
+	}
+
+	@Override
+	public boolean watch(String key,String tagval) {
+		return this.redisCacheUtil.watch(key,tagval);
+	}
+
+	@Override
+	public String updateFileds(Long goodsId, Map<String, String> hash) {
+
+		return this.redisCacheUtil.hmset(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsId), hash);
+
+	}
+
+	@Override
+	public String updateSelectionFileds(Long selectionId, Map<String, String> hash) {
+
+		return this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId), hash);
+
+	}
+
+	@Override
+	public String queryToken(String key) {
+		
+		return  this.redisCacheUtil.get(key);
+	}
+
+	@Override
+	public Long clearWmsSelRelation(Long goodsId, String... member) {
+		//redisCacheUtil.srem("1", "1","2");
+		return this.redisCacheUtil.srem(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX + ":"
+				+ String.valueOf(goodsId), member);
+
+	}
+
+	@Override
+	public String saveGoodsBaseInventory(Long goodsBaseId,
+			GoodsBaseInventoryDO goodsBaseInventoryDO) {
+		return this.redisCacheUtil.hmset(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsBaseId), ObjectUtils.toHashMap(goodsBaseInventoryDO));
+	}
+
+	@Override
+	public List<Long> updateGoodsBaseInventory(Long goodsBaseId, int saleCount, int totalCount) {
+		return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+				+ String.valueOf(goodsBaseId), 
+				GoodBaseHashFieldEnum.baseSaleCount.toString(),
+				GoodBaseHashFieldEnum.baseTotalCount.toString(), (saleCount), (totalCount));
+	}
+	
+	@Override
+	public GoodsBaseInventoryDO queryGoodsBaseById(Long goodsBaseId) {
+		long startTime = System.currentTimeMillis();
+		String method = "queryGoodsBaseById";
+		final LogModel lm = LogModel.newLogModel(method);
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
+		Map<String, String> objMap = null;
+		try {
+			objMap = this.redisCacheUtil
+					.hgetAll(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
+							+ String.valueOf(goodsBaseId));
+			if (!CollectionUtils.isEmpty(objMap)) {
+				
+				return JSON.parseObject(JSON.toJSONString(objMap),
+						GoodsBaseInventoryDO.class);
+			}
+		} finally {
+			long endTime = System.currentTimeMillis();
+			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
+					+ "milliseconds(毫秒)执行完成!";
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("objMap", objMap).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
+		}
+		return null;
+	}
+
+	@Override
+	public List<String> queryFirstInGoodsInventoryAction() {
+		
+		return this.redisCacheUtil.lrange(QueueConstant.QUEUE_LOGS_MESSAGE, (0),(499));
+	}
+
+	@Override
+	public Long queryLogQueueMaxLenth(String key) {
+		//
+		return this.redisCacheUtil.llen(QueueConstant.QUEUE_LOGS_MESSAGE);
+	}
+
+	@Override
+	public Long lremLogQueue1(GoodsInventoryActionDO logActionDO) {
+		// 将库存日志队列信息移除:总是移除list从表头到表尾头一条与 value 相同的对象元素
+		return this.redisCacheUtil.lrem(QueueConstant.QUEUE_LOGS_MESSAGE, (0), JSONObject.toJSONString(logActionDO));
+	}
+
+	@Override
+	public String lpop(String key) {
+
+		return this.redisCacheUtil.lpop(key);
+
+	}
+
+	@Override
+	public Double zincrby(String key, double score, String member) {
+		 return this.redisCacheUtil.zincrby(key, score, member);
+	}
+
+	@Override
+	public Long clearQueueData(double start, double end) {
+		
+		return this.redisCacheUtil.zremrangeByScore(QueueConstant.QUEUE_SEND_MESSAGE, start, end);
+	}
+
+	@Override
+	public String overrivedSelectionWmsInventory(Long selectionId,
+			int adjustLeftNum, int adjustTotalNum) {
+		 Map<String, String> hash = new HashMap<String, String>();
+		hash.put(HashFieldEnum.leftNumber.toString(), String.valueOf(adjustLeftNum));
+		hash.put(HashFieldEnum.totalNumber.toString(), String.valueOf(adjustTotalNum));
+		return this.redisCacheUtil.hmset(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId), hash);
+		/*return this.redisCacheUtil.hincrByAndhincrBy4wms(QueueConstant.SELECTION_INVENTORY_PREFIX + ":"
+				+ String.valueOf(selectionId),
+				HashFieldEnum.totalNumber.toString(),
+				HashFieldEnum.leftNumber.toString(), adjustTotalNum,(adjustLeftNum));*/
+	}
+
+	@Override
+	public Long delete(String key, Long goodsId) {	// 根据选型id删除选型库存信息
+		return this.redisCacheUtil.del(key+ ":"+ String.valueOf(goodsId));}
+}
