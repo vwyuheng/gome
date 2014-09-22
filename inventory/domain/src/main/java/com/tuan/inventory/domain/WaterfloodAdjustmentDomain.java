@@ -380,7 +380,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				}
 
 				CreateInventoryResultEnum resultEnum = null;
-
 				InventoryInitDomain create = new InventoryInitDomain(
 							goodsId, lm);
 				//注入相关Repository
@@ -388,7 +387,6 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 				create.setInitFromDesc(initFromDesc);
 				resultEnum = create.businessExecute();
-
 				return resultEnum;
 			}
 			

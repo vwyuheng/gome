@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -172,7 +171,6 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			final LogModel lm = LogModel.newLogModel(method);
 			logupdate.info(lm.setMethod(method).addMetaData("start", startTime)
 					.toJson(false));
-
 			CallResult<OrderQueryResult>  cllResult= inventoryCenterExtFacade.queryNupayOrderGoodsNum( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", preGoodsId);
 			UserOrderQueryEnum result = cllResult.getBusinessResult().getResult();
 			int takeNum = 0;

@@ -192,7 +192,8 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		} catch (Exception e) {
 			this.isInitWms = false;
-			logSysUpdate.error(lm.addMetaData("errorMsg",initFromDesc+"initCheck4Wms error" + e.getMessage()).toJson(false), e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",
+					initFromDesc+"initCheck4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;

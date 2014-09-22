@@ -190,7 +190,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			//create.setSelIds(selIds);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-
 			create.setInitFromDesc(initFromDesc);
 			resultEnum = create.business4WmsExecute();
 			
@@ -240,7 +239,6 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
-
 			updateActionDO.setContent("preGoodsInfo:"+JSON.toJSONString((preGoodsInfo==null)?"NO_GOODS":preGoodsInfo)+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"InventoryWmsUpdateDomain:物流库存调整":updateActionDO.getRemark()+",物流库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());

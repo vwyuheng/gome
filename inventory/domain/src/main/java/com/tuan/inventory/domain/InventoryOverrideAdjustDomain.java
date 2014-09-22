@@ -594,9 +594,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
-
 				create.setInitFromDesc(initFromDesc);
-
 				resultEnum = create.businessExecute();
 			
 			return resultEnum;

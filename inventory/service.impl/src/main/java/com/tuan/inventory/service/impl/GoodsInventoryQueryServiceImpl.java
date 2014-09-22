@@ -78,6 +78,16 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						}
 						
 						InventoryQueryEnum enumRes = null;
+						//参数校验
+						if (selectionId <= 0) {
+							enumRes = InventoryQueryEnum.INVALID_SELECTIONID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSelectionBySelectionId("+goodsId+","+selectionId+")",goodsId,lm);
 						
@@ -95,16 +105,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
 		
-						//参数校验
-						if (selectionId <= 0) {
-							enumRes = InventoryQueryEnum.INVALID_SELECTIONID;
-						}
-						// 检查出现错误
-						if (enumRes != null) {
-							return TuanCallbackResult.failure(
-									enumRes.getCode(), null,
-									new InventoryQueryResult(enumRes, null));
-						}
+						
 						return TuanCallbackResult.success();
 					}
 
@@ -247,7 +248,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		  .addMetaData("clientName", clientName)
 		  .addMetaData("goodsId", goodsId)
 		  .addMetaData("start", startTime);
-
+		
 		if(logQuery.isDebugEnabled()) {
         	 logQuery.debug(lm.toJson(false));
 		}
@@ -262,7 +263,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						  logQuery.debug(lm.addMetaData("init start", startTime)
 									.toJson(false));
 					  }
-
+					  
 						InventoryQueryEnum enumRes = null;
 
 						if (goodsId <= 0) {
@@ -364,6 +365,15 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						}
 						
 						InventoryQueryEnum enumRes = null;
+						if (goodsId <= 0) {
+							enumRes = InventoryQueryEnum.INVALID_GOODSID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSelectionListByGoodsId("+goodsId+")",goodsId,lm);
 						
@@ -379,15 +389,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
 									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
-						if (goodsId <= 0) {
-							enumRes = InventoryQueryEnum.INVALID_GOODSID;
-						}
-						// 检查出现错误
-						if (enumRes != null) {
-							return TuanCallbackResult.failure(
-									enumRes.getCode(), null,
-									new InventoryQueryResult(enumRes, null));
-						}
+						
 						return TuanCallbackResult.success();
 					}
 
@@ -547,6 +549,19 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						}
 						
 						InventoryQueryEnum enumRes = null;
+						
+						if (goodsId <= 0) {
+							enumRes = InventoryQueryEnum.INVALID_GOODSID;
+						}
+						if (CollectionUtils.isEmpty(selectionIdList)) {
+							enumRes = InventoryQueryEnum.INVALID_PARAM;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSelectionListBySelectionIdList("+goodsId+","+selectionIdList+")",goodsId,lm);
 
@@ -562,18 +577,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
 									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
-						if (goodsId <= 0) {
-							enumRes = InventoryQueryEnum.INVALID_GOODSID;
-						}
-						if (CollectionUtils.isEmpty(selectionIdList)) {
-							enumRes = InventoryQueryEnum.INVALID_PARAM;
-						}
-						// 检查出现错误
-						if (enumRes != null) {
-							return TuanCallbackResult.failure(
-									enumRes.getCode(), null,
-									new InventoryQueryResult(enumRes, null));
-						}
+						
 						return TuanCallbackResult.success();
 					}
 
@@ -724,7 +728,16 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						}
 					
 						InventoryQueryEnum enumRes = null;
-				
+						
+						if (StringUtils.isEmpty(wmsGoodsId)) {
+							enumRes = InventoryQueryEnum.INVALID_WMSGOODSID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
 						// 初始化检查
 						CreateInventoryResultEnum resultEnum =  initWmsCheck("findWmsIsBeDeliveryByWmsGoodsId("+wmsGoodsId+","+isBeDelivery+")",wmsGoodsId,isBeDelivery,lm);
 						
@@ -740,15 +753,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
 									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
-						if (StringUtils.isEmpty(wmsGoodsId)) {
-							enumRes = InventoryQueryEnum.INVALID_WMSGOODSID;
-						}
-						// 检查出现错误
-						if (enumRes != null) {
-							return TuanCallbackResult.failure(
-									enumRes.getCode(), null,
-									new InventoryQueryResult(enumRes, null));
-						}
+						
 						return TuanCallbackResult.success();
 					}
 

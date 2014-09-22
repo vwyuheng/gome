@@ -25,7 +25,6 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-
 import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.ext.InventoryCenterExtFacade;
 import com.tuan.inventory.model.GoodsInventoryModel;
@@ -112,7 +111,6 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 						}else {
 							logLock.info("订单接口返回cllResult:"+cllResult+",订单id:"+model.getOrderId());
 						}
-						   
 						if(statEnum!=null) {
 							long endTime = System.currentTimeMillis();
 							String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
@@ -614,6 +612,5 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 			InventoryCenterExtFacade inventoryCenterExtFacade) {
 		this.inventoryCenterExtFacade = inventoryCenterExtFacade;
 	}
-
 
 }

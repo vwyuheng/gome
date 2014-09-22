@@ -268,7 +268,6 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 			create.setInitFromDesc(initFromDesc);
-
 			resultEnum = create.businessExecute();
 
 		return resultEnum;

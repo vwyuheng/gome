@@ -792,7 +792,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		inventoryCosetDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryCosetDomain.setSynInitAndAsynUpdateDomainRepository(synInitAndAsynUpdateDomainRepository);
 		inventoryCosetDomain.setSequenceUtil(sequenceUtil);
-
 		inventoryCosetDomain.setInventoryCenterExtFacade(inventoryCenterExtFacade);
 		Long goodsId = 0L;
 		if(param != null && param.getPreGoodsId() != null){
