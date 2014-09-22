@@ -13,6 +13,7 @@
 	<name>inventory-domain</name>
 	<url>http://www.55tuan.com</url>
 	<dependencies>
+	
 	<dependency>
 			<groupId>com.tuan.cozy</groupId>
 			<artifactId>cozy-utils-trace</artifactId>
@@ -21,10 +22,10 @@
 				<groupId>com.tuan.ordercenter</groupId>
 				<artifactId>ordercenter-model</artifactId>
 			</dependency>
-			<dependency>
+			<!-- <dependency>
 				<groupId>com.tuan.ordercenter</groupId>
 				<artifactId>ordercenter-service</artifactId>
-			</dependency>
+			</dependency> -->
 			<dependency>
 			<groupId>memcached</groupId>
 			<artifactId>memcached</artifactId>
@@ -62,6 +63,10 @@
 		  <groupId>com.tuan.cozy</groupId>
 		  <artifactId>cozy-common-sequence-client</artifactId>
 		</dependency>
+		<dependency>
+				<groupId>com.tuan.inventory</groupId>
+				<artifactId>inventory-client</artifactId>
+			</dependency>
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-model</artifactId>

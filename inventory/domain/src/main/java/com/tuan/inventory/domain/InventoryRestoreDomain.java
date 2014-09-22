@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.impl.DLockImpl;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -87,7 +86,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			}
 			
 			//初始化检查
-			CreateInventoryResultEnum resultEnum = this.initPreGoodsCostCheck();
+			CreateInventoryResultEnum resultEnum = this.initPreGoodsCostCheck("from_InventoryRestoreDomain");
 				
 				long endTime = System.currentTimeMillis();
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
@@ -295,7 +294,7 @@ public class InventoryRestoreDomain extends AbstractDomain {
 			if (isOldGoodsExists) { // 改价前商品
 			//将商品信息加载上来
 		    GoodsInventoryDO oldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
-			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSON.toJSONString(inventoryInfoDO4NewGoods)+"],inventoryInfoDO4OldGoods:["+JSON.toJSONString(oldGoods)+"]"); // 操作内容
+			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+inventoryInfoDO4NewGoods!=null?JSON.toJSONString(inventoryInfoDO4NewGoods):"inventoryInfoDO4NewGoods is null!"+"],inventoryInfoDO4OldGoods:["+oldGoods!=null?JSON.toJSONString(oldGoods):"oldGoods is null!"+"]"); // 操作内容
 			}
 			updateActionDO.setRemark("还原库存,preGoodsId("+preGoodsId+"),goodsId("+goodsId+"),orderIds("+orderIds+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
@@ -395,13 +394,13 @@ public class InventoryRestoreDomain extends AbstractDomain {
 	}
 
 	// 初始化改价前商品
-	//@SuppressWarnings("unchecked")
-	public CreateInventoryResultEnum initPreGoodsCostCheck() {
+	public CreateInventoryResultEnum initPreGoodsCostCheck(String initFromDesc) {
 		CreateInventoryResultEnum resultEnum = null;
 			InventoryInitDomain create = new InventoryInitDomain(preGoodsId, lm);
 			// 注入相关Repository
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			create.setInitFromDesc(initFromDesc);
 			resultEnum = create.businessExecute();
 
 		return resultEnum;

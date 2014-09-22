@@ -79,12 +79,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 	@Test
 	public void testUpdateWmsData() {
 		UpdateWmsDataParam param = new UpdateWmsDataParam();
-		param.setGoodsId("187237");
+		param.setGoodsId("1000244");
 		param.setSuppliersId("1");
-		param.setWmsGoodsId("T01000000116");
+		param.setWmsGoodsId("T00180002646");
 		param.setIsBeDelivery("1");
-		param.setGoodsSelectionIds("1,2,3");
-		param.setGoodsTypeIds("3,4,5");
+		param.setGoodsSelectionIds("267153,267154");  //267153,267154
+		param.setGoodsTypeIds("1000644,1000645");
 		
 		goodsInventoryUpdateService.updateWmsData(clientIP, clientName, param, null);
 	}

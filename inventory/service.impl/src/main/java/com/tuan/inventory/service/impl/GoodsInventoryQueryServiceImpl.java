@@ -79,7 +79,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSelectionBySelectionId("+goodsId+","+selectionId+")",goodsId,lm);
 						
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -120,7 +120,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									.getCode(), res);
 						} else {
 							res = new InventoryQueryResult(
-									InventoryQueryEnum.SYS_ERROR, null);
+									InventoryQueryEnum.NO_SELECTION, null);
 							return TuanCallbackResult.failure(res.getResult()
 									.getCode(), null, res);
 						}
@@ -173,7 +173,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.toJson(true));
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSuppliersBySuppliersId("+goodsId+","+suppliersId+")",goodsId,lm);
 						
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
@@ -247,10 +247,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		  .addMetaData("clientName", clientName)
 		  .addMetaData("goodsId", goodsId)
 		  .addMetaData("start", startTime);
-		/*boolean isShow = false;
-		if(!"partner-api".equals(clientName)||StringUtils.isEmpty(clientName)) {
-			  isShow=true;
-		  }*/
+
 		if(logQuery.isDebugEnabled()) {
         	 logQuery.debug(lm.toJson(false));
 		}
@@ -265,11 +262,20 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						  logQuery.debug(lm.addMetaData("init start", startTime)
 									.toJson(false));
 					  }
-					  
+
 						InventoryQueryEnum enumRes = null;
-				
+
+						if (goodsId <= 0) {
+							enumRes = InventoryQueryEnum.INVALID_GOODSID;
+						}
+						// 检查出现错误
+						if (enumRes != null) {
+							return TuanCallbackResult.failure(
+									enumRes.getCode(), null,
+									new InventoryQueryResult(enumRes, null));
+						}
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsInventoryByGoodsId("+goodsId+")",goodsId,lm);
 						
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -284,15 +290,8 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 							return TuanCallbackResult.failure(resultEnum.getCode(), null, new InventoryQueryResult(
 									InventoryQueryEnum.createQueryEnum(resultEnum.getCode(),resultEnum.getDescription()), null));
 						}
-						if (goodsId <= 0) {
-							enumRes = InventoryQueryEnum.INVALID_GOODSID;
-						}
-						// 检查出现错误
-						if (enumRes != null) {
-							return TuanCallbackResult.failure(
-									enumRes.getCode(), null,
-									new InventoryQueryResult(enumRes, null));
-						}
+						
+						
 						return TuanCallbackResult.success();
 					}
 
@@ -308,7 +307,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									.getCode(), res);
 						} else {
 							res = new InventoryQueryResult(
-									InventoryQueryEnum.SYS_ERROR, null);
+									InventoryQueryEnum.NO_GOODS, null);
 							return TuanCallbackResult.failure(res.getResult()
 									.getCode(), null, res);
 						}
@@ -323,9 +322,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
+		
 		lm.addMetaData("result", result.isSuccess()).addMetaData("runResult", runResult)
-				.addMetaData("resultCode", result.getResultCode())
-				.addMetaData("qresult", qresult.getResultObject())
+				.addMetaData("resultCode", resultCode)
+				.addMetaData("qresult", qresult!=null?qresult.getResultObject():"qresult is null! this is vip error!")
 				.addMetaData("end", endTime);
 		if(logQuery.isDebugEnabled()) {
 				logQuery.debug(lm.toJson(false));
@@ -333,7 +333,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 		
 		return new CallResult<GoodsInventoryModel>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
-				(GoodsInventoryModel) qresult.getResultObject(),
+				qresult!=null?(GoodsInventoryModel) qresult.getResultObject():null,
 				result.getThrowable());
 	}
 
@@ -365,7 +365,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSelectionListByGoodsId("+goodsId+")",goodsId,lm);
 						
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -403,7 +403,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									.getCode(), res);
 						} else {
 							res = new InventoryQueryResult(
-									InventoryQueryEnum.SYS_ERROR, null);
+									InventoryQueryEnum.NO_SELECTION, null);
 							return TuanCallbackResult.failure(res.getResult()
 									.getCode(), null, res);
 						}
@@ -456,7 +456,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.toJson(false));
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSuppliersListByGoodsId("+goodsId+")",goodsId,lm);
 						
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -548,7 +548,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSelectionListBySelectionIdList("+goodsId+","+selectionIdList+")",goodsId,lm);
 
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -589,7 +589,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									.getCode(), res);
 						} else {
 							res = new InventoryQueryResult(
-									InventoryQueryEnum.SYS_ERROR, null);
+									InventoryQueryEnum.NO_SELECTION, null);
 							return TuanCallbackResult.failure(res.getResult()
 									.getCode(), null, res);
 						}
@@ -639,7 +639,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						
 						InventoryQueryEnum enumRes = null;
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initCheck(goodsId,lm);
+						CreateInventoryResultEnum resultEnum =  initCheck("findGoodsSuppliersListBySuppliersIdList("+goodsId+","+suppliersIdList+")",goodsId,lm);
 						
 						lm.addMetaData("init","init,after").addMetaData("init[findGoodsSuppliersListBySuppliersIdList]", goodsId).addMetaData("message", resultEnum.getDescription());
 						writeBusInitLog(lm,true);
@@ -726,7 +726,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						InventoryQueryEnum enumRes = null;
 				
 						// 初始化检查
-						CreateInventoryResultEnum resultEnum =  initWmsCheck(wmsGoodsId,isBeDelivery,lm);
+						CreateInventoryResultEnum resultEnum =  initWmsCheck("findWmsIsBeDeliveryByWmsGoodsId("+wmsGoodsId+","+isBeDelivery+")",wmsGoodsId,isBeDelivery,lm);
 						
 						long endTime = System.currentTimeMillis();
 						String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -783,7 +783,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 									.getCode(), res);
 						} else {
 							res = new InventoryQueryResult(
-									InventoryQueryEnum.SYS_ERROR, null);
+									InventoryQueryEnum.NO_WMS_DATA, null);
 							return TuanCallbackResult.failure(res.getResult()
 									.getCode(), null, res);
 						}
@@ -814,7 +814,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 	
 	//初始化检查
 	@SuppressWarnings("unchecked")
-	public CreateInventoryResultEnum initCheck(long goodsId,LogModel lm) {
+	public CreateInventoryResultEnum initCheck(String initFromDesc,long goodsId,LogModel lm) {
 		//初始化加分布式锁
 		LockResult<String> lockResult = null;
 		CreateInventoryResultEnum resultEnum = null;
@@ -826,12 +826,15 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 								.getCode()) {
 					logQuery.error(lm.addMetaData("dLock",goodsId).toJson(false));
 				}
+				
 				InventoryInitDomain create = new InventoryInitDomain(goodsId,
 						lm);
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+				create.setInitFromDesc(initFromDesc);
 				resultEnum = create.businessExecute();
+				
 			} finally{
 				dLock.unlockManual(key);
 			}
@@ -841,7 +844,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 
 	    //初始化物流库存库存
 		@SuppressWarnings("unchecked")
-		public CreateInventoryResultEnum initWmsCheck(String wmsGoodsId,String isBeDelivery,LogModel lm) {
+		public CreateInventoryResultEnum initWmsCheck(String initFromDesc,String wmsGoodsId,String isBeDelivery,LogModel lm) {
 					//初始化加分布式锁
 					
 					LockResult<String> lockResult = null;
@@ -862,6 +865,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 						create.setLm(lm);
 						create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 						create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+						create.setInitFromDesc(initFromDesc);
 						resultEnum = create.business4WmsExecute();
 					} finally{
 						dLock.unlockManual(key);
@@ -967,7 +971,7 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 										.getCode(), res);
 							} else {
 								res = new InventoryQueryResult(
-										InventoryQueryEnum.SYS_ERROR, null);
+										InventoryQueryEnum.NO_GOODSBASE, null);
 								return TuanCallbackResult.failure(res.getResult()
 										.getCode(), null, res);
 							}

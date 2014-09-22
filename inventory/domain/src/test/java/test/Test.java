@@ -13,11 +13,12 @@ import java.util.Map;
 import org.springframework.util.CollectionUtils;
 
 import net.sf.json.JSONObject;
-
-import com.alibaba.fastjson.JSON;
+import org.springframework.util.CollectionUtils;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
+import com.tuan.inventory.domain.support.util.StringUtil;
 
 public class Test {
 	private static boolean isGoodsOf;
@@ -115,12 +116,19 @@ public class Test {
 		//baseInventoryDO.setGoodsBaseId(8000009999l);
 		//baseInventoryDO.setBaseTotalCount(0);
 		//baseInventoryDO.setBaseSaleCount(0);
-
-		System.out.println("InventoryWmsUpdateDomain:物流库存调整t".getBytes().length);
+		//System.out.println("InventoryWmsUpdateDomain:物流库存调整t".getBytes().length);
 		List<GoodsWmsSelectionResult> tmpSelectionParam = new ArrayList<GoodsWmsSelectionResult>();
 		System.out.println(CollectionUtils.isEmpty(tmpSelectionParam));
+		List<GoodsSelectionDO> rgsrList = new ArrayList<GoodsSelectionDO>();
+		for(int i=1;i<=5;i++) {
+			GoodsSelectionDO sel = new GoodsSelectionDO();
+			sel.setId((long) i);
+			rgsrList.add(sel);
+		}
 		
 		
+		System.out.println(StringUtil.getSelectionIdByDotSeparate(rgsrList));
+
 	}
 	
 	

@@ -57,6 +57,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
+		 <!-- logback兼容log4j -->
+          <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
+		</dependency>
 		<dependency>
   			<groupId>ch.qos.logback</groupId>
   			<artifactId>logback-core</artifactId>
@@ -79,11 +84,10 @@
 			<artifactId>cozy-utils-trace</artifactId>
 		</dependency>
 		<!-- test start -->
-		<!-- <dependency>
-				<groupId>com.tuan.inventory</groupId>
-				<artifactId>inventory-client</artifactId>
-			</dependency> -->
-		<!-- test end -->
+		<dependency>
+			<groupId>com.tuan.inventory</groupId>
+			<artifactId>inventory-ext</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-model</artifactId>

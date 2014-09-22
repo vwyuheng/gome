@@ -10,7 +10,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
-import com.tuan.core.common.lock.impl.DLockImpl;
+
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
@@ -18,18 +18,16 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.repository.SynInitAndAsynUpdateDomainRepository;
-import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.HessianProxyUtil;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
+import com.tuan.inventory.ext.InventoryCenterExtFacade;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
 import com.tuan.inventory.model.param.CreateInventory4GoodsCostParam;
 import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
-import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.enu.ClientNameEnum;
 import com.tuan.ordercenter.model.enu.res.UserOrderQueryEnum;
 import com.tuan.ordercenter.model.result.CallResult;
@@ -44,6 +42,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository;
+	private InventoryCenterExtFacade inventoryCenterExtFacade;
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryDO inventoryInfoDO4OldGoods;
@@ -164,16 +163,17 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			
 			//进行真正的业务处理
 			//走hessian调用取订单支付状态
-			OrderQueryService basic = (OrderQueryService) HessianProxyUtil
+			/*OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 					.getObject(OrderQueryService.class,
-							InventoryConfig.QUERY_URL);
+							InventoryConfig.QUERY_URL);*/
 			//初始化改价前商品进来
 			long startTime = System.currentTimeMillis();
 			String method = "OrderQueryService.queryNupayOrderGoodsNum,preGoodsId:"+preGoodsId;
 			final LogModel lm = LogModel.newLogModel(method);
 			logupdate.info(lm.setMethod(method).addMetaData("start", startTime)
 					.toJson(false));
-			CallResult<OrderQueryResult>  cllResult= basic.queryNupayOrderGoodsNum( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", preGoodsId);
+
+			CallResult<OrderQueryResult>  cllResult= inventoryCenterExtFacade.queryNupayOrderGoodsNum( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", preGoodsId);
 			UserOrderQueryEnum result = cllResult.getBusinessResult().getResult();
 			int takeNum = 0;
 			Long getTakeNum = 0L;
@@ -400,7 +400,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			if (isOldGoodsExists) { // 改价前商品
 			//将商品信息加载上来
 		    GoodsInventoryDO oldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
-			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+JSON.toJSONString(inventoryInfoDO4NewGoods)+"],inventoryInfoDO4OldGoods:["+JSON.toJSONString(oldGoods)+"]"); // 操作内容
+			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+inventoryInfoDO4NewGoods!=null?JSON.toJSONString(inventoryInfoDO4NewGoods):"inventoryInfoDO4NewGoods is null!"+"],inventoryInfoDO4OldGoods:["+oldGoods!=null?JSON.toJSONString(oldGoods):"oldGoods is null!"+"]"); // 操作内容
 			}
 			updateActionDO.setRemark("商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
@@ -533,6 +533,11 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	public void setSynInitAndAsynUpdateDomainRepository(
 			SynInitAndAsynUpdateDomainRepository synInitAndAsynUpdateDomainRepository) {
 		this.synInitAndAsynUpdateDomainRepository = synInitAndAsynUpdateDomainRepository;
+	}
+
+	public void setInventoryCenterExtFacade(
+			InventoryCenterExtFacade inventoryCenterExtFacade) {
+		this.inventoryCenterExtFacade = inventoryCenterExtFacade;
 	}
 	
 

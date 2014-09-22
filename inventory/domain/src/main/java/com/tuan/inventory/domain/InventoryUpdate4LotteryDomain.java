@@ -122,7 +122,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		}
 		
 		// 初始化检查
-		CreateInventoryResultEnum resultEnum =	this.initCheck();
+		CreateInventoryResultEnum resultEnum =	this.initCheck("from_InventoryUpdate4LotteryDomain");
 		
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -236,7 +236,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 
 	
 	// 初始化库存
-	public CreateInventoryResultEnum initCheck() {
+	public CreateInventoryResultEnum initCheck(String initFromDesc) {
 		setGoodsId(param.getGoodsId());
 		setObjectId(String.valueOf(param.getObjectId()));
 		if(param.getGoodsBaseId()==0&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
@@ -267,6 +267,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			create.setInitFromDesc(initFromDesc);
+
 			resultEnum = create.businessExecute();
 
 		return resultEnum;

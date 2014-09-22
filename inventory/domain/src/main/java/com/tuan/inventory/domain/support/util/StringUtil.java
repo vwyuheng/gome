@@ -25,6 +25,20 @@ public class StringUtil {
 		}
 		return sb.toString();
 	}
+	/**
+	 * 多个选型id关系 返回 ,号格分隔
+	 * @param rgsrList
+	 * @return
+	 */
+	public static String getSelectionIdByDotSeparate(List<GoodsSelectionDO> rgsrList) {
+		StringBuffer sb  = new StringBuffer();
+		//多个选型id以空格间隔的字符串
+		for(GoodsSelectionDO rgsr:rgsrList) {
+			sb.append(rgsr.getId());
+			sb.append(",");
+		}
+		return sb.toString().substring(0, sb.toString().length()-1);
+	}
 	
 	
 	public static String strHandler(int goodsDeductNum,int selectionDeductNum,int suppliersDeductNum){

@@ -127,6 +127,7 @@ public interface BaseDAOService {
 	public Long adjustSuppliersWaterflood(Long suppliersId,int num);
 	public List<Long> adjustSuppliersWaterflood(Long goodsId,Long suppliersId,int num);
 	
+	public Long delete(String key,Long goodsId);
 	public Long deleteGoodsInventory(Long goodsId);
 	public Long deleteSelectionInventory(Long selectionId);
 	public Long deleteSuppliersInventory(Long suppliersId);

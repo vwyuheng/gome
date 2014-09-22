@@ -146,7 +146,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 						srDO.setGoodsId(goodsId);
 						
 						this.saveGoodsSelection(srDO);
-					}/*else {//TODO 初始化时无需更新选型数据
+					}/*else {//TODO 初始化时无需更新选型数据,以免对现有数据造成影响
 						this.updateGoodsSelection(srDO);
 					}*/
 					
@@ -174,10 +174,8 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDo==null) {
 						//将商品id set到选型中
 						srDO.setGoodsId(goodsId);
-						//srDO.setTotalNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getTotalNumber());
-						//srDO.setLeftNumber(srDO.getLimitStorage()==0?Integer.MAX_VALUE:srDO.getLeftNumber());
 						this.saveGoodsSelection(srDO);
-					}else {//
+					}else {// 保存或更新
 						this.updateGoodsSelection(srDO);
 					}
 					
@@ -199,7 +197,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDO==null) {
 						srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
-					}else {//
+					}else {// 初始化时不能进行更新操作，否则会对现有数据产生无法预料的影响
 						//this.updateGoodsSelection(srDO);
 					}
 					
@@ -221,7 +219,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					if(tmpDO==null) {
 						//srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
-					}else {//
+					}else {//  // 保存或更新
 						this.updateGoodsSelection(srDO);
 					}
 					
@@ -376,7 +374,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 					GoodsInventoryWMSDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
 					if(tmpDO==null) {
 						this.saveGoodsInventoryWMS(wmsInventory);
-					}else {//TODO 创建和初始化时不需要更新wms数据 
+					}else {//TODO 创建和初始化时不需要更新wms数据 ,以免影响后续业务操作的数据
 						//this.updateGoodsInventoryWMS(wmsInventory);
 					}
 					
@@ -401,7 +399,7 @@ public class SynInitAndAsynUpdateDomainRepository {
 				GoodsInventoryWMSDO tmpDO = synInitAndAsynUpdateDAO.selectGoodsInventoryWMSDO(wmsGoodsId);
 				if(tmpDO==null) {
 					this.saveGoodsInventoryWMS(wmsInventory);
-				}else {//
+				}else {//初始化时不能更新
 					this.updateGoodsInventoryWMS(wmsInventory);
 				}
 				

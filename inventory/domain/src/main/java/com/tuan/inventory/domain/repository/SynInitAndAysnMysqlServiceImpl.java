@@ -116,7 +116,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (wmsDO == null&&CollectionUtils.isEmpty(selectionList)) {
 							logupdate.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_PARAM
 											.getCode());
 						}
 						
@@ -850,14 +850,23 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 	}
 	@Override
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(final long goodsId,final Map<String, String> hash,
-			final GoodsInventoryDO inventoryInfoDO,final int pretotalnum) throws Exception {
+			final GoodsInventoryDO inventoryInfoDO,final int pretotalnum,final GoodsInventoryWMSDO wmsInventory) throws Exception {
 		
 		TuanCallbackResult callBackResult = super.execute(
 				new TuanServiceCallback() {
 					public TuanCallbackResult executeAction() {
 						try {
-							//
-							synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
+							//判断是否存在
+							GoodsInventoryDO tmpGIDO = synInitAndAsynUpdateDomainRepository.selectGoodsInventoryDO(goodsId);
+							if(tmpGIDO==null) { //如果不存在则需要创建进来
+								synInitAndAsynUpdateDomainRepository.saveGoodsInventory(inventoryInfoDO);
+								goodsInventoryDomainRepository.saveGoodsInventory(goodsId, inventoryInfoDO);
+							}else {
+								synInitAndAsynUpdateDomainRepository.updateGoodsInventory(inventoryInfoDO);
+							}
+							if(wmsInventory!=null) {
+								synInitAndAsynUpdateDomainRepository.saveAndUpdateGoodsWms(wmsInventory);
+							}
 							//更新库存基表
 							Long goodsBaseId = inventoryInfoDO.getGoodsBaseId();
 							GoodsBaseInventoryDO baseInventoryDO = synInitAndAsynUpdateDomainRepository.getGoodBaseBygoodsId(goodsBaseId);
@@ -871,6 +880,21 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								int num=baseInventoryDO.getBaseTotalCount()-pretotalnum+inventoryInfoDO.getTotalNumber();
 								baseInventoryDO.setBaseTotalCount(num);
 								synInitAndAsynUpdateDomainRepository.saveGoodsBaseInventoryDO(baseInventoryDO);
+							}
+							if(wmsInventory!=null) {
+								String wmsAck =	goodsInventoryDomainRepository.saveAndUpdateGoodsWmsInventory(wmsInventory);
+								if(StringUtils.isEmpty(wmsAck)) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveAndUpdateGoodsWmsInventory to redis error occured!",
+											new Exception());
+								}
+								if(!wmsAck.equalsIgnoreCase("ok")) {
+									throw new TuanRuntimeException(
+											QueueConstant.SERVICE_REDIS_FALIURE,
+											"SynInitAndAysnMysqlServiceImpl.saveAndUpdateGoodsWmsInventory to redis error occured!",
+											new Exception());
+								}
 							}
 							if(!CollectionUtils.isEmpty(hash)) {
 								String retAck =	 goodsInventoryDomainRepository.updateFields(goodsId, hash);
@@ -964,19 +988,24 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeAction() {
 					try {
 					synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionDOList);
-					String retAck = goodsInventoryDomainRepository.updateSelectionFields(selectionDOList);
-					if(StringUtils.isEmpty(retAck)) {
+					//删除商品与选型的关系
+					Long delACK = goodsInventoryDomainRepository.delete(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX, goodsId);
+					if(delACK==null) {
 						throw new TuanRuntimeException(
 								QueueConstant.SERVICE_REDIS_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.updateSelectionFields to redis error occured!",
+								"SynInitAndAysnMysqlServiceImpl.delete to redis error occured!",
 								new Exception());
 					}
-					if(!retAck.equalsIgnoreCase("ok")) {
+					//删除成功后要进行关系的重新绑定
+					boolean		retAck = goodsInventoryDomainRepository.saveAndUpdateGoodsSeleInventory(goodsId,selectionDOList);
+					//String retAck = goodsInventoryDomainRepository.updateSelectionFields(selectionDOList);
+					if(!retAck) {
 						throw new TuanRuntimeException(
 								QueueConstant.SERVICE_REDIS_FALIURE,
-								"SynInitAndAysnMysqlServiceImpl.updateSelectionFields to redis error occured!",
+								"SynInitAndAysnMysqlServiceImpl.saveAndUpdateGoodsSeleInventory to redis error occured!",
 								new Exception());
 					}
+					
 					} catch (Exception e) {
 						logupdate.error(
 								"SynInitAndAysnMysqlServiceImpl.updateBatchGoodsSelection error occured!"
@@ -1174,7 +1203,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (suppliersDO == null) {
 						 logupdate.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_PARAM
 										.getCode());
 					}
 					
@@ -1239,7 +1268,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(
+	public CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(final List<Long> selectionRelationIdList,
 			final long goodsId) {
 		
 	    TuanCallbackResult callBackResult = super.execute(
@@ -1247,7 +1276,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 				public TuanCallbackResult executeAction() {
 					List<GoodsSelectionDO> selectionInventoryList = null;
 					try {
-						selectionInventoryList = initCacheDomainRepository.querySelectionByGoodsId(goodsId);
+						selectionInventoryList = initCacheDomainRepository.querySelectionByGoodsId(selectionRelationIdList,goodsId);
 					} catch (Exception e) {
 						logQuery.error(
 								"SynInitAndAysnMysqlServiceImpl.selectGoodsSelectionListByGoodsId error occured!"
@@ -1320,7 +1349,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (goodsId <= 0) {
 						logQuery.error(this.getClass()+"_create param invalid ,goodsId is invalid!");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_GOODSID
 										.getCode());
 					}
 					
@@ -1568,7 +1597,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (CollectionUtils.isEmpty(goodsTypeIdList)) {
 						logQuery.error(this.getClass()+"_create param invalid ,goodsTypeIdList is invalid!");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_GOODSTYPEID
 										.getCode());
 					}
 					
@@ -1767,7 +1796,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (suppliersDO == null) {
 							logupdate.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_PARAM
 											.getCode());
 						}
 						
@@ -1904,7 +1933,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (goodsBaseId==null) {
 							logQuery.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_GOODSBASEID
 											.getCode());
 						}
 						
@@ -1971,7 +2000,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (baseInventoryDO == null) {
 							logupdate.error(this.getClass()+"_create param invalid ,param is null");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.NO_GOODSBASE
 											.getCode());
 						}
 						
@@ -2017,7 +2046,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (goodsBaseId==null) {
 							logQuery.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_GOODSBASEID
 											.getCode());
 						}
 						
@@ -2133,7 +2162,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (selectionDO == null&&goodsDO==null) {
 						 logupdate.error(this.getClass()+"_create param invalid ,all param is null");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_PARAM
 										.getCode());
 					}
 					
@@ -2250,7 +2279,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (suppliersDO == null) {
 						 logupdate.error(this.getClass()+"_create param invalid ,GoodsSuppliersDO is null");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_PARAM
 										.getCode());
 					}
 					
@@ -2383,7 +2412,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (goodsId==0||(goodsDO == null&&CollectionUtils.isEmpty(selectionInventoryList)&&CollectionUtils.isEmpty(suppliersInventoryList))) {
 						 logupdate.error(this.getClass()+"_create param invalid ,param is null");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_PARAM
 										.getCode());
 					}
 					
@@ -2430,7 +2459,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 					if (StringUtils.isEmpty(wmsGoodsId)) {
 						logQuery.error(this.getClass()+"_create param invalid ,wmsGoodsId is invalid!");
 						return TuanCallbackResult
-								.failure(PublicCodeEnum.PARAM_INVALID
+								.failure(PublicCodeEnum.INVALID_WMSGOODSID
 										.getCode());
 					}
 					
@@ -2528,7 +2557,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 						if (goodsBaseId==null) {
 							logQuery.error(this.getClass()+"_create param invalid ,goodsBaseId is invalid!");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_GOODSBASEID
 											.getCode());
 						}
 						

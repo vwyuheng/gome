@@ -68,7 +68,7 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 	
 	
 	
-	/**库存调整
+	/**库存创建
 	 * @param tokenId 序列值
 	 * @param goodsId
 	 * @param action  操作类型
@@ -122,6 +122,17 @@ public class MessageNotifyCallBackServiceImpl extends AbstractService implements
 				param.setTokenid(tokenId);
 				param.setTotalnum(Integer.parseInt(data.get("totalnum")));
 				param.setType(data.get("type"));
+				if(StringUtils.isEmpty(data.get("goodsBaseId"))) {
+					log.info("异常走notifyserver,"+action+",商品goodsBaseId(goodsBaseId)不能为空!!!");
+				}else {
+					param.setGoodsBaseId(data.get("goodsBaseId"));
+				}
+				if(StringUtils.isEmpty(data.get("limitStorage"))) {
+					log.info("异常走notifyserver,"+action+",是否限制库存标识(limitStorage)不能为空!!!");
+					return;//终止方法运行
+				}else {
+					param.setLimitStorage(Integer.parseInt(data.get("limitStorage")));
+				}
 				InventoryCallResult inventoryCallResult=goodsInventoryUpdateService.overrideAdjustInventory(clientIp,clientName,param,null);
 				log.info(lm.setMethod(method).addMetaData("isupdate", needUpdate).addMetaData("resultCode", inventoryCallResult.getCode()).toJson());
 			}

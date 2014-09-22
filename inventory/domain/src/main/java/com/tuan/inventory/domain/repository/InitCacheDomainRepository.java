@@ -64,11 +64,11 @@ public class InitCacheDomainRepository {
 	 * @param goodsId
 	 * @return
 	 */
-	public List<GoodsSelectionDO> querySelectionByGoodsId(
+	public List<GoodsSelectionDO> querySelectionByGoodsId(List<Long> selectionRelationIdList,
 			long goodsId){
 		List<GoodsSelectionDO> result = null;
 		List<GoodsSelectionRelationGoodDO> selectionList = null;
-		selectionList = goodTypeDomainRepository.selectSelectionRelationBySrIds(null, goodsId);
+		selectionList = goodTypeDomainRepository.selectSelectionRelationBySrIds(selectionRelationIdList, goodsId);
 		if(!CollectionUtils.isEmpty(selectionList)) {
 			result = new ArrayList<GoodsSelectionDO>();
 			for(GoodsSelectionRelationGoodDO selection:selectionList) {

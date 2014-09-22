@@ -123,7 +123,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			logSysUpdate.debug(lm.toJson(false));
 		}
 		// 初始化检查
-		CreateInventoryResultEnum resultEnum =	this.initCheck();
+		CreateInventoryResultEnum resultEnum =	this.initCheck("from_InventoryWmsAdjust4SelectionDomain");
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -181,7 +181,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 	}
 	
 	//初始化库存
-	public CreateInventoryResultEnum initCheck() {
+	public CreateInventoryResultEnum initCheck(String initFromDesc) {
 	       //初始化物流编码
 			//this.wmsGoodsId = param.getWmsGoodsId();
 			setWmsGoodsId(param.getWmsGoodsId());
@@ -195,6 +195,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 			create.setGoodsTypeIdList(selGoodsTypeIds);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			create.setInitFromDesc(initFromDesc);
 			resultEnum = create.business4WmsExecute();
 			
 			return resultEnum;

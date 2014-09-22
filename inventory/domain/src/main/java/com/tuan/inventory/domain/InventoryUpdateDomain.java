@@ -39,8 +39,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
+	private GoodsInventoryDO preInventoryInfoDO;
 	private GoodsInventoryDO inventoryInfoDO;
-
+	//保持现场
+	private List<GoodsSelectionDO> preSelectionList;
 	private List<GoodsSelectionModel> selectionList;
 	private List<GoodsSuppliersModel> suppliersList;
 	
@@ -86,6 +88,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 	private boolean selectionInventoryHandler() {
 		try {
 			if (!CollectionUtils.isEmpty(param.getGoodsSelection())) { // if1
+				List<GoodsSelectionDO> preSelectionListTmp = new ArrayList<GoodsSelectionDO>();
 				this.selectionList = param.getGoodsSelection();
 				this.selectionParam = new ArrayList<GoodsSelectionAndSuppliersResult>();
 
@@ -96,12 +99,14 @@ public class InventoryUpdateDomain extends AbstractDomain {
 						// 查询商品选型库存
 						GoodsSelectionDO selectionDO = this.goodsInventoryDomainRepository
 								.querySelectionRelationById(selectionId);
+						if(selectionDO!=null) { //保存扣减前的状态
+							preSelectionListTmp.add(selectionDO);
+						}
 						if (selectionDO != null
 								&& selectionDO.getLimitStorage() == 1) { // 只处理限制库存商品
 							// 扣减库存并返回扣减标识,计算库存并
 							if ((selectionDO.getLeftNumber() - model.getNum()) < 0) {
 								// 该处为了保证只要有一个选型商品库存不足则返回库存不足
-								
 								return false;
 							} else {
 								selection = new GoodsSelectionAndSuppliersResult();
@@ -124,7 +129,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 					}// if选型
 
 				}// for
-
+				setPreSelectionList(preSelectionListTmp);
 			}
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
@@ -188,6 +193,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if(tmpInventory==null) {
 			return CreateInventoryResultEnum.NO_GOODS;
 		}
+		//计算库存前保存现场
+		setPreInventoryInfoDO(tmpInventory);
 		// 商品本身扣减库存量
 		int deductNum = param.getNum();
 		int deSelectionNum = 0;
@@ -274,7 +281,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		}
 		
 		// 初始化检查
-		CreateInventoryResultEnum resultEnum =	this.initCheck();
+		CreateInventoryResultEnum resultEnum =	this.initCheck("from_InventoryUpdateDomain");
 		
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
@@ -584,7 +591,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	
 	// 初始化库存
-	public CreateInventoryResultEnum initCheck() {
+	public CreateInventoryResultEnum initCheck(String initFromDesc) {
 		//this.goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
 		setGoodsId(Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId()));
 		if(StringUtils.isEmpty(param.getGoodsBaseId())&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
@@ -617,6 +624,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		    //create.setWmsGoodsId(wmsGoodsId);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+			create.setInitFromDesc(initFromDesc);
 			resultEnum = create.businessExecute();
 		return resultEnum;
 	}
@@ -668,7 +676,9 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			if(!StringUtils.isEmpty(param.getOrderId())) {
 				updateActionDO.setOrderId(Long.valueOf(param.getOrderId()));
 			}
-			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
+			//选型的暂不加，以免字段保存不了
+			//(CollectionUtils.isEmpty(preSelectionList)?",preSelectionList is null!":",preSelectionList:"+JSON.toJSONString(preSelectionList))+
+			updateActionDO.setContent("before_deduct:"+preInventoryInfoDO!=null?JSON.toJSONString(preInventoryInfoDO):"preInventoryInfoDO is null!"+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("扣减库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
@@ -897,6 +907,22 @@ public class InventoryUpdateDomain extends AbstractDomain {
 
 	public void setOrderId(String orderId) {
 		this.orderId = orderId;
+	}
+
+	public List<GoodsSelectionDO> getPreSelectionList() {
+		return preSelectionList;
+	}
+
+	public void setPreSelectionList(List<GoodsSelectionDO> preSelectionList) {
+		this.preSelectionList = preSelectionList;
+	}
+
+	public GoodsInventoryDO getPreInventoryInfoDO() {
+		return preInventoryInfoDO;
+	}
+
+	public void setPreInventoryInfoDO(GoodsInventoryDO preInventoryInfoDO) {
+		this.preInventoryInfoDO = preInventoryInfoDO;
 	}
 	
 	

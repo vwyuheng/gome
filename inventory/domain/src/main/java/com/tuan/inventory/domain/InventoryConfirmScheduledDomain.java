@@ -119,7 +119,7 @@ public class InventoryConfirmScheduledDomain extends AbstractDomain {
 					//当确保redis中数据是最新的数据后,第一件事应该就是将队列状态标记删除以保证不会被重复处理
 					if(this.verifyId(queueId)) {
 						if(!this.markDelete(queueId,JSON.toJSONString(queueModel))) {
-							logConfirm.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+")!!!");
+							logConfirm.info("[队列状态标记删除状态及删除缓存的队列失败],queueId:("+queueId+"),goodsId="+goodsId);
 						}else {
 							//logConfirm.info("[队列状态标记删除状态及删除缓存的队列成功],queueId:("+queueId+"),end");
 						}

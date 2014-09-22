@@ -39,7 +39,7 @@ public interface SynInitAndAysnMysqlService {
 	//public CallResult<GoodsInventoryDO> updateGoodsInventory(GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,final int pretotalnum,String goodsSelectionIds,GoodsInventoryDO goodsDO) throws Exception;
 	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,int adjustNum,GoodsInventoryDO goodsDO) throws Exception;
-	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO, int pretotalnum) throws Exception;
+	public CallResult<GoodsInventoryDO> updateGoodsInventory(long goodsId,Map<String, String> hash,GoodsInventoryDO goodsDO, int pretotalnum,GoodsInventoryWMSDO wmsInventory) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,int pretotalnum,GoodsSelectionDO selectionDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,int pretotalnum,int adjustNum,GoodsSelectionDO selectionDO) throws Exception;
 	public CallResult<GoodsSelectionDO> updateGoodsSelection(GoodsInventoryDO goodsDO,GoodsSelectionDO selectionDO) throws Exception;
@@ -54,7 +54,7 @@ public interface SynInitAndAysnMysqlService {
 	public CallResult<List<GoodsSelectionDO>> selectSelectionByGoodsTypeIds(final List<Long> goodsTypeIdList);
 	public CallResult<GoodsInventoryDO> selectGoodsInventoryByGoodsId(long goodsId);
 	public CallResult<GoodsInventoryDO> selectSelfGoodsInventoryByGoodsId(long goodsId);
-	public  CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(long goodsId);
+	public  CallResult<List<GoodsSelectionDO>> selectGoodsSelectionListByGoodsId(List<Long> selectionRelationIdList,long goodsId);
 	public  CallResult<GoodsSelectionDO> selectGoodsSelectionBySelId(Long selId);
 	public  CallResult<List<GoodsSuppliersDO>> selectGoodsSuppliersListByGoodsId(long goodsId);
 	public CallResult<GoodsInventoryWMSDO> selectGoodsInventoryWMSByWmsGoodsId(String wmsGoodsId,Integer isBeDelivery);

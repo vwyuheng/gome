@@ -46,6 +46,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
+	private GoodsInventoryDO preInventoryDO;
 	private GoodsInventoryDO inventoryDO;
 	private GoodsSelectionDO selectionInventory;
 	private GoodsSuppliersDO suppliersInventory;
@@ -60,6 +61,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	private String tokenid;  //redis序列,解决接口幂等问题
 	private String businessType;
 	private int limitStorage;  //是否限制库存
+	private int preLimitStorage;  //调整前商品的是否限制库存标识
+	
 	// 调整前剩余库存
 	private int preleftnum = 0;
 	// 调整前总库存
@@ -110,7 +113,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			}
 			
 			//初始化检查
-			resultEnum = this.initCheck();
+			resultEnum = this.initCheck("from_InventoryOverrideAdjustDomain");
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
@@ -125,11 +128,19 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
-				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
-				if(inventoryDO!=null&&limitStorage==1) {
-					this.preleftnum = inventoryDO.getLeftNumber();
-					this.pretotalnum = inventoryDO.getTotalNumber();
-					
+				GoodsInventoryDO inventoryDOTmp = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+				if(inventoryDOTmp!=null) {
+					//初始化调整前商品的是否限制库存标识
+					setPreLimitStorage(inventoryDOTmp.getLimitStorage());
+					//this.preleftnum = inventoryDO.getLeftNumber();
+					//this.pretotalnum = inventoryDO.getTotalNumber();
+					//初始化调整前的库存和剩余库存
+					if(inventoryDOTmp.getLimitStorage()==1) {
+						setPreleftnum(inventoryDOTmp.getLeftNumber());
+						setPretotalnum(inventoryDOTmp.getTotalNumber());
+					}
+					setInventoryDO(inventoryDOTmp);
+					setPreInventoryDO(inventoryDOTmp); //保存现场
 				}
 			}
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
@@ -201,44 +212,56 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			}
 			// 插入日志
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
+
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 					if (inventoryDO != null) {
-						goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
-						
-						//先计算调整量[可能为正也可能为负]
-						int adjustnum = afttotalnum-pretotalnum;
-						if(adjustnum==0&&limitStorage==inventoryDO.getLimitStorage()) {
-							//不调整时消息也不能发
-							setSendMsg(true);
-							return CreateInventoryResultEnum.SUCCESS;
-						}else if(adjustnum>0) {
-							// 剩余库存
-							aftleftnum = preleftnum + adjustnum;
-						}else { //调减
-							if((-adjustnum)>preleftnum) {
-								return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
-							}else {
-								aftleftnum = preleftnum + adjustnum;//此时adjustnum<0
-							}
-							
-						}
-						// 调整后剩余库存数量
-						inventoryDO.setLeftNumber(aftleftnum);
-						// 调整商品总库存数量
-						inventoryDO.setTotalNumber(afttotalnum);
-						//清除选型关系
-						inventoryDO.setWmsId(0l);
-						inventoryDO.setGoodsSelectionIds("");
-						if(goodsBaseId!=null&&goodsBaseId>0) {
-							inventoryDO.setGoodsBaseId(goodsBaseId);
-						}
-						if (limitStorage == 1) {
-							inventoryDO.setLimitStorage(1); // 更新数据库用
-						} else {// 当将限制库存的(limitstorage为1的)总库存调整为0时,更新库存限制标志为非限制库存(0)
+						//goodsSelectionIds = inventoryDO.getGoodsSelectionIds();
+						setGoodsSelectionIds(inventoryDO.getGoodsSelectionIds());
+						if(preLimitStorage==1&&limitStorage==0) { //由限制库存调整为非限制库存情况
 							inventoryDO.setLimitStorage(0); // 更新数据库用
 							inventoryDO.setLeftNumber(0);
 							inventoryDO.setTotalNumber(0);
+							///pretotalnum = 0;
+						}else {
+							//先计算调整量[可能为正也可能为负]
+							int adjustnum = afttotalnum-pretotalnum;
+							
+							if(adjustnum==0&&limitStorage==preLimitStorage) {
+								//不调整时消息也不能发
+								setSendMsg(true);
+								return CreateInventoryResultEnum.SUCCESS;
+							}else if(adjustnum>0) {
+									// 剩余库存
+									aftleftnum = preleftnum + adjustnum;
+								
+									if(preLimitStorage==0&&limitStorage==1) {  //由非限制库存调整为限制库存时必然是调增,此时计算总库存时要考虑进去销量
+										afttotalnum = afttotalnum+inventoryDO.getGoodsSaleCount();
+									}
+							}else { //调减
+								if((-adjustnum)>preleftnum) {
+									return CreateInventoryResultEnum.NO_SUPPORT_ADJUST;
+								}else {
+									aftleftnum = preleftnum + adjustnum;//此时adjustnum<0
+								}
+								
+							}
+							
+							// 调整后剩余库存数量
+							inventoryDO.setLeftNumber(aftleftnum);
+							// 调整商品总库存数量
+							inventoryDO.setTotalNumber(afttotalnum);
+							//清除选型关系
+							inventoryDO.setWmsId(0l);
+							inventoryDO.setGoodsSelectionIds("");
+							if(goodsBaseId!=null&&goodsBaseId>0) {
+								inventoryDO.setGoodsBaseId(goodsBaseId);
+							}
+							if (limitStorage == 1) {
+								inventoryDO.setLimitStorage(1); // 更新数据库用
+							}
 						}
+						
+						
 					}
 					
 					CallResult<GoodsInventoryDO> callResult  = null;
@@ -475,7 +498,8 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			this.type = param.getType();
 			// 2：可不传 4：选型id 6 分店id
 			this.id = param.getId();
-			this.limitStorage = param.getLimitStorage();
+			//this.limitStorage = param.getLimitStorage();
+			setLimitStorage(param.getLimitStorage());
 			if (type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {
 				this.afttotalnum = param.getTotalnum();
 			}else if (type
@@ -539,7 +563,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			return notifyParam;
 		}
 		//初始化库存
-		public CreateInventoryResultEnum initCheck() {
+		public CreateInventoryResultEnum initCheck(String initFromDesc) {
 			this.fillParam();
 			this.goodsId =  StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
 			if(StringUtils.isEmpty(goodsBaseId2str)&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
@@ -570,6 +594,9 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 				//注入相关Repository
 				create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 				create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+
+				create.setInitFromDesc(initFromDesc);
+
 				resultEnum = create.businessExecute();
 			
 			return resultEnum;
@@ -606,7 +633,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent(JSON.toJSONString(param)); // 操作内容
+					.setContent("preInventoryDO:"+preInventoryDO!=null?JSON.toJSONString(preInventoryDO):"preInventoryDO is null!"+",param:"+JSON.toJSONString(param)); // 操作内容
 			updateActionDO.setRemark("全量调整库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
@@ -715,6 +742,48 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 	}
 	public void setSendMsg(boolean isSendMsg) {
 		this.isSendMsg = isSendMsg;
+	}
+	public int getPreLimitStorage() {
+		return preLimitStorage;
+	}
+	public void setPreLimitStorage(int preLimitStorage) {
+		this.preLimitStorage = preLimitStorage;
+	}
+	public int getLimitStorage() {
+		return limitStorage;
+	}
+	public void setLimitStorage(int limitStorage) {
+		this.limitStorage = limitStorage;
+	}
+	public int getPreleftnum() {
+		return preleftnum;
+	}
+	public void setPreleftnum(int preleftnum) {
+		this.preleftnum = preleftnum;
+	}
+	public int getPretotalnum() {
+		return pretotalnum;
+	}
+	public void setPretotalnum(int pretotalnum) {
+		this.pretotalnum = pretotalnum;
+	}
+	public GoodsInventoryDO getInventoryDO() {
+		return inventoryDO;
+	}
+	public void setInventoryDO(GoodsInventoryDO inventoryDO) {
+		this.inventoryDO = inventoryDO;
+	}
+	public String getGoodsSelectionIds() {
+		return goodsSelectionIds;
+	}
+	public void setGoodsSelectionIds(String goodsSelectionIds) {
+		this.goodsSelectionIds = goodsSelectionIds;
+	}
+	public GoodsInventoryDO getPreInventoryDO() {
+		return preInventoryDO;
+	}
+	public void setPreInventoryDO(GoodsInventoryDO preInventoryDO) {
+		this.preInventoryDO = preInventoryDO;
 	}
 
 }

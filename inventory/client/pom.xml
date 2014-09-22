@@ -38,6 +38,12 @@
 		<dependency>
 		    <groupId>com.github.sgroschupf</groupId>
 		    <artifactId>zkclient</artifactId>
+		    <exclusions>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency> 
 		<dependency>
 		  <groupId>org.javassist</groupId>
@@ -63,6 +69,7 @@
 		<type>jar</type>
 		<scope>compile</scope>
 	</dependency>
+		
 		<dependency>
 			<groupId>com.tuan.inventory</groupId>
 			<artifactId>inventory-model</artifactId>
@@ -160,10 +167,6 @@
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>
 		</dependency>
-		<!-- <dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency> -->
 		<!-- logback -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -172,6 +175,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		 <!-- logback兼容log4j -->
+           <dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>log4j-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
   			<groupId>ch.qos.logback</groupId>

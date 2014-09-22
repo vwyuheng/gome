@@ -16,7 +16,7 @@ import com.tuan.inventory.model.param.SelectionNotifyMessageParam;
 import com.tuan.inventory.model.param.SuppliersNotifyMessageParam;
 
 public class InventoryUpdateByNotifyMessageDomain extends AbstractDomain {
-	protected static Log logSysDeduct = LogFactory.getLog("INVENTORY.DEDUCT.LOG");
+	
 	private LogModel lm;
 	private InventoryNotifyMessageParam param;
 	private final String method = "InventoryUpdateCallBackServiceImpl.receive";

@@ -11,6 +11,7 @@ import com.tuan.inventory.domain.InventoryLockedScheduledDomain;
 import com.tuan.inventory.domain.SynInitAndAysnMysqlService;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.ext.InventoryCenterExtFacade;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.job.util.AbstractJobRunnable;
 import com.tuan.job.util.ExecutorManager;
@@ -21,6 +22,8 @@ public class LockedQueueConsumeJob extends AbstractJobRunnable {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	@Resource
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;	
+	@Resource
+	private InventoryCenterExtFacade inventoryCenterExtFacade;
 	@Resource
 	private DLockImpl dLock;//分布式锁
 	
@@ -48,6 +51,7 @@ public class LockedQueueConsumeJob extends AbstractJobRunnable {
 		inventoryLockedScheduledDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryLockedScheduledDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryLockedScheduledDomain.setdLock(dLock);
+		inventoryLockedScheduledDomain.setInventoryCenterExtFacade(inventoryCenterExtFacade);
 		//业务处理
 		inventoryLockedScheduledDomain.businessHandler();
 		long endTime = System.currentTimeMillis();

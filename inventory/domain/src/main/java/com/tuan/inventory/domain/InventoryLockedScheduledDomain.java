@@ -22,12 +22,12 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
-import com.tuan.inventory.domain.support.config.InventoryConfig;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
-import com.tuan.inventory.domain.support.util.HessianProxyUtil;
+
 import com.tuan.inventory.domain.support.util.ObjectUtils;
+import com.tuan.inventory.ext.InventoryCenterExtFacade;
 import com.tuan.inventory.model.GoodsInventoryModel;
 import com.tuan.inventory.model.GoodsInventoryQueueModel;
 import com.tuan.inventory.model.GoodsSelectionModel;
@@ -38,7 +38,6 @@ import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.InventoryScheduledParam;
 import com.tuan.inventory.model.util.DateUtils;
 import com.tuan.inventory.model.util.QueueConstant;
-import com.tuan.ordercenter.backservice.OrderQueryService;
 import com.tuan.ordercenter.model.enu.ClientNameEnum;
 import com.tuan.ordercenter.model.enu.status.OrderInfoPayStatusEnum;
 import com.tuan.ordercenter.model.result.CallResult;
@@ -55,6 +54,7 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private DLockImpl dLock;//分布式锁
+	private InventoryCenterExtFacade inventoryCenterExtFacade;
 	private InventoryScheduledParam param;
 	private final int delStatus = 4;
 	private List<GoodsSelectionDO> selectionInventoryList = null;
@@ -96,18 +96,23 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 				for (GoodsInventoryQueueModel model : queueList) {
 					if(model.getCreateTime()<=DateUtils.getBeforXTimestamp10Long(param.getPeriod())) {
 						//走hessian调用取订单支付状态
-						OrderQueryService basic = (OrderQueryService) HessianProxyUtil
+						/*OrderQueryService basic = (OrderQueryService) HessianProxyUtil
 								.getObject(OrderQueryService.class,
-										InventoryConfig.QUERY_URL);
+										InventoryConfig.QUERY_URL);*/
 						long startTime = System.currentTimeMillis();
 						String method = "OrderQueryService.queryOrderPayStatus,订单id:"+String.valueOf(model!=null?model.getOrderId():0);
 						final LogModel lm = LogModel.newLogModel(method);
 						logLock.info(lm.setMethod(method).addMetaData("start", startTime)
 								.toJson(false));
 
-						CallResult<OrderQueryResult>  cllResult= basic.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
-						OrderInfoPayStatusEnum statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
-						
+						CallResult<OrderQueryResult>  cllResult= inventoryCenterExtFacade.queryOrderPayStatus( "INVENTORY_"+ClientNameEnum.INNER_SYSTEM.getValue(),"", String.valueOf(model.getOrderId()));
+						OrderInfoPayStatusEnum statEnum = null;
+						if(cllResult!=null) {
+							  statEnum = (OrderInfoPayStatusEnum) cllResult.getBusinessResult().getResultObject();
+						}else {
+							logLock.info("订单接口返回cllResult:"+cllResult+",订单id:"+model.getOrderId());
+						}
+						   
 						if(statEnum!=null) {
 							long endTime = System.currentTimeMillis();
 							String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
@@ -604,5 +609,11 @@ public class InventoryLockedScheduledDomain extends AbstractDomain {
 	public void setdLock(DLockImpl dLock) {
 		this.dLock = dLock;
 	}
+	
+	public void setInventoryCenterExtFacade(
+			InventoryCenterExtFacade inventoryCenterExtFacade) {
+		this.inventoryCenterExtFacade = inventoryCenterExtFacade;
+	}
+
 
 }

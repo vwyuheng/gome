@@ -62,7 +62,7 @@ public class GoodsdOverrideAdjustInventoryDomain extends AbstractGoodsInventoryD
 		param.setId(id);
 		param.setUserId(userId);
 		param.setType(type);
-		param.setLimitStorage(Integer.valueOf(limitStorage));
+		param.setLimitStorage(Integer.valueOf(StringUtils.isEmpty(limitStorage)?"0":limitStorage));
 		param.setTotalnum(totalnum);
 		param.setGoodsBaseId(goodsBaseId);
 		return param;

@@ -118,7 +118,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			logSysUpdate.debug(lm.toJson(false));
 		}
 		// 初始化检查
-		CreateInventoryResultEnum resultEnum =	this.initCheck();
+		CreateInventoryResultEnum resultEnum =	this.initCheck("from_InventoryWmsUpdateDomain");
 		long endTime = System.currentTimeMillis();
 		String runResult = "[" + "init" + "]业务处理历时" + (startTime - endTime)
 				+ "milliseconds(毫秒)执行完成!";
@@ -176,7 +176,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 	}
 	
 	//初始化库存
-	public CreateInventoryResultEnum initCheck() {
+	public CreateInventoryResultEnum initCheck(String initFromDesc) {
 	       //初始化物流编码
 			setWmsGoodsId(param.getWmsGoodsId());
 			//初始化加分布式锁
@@ -190,6 +190,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			//create.setSelIds(selIds);
 			create.setGoodsInventoryDomainRepository(this.goodsInventoryDomainRepository);
 			create.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
+
+			create.setInitFromDesc(initFromDesc);
 			resultEnum = create.business4WmsExecute();
 			
 			return resultEnum;
@@ -229,7 +231,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 						.getDescription());
 				updateActionDO.setOriginalInventory("prewmsleftnum:"+String
 						.valueOf(wmsOrileftnum)+",prewmstotalnum:"+String
-						.valueOf(wmsOritotalnum)+",preGoodsList:"+JSON.toJSONString((preGoodsInfo==null)?"NO_GOODS":preGoodsInfo));
+						.valueOf(wmsOritotalnum));
 				updateActionDO.setInventoryChange("wmsast_aftinfo:"+JSON.toJSONString(wmsDO)+",goodsast_aftinfo:"+JSON.toJSONString((aftGoodsInfo==null)?"NO_GOODS":aftGoodsInfo));
 			}
 			
@@ -238,8 +240,8 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
-			
-			updateActionDO.setContent("param:"+JsonUtils.convertObjectToString(param)); // 操作内容
+
+			updateActionDO.setContent("preGoodsInfo:"+JSON.toJSONString((preGoodsInfo==null)?"NO_GOODS":preGoodsInfo)+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"InventoryWmsUpdateDomain:物流库存调整":updateActionDO.getRemark()+",物流库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {

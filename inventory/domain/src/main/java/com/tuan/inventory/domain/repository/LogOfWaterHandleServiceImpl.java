@@ -40,7 +40,7 @@ public class LogOfWaterHandleServiceImpl  extends TuanServiceTemplateImpl implem
 						if (CollectionUtils.isEmpty(logList)) {
 							 logger.error(this.getClass()+"_create param invalid ,logList is null");
 							return TuanCallbackResult
-									.failure(PublicCodeEnum.PARAM_INVALID
+									.failure(PublicCodeEnum.INVALID_PARAM
 											.getCode());
 						}
 						

@@ -260,9 +260,6 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		if (!CollectionUtils.isEmpty(selectionDO)) { // if1
 			for (GoodsSelectionDO srDO : selectionDO) { // for
 				if (srDO.getId() > 0) { // if选型
-					//首先根据选型id判断该选型是否已存在
-					//GoodsSelectionDO tmpSelDO = this.baseDAOService.querySelectionRelationById(srDO.getId());
-					//if(tmpSelDO==null) {  //不存在才创建,初始化时无需更新数据
 						//将商品id set到选型中
 						srDO.setGoodsId(goodsId);
 						boolean subRet = this.baseDAOService.saveGoodsSelectionInventory(goodsId, srDO);
@@ -271,9 +268,6 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 						}
 						
 					}
-					
-				//}
-				
 			}//for
 		}//if1
 		return true;
@@ -329,14 +323,11 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 		return null;
 	}
 	public String saveAndUpdateGoodsWmsInventory(GoodsInventoryWMSDO wmsDO) {
-		if (wmsDO!=null) { // if1
-			//for (GoodsInventoryWMSDO wmsDO : wmsDOList) { // for
-			//GoodsInventoryWMSDO tmpWmsDO = this.baseDAOService.queryWmsInventoryById(wmsDO.getWmsGoodsId());
+		if (wmsDO!=null) { // if1 //这个必须覆盖更新
 			if(!StringUtils.isEmpty(wmsDO.getWmsGoodsId())) { //不存在才创建
 				return this.baseDAOService.saveGoodsWmsInventory(wmsDO);
 			}
 			
-			//}//for
 		}//if1
 		return null;
 	}
@@ -541,6 +532,9 @@ public class GoodsInventoryDomainRepository extends AbstractInventoryRepository 
 	
 	public Long deleteGoodsInventory(Long goodsId) {
 		return this.baseDAOService.deleteGoodsInventory(goodsId);
+	}
+	public Long delete(String key,Long goodsId) {
+		return this.baseDAOService.delete(key,goodsId);
 	}
 	public Long deleteSelectionInventory(List<GoodsSelectionModel> selectionList){
 		long result = 0;

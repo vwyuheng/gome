@@ -55,8 +55,11 @@ public class InventoryInitDomain extends AbstractDomain{
 	private boolean isInit;
 	// 是否需要初始化物流商品
 	private boolean isInitWms;
+	public String initFromDesc;  //初始化来源
+	
 	
 	public InventoryInitDomain(long goodsId, LogModel lm) {
+		//this.initFromDesc = initFromDesc;
 		this.goodsId = goodsId;
 		this.lm = lm;
 	}
@@ -189,8 +192,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			
 		} catch (Exception e) {
 			this.isInitWms = false;
-			logSysUpdate.error(lm.addMetaData("errorMsg",
-					"initCheck4Wms error" + e.getMessage()).toJson(false), e);
+			logSysUpdate.error(lm.addMetaData("errorMsg",initFromDesc+"initCheck4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -198,9 +200,9 @@ public class InventoryInitDomain extends AbstractDomain{
 	}
 	// 初始化检查
 	public CreateInventoryResultEnum initCheck() {
+		
 		try {
 			if (goodsId > 0) { //
-
 				this.inventoryInfoDO = this.goodsInventoryDomainRepository
 						.queryGoodsInventory(goodsId);
 				if (inventoryInfoDO == null) {
@@ -235,7 +237,7 @@ public class InventoryInitDomain extends AbstractDomain{
 
 					// 查询该商品选型库存信息
 					CallResult<List<GoodsSelectionDO>> callGoodsSelectionListDOResult = this.synInitAndAysnMysqlService
-							.selectGoodsSelectionListByGoodsId(goodsId);
+							.selectGoodsSelectionListByGoodsId(null,goodsId);
 					if (callGoodsSelectionListDOResult == null
 							|| !callGoodsSelectionListDOResult.isSuccess()) {
 						this.isInit = false;
@@ -297,7 +299,7 @@ public class InventoryInitDomain extends AbstractDomain{
 			}
 		} catch (Exception e) {
 			logSysUpdate.error(lm.addMetaData("errorMsg",
-					"initCheck error" + e.getMessage()).toJson(false), e);
+					initFromDesc+"initCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}
 		return CreateInventoryResultEnum.SUCCESS;
@@ -312,6 +314,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
 		try {
+			logSysUpdate.info(initFromDesc+",init4WmsUpdate详情[" + goodsId + "],wmsUpate=[" + wmsUpate!=null?JSON.toJSONString(wmsUpate):"wmsUpate is null!" + "]startTime:"+startTime);
 			// 保存商品库存
 			callResult = synInitAndAysnMysqlService.saveGoodsWmsUpdateInventory(goodsId,wmsUpate,wmsInventoryRadySaveList,selWmsList4GoodsTypeId);
 			PublicCodeEnum publicCodeEnum = callResult
@@ -329,9 +332,6 @@ public class InventoryInitDomain extends AbstractDomain{
 				
 			}
 		} catch (Exception e) {
-			/*this.writeBusInitErrorLog(
-					lm.addMetaData("errorMsg",
-							"init4Wms error" + e.getMessage()),false,  e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"init4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -341,7 +341,7 @@ public class InventoryInitDomain extends AbstractDomain{
 					.addMetaData("selWmsList",selWmsList)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime-System.currentTimeMillis())).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -355,6 +355,7 @@ public class InventoryInitDomain extends AbstractDomain{
 		CallResult<Boolean> callResult  = null;
 		long startTime = System.currentTimeMillis();
 		try {
+			logSysUpdate.info(initFromDesc+",init4Wms详情[" + goodsId + "],wmsUpate=[" + wmsUpate!=null?JSON.toJSONString(wmsUpate):"wmsUpate is null!" + "]startTime:"+startTime);
 			// 保存商品库存
 			callResult = synInitAndAysnMysqlService.saveGoodsWmsInventory(goodsId,wmsUpate,wmsInventoryRadySaveList,selWmsList4GoodsTypeId);
 				PublicCodeEnum publicCodeEnum = callResult
@@ -372,19 +373,17 @@ public class InventoryInitDomain extends AbstractDomain{
 							
 						}
 		} catch (Exception e) {
-			/*this.writeBusInitErrorLog(
-					lm.addMetaData("errorMsg",
-							"init4Wms error" + e.getMessage()),false,  e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"init4Wms error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			logSysUpdate.info(lm.addMetaData("wmsUpate",wmsUpate)
+			logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
+					.addMetaData("wmsUpate",wmsUpate)
 					.addMetaData("wmsInventoryList",wmsInventoryList)
 					.addMetaData("selWmsList",selWmsList)
 					.addMetaData("endTime", System.currentTimeMillis())
 					.addMetaData("message",message)
-					.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
+					.addMetaData("useTime", JsonUtils.getRunTime(startTime-System.currentTimeMillis())).toJson(false));
 		}
 		
 		return CreateInventoryResultEnum.SUCCESS;
@@ -399,9 +398,9 @@ public class InventoryInitDomain extends AbstractDomain{
 		long startTime = System.currentTimeMillis();
 		try {
 			if(inventoryInfoDO!=null) {
-				if(logSysUpdate.isDebugEnabled()) {
-					logSysUpdate.debug("初始化商品详情[" + goodsId + "],resultContent=[" + JSON.toJSONString(inventoryInfoDO) + "]");
-				}
+				//if(logSysUpdate.isDebugEnabled()) {
+					logSysUpdate.info(initFromDesc+",init商品详情[" + goodsId + "],inventoryInfoDO=[" + JSON.toJSONString(inventoryInfoDO) + "]startTime:"+startTime);
+				//}
 				
 			}
 		     // 保存商品库存
@@ -424,15 +423,15 @@ public class InventoryInitDomain extends AbstractDomain{
 					"init error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
 		}finally {
-			if(logSysUpdate.isDebugEnabled()) {
-				logSysUpdate.debug(lm.addMetaData("goodsId",goodsId)
+			//if(logSysUpdate.isDebugEnabled()) {
+				logSysUpdate.info(lm.addMetaData("goodsId",goodsId)
 						.addMetaData("inventoryInfoDO",inventoryInfoDO)
 						.addMetaData("selectionInventoryList",selectionInventoryList)
 						.addMetaData("suppliersInventoryList",suppliersInventoryList)
 						.addMetaData("endTime", System.currentTimeMillis())
 						.addMetaData("message",message)
-						.addMetaData("useTime", JsonUtils.getRunTime(startTime)).toJson(false));
-			}
+						.addMetaData("useTime", JsonUtils.getRunTime(startTime-System.currentTimeMillis())).toJson(false));
+			//}
 			
 		}
 		
@@ -688,7 +687,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		
 	}
 	//更新物流的库存信息
-
 	public CreateInventoryResultEnum updateWmsMysqlInventory(GoodsInventoryWMSDO wmsDO, GoodsInventoryDO goodsInventoryInfo) {
 		String message = StringUtils.EMPTY;
 		CallResult<Boolean> callResult  = null;
@@ -696,7 +694,6 @@ public class InventoryInitDomain extends AbstractDomain{
 		try {
 			// 更新商品库存
 			callResult = synInitAndAysnMysqlService.batchUpdateGoodsWms(wmsDO,goodsInventoryInfo);
-
 						PublicCodeEnum publicCodeEnum = callResult
 								.getPublicCodeEnum();
 						
@@ -829,6 +826,13 @@ public class InventoryInitDomain extends AbstractDomain{
 	
 	public void setGoodsId(long goodsId) {
 		this.goodsId = goodsId;
+	}
+	
+	public void setInitFromDesc(String initFromDesc) {
+		this.initFromDesc = initFromDesc;
+	}
+	public String getInitFromDesc() {
+		return initFromDesc;
 	}
 	
 	
