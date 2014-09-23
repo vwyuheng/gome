@@ -264,7 +264,7 @@
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 	<!-- history日志记录 -->                                                                                                                                                                                                                                                                                                    
     <appender name="INVENTORY-HIS-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${loggingRoot}/his/inventory-hist.log</file>
+		<file>${loggingRoot}/his/inventory-his.log</file>
         	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
       			<fileNamePattern>${loggingRoot}/his/inventory-his.log.%d{yyyyMMdd}</fileNamePattern>
       			<maxHistory>20</maxHistory>
