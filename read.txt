@@ -40,3 +40,5 @@ mvn install -DAPP_ENV=urgency  -Dmaven.test.skip=true -Dprofile.file.name=/profi
 
 mvn  clean install -DAPP_ENV=idc_product -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.idc_product
 
+mvn  clean install -DAPP_ENV=perf -Dmaven.test.skip=true -Dprofile.file.name=/profile/env.properties.perf
+
