@@ -169,13 +169,14 @@ public class StringUtil {
 				if (ogsm.getId()!= null
 						&& ogsm.getId()> 0) { //商品选型的id,多个选型id以空格间隔的字符串
 					sb.append(ogsm.getId());
-					sb.append(",[调整数量:"+ogsm.getNum()+"]");
-					sb.append(String.valueOf((char) 29));
+					sb.append(",");
+					//sb.append(",[调整数量:"+ogsm.getNum()+"]");
+					//sb.append(String.valueOf((char) 29));
 				}
 				
 			}
 		
-		return sb.toString();
+		return sb.toString().substring(0, sb.toString().length()-1);
 	}
 	public static String getGoodsIds(List<Long> goodsIds) {
 		StringBuffer sb  = new StringBuffer();
