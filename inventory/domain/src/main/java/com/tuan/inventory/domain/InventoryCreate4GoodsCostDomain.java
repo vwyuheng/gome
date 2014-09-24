@@ -197,6 +197,10 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				long endTime = System.currentTimeMillis();
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 						+ "milliseconds(毫秒)执行完成!";
+				if(logupdate.isDebugEnabled()) {
+					logupdate.debug(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
+							.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(false));
+				}
 				logupdate.info(lm.setMethod(method).addMetaData("endTime", endTime).addMetaData("preGoodsId", preGoodsId)
 						.addMetaData("runResult", runResult).addMetaData("message", result.getDescription()).toJson(false));
 				return CreateInventoryResultEnum.FAILED_ORDERQUERYSERVICE;
