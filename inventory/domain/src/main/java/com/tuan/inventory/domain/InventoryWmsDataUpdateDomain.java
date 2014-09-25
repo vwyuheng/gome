@@ -61,7 +61,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	private String isBeDelivery;
 	private long premaryKey4Suppliers;  //分店主键
 	private String goodsSelectionIds = "";  //共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2,即选型表主键
-	private String goodsTypeIds = null;  //共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2,即选型表主键
+	private String goodsTypeIds = "";  //共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2,即选型表主键
 	private List<GoodsSelectionDO> selectionDOList ;//共享库存时所绑定的选型表ID集合，以逗号分隔开；如：1,2,3或2:两种表示形式
 	private SequenceUtil sequenceUtil;
 	private boolean idemptent = false;
