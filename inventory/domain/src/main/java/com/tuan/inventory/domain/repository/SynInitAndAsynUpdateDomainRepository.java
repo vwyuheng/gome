@@ -62,35 +62,38 @@ public class SynInitAndAsynUpdateDomainRepository {
 				if (goodsId > 0) { // if选型
 					GoodsInventoryDO tmpGoodsDO = synInitAndAsynUpdateDAO.selectGoodsInventoryDO(goodsId);
 					if(tmpGoodsDO==null) {
-						//
+						//不存在save
 						this.saveGoodsInventory(goodsDO);
-						if(goodsBaseId>0) {  //常态化刚上线时是1:1的,故可以直接取
-							GoodsBaseInventoryDO tmpBase =	goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
-							if(tmpBase==null) { //判断redis中是否存在
-								//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
-								GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
-								if(baseDO!=null) {
-									synInitAndAsynUpdateDAO.insertGoodsBaseInventoryDO(baseDO);
-									String retAck = goodsInventoryDomainRepository
-											.saveGoodsBaseInventory(
-													goodsBaseId, baseDO);
-									if (StringUtils.isEmpty(retAck)
-											|| !retAck
-													.equalsIgnoreCase("ok")) {
-										logupdate.info("保存redis失败(SynInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory:baseDO):"+JSON.toJSONString(baseDO));
-									}
-								}
-							}else {
-								//计算库存总数:暂时去掉
-								GoodsBaseInventoryDO upBaseDO = synInitAndAsynUpdateDAO.selectSelfInventoryBaseInit(goodsBaseId);
-								if(upBaseDO!=null) {
-									synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(upBaseDO);
-								}
-							}
-							
-						}
+						
+					}else { //存在更新
+						this.updateGoodsInventory(goodsDO);
 					}
 					
+					if(goodsBaseId>0) {  //常态化刚上线时是1:1的,故可以直接取
+						GoodsBaseInventoryDO tmpBase =	goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+						if(tmpBase==null) { //判断redis中是否存在
+							//初始化基本信息:注释掉是为了兼容以后历史baseid下增加商品时销量和库存总量的统计无误
+							GoodsBaseInventoryDO baseDO = synInitAndAsynUpdateDAO.selectInventoryBase4Init(goodsBaseId);
+							if(baseDO!=null) {
+								synInitAndAsynUpdateDAO.insertGoodsBaseInventoryDO(baseDO);
+								String retAck = goodsInventoryDomainRepository
+										.saveGoodsBaseInventory(
+												goodsBaseId, baseDO);
+								if (StringUtils.isEmpty(retAck)
+										|| !retAck
+												.equalsIgnoreCase("ok")) {
+									logupdate.info("保存redis失败(SynInitAndAsynUpdateDomainRepository.saveBatchGoodsInventory:baseDO):"+JSON.toJSONString(baseDO));
+								}
+							}
+						}else {
+							//计算库存总数:暂时去掉
+							GoodsBaseInventoryDO upBaseDO = synInitAndAsynUpdateDAO.selectSelfInventoryBaseInit(goodsBaseId);
+							if(upBaseDO!=null) {
+								synInitAndAsynUpdateDAO.updateGoodsBaseInventoryDO(upBaseDO);
+							}
+						}
+						
+					}
 				}
 				
 			}//for

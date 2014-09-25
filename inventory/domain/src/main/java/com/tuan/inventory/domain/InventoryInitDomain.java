@@ -142,10 +142,10 @@ public class InventoryInitDomain extends AbstractDomain{
 						wmsInventoryRadySaveList = new ArrayList<GoodsInventoryDO>();
 						for(GoodsInventoryDO goodsDO:wmsInventoryList) {
 							if(goodsDO.getGoodsId()>0) {
-								GoodsInventoryDO tmpDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsDO.getGoodsId());
-								if(tmpDO==null) {
+								//GoodsInventoryDO tmpDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsDO.getGoodsId());
+								//if(tmpDO==null) {
 									wmsInventoryRadySaveList.add(goodsDO);
-								}
+								//}
 							}
 							
 						}
