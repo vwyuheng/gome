@@ -120,6 +120,12 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 						if (inventoryInfoDOTmp != null) {
 							setPretotalnum(inventoryInfoDOTmp.getTotalNumber());
 							setInventoryInfoDO(inventoryInfoDOTmp);
+						}else {
+							inventoryInfoDOTmp = new GoodsInventoryDO();
+							inventoryInfoDOTmp.setGoodsId(goodsId);
+							inventoryInfoDOTmp.setGoodsSaleCount(0);
+							inventoryInfoDOTmp.setWaterfloodVal(0);
+							setInventoryInfoDO(inventoryInfoDOTmp);
 						}
 					}
 				}
