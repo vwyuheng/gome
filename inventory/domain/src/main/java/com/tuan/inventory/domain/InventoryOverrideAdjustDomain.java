@@ -230,7 +230,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 								//不调整时消息也不能发
 								setSendMsg(true);
 								return CreateInventoryResultEnum.SUCCESS;
-							}else if(adjustnum>0) {
+							}else if(adjustnum>=0) {
 									// 剩余库存
 									aftleftnum = preleftnum + adjustnum;
 								
@@ -631,7 +631,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent("preInventoryDO:"+preInventoryDO!=null?JSON.toJSONString(preInventoryDO):"preInventoryDO is null!"+",param:"+JSON.toJSONString(param)); // 操作内容
+					.setContent("preInventoryDO:"+(preInventoryDO!=null?JSON.toJSONString(preInventoryDO):"preInventoryDO is null!")+",param:"+JSON.toJSONString(param)); // 操作内容
 			updateActionDO.setRemark("全量调整库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
