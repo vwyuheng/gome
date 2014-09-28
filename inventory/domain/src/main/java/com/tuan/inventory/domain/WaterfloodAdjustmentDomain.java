@@ -412,7 +412,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent("preInventoryDO"+preInventoryDO!=null?JSON.toJSONString(preInventoryDO):"preInventoryDO is null!"+",param"+JSON.toJSONString(param)); // 操作内容
+					.setContent("preInventoryDO"+(preInventoryDO!=null?JSON.toJSONString(preInventoryDO):"preInventoryDO is null!")+",param"+JSON.toJSONString(param)); // 操作内容
 			updateActionDO.setRemark("注水调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			

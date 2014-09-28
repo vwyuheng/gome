@@ -678,7 +678,7 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			}
 			//选型的暂不加，以免字段保存不了
 			//(CollectionUtils.isEmpty(preSelectionList)?",preSelectionList is null!":",preSelectionList:"+JSON.toJSONString(preSelectionList))+
-			updateActionDO.setContent("before_deduct:"+preInventoryInfoDO!=null?JSON.toJSONString(preInventoryInfoDO):"preInventoryInfoDO is null!"+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
+			updateActionDO.setContent("before_deduct:"+(preInventoryInfoDO!=null?JSON.toJSONString(preInventoryInfoDO):"preInventoryInfoDO is null!")+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("扣减库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {

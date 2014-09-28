@@ -34,7 +34,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 	private GoodsInventoryActionDO updateActionDO;
 	private GoodsInventoryQueueDO queueDO;
 	private GoodsInventoryDO inventoryInfoDO;
-
+	private GoodsInventoryDO preInventoryInfoDO;
 	private Long goodsId;
 	private Long goodsBaseId;
 	private String objectId;
@@ -70,6 +70,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		if(tmpInventory==null) {
 			return CreateInventoryResultEnum.NO_GOODS;
 		}
+		//计算库存前保存现场
+		setPreInventoryInfoDO(tmpInventory);
 		// 商品本身扣减库存量
 		int deductNum = param.getSaleCount();
 
@@ -297,7 +299,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
 			updateActionDO.setOrderId(param.getObjectId());
-			updateActionDO.setContent(JsonUtils.convertObjectToString(param)); // 操作内容
+			updateActionDO.setContent("before_deduct:"+(preInventoryInfoDO!=null?JSON.toJSONString(preInventoryInfoDO):"preInventoryInfoDO is null!")+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark("抽奖商品扣减库存");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {
@@ -509,6 +511,14 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 
 	public void setObjectId(String objectId) {
 		this.objectId = objectId;
+	}
+
+	public GoodsInventoryDO getPreInventoryInfoDO() {
+		return preInventoryInfoDO;
+	}
+
+	public void setPreInventoryInfoDO(GoodsInventoryDO preInventoryInfoDO) {
+		this.preInventoryInfoDO = preInventoryInfoDO;
 	}
 
 	

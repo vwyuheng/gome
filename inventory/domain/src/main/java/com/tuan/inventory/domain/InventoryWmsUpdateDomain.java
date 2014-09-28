@@ -239,7 +239,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 			
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
-			updateActionDO.setContent("preGoodsInfo:"+JSON.toJSONString((preGoodsInfo==null)?"NO_GOODS":preGoodsInfo)+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
+			updateActionDO.setContent("preGoodsInfo:"+JSON.toJSONString(((preGoodsInfo==null)?"NO_GOODS":preGoodsInfo))+",param:"+JsonUtils.convertObjectToString(param)); // 操作内容
 			updateActionDO.setRemark(StringUtils.isEmpty(updateActionDO.getRemark())?"InventoryWmsUpdateDomain:物流库存调整":updateActionDO.getRemark()+",物流库存调整");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 		} catch (Exception e) {

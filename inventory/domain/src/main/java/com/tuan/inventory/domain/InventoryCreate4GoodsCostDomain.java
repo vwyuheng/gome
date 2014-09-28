@@ -398,7 +398,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 			if (isOldGoodsExists) { // 改价前商品
 			//将商品信息加载上来
 		    GoodsInventoryDO oldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
-			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+inventoryInfoDO4NewGoods!=null?JSON.toJSONString(inventoryInfoDO4NewGoods):"inventoryInfoDO4NewGoods is null!"+"],inventoryInfoDO4OldGoods:["+oldGoods!=null?JSON.toJSONString(oldGoods):"oldGoods is null!"+"]"); // 操作内容
+			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+(inventoryInfoDO4NewGoods!=null?JSON.toJSONString(inventoryInfoDO4NewGoods):"inventoryInfoDO4NewGoods is null!")+"],inventoryInfoDO4OldGoods:["+(oldGoods!=null?JSON.toJSONString(oldGoods):"oldGoods is null!")+"]"); // 操作内容
 			}
 			updateActionDO.setRemark("商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
