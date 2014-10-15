@@ -172,11 +172,12 @@ public class SynInitAndAsynUpdateDomainRepository {
 			for (GoodsSelectionDO srDO : selectionDOList) { // for
 				if (srDO.getId() > 0) { // if选型
 					long selectionId = srDO.getId();
+					srDO.setGoodsId(goodsId);
 					//保存前检查下是否存在？
 					GoodsSelectionDO tmpDo = synInitAndAsynUpdateDAO.selectGoodsSelectionDO(selectionId);
 					if(tmpDo==null) {
 						//将商品id set到选型中
-						srDO.setGoodsId(goodsId);
+						//srDO.setGoodsId(goodsId);
 						this.saveGoodsSelection(srDO);
 					}else {// 保存或更新
 						this.updateGoodsSelection(srDO);

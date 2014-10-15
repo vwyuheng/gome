@@ -987,7 +987,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 			new TuanServiceCallback() {
 				public TuanCallbackResult executeAction() {
 					try {
-					synInitAndAsynUpdateDomainRepository.updateBatchGoodsSelection(goodsId, selectionDOList);
+					synInitAndAsynUpdateDomainRepository.saveAndUpdateGoodsSelection(goodsId, selectionDOList);
 					//删除商品与选型的关系
 					Long delACK = goodsInventoryDomainRepository.delete(QueueConstant.GOODS_SELECTION_RELATIONSHIP_PREFIX, goodsId);
 					if(delACK==null) {
