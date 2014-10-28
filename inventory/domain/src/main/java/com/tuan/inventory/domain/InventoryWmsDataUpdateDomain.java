@@ -463,7 +463,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 	// 发送库存新增消息
 	public void sendNotify() {
 		try {
-			if (goodsId != 0 &&goodsBaseId!=null&&goodsBaseId != 0) {
+			if (goodsId!=null&&goodsId != 0 &&goodsBaseId!=null&&goodsBaseId != 0) {
 				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
 				goodsInventoryDomainRepository
 						.sendNotifyServerMessage(
