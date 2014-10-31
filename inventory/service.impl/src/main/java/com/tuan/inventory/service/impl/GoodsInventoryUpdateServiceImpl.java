@@ -948,13 +948,10 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 				traceMessage, MessageTypeEnum.CENTS, "Inventory", "GoodsInventoryUpdateService", "updateInventory4Lottery");
 		//构建领域对象
 		final InventoryUpdate4LotteryDomain inventoryUpdateDomain = new InventoryUpdate4LotteryDomain(clientIp, clientName, param, lm);
-		//构建库存生成的队列id对象
-		final QueueKeyIdParam queueIdParam = new QueueKeyIdParam();
 		//注入仓储对象
 		inventoryUpdateDomain.setGoodsInventoryDomainRepository(goodsInventoryDomainRepository);
 		inventoryUpdateDomain.setSynInitAndAysnMysqlService(synInitAndAysnMysqlService);
 		inventoryUpdateDomain.setSequenceUtil(sequenceUtil);
-		//inventoryUpdateDomain.setdLock(dLock);
 		String goodsId = "";
 		if(param != null &&param.getGoodsId()!=0){
 			goodsId = String.valueOf(param.getGoodsId());
@@ -993,7 +990,6 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			public TuanCallbackResult executeAction() {
 				CreateInventoryResultEnum resultEnum = inventoryUpdateDomain.updateInventory();
 				if(resultEnum.compareTo(CreateInventoryResultEnum.SUCCESS) == 0){
-					queueIdParam.setQueueKeyId(inventoryUpdateDomain.getQueueKeyId());
 					return TuanCallbackResult.success();
 				}else{
 					return TuanCallbackResult.failure(resultEnum.getCode(), null, resultEnum.getDescription());
@@ -1001,7 +997,9 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 			}
 
 			@Override
-			public void executeAfter() {}
+			public void executeAfter() {
+				inventoryUpdateDomain.sendNotify();
+			}
 		});
 		dLock.unlockManual(lockKey);
 		long endTime = System.currentTimeMillis();
@@ -1013,7 +1011,7 @@ public class GoodsInventoryUpdateServiceImpl  extends AbstractInventoryService i
 		logSaveAndUpdate.info(lm.toJson(false));
 		TraceMessageUtil.traceMessagePrintE(traceMessage, MessageResultEnum.SUCCESS);
 		return new InventoryCallResult(result.getResultCode(), 
-				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),queueIdParam);
+				CreateInventoryResultEnum.valueOfEnum(result.getResultCode()).name(),null);
 	}
 	@SuppressWarnings("unchecked")
 	@Override

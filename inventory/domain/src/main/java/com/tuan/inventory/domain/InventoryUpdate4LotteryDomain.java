@@ -2,16 +2,18 @@ package com.tuan.inventory.domain;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.tuan.core.common.lang.utils.TimeUtil;
+import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryActionDO;
 import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
-import com.tuan.inventory.dao.data.redis.GoodsInventoryQueueDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
+import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
@@ -20,6 +22,7 @@ import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
 import com.tuan.inventory.model.enu.res.CreateInventoryResultEnum;
+import com.tuan.inventory.model.param.InventoryNotifyMessageParam;
 import com.tuan.inventory.model.param.UpdateLotteryInventoryParam;
 import com.tuan.inventory.model.result.CallResult;
 
@@ -32,7 +35,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 	private GoodsInventoryDomainRepository goodsInventoryDomainRepository;
 	private SynInitAndAysnMysqlService synInitAndAysnMysqlService;
 	private GoodsInventoryActionDO updateActionDO;
-	private GoodsInventoryQueueDO queueDO;
+	//private GoodsInventoryQueueDO queueDO;
+	//扣减后
 	private GoodsInventoryDO inventoryInfoDO;
 	private GoodsInventoryDO preInventoryInfoDO;
 	private Long goodsId;
@@ -52,8 +56,8 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 	// 当前库存
 	private List<Long> resultACK;
 	private SequenceUtil sequenceUtil;
-	public String queueKeyId ="";
-	private boolean idemptent = false;
+	
+	//private boolean idemptent = false;
 	public InventoryUpdate4LotteryDomain(String clientIp, String clientName,
 			UpdateLotteryInventoryParam param, LogModel lm) {
 		this.clientIp = clientIp;
@@ -112,8 +116,6 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			setGoodsId(param.getGoodsId());
 			this.idemptent = idemptent();
 			if (idemptent) {
-				String queueTag = goodsInventoryDomainRepository.queryToken(DLockConstants.DEDUCT_QUEUEID + "_"+ goodsId);
-				setQueueKeyId(queueTag);
 				return CreateInventoryResultEnum.SUCCESS;
 			}
 		}*/
@@ -160,7 +162,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 
 	// 库存系统新增库存
 	public CreateInventoryResultEnum updateInventory() {
-		logupdate.info("扣减开始>"+",objectId="+objectId+",goodsId="+goodsId+",幂等状态:"+idemptent);
+		logupdate.info("扣减开始>"+",objectId="+objectId+",goodsId="+goodsId);
 		/*if(idemptent) {  //幂等控制，已处理成功
 			return CreateInventoryResultEnum.SUCCESS;
 		}*/
@@ -197,9 +199,9 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			}
 			
 			//压入扣减队列处理
-			String queueKeyId = pushSendMsgQueue();
-			if(!StringUtils.isEmpty(queueKeyId))
-			     setQueueKeyId(queueKeyId);
+			//String queueKeyId = pushSendMsgQueue();
+			///if(!StringUtils.isEmpty(queueKeyId))
+			    // setQueueKeyId(queueKeyId);
 
 		} catch (Exception e) {
 			logupdate.error(lm.addMetaData("errorMsg",
@@ -209,31 +211,13 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		}
 
 		//处理成返回前设置tag
-		/*if (StringUtils.isNotEmpty(orderId)) {
+		/*if (goodsId!=null&&goodsId!=0) {
 			goodsInventoryDomainRepository.setTag(
-					DLockConstants.DEDUCT_INVENTORY_SUCCESS + "_" + orderId,
+					DLockConstants.DEDUCT_INVENTORY_SUCCESS + "_" + goodsId,
 					DLockConstants.IDEMPOTENT_DURATION_TIME,
 					DLockConstants.HANDLER_SUCCESS);
-			//同时缓存生成的队列id
-			goodsInventoryDomainRepository.setTag(
-					DLockConstants.DEDUCT_QUEUEID + "_" + orderId,
-					DLockConstants.IDEMPOTENT_DURATION_TIME,
-					getQueueKeyId());
 		}*/
 		return CreateInventoryResultEnum.SUCCESS;
-	}
-
-	public String pushSendMsgQueue() {
-		// 填充队列
-		if (fillInventoryQueueDO()) {
-			logupdate.info("压入redis的队列详情:"+JSON.toJSONString(queueDO));
-			if(queueDO!=null&&queueDO.getId()!=null&&queueDO.getId()!=0) {
-				return this.goodsInventoryDomainRepository.pushQueueSendMsg(queueDO);
-			}
-			return null;
-		}else {
-			return null;
-		}
 	}
 
 	
@@ -275,7 +259,58 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		return resultEnum;
 	}
 	
-	
+	// 发送库存新增消息
+	public boolean sendNotify() {
+			try {
+				InventoryNotifyMessageParam notifyParam = fillInventoryNotifyMessageParam();
+				if(notifyParam!=null) {
+					this.goodsInventoryDomainRepository.sendNotifyServerMessage(NotifySenderEnum.InventoryUpdate4LotteryDomain.toString(),JSONObject
+							.fromObject(notifyParam));
+				}
+				
+			} catch (Exception e) {
+				logupdate.error(lm.addMetaData("errorMsg",
+						"InventoryConfirmScheduledDomain sendNotify error" + e.getMessage()).toJson(false), e);
+				return false;
+			}
+			return true;
+		}
+
+		// 填充notifyserver发送参数
+		private InventoryNotifyMessageParam fillInventoryNotifyMessageParam() throws Exception{
+			if(goodsId==null||(goodsId!=null&&goodsId==0)) {
+				return null;
+			}
+			InventoryNotifyMessageParam notifyParam = new InventoryNotifyMessageParam();
+			//准备消息数据
+			GoodsInventoryDO	notifyMsgInventory = this.goodsInventoryDomainRepository
+					.queryGoodsInventory(goodsId);
+			if(notifyMsgInventory!=null) {
+				notifyParam.setGoodsBaseId(goodsBaseId);
+				notifyParam.setUserId(param.getUserId());
+				notifyParam.setGoodsId(goodsId);
+				notifyParam.setLimitStorage(notifyMsgInventory.getLimitStorage());
+				notifyParam.setWaterfloodVal(notifyMsgInventory.getWaterfloodVal());
+				notifyParam.setTotalNumber(notifyMsgInventory.getTotalNumber());
+				notifyParam.setLeftNumber(notifyMsgInventory.getLeftNumber());
+				//库存总数 减 库存剩余
+				Integer sales = notifyMsgInventory.getGoodsSaleCount();
+				//销量
+				notifyParam.setSales(sales==null?0:sales);
+			}else {
+				return null;
+			}
+			GoodsBaseInventoryDO baseInventoryDO = goodsInventoryDomainRepository.queryGoodsBaseById(goodsBaseId);
+			if(baseInventoryDO!=null&&baseInventoryDO.getGoodsBaseId()!=null){
+				notifyParam.setBaseTotalCount(baseInventoryDO.getBaseTotalCount());
+				notifyParam.setBaseSaleCount(baseInventoryDO.getBaseSaleCount());
+			}else {
+				logupdate.info("[GoodsBaseInventoryDO,非法数据]查询goodsBaseId:("+goodsBaseId+"),redis中所存储baseInventoryDO状态:"+baseInventoryDO);
+				return null;
+			}
+			
+			return notifyParam;
+		}
 	// 填充日志信息
 	public boolean fillInventoryUpdateActionDO() {
 		GoodsInventoryActionDO updateActionDO = new GoodsInventoryActionDO();
@@ -308,69 +343,11 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			setUpdateActionDO(null);
 			return false;
 		}
-		//this.updateActionDO = updateActionDO;
 		setUpdateActionDO(updateActionDO);
 		return true;
 	}
 
-	/**
-	 * 填充库存队列信息
-	 * 
-	 * @return
-	 */
-	public boolean fillInventoryQueueDO() {
-		GoodsInventoryQueueDO queueDO = new GoodsInventoryQueueDO();
-		try {
-			Long queueId = sequenceUtil.getSequence(SEQNAME.seq_queue_send);
-			queueDO.setId(queueId);
-			queueDO.setGoodsId((goodsId==null||goodsId==0)?param.getGoodsId():goodsId);
-			long tmpInitGoodsBaseId = 0;
-			if(goodsBaseId==null||goodsBaseId==0) {
-				if(param.getGoodsBaseId()==0) {  //为了兼容参数goodsbaseid不传的情况
-					GoodsInventoryDO temp = this.goodsInventoryDomainRepository
-							.queryGoodsInventory(queueDO.getGoodsId());
-					if(temp!=null) {
-						tmpInitGoodsBaseId = temp.getGoodsBaseId();
-						if(tmpInitGoodsBaseId==0) {
-							// 初始化商品库存信息
-							CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-									.selectGoodsInventoryByGoodsId(queueDO.getGoodsId());
-							if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
-								temp = 	callGoodsInventoryDOResult.getBusinessResult();
-								if(temp!=null) {
-									tmpInitGoodsBaseId = temp.getGoodsBaseId();
-								}
-							}
-						}
-					}
-				}else {
-					tmpInitGoodsBaseId = param.getGoodsBaseId();
-				}
-				//goodsBaseId = tmpInitGoodsBaseId;
-				setGoodsBaseId(tmpInitGoodsBaseId);
-			}
-			queueDO.setGoodsBaseId(goodsBaseId);
-	        queueDO.setLimitStorage(limitStorage);
-			queueDO.setOrderId(0l);
-	        queueDO.setUserId(param.getUserId());
-
-			queueDO.setCreateTime(TimeUtil.getNowTimestamp10Long());
-			// 封装库存变化信息到队列
-			queueDO.setOriginalGoodsInventory(originalGoodsInventory);
-			queueDO.setDeductNum(goodsDeductNum==0?param.getSaleCount():goodsDeductNum);
-			
-
-		} catch (Exception e) {
-			logupdate.error(lm.addMetaData("errorMsg",
-					"InventoryUpdate4LotteryDomain fillInventoryQueueDO error" + e.getMessage()).toJson(false), e);
-			setQueueDO(null);
-			return false;
-		}
-		//this.queueDO = queueDO;
-		setQueueDO(queueDO);
-		return true;
-	}
-
+	
 	/*public boolean idemptent() {
 		//根据key取已缓存的tokenid  
 		String gettokenid = goodsInventoryDomainRepository.queryToken(DLockConstants.DEDUCT_INVENTORY + "_"+ goodsId);
@@ -429,14 +406,6 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		return goodsId;
 	}
 
-	public String getQueueKeyId() {
-		return queueKeyId;
-	}
-
-	public void setQueueKeyId(String queueKeyId) {
-		this.queueKeyId = queueKeyId;
-	}
-
 	public GoodsInventoryDO getInventoryInfoDO() {
 		return inventoryInfoDO;
 	}
@@ -481,14 +450,6 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		this.updateActionDO = updateActionDO;
 	}
 
-	public GoodsInventoryQueueDO getQueueDO() {
-		return queueDO;
-	}
-
-	public void setQueueDO(GoodsInventoryQueueDO queueDO) {
-		this.queueDO = queueDO;
-	}
-
 	public int getLimtStorgeDeNum() {
 		return limtStorgeDeNum;
 	}
@@ -521,8 +482,5 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 		this.preInventoryInfoDO = preInventoryInfoDO;
 	}
 
-	
-	
-	
 
 }

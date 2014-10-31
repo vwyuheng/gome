@@ -6,7 +6,8 @@ package com.tuan.inventory.domain.support.enu;
  */
 public enum NotifySenderEnum {
 	InventoryAdjustDomain,InventoryConfirmScheduledDomain,InventoryCreateDomain,InventoryLockedScheduledDomain,InventoryOverrideAdjustDomain,
-	InventoryWmsCreateDomain,InventoryWmsDataUpdateDomain,WaterfloodAdjustmentDomain,InventoryCreate4GoodsCostDomain_pre,InventoryCreate4GoodsCostDomain_aft;
+	InventoryWmsCreateDomain,InventoryWmsDataUpdateDomain,WaterfloodAdjustmentDomain,InventoryCreate4GoodsCostDomain_pre,
+	InventoryCreate4GoodsCostDomain_aft,InventoryUpdate4LotteryDomain;
 	
 	
 }
