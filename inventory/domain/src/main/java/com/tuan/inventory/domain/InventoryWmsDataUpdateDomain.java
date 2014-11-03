@@ -512,7 +512,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 						
 					} catch (Exception e) {
 						logupdate.error(lm.addMetaData("errorMsg",
-								"fillInventoryNotifyMessageParam error" + e.getMessage()).toJson(false), e);
+								"InventoryWmsDataUpdateDomain_fillInventoryNotifyMessageParam error,inventoryInfoDO("+JSON.toJSONString(inventoryInfoDO)+"),goodsId="+goodsId+",goodsBaseId="+goodsBaseId +","+ e.getMessage()).toJson(false), e);
 					}
 					return notifyParam;
 				}
