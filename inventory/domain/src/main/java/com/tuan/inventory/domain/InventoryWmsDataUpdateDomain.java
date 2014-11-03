@@ -221,23 +221,27 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			GoodsInventoryDO temp = this.goodsInventoryDomainRepository
 					.queryGoodsInventory(goodsId);
 			if(temp!=null) {
-				goodsBaseId = temp.getGoodsBaseId();
-				if(goodsBaseId!=null&&goodsBaseId==0) {
-					// 初始化商品库存信息
-					CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-							.selectGoodsInventoryByGoodsId(goodsId);
-					if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
-						temp = 	callGoodsInventoryDOResult.getBusinessResult();
-						if(temp!=null) {
-							this.goodsBaseId = temp.getGoodsBaseId();
-						}
+				//goodsBaseId = temp.getGoodsBaseId();
+				setGoodsBaseId(temp.getGoodsBaseId());
+				//if(goodsBaseId!=null&&goodsBaseId==0) {}
+			}else {
+				// 初始化商品库存信息
+				CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsInventoryByGoodsId(goodsId);
+				if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+					temp = 	callGoodsInventoryDOResult.getBusinessResult();
+					if(temp!=null) {
+						//this.goodsBaseId = temp.getGoodsBaseId();
+						setGoodsBaseId(temp.getGoodsBaseId());
 					}
 				}
+			
 			}
 			
 		}else {
 			if(!StringUtils.isEmpty(param.getGoodsBaseId())) {
-				goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+				//goodsBaseId = Long.valueOf(param.getGoodsBaseId());
+				setGoodsBaseId(Long.valueOf(param.getGoodsBaseId()));
 			}else {
 				return CreateInventoryResultEnum.INVALID_GOODSBASEID;
 			}
@@ -478,7 +482,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			
 		} catch (Exception e) {
 			logupdate.error(lm.addMetaData("errorMsg",
-					"sendNotify error" + e.getMessage()).toJson(false), e);
+					"sendNotify error,goodsId="+goodsId+",goodsBaseId="+goodsBaseId + e.getMessage()).toJson(false), e);
 		}
 	}
 
@@ -643,6 +647,10 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 
 	public void setGoodsSelectionIds(String goodsSelectionIds) {
 		this.goodsSelectionIds = goodsSelectionIds;
+	}
+
+	public void setGoodsBaseId(Long goodsBaseId) {
+		this.goodsBaseId = goodsBaseId;
 	}
 	
 
