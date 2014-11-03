@@ -230,17 +230,18 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 					.queryGoodsInventory(goodsId);
 			if(temp!=null) {
 				setGoodsBaseId(temp.getGoodsBaseId());
-				if(goodsBaseId!=null&&goodsBaseId==0) {
-					// 初始化商品库存信息
-					CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-							.selectGoodsInventoryByGoodsId(goodsId);
-					if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
-						temp = 	callGoodsInventoryDOResult.getBusinessResult();
-						if(temp!=null) {
-							setGoodsBaseId(temp.getGoodsBaseId());
-						}
+				//if(goodsBaseId!=null&&goodsBaseId==0) {}
+			}else {
+				// 初始化商品库存信息
+				CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsInventoryByGoodsId(goodsId);
+				if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+					temp = 	callGoodsInventoryDOResult.getBusinessResult();
+					if(temp!=null) {
+						setGoodsBaseId(temp.getGoodsBaseId());
 					}
 				}
+			
 			}
 		}else {
 			setGoodsBaseId(param.getGoodsBaseId());

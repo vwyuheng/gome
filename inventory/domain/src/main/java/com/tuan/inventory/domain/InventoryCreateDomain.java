@@ -152,9 +152,6 @@ public class InventoryCreateDomain extends AbstractDomain {
 
 			}
 		} catch (Exception e) {
-			/*this.writeBusErrorLog(
-					lm.addMetaData("errorMsg",
-							"busiCheck error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 							"busiCheck error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;
@@ -180,9 +177,6 @@ public class InventoryCreateDomain extends AbstractDomain {
 			this.goodsInventoryDomainRepository.pushLogQueues(updateActionDO);
 
 		} catch (Exception e) {
-			/*this.writeBusErrorLog(
-					lm.addMetaData("errorMsg",
-							"createInventory error" + e.getMessage()),false, e);*/
 			logSysUpdate.error(lm.addMetaData("errorMsg",
 					"createInventory error" + e.getMessage()).toJson(false), e);
 			return CreateInventoryResultEnum.SYS_ERROR;

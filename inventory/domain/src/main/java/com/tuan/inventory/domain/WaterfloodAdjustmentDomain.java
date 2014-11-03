@@ -358,22 +358,23 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 	public CreateInventoryResultEnum initCheck(String initFromDesc) {
 				this.fillParam();
 				this.goodsId = StringUtils.isEmpty(goodsId2str)?0:Long.valueOf(goodsId2str);
-				if(StringUtils.isEmpty(goodsBaseId2str)) {  //为了兼容参数goodsbaseid不传的情况
+				if(StringUtils.isEmpty(goodsBaseId2str)&&goodsId!=0) {  //为了兼容参数goodsbaseid不传的情况
 					GoodsInventoryDO temp = this.goodsInventoryDomainRepository
 							.queryGoodsInventory(goodsId);
 					if(temp!=null) {
 						this.goodsBaseId = temp.getGoodsBaseId();
-						if(goodsBaseId!=null&&goodsBaseId==0) {
-							// 初始化商品库存信息
-							CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-									.selectGoodsInventoryByGoodsId(goodsId);
-							if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
-								temp = 	callGoodsInventoryDOResult.getBusinessResult();
-								if(temp!=null) {
-									this.goodsBaseId = temp.getGoodsBaseId();
-								}
+						if(goodsBaseId!=null&&goodsBaseId==0) {}
+					}else {
+						// 初始化商品库存信息
+						CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+								.selectGoodsInventoryByGoodsId(goodsId);
+						if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+							temp = 	callGoodsInventoryDOResult.getBusinessResult();
+							if(temp!=null) {
+								this.goodsBaseId = temp.getGoodsBaseId();
 							}
 						}
+					
 					}
 				}else {
 					this.goodsBaseId = Long.valueOf(goodsBaseId2str);

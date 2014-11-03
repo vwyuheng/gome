@@ -600,18 +600,19 @@ public class InventoryUpdateDomain extends AbstractDomain {
 			if(temp!=null) {
 				//this.goodsBaseId = temp.getGoodsBaseId();
 				setGoodsBaseId(temp.getGoodsBaseId());
-				if(goodsBaseId!=null&&goodsBaseId==0) {
-					// 初始化商品库存信息
-					CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
-							.selectGoodsInventoryByGoodsId(goodsId);
-					if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
-						temp = 	callGoodsInventoryDOResult.getBusinessResult();
-						if(temp!=null) {
-							//this.goodsBaseId = temp.getGoodsBaseId();
-							setGoodsBaseId(temp.getGoodsBaseId());
-						}
+				//if(goodsBaseId!=null&&goodsBaseId==0) {}
+			}else {
+				// 初始化商品库存信息
+				CallResult<GoodsInventoryDO> callGoodsInventoryDOResult = this.synInitAndAysnMysqlService
+						.selectGoodsInventoryByGoodsId(goodsId);
+				if (callGoodsInventoryDOResult != null&&callGoodsInventoryDOResult.isSuccess()) {
+					temp = 	callGoodsInventoryDOResult.getBusinessResult();
+					if(temp!=null) {
+						//this.goodsBaseId = temp.getGoodsBaseId();
+						setGoodsBaseId(temp.getGoodsBaseId());
 					}
 				}
+			
 			}
 		}else {
 			//this.goodsBaseId = Long.valueOf(param.getGoodsBaseId());
