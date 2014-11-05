@@ -123,6 +123,7 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 						}else {
 							inventoryInfoDOTmp = new GoodsInventoryDO();
 							inventoryInfoDOTmp.setGoodsId(goodsId);
+							inventoryInfoDOTmp.setGoodsBaseId(goodsBaseId);
 							inventoryInfoDOTmp.setGoodsSaleCount(0);
 							inventoryInfoDOTmp.setWaterfloodVal(0);
 							setInventoryInfoDO(inventoryInfoDOTmp);
@@ -215,7 +216,8 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 			}
 		}
 		if (!StringUtils.isEmpty(param.getGoodsId())) { // if1
-			goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+			//goodsId = Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId());
+			setGoodsId(Long.valueOf(StringUtils.isEmpty(param.getGoodsId())?"0":param.getGoodsId()));
 		} // if 
 		if (StringUtils.isEmpty(param.getGoodsBaseId())&&goodsId!=null&&goodsId!=0) { // if1
 			GoodsInventoryDO temp = this.goodsInventoryDomainRepository
@@ -607,6 +609,10 @@ public class InventoryWmsDataUpdateDomain extends AbstractDomain {
 
 	public Long getGoodsId() {
 		return goodsId;
+	}
+
+	public void setGoodsId(Long goodsId) {
+		this.goodsId = goodsId;
 	}
 
 	public List<GoodsSelectionDO> getSelectionDOList() {
