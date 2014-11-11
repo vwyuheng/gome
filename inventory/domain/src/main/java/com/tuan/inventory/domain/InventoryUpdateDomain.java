@@ -3,6 +3,7 @@ package com.tuan.inventory.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -193,8 +194,10 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if(tmpInventory==null) {
 			return CreateInventoryResultEnum.NO_GOODS;
 		}
+		//临时中间变量
+		GoodsInventoryDO	tmpPreInventory = tmpInventory;
 		//计算库存前保存现场
-		setPreInventoryInfoDO(tmpInventory);
+		setPreInventoryInfoDO(tmpPreInventory);
 		// 商品本身扣减库存量
 		int deductNum = param.getNum();
 		int deSelectionNum = 0;
