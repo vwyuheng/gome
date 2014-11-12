@@ -20,6 +20,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSuppliersDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -46,6 +47,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	
 	private SequenceUtil sequenceUtil;
 	private GoodsInventoryActionDO updateActionDO;
+	private GoodsInventoryDO preInventoryDO;
 	private GoodsInventoryDO inventoryDO;
 	private GoodsSelectionDO selectionInventory;
 	private GoodsSuppliersDO suppliersInventory;
@@ -118,7 +120,10 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			//真正的库存调整业务处理
 			if(goodsId!=null&&goodsId>0) {
 				//查询商品库存
-				this.inventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+				GoodsInventoryDO tmpInventoryDO = this.goodsInventoryDomainRepository.queryGoodsInventory(goodsId);
+			    //保留调整前现场
+				setPreInventoryDO(ObjectUtils.ObjectSelfCopy(tmpInventoryDO, GoodsInventoryDO.class));
+				setInventoryDO(tmpInventoryDO);//赋值
 				limitStorage = inventoryDO.getLimitStorage();
 				if(limitStorage==0) {  //非限制库存
 					setSendMsg(true);//此时无需发送消息
@@ -474,7 +479,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent(JSON.toJSONString(param)); // 操作内容
+					.setContent("param:"+JSON.toJSONString(param)+",preInventoryDO:"+JSON.toJSONString(preInventoryDO)+"adjustAft:"+JSON.toJSONString(inventoryDO)); // 操作内容
 			if(param.getTask()==QueueConstant.TASK_RESTORE_INVENTORY) {
 				updateActionDO.setRemark("商品改价还原库存");
 			}else {
@@ -584,6 +589,14 @@ public class InventoryAdjustDomain extends AbstractDomain {
 	}
 	public void setSendMsg(boolean isSendMsg) {
 		this.isSendMsg = isSendMsg;
+	}
+	
+	public void setPreInventoryDO(GoodsInventoryDO preInventoryDO) {
+		this.preInventoryDO = preInventoryDO;
+	}
+	
+	public void setInventoryDO(GoodsInventoryDO inventoryDO) {
+		this.inventoryDO = inventoryDO;
 	}
 
 }
