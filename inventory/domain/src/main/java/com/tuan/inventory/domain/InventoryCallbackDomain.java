@@ -288,7 +288,7 @@ public class InventoryCallbackDomain extends AbstractDomain {
 				.setContent("queueDO:"+JSON.toJSONString(queueDO)+",param:"+JSON.toJSONString(param)); // 操作内容
 			}else {
 				updateActionDO
-				.setContent(JSON.toJSONString(param)); // 操作内容
+				.setContent("param:"+JSON.toJSONString(param)); // 操作内容
 			}
 			updateActionDO.setClientIp(clientIp);
 			updateActionDO.setClientName(clientName);
