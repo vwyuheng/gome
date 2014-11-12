@@ -479,7 +479,7 @@ public class InventoryAdjustDomain extends AbstractDomain {
 			updateActionDO.setClientName(clientName);
 			//updateActionDO.setOrderId(0l);
 			updateActionDO
-					.setContent("param:"+JSON.toJSONString(param)+",preInventoryDO:"+JSON.toJSONString(preInventoryDO)+"adjustAft:"+JSON.toJSONString(inventoryDO)); // 操作内容
+					.setContent("param:"+JSON.toJSONString(param)+",preInventoryDO:"+(preInventoryDO==null?"preInventoryDO is null!":JSON.toJSONString(preInventoryDO))+"adjustAft:"+(inventoryDO==null?"inventoryDO is null!":JSON.toJSONString(inventoryDO))); // 操作内容
 			if(param.getTask()==QueueConstant.TASK_RESTORE_INVENTORY) {
 				updateActionDO.setRemark("商品改价还原库存");
 			}else {
