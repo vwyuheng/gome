@@ -129,6 +129,11 @@ public class ObjectUtils {
 		}
 		return result;
 	}
+	//对象的自我拷贝
+	public static  <T> T ObjectSelfCopy(Object tmpObject,Class<T> classType) {
+		return JSON.parseObject(JSON.toJSONString(tmpObject),
+				classType);
+	}
 	public static GoodsSelectionDO toSelectionDO(GoodsSelectionModel selModel) {
 		GoodsSelectionDO result = null;
 		if(selModel!=null) {

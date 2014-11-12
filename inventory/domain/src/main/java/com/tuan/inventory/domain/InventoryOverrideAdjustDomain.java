@@ -21,6 +21,7 @@ import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -140,7 +141,7 @@ public class InventoryOverrideAdjustDomain extends AbstractDomain {
 						setPretotalnum(inventoryDOTmp.getTotalNumber());
 					}
 					setInventoryDO(inventoryDOTmp);
-					setPreInventoryDO(inventoryDOTmp); //保存现场
+					setPreInventoryDO(ObjectUtils.ObjectSelfCopy(inventoryDOTmp, GoodsInventoryDO.class)); //保存现场
 				}
 			}
 			if(type.equalsIgnoreCase(ResultStatusEnum.GOODS_SELF.getCode())) {

@@ -10,6 +10,7 @@ import com.tuan.inventory.dao.data.redis.GoodsInventoryWMSDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.model.enu.ResultStatusEnum;
@@ -88,7 +89,7 @@ public class InventoryWmsUpdateDomain extends AbstractDomain {
 					//初始化goodsbaseid
 					setGoodsBaseId(tmpGoodsDO.getGoodsBaseId());
 					//初始化调整前商品库存信息
-					setPreGoodsInfo(tmpGoodsDO);
+					setPreGoodsInfo(ObjectUtils.ObjectSelfCopy(tmpGoodsDO, GoodsInventoryDO.class));
 					//计算调整后库存
 					if ((tmpGoodsDO.getTotalNumber()+deductNum<0)) {
 						tmpGoodsDO.setLeftNumber(0);

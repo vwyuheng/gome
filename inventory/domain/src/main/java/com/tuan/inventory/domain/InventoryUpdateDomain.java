@@ -3,7 +3,6 @@ package com.tuan.inventory.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -20,6 +19,7 @@ import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DLockConstants;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -194,10 +194,8 @@ public class InventoryUpdateDomain extends AbstractDomain {
 		if(tmpInventory==null) {
 			return CreateInventoryResultEnum.NO_GOODS;
 		}
-		//临时中间变量
-		GoodsInventoryDO	tmpPreInventory = tmpInventory;
 		//计算库存前保存现场
-		setPreInventoryInfoDO(tmpPreInventory);
+		setPreInventoryInfoDO(ObjectUtils.ObjectSelfCopy(tmpInventory, GoodsInventoryDO.class));
 		// 商品本身扣减库存量
 		int deductNum = param.getNum();
 		int deSelectionNum = 0;

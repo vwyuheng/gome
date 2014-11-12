@@ -13,6 +13,7 @@ import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
 import com.tuan.inventory.domain.repository.GoodsInventoryDomainRepository;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -72,7 +73,7 @@ public class InventoryWmsAdjust4SelectionDomain extends AbstractDomain {
 					if (selectionDO != null
 							&& selectionDO.getLimitStorage() == 1) { //为了计算销量 不管是否限制库存的都要扣减
 						    //setPreSelectionDO(selectionDO);
-						   	tmpPreSelectionList.add(selectionDO);
+						   	tmpPreSelectionList.add(ObjectUtils.ObjectSelfCopy(selectionDO, GoodsSelectionDO.class));
 						   // setWmsSelectionDeductNum(model.getNum());
 							selection = new GoodsWmsSelectionResult();
 							//redis更新用

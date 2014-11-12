@@ -17,6 +17,7 @@ import com.tuan.inventory.domain.support.enu.NotifySenderEnum;
 import com.tuan.inventory.domain.support.logs.LogModel;
 import com.tuan.inventory.domain.support.util.DataUtil;
 import com.tuan.inventory.domain.support.util.JsonUtils;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.SEQNAME;
 import com.tuan.inventory.domain.support.util.SequenceUtil;
 import com.tuan.inventory.domain.support.util.StringUtil;
@@ -75,7 +76,7 @@ public class InventoryUpdate4LotteryDomain extends AbstractDomain {
 			return CreateInventoryResultEnum.NO_GOODS;
 		}
 		//计算库存前保存现场
-		setPreInventoryInfoDO(tmpInventory);
+		setPreInventoryInfoDO(ObjectUtils.ObjectSelfCopy(tmpInventory, GoodsInventoryDO.class));
 		// 商品本身扣减库存量
 		int deductNum = param.getSaleCount();
 

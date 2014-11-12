@@ -116,7 +116,7 @@ public class WaterfloodAdjustmentDomain extends AbstractDomain {
 				if (inventoryDOTmp != null) {
 					this.originalgoodswfVal = inventoryDOTmp.getWaterfloodVal();
 					setInventoryDO(inventoryDOTmp);
-					setPreInventoryDO(inventoryDOTmp);  //保存现场
+					setPreInventoryDO(ObjectUtils.ObjectSelfCopy(inventoryDOTmp, GoodsInventoryDO.class));  //保存现场
 				} 
 			}
 			

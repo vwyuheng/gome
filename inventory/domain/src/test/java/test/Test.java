@@ -14,6 +14,7 @@ import net.sf.json.JSONObject;
 
 import org.springframework.util.CollectionUtils;
 
+import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
@@ -33,7 +34,10 @@ public class Test {
 	    rdo.setTotalNumber(1000);
 		//rdo.setSuppliersInventoryId(4);
 		rdo.setLimitStorage(0);
+		System.out.println("dd1="+ObjectSelfCopy(rdo,GoodsSelectionRelationDO.class));
 		
+		rdo.setLeftNumber(400);
+		System.out.println("dd2="+rdo);
 		//JSONObject jsonObject = new JSONObject();
 		//jsonObject.accumulate("code", "1000");
 		//jsonObject.accumulate("msg", "success");
@@ -118,21 +122,25 @@ public class Test {
 		//baseInventoryDO.setBaseSaleCount(0);
 
 		//System.out.println("InventoryWmsUpdateDomain:物流库存调整t".getBytes().length);
-		List<GoodsWmsSelectionResult> tmpSelectionParam = new ArrayList<GoodsWmsSelectionResult>();
+		/*List<GoodsWmsSelectionResult> tmpSelectionParam = new ArrayList<GoodsWmsSelectionResult>();
 		System.out.println(CollectionUtils.isEmpty(tmpSelectionParam));
 		List<GoodsSelectionDO> rgsrList = new ArrayList<GoodsSelectionDO>();
 		for(int i=1;i<=5;i++) {
 			GoodsSelectionDO sel = new GoodsSelectionDO();
 			sel.setId((long) i);
 			rgsrList.add(sel);
-		}
+		}*/
 		
 		
-		System.out.println(StringUtil.getSelectionIdByDotSeparate(rgsrList));
+		//System.out.println(StringUtil.getSelectionIdByDotSeparate(rgsrList));
 
 	}
 	
-	
+	//对象的自我拷贝
+	public static  <T> T ObjectSelfCopy(Object tmpObject,Class<T> classType) {
+			return JSON.parseObject(JSON.toJSONString(tmpObject),
+					classType);
+	}
 	
 	@SuppressWarnings("rawtypes")
 	private static Map<String,String> toHashMap(Object object) {
