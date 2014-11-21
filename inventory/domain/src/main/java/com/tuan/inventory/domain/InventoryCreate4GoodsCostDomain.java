@@ -57,7 +57,8 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	// 改价前商品是否存在：初始化后才有效
 	boolean isOldGoodsExists = false;
 	boolean idemptent = false;
-	
+	//订单返回的被占用库存量
+	private int takeNum = 0;
 	public InventoryCreate4GoodsCostDomain(String clientIp, String clientName,
 			CreateInventory4GoodsCostParam param, LogModel lm) {
 		this.clientIp = clientIp;
@@ -180,6 +181,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 				//未支付订单占用库存量
 				getTakeNum =  (Long) cllResult.getBusinessResult().getResultObject();
 				takeNum = getTakeNum.intValue();
+				setTakeNum(takeNum);
 				long endTime = System.currentTimeMillis();
 				String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 						+ "milliseconds(毫秒)执行完成!takeNum="+takeNum;
@@ -400,7 +402,7 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 		    GoodsInventoryDO oldGoods = this.goodsInventoryDomainRepository.queryGoodsInventory(preGoodsId);
 			updateActionDO.setContent("inventoryInfoDO4NewGoods:["+(inventoryInfoDO4NewGoods!=null?JSON.toJSONString(inventoryInfoDO4NewGoods):"inventoryInfoDO4NewGoods is null!")+"],inventoryInfoDO4OldGoods:["+(oldGoods!=null?JSON.toJSONString(oldGoods):"oldGoods is null!")+"]"); // 操作内容
 			}
-			updateActionDO.setRemark("商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
+			updateActionDO.setRemark("takeNum:"+takeNum+"商品改价,preGoodsId("+preGoodsId+"),goodsId("+goodsId+")");
 			updateActionDO.setCreateTime(TimeUtil.getNowTimestamp10Int());
 			
 		} catch (Exception e) {
@@ -536,6 +538,10 @@ public class InventoryCreate4GoodsCostDomain extends AbstractDomain {
 	public void setInventoryCenterExtFacade(
 			InventoryCenterExtFacade inventoryCenterExtFacade) {
 		this.inventoryCenterExtFacade = inventoryCenterExtFacade;
+	}
+
+	public void setTakeNum(int takeNum) {
+		this.takeNum = takeNum;
 	}
 	
 
