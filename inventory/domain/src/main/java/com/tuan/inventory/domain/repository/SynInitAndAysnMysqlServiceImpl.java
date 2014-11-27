@@ -362,9 +362,6 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 								synInitAndAsynUpdateDomainRepository.saveGoodsWms(wmsInventory4wmsGoodsId);
 							}
 						if(inventoryInfoDO!=null) {
-							if(logupdate.isDebugEnabled()) {
-								logupdate.debug("saveGoodsInventory初始化商品详情[" + goodsId + "],resultContent=[" + JSON.toJSONString(inventoryInfoDO) + "]");
-							}
 							String retAck = goodsInventoryDomainRepository.saveGoodsInventory(goodsId,
 									inventoryInfoDO);
 							if(!StringUtils.isEmpty(retAck)&&retAck.equalsIgnoreCase("ok")&&baseDO!=null&&baseId!=null&&baseId!=0){
@@ -376,13 +373,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory to redis error occured!",
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory1 to redis error occured!",
 											new Exception());
 							 }
 							if(!retAck.equalsIgnoreCase("ok")) {
 								throw new TuanRuntimeException(
 										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory to redis error occured!",
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory2 to redis error occured!",
 										new Exception());
 							}
 						}
@@ -393,7 +390,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(!selSuccess) {
 								throw new TuanRuntimeException(
 										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionInventory to redis error occured!",
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsSelectionInventory3 to redis error occured!",
 										new Exception());
 							}
 					}
@@ -404,7 +401,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							if(!suppSuccess) {
 								throw new TuanRuntimeException(
 										QueueConstant.SERVICE_REDIS_FALIURE,
-										"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliersInventory to redis error occured!",
+										"SynInitAndAysnMysqlServiceImpl.saveGoodsSuppliersInventory4 to redis error occured!",
 										new Exception());
 							}
 						
@@ -416,13 +413,13 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory to redis error occured!",
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory5 to redis error occured!",
 											new Exception());
 							 }
 							 if(StringUtils.isNotEmpty(retAck)&&!retAck.equalsIgnoreCase("ok")) {
 								 throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory to redis error occured!",
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory6 to redis error occured!",
 											new Exception());
 							 }
 						}
@@ -432,20 +429,20 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							 if(StringUtils.isEmpty(retAck)) {
 								 throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory to redis error occured!",
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory7 to redis error occured!",
 											new Exception());
 							 }
 							 if(StringUtils.isNotEmpty(retAck)&&!retAck.equalsIgnoreCase("ok")) {
 								 throw new TuanRuntimeException(
 											QueueConstant.SERVICE_REDIS_FALIURE,
-											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory to redis error occured!",
+											"SynInitAndAysnMysqlServiceImpl.saveGoodsWmsInventory8 to redis error occured!",
 											new Exception());
 							 }
 						}
 							 
 						} catch (Exception e) {
 							logupdate.error(
-									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory error occured!"
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory9 error occured!"
 											+ e.getMessage(), e);
 							if (e instanceof DataIntegrityViolationException) {// 消息数据重复
 								throw new TuanRuntimeException(QueueConstant.DATA_EXISTED,
@@ -454,7 +451,7 @@ public class SynInitAndAysnMysqlServiceImpl  extends TuanServiceTemplateImpl imp
 							}
 							throw new TuanRuntimeException(
 									QueueConstant.SERVICE_DATABASE_FALIURE,
-									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory error occured!",
+									"SynInitAndAysnMysqlServiceImpl.saveGoodsInventory10 error occured!",
 									e);
 							
 						}
