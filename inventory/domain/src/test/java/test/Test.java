@@ -18,7 +18,9 @@ import com.alibaba.fastjson.JSON;
 import com.tuan.inventory.dao.data.GoodsSelectionRelationDO;
 import com.tuan.inventory.dao.data.GoodsWmsSelectionResult;
 import com.tuan.inventory.dao.data.redis.GoodsBaseInventoryDO;
+import com.tuan.inventory.dao.data.redis.GoodsInventoryDO;
 import com.tuan.inventory.dao.data.redis.GoodsSelectionDO;
+import com.tuan.inventory.domain.support.util.ObjectUtils;
 import com.tuan.inventory.domain.support.util.StringUtil;
 
 public class Test {
@@ -34,10 +36,10 @@ public class Test {
 	    rdo.setTotalNumber(1000);
 		//rdo.setSuppliersInventoryId(4);
 		rdo.setLimitStorage(0);
-		System.out.println("dd1="+ObjectSelfCopy(rdo,GoodsSelectionRelationDO.class));
+		//System.out.println("dd1="+ObjectSelfCopy(rdo,GoodsSelectionRelationDO.class));
 		
 		rdo.setLeftNumber(400);
-		System.out.println("dd2="+rdo);
+		//System.out.println("dd2="+rdo);
 		//JSONObject jsonObject = new JSONObject();
 		//jsonObject.accumulate("code", "1000");
 		//jsonObject.accumulate("msg", "success");
@@ -130,9 +132,22 @@ public class Test {
 			sel.setId((long) i);
 			rgsrList.add(sel);
 		}*/
-		
-		
-		//System.out.println(StringUtil.getSelectionIdByDotSeparate(rgsrList));
+		//{"goodsBaseId":8000010009751,"goodsId":10009790,"goodsSaleCount":0,"goodsSelectionIds":"","isAddGoodsSelection":0,
+		//	"isDirectConsumption":0,"leftNumber":0,"limitStorage":0,"totalNumber":0,"userId":0,"waterfloodVal":0,"wmsId":0}
+		GoodsInventoryDO inventoryInfoDO = new GoodsInventoryDO();
+		inventoryInfoDO.setGoodsId(10009790l);
+		inventoryInfoDO.setGoodsBaseId(8000010009751l);
+		inventoryInfoDO.setGoodsSaleCount(0);
+		inventoryInfoDO.setGoodsSelectionIds("");
+		inventoryInfoDO.setIsAddGoodsSelection(0);
+		inventoryInfoDO.setIsDirectConsumption(0);
+		inventoryInfoDO.setLeftNumber(0);
+		inventoryInfoDO.setTotalNumber(0);
+		inventoryInfoDO.setLimitStorage(0);
+		inventoryInfoDO.setUserId(0l);
+		inventoryInfoDO.setWaterfloodVal(0);
+		inventoryInfoDO.setWmsId(0l);
+		System.out.println(ObjectUtils.toHashMap(inventoryInfoDO));
 
 	}
 	
