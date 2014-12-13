@@ -26,7 +26,7 @@
 	</dubbo:service>
 	
 	<dubbo:service ref="goodsInventoryUpdateService"
-		interface="com.tuan.inventory.service.GoodsInventoryUpdateService" path="goodsInventoryUpdate"
+		interface="com.tuan.inventory.service.GoodsInventoryUpdateService" path="inventoryUpdate"
 		timeout="20000" version="1.0">
 	</dubbo:service>
 	
