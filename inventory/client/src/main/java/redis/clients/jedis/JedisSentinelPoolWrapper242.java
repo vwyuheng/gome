@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import redis.clients.jedis.exceptions.JedisConnectionException;
@@ -29,7 +30,8 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 
     protected Set<MasterListener> masterListeners = new HashSet<MasterListener>();
 
-    protected Logger log = Logger.getLogger(getClass().getName());
+    //protected Logger log = Logger.getLogger(getClass().getName());
+    private static final Logger log=LoggerFactory.getLogger("INVENTORY.CLIENT.LOG");
 
     public JedisSentinelPoolWrapper242(String masterName, Set<String> sentinels,
 	    final GenericObjectPoolConfig poolConfig) {
@@ -145,7 +147,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 		final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel
 			.split(":")));
 
-		log.fine("Connecting to Sentinel " + hap);
+		log.warn("Connecting to Sentinel " + hap);
 
 		try {
 		    Jedis jedis = new Jedis(hap.getHost(), hap.getPort());
@@ -153,18 +155,18 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 		    if (master == null) {
 			master = toHostAndPort(jedis
 				.sentinelGetMasterAddrByName(masterName));
-			log.fine("Found Redis master at " + master);
+			log.warn("Found Redis master at " + master);
 			jedis.disconnect();
 			break outer;
 		    }
 		} catch (JedisConnectionException e) {
-		    log.warning("Cannot connect to sentinel running @ " + hap
+		    log.warn("Cannot connect to sentinel running @ " + hap
 			    + ". Trying next one.");
 		}
 	    }
 
 	    try {
-		log.severe("All sentinels down, cannot determine where is "
+		log.info("All sentinels down, cannot determine where is "
 			+ masterName + " master is running... sleeping 1000ms.");
 		Thread.sleep(1000);
 	    } catch (InterruptedException e) {
@@ -204,7 +206,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     			final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel
     					.split(":")));
     			
-    			log.fine("Connecting to Sentinel " + hap);
+    			log.warn("Connecting to Sentinel " + hap);
     			
     			try {
     				Jedis jedis = new Jedis(hap.getHost(), hap.getPort());
@@ -212,7 +214,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     				if (master == null) {
     					master = toHostAndPort(jedis
     							.sentinelGetMasterAddrByName(masterName));
-    					log.fine("Found Redis master at " + master);
+    					log.warn("Found Redis master at " + master);
     					if(master!=null) {
     						//以下是处理slaves的
     						List<String> hostAndPortSalve = null;
@@ -242,13 +244,13 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     					break outer;
     				}
     			} catch (JedisConnectionException e) {
-    				log.warning("Cannot connect to sentinel running @ " + hap
+    				log.warn("Cannot connect to sentinel running @ " + hap
     						+ ". Trying next one.");
     			}
     		}
     		
     		try {
-    			log.severe("All sentinels down, cannot determine where is "
+    			log.info("All sentinels down, cannot determine where is "
     					+ masterName + " master is running... sleeping 1000ms.");
     			Thread.sleep(1000);
     		} catch (InterruptedException e) {
@@ -270,7 +272,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     	if(!CollectionUtils.isEmpty(listSlaves)) {
     		//随机取一个slave
     		isslave = listSlaves.get(Utils.random(listSlaves.size()));
-    		log.fine("Found Redis slave at " + isslave);
+    		log.warn("Found Redis slave at " + isslave);
 		}
     	
     	
@@ -347,7 +349,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 		    j.subscribe(new JedisPubSubAdapter() {
 			@Override
 			public void onMessage(String channel, String message) {
-			    log.fine("Sentinel " + host + ":" + port
+			    log.warn("Sentinel " + host + ":" + port
 				    + " published: " + message + ".");
 
 			    String[] switchMasterMsg = message.split(" ");
@@ -359,14 +361,14 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 					    switchMasterMsg[3],
 					    switchMasterMsg[4])));
 				} else {
-				    log.fine("Ignoring message on +switch-master for master name "
+				    log.warn("Ignoring message on +switch-master for master name "
 					    + switchMasterMsg[0]
 					    + ", our master name is "
 					    + masterName);
 				}
 
 			    } else {
-				log.severe("Invalid message received on Sentinel "
+				log.warn("Invalid message received on Sentinel "
 					+ host
 					+ ":"
 					+ port
@@ -379,7 +381,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 		} catch (JedisConnectionException e) {
 
 		    if (running.get()) {
-			log.severe("Lost connection to Sentinel at " + host
+			log.warn("Lost connection to Sentinel at " + host
 				+ ":" + port
 				+ ". Sleeping 5000ms and retrying.");
 			try {
@@ -388,7 +390,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 			    e1.printStackTrace();
 			}
 		    } else {
-			log.fine("Unsubscribing from Sentinel at " + host + ":"
+			log.warn("Unsubscribing from Sentinel at " + host + ":"
 				+ port);
 		    }
 		}
@@ -397,12 +399,12 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 
 	public void shutdown() {
 	    try {
-		log.fine("Shutting down listener on " + host + ":" + port);
+		log.warn("Shutting down listener on " + host + ":" + port);
 		running.set(false);
 		// This isn't good, the Jedis object is not thread safe
 		j.disconnect();
 	    } catch (Exception e) {
-		log.severe("Caught exception while shutting down: "
+		log.warn("Caught exception while shutting down: "
 			+ e.getMessage());
 	    }
 	}
