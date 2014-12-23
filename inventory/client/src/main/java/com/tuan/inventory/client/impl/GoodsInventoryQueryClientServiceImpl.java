@@ -35,7 +35,7 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 		  .addMetaData("goodsId", goodsId)
 		  .addMetaData("start", "start");
 		if(logger.isDebugEnabled()) {
-			logger.debug(lm.toJson(true));
+			//logger.debug(lm.toJson(true));
 		}
 		
 		TuanCallbackResult result = this.inventoryServiceTemplate
@@ -88,7 +88,7 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 				.addMetaData("qresult", qresult.getResultObject())
 				.addMetaData("end", endTime);
 		if(logger.isDebugEnabled()) {
-			logger.debug(lm.toJson(true));
+			//logger.debug(lm.toJson(true));
 		}
 		
 		
@@ -111,7 +111,7 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 			  .addMetaData("goodsBaseId", goodsBaseId)
 			  .addMetaData("start", "start");
 			if(logger.isDebugEnabled()) {
-				logger.debug(lm.toJson(true));
+				//logger.debug(lm.toJson(true));
 			}
 			
 			TuanCallbackResult result = this.inventoryServiceTemplate
@@ -166,7 +166,7 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 					.addMetaData("qresult", qresult.getResultObject())
 					.addMetaData("end", endTime);
 			if(logger.isDebugEnabled()) {
-				logger.debug(lm.toJson(true));
+//				logger.debug(lm.toJson(true));
 			}
 			
 			return new CallResult<GoodsBaseModel>(result.isSuccess(),
