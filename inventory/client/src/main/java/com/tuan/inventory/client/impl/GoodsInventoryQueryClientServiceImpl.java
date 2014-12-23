@@ -34,7 +34,10 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 		  .addMetaData("clientName", clientName)
 		  .addMetaData("goodsId", goodsId)
 		  .addMetaData("start", "start");
-		logger.info(lm.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.toJson(true));
+		}
+		
 		TuanCallbackResult result = this.inventoryServiceTemplate
 				.execute(new InventoryQueryServiceCallback() {
 					@Override
@@ -84,7 +87,10 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 				.addMetaData("resultCode", result.getResultCode())
 				.addMetaData("qresult", qresult.getResultObject())
 				.addMetaData("end", endTime);
-		logger.info(lm.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.toJson(true));
+		}
+		
 		
 		return new CallResult<GoodsInventoryModel>(result.isSuccess(),
 				PublicCodeEnum.valuesOf(resultCode),
@@ -104,7 +110,9 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 			  .addMetaData("clientName", clientName)
 			  .addMetaData("goodsBaseId", goodsBaseId)
 			  .addMetaData("start", "start");
-			logger.info(lm.toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.toJson(true));
+			}
 			
 			TuanCallbackResult result = this.inventoryServiceTemplate
 					.execute(new InventoryQueryServiceCallback() {
@@ -157,7 +165,9 @@ public class GoodsInventoryQueryClientServiceImpl extends AbstractInventoryClien
 					.addMetaData("resultCode", result.getResultCode())
 					.addMetaData("qresult", qresult.getResultObject())
 					.addMetaData("end", endTime);
-			logger.info(lm.toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.toJson(true));
+			}
 			
 			return new CallResult<GoodsBaseModel>(result.isSuccess(),
 					PublicCodeEnum.valuesOf(resultCode),
