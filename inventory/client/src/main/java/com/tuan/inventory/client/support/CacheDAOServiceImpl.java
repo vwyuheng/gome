@@ -25,8 +25,11 @@ public class CacheDAOServiceImpl implements CacheDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "queryGoodsInventory";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		try {
 			Map<String, String> objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.GOODS_INVENTORY_PREFIX + ":"
@@ -40,8 +43,11 @@ public class CacheDAOServiceImpl implements CacheDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return null;
 	}
@@ -82,8 +88,11 @@ public class CacheDAOServiceImpl implements CacheDAOService {
 		long startTime = System.currentTimeMillis();
 		String method = "queryGoodsBaseById";
 		final LogModel lm = LogModel.newLogModel(method);
-		logger.info(lm.setMethod(method).addMetaData("start", startTime)
-				.toJson(true));
+		if(logger.isDebugEnabled()) {
+			logger.debug(lm.setMethod(method).addMetaData("start", startTime)
+					.toJson(true));
+		}
+		
 		try {
 			Map<String, String> objMap = this.redisCacheUtil
 					.hgetAll(QueueConstant.GOODS_BASE_INVENTORY_PREFIX + ":"
@@ -97,8 +106,11 @@ public class CacheDAOServiceImpl implements CacheDAOService {
 			long endTime = System.currentTimeMillis();
 			String runResult = "[" + method + "]业务处理历时" + (startTime - endTime)
 					+ "milliseconds(毫秒)执行完成!";
-			logger.info(lm.setMethod(method).addMetaData("endTime", endTime)
-					.addMetaData("runResult", runResult).toJson(true));
+			if(logger.isDebugEnabled()) {
+				logger.debug(lm.setMethod(method).addMetaData("endTime", endTime)
+						.addMetaData("runResult", runResult).toJson(true));
+			}
+			
 		}
 		return null;
 	}
