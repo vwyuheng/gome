@@ -132,7 +132,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     }
     
     
-    private HostAndPort initSentinels(Set<String> sentinels,
+    /*private HostAndPort initSentinels(Set<String> sentinels,
 	    final String masterName) {
 
 	HostAndPort master = null;
@@ -187,11 +187,11 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 	}
 
 	return master;
-    }
+    }*/
 
     private HostAndPort initSentinelsSlave(Set<String> sentinels,
     		final String masterName) {
-    	
+    	boolean sentinelAvailable = false;
     	HostAndPort master = null;
     	HostAndPort isslave = null;
     	boolean running = true;
@@ -207,15 +207,26 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     					.split(":")));
     			
     			log.warn("Connecting to Sentinel " + hap);
-    			
+    			 Jedis jedis = null;
     			try {
-    				Jedis jedis = new Jedis(hap.getHost(), hap.getPort());
+    				 jedis = new Jedis(hap.getHost(), hap.getPort());
     				
     				if (master == null) {
-    					master = toHostAndPort(jedis
-    							.sentinelGetMasterAddrByName(masterName));
+    					List<String> masterAddr = jedis
+    							.sentinelGetMasterAddrByName(masterName);
+    					// connected to sentinel...
+    					sentinelAvailable = true;
+
+    					if (masterAddr == null || masterAddr.size() != 2) {
+    					    log.warn("Can not get master addr, master name: "
+    						    + masterName + ". Sentinel: " + hap + ".");
+    					    continue;
+    					}
+    					master = toHostAndPort(masterAddr);
+    					/*master = toHostAndPort(jedis
+    							.sentinelGetMasterAddrByName(masterName));*/
     					log.warn("Found Redis master at " + master);
-    					if(master!=null) {
+    					//if(master!=null) {
     						//以下是处理slaves的
     						List<String> hostAndPortSalve = null;
     						slaves = jedis.sentinelSlaves(masterName);
@@ -239,36 +250,66 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
     						}else {  //不存在slave时,maser充当slave
     							listSlaves.add(master);
     						}
-    					}
-						jedis.disconnect();
+    					//}
+						//jedis.disconnect();
     					break outer;
+    						//break;
     				}
     			} catch (JedisConnectionException e) {
     				log.warn("Cannot connect to sentinel running @ " + hap
     						+ ". Trying next one.");
-    			}
+    			}finally {
+    				if (jedis != null) {
+    				    jedis.close();
+    				}
+    			    }
     		}
     		
-    		try {
+    		/*try {
     			log.info("All sentinels down, cannot determine where is "
     					+ masterName + " master is running... sleeping 1000ms.");
     			Thread.sleep(1000);
     		} catch (InterruptedException e) {
     			e.printStackTrace();
+    		}*/
+    	
+    		
+    		if (master == null) {
+    			try {
+    		    if (sentinelAvailable) {
+    			// can connect to sentinel, but master name seems to not
+    			// monitored
+    		    	log.info("can connect to sentinel, but  "
+        					+ masterName + " master name seems to not... sleeping 1000ms try again.");
+    		    	Thread.sleep(1000);
+    			//throw new JedisException("Can connect to sentinel, but "
+    				//+ masterName + " seems to be not monitored...");
+    			
+    		    } else {
+    		    	log.info("All sentinels down, cannot determine where is "
+        					+ masterName + " master is running...");
+    		    	Thread.sleep(1000);
+    			//throw new JedisConnectionException(
+    				//"All sentinels down, cannot determine where is "
+    				//	+ masterName + " master is running...");
+    		    }
+    			} catch (InterruptedException e) {
+        			e.printStackTrace();
+        		}
     		}
+    		log.info("Redis master running at " + master
+        			+ ", starting Sentinel listeners...");
+        	
+        	for (String sentinel : sentinels) {
+        		final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel
+        				.split(":")));
+        		MasterListener masterListener = new MasterListener(masterName,
+        				hap.getHost(), hap.getPort());
+        		masterListeners.add(masterListener);
+        		masterListener.start();
+        	}
     	}
     	
-    	log.info("Redis master running at " + master
-    			+ ", starting Sentinel listeners...");
-    	
-    	for (String sentinel : sentinels) {
-    		final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel
-    				.split(":")));
-    		MasterListener masterListener = new MasterListener(masterName,
-    				hap.getHost(), hap.getPort());
-    		masterListeners.add(masterListener);
-    		masterListener.start();
-    	}
     	if(!CollectionUtils.isEmpty(listSlaves)) {
     		//随机取一个slave
     		isslave = listSlaves.get(Utils.random(listSlaves.size()));
@@ -383,11 +424,12 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 		    if (running.get()) {
 			log.warn("Lost connection to Sentinel at " + host
 				+ ":" + port
-				+ ". Sleeping 5000ms and retrying.");
+				+ ". Sleeping 5000ms and retrying.",e);
 			try {
 			    Thread.sleep(subscribeRetryWaitTimeMillis);
 			} catch (InterruptedException e1) {
-			    e1.printStackTrace();
+				log.warn("InterruptedException Unsubscribing from Sentinel at " + host + ":"
+						+ port,e1);
 			}
 		    } else {
 			log.warn("Unsubscribing from Sentinel at " + host + ":"

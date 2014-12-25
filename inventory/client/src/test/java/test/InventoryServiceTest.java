@@ -16,20 +16,20 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 
 	/*@Resource
 	SpyMemcachedClient memcachedClient;*/
-	//@Resource
-	//RedisClientCacheUtil redisCacheUtil;
+	@Resource
+	RedisClientCacheUtil redisCacheUtil;
 	//@Resource
 	//GoodsInventoryQueryClientService goodsInventoryQueryClientService;
-	@Resource
-	InventoryCenterFacade inventoryCenterFacade;
+	//@Resource
+	//InventoryCenterFacade inventoryCenterFacade;
 	
-	/* @Test
+	 @Test
 	    public void sentinel() throws InterruptedException {
 
-			for (int i = 0; i < 100; i++) {
+			/*for (int i = 0; i < 100; i++) {
 				try {
 					
-					System.out.println(redisCacheUtil.get("KEY: " + i)+ "," + i);
+					//System.out.println(redisCacheUtil.get("KEY: " + i)+ "," + i);
 					System.out.print(".");
 					Thread.sleep(500);
 					
@@ -38,11 +38,14 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 					i--;
 					Thread.sleep(1000);
 				}
-			}
+			}*/
 		
-	    }*/
+			while(true) {
+				
+			}
+	    }
 	
-	 @Test
+	/* @Test
 	 public void testDubboInventory() {
 		 try {
 			 // 查询商品库存
@@ -52,6 +55,17 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			 // System.out.println("11GoodsInventoryModel11size="+result.getBusinessResult());
 			 System.out.println("11GoodsInventoryModel11="
 					 + result.getBusinessResult());
+		 } catch (Exception e) {
+			 // TODO Auto-generated catch block
+			 e.printStackTrace();
+		 }
+	 }*/
+	 @Test
+	 public void testRedis() {
+		 try {
+			 while(true) {
+				 
+			 }
 		 } catch (Exception e) {
 			 // TODO Auto-generated catch block
 			 e.printStackTrace();
