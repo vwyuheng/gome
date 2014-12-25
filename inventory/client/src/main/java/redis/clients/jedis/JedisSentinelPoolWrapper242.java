@@ -358,7 +358,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 
 	protected MasterListener() {
 	}
-
+	//监听master 变更的监听器
 	public MasterListener(String masterName, String host, int port) {
 	    this.masterName = masterName;
 	    this.host = host;
