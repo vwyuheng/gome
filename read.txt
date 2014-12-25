@@ -2,6 +2,7 @@
 清空环境：
 mvn clean -DAPP_ENV=test
 
+
 建立Eclipse环境：
 mvn eclipse:eclipse -DAPP_ENV=test
 
