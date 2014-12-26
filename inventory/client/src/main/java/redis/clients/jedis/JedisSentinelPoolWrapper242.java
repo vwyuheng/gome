@@ -197,8 +197,8 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 		//boolean running = true;
 		List<HostAndPort> listSlaves = new ArrayList<HostAndPort>();
 		List<Map<String, String>> slaves = null;
-		outer: while (true) {
-		
+		//outer: while (true) {
+		 while (!sentinelAvailable) {
 			log.info("Trying to find master from available Sentinels...");
 
 			for (String sentinel : sentinels) {
@@ -250,7 +250,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 							listSlaves.add(master);
 						}
 
-						if (master == null) {
+					/*	if (master == null) {
 							try {
 								if (sentinelAvailable) {
 									// can connect to sentinel, but master name seems to not
@@ -281,20 +281,21 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 						MasterListener masterListener = new MasterListener(masterName,
 								hap.getHost(), hap.getPort());
 						masterListeners.add(masterListener);
-						masterListener.start();
+						masterListener.start();*/
 						
-						break outer;
+						break;
 
 					}
 				} catch (JedisConnectionException e) {
-					log.warn("Cannot connect to sentinel running @ " + hap
-							+ ".sleep 2000ms Trying next one.");
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+						log.warn("Cannot connect to sentinel running @ " + hap
+								+ ".sleep 2000ms Trying next one.");
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					
 				} finally {
 					if (jedis != null) {
 						jedis.close();
@@ -304,6 +305,43 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 
 		 }
 		
+		/*if (master == null) {
+			try {
+				if (sentinelAvailable) {
+					// can connect to sentinel, but master name seems to not
+					// monitored
+					log.info("can connect to sentinel, but  "
+							+ masterName
+							+ " master name seems to not... sleeping 1000ms try again.");
+					Thread.sleep(1000);
+					// throw new
+					// JedisException("Can connect to sentinel, but "
+					// + masterName + " seems to be not monitored...");
+
+				} else {
+					log.info("All sentinels down, cannot determine where is "
+							+ masterName + " master is running...");
+					Thread.sleep(1000);
+					// throw new JedisConnectionException(
+					// "All sentinels down, cannot determine where is "
+					// + masterName + " master is running...");
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}*/
+
+	 log.info("Redis master running at " + master
+				+ ", starting Sentinel listeners...");
+		for (String sentinel : sentinels) {
+			 final HostAndPort hap = toHostAndPort(Arrays.asList(sentinel
+					    .split(":")));
+			//监听到网络不通时进行处理
+			MasterListener masterListener = new MasterListener(masterName,
+					hap.getHost(), hap.getPort());
+			masterListeners.add(masterListener);
+			masterListener.start();
+		}
 
 		if (!CollectionUtils.isEmpty(listSlaves)) {
 			// 随机取一个slave
@@ -376,10 +414,9 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 	    running.set(true);
 
 	    while (running.get()) {
-
-		j = new Jedis(host, port);
-
+		
 		try {
+			j = new Jedis(host, port);
 		    j.subscribe(new JedisPubSubAdapter() {
 			@Override
 			public void onMessage(String channel, String message) {
