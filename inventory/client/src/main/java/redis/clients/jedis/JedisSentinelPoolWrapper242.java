@@ -250,39 +250,6 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 							listSlaves.add(master);
 						}
 
-					/*	if (master == null) {
-							try {
-								if (sentinelAvailable) {
-									// can connect to sentinel, but master name seems to not
-									// monitored
-									log.info("can connect to sentinel, but  "
-											+ masterName
-											+ " master name seems to not... sleeping 1000ms try again.");
-									Thread.sleep(1000);
-									// throw new
-									// JedisException("Can connect to sentinel, but "
-									// + masterName + " seems to be not monitored...");
-
-								} else {
-									log.info("All sentinels down, cannot determine where is "
-											+ masterName + " master is running...");
-									Thread.sleep(1000);
-									// throw new JedisConnectionException(
-									// "All sentinels down, cannot determine where is "
-									// + masterName + " master is running...");
-								}
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-						log.info("Redis master running at " + master
-								+ ", starting Sentinel listeners...");
-						//监听到网络不通时进行处理
-						MasterListener masterListener = new MasterListener(masterName,
-								hap.getHost(), hap.getPort());
-						masterListeners.add(masterListener);
-						masterListener.start();*/
-						
 						break;
 
 					}
@@ -315,17 +282,11 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 							+ masterName
 							+ " master name seems to not... sleeping 1000ms try again.");
 					Thread.sleep(1000);
-					// throw new
-					// JedisException("Can connect to sentinel, but "
-					// + masterName + " seems to be not monitored...");
 
 				} else {
 					log.info("All sentinels down, cannot determine where is "
 							+ masterName + " master is running...");
 					Thread.sleep(1000);
-					// throw new JedisConnectionException(
-					// "All sentinels down, cannot determine where is "
-					// + masterName + " master is running...");
 				}
 				
 			} catch (InterruptedException e) {

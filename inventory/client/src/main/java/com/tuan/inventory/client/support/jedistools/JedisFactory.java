@@ -110,6 +110,8 @@ public class JedisFactory extends RedisBaseObject
     	if (jf.jedisSentinelPool != null)
     	{
     		jf.jedisSentinelPool.returnBrokenResource(res);
+    		//摧毁监听线程
+    		//jf.jedisSentinelPool.destroy();
     	}
     }
     
