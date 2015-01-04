@@ -287,6 +287,7 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 
 					}
 				} catch (JedisConnectionException e) {
+					sentinelAvailable = false;
 						log.warn("Cannot connect to sentinel running @ " + hap
 								+ ".sleep 2000ms Trying next one.");
 						try {
@@ -303,9 +304,9 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 				}
 			}
 
-		 }
+		 }// while (!sentinelAvailable)
 		
-		/*if (master == null) {
+		if (master == null) {
 			try {
 				if (sentinelAvailable) {
 					// can connect to sentinel, but master name seems to not
@@ -326,10 +327,13 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 					// "All sentinels down, cannot determine where is "
 					// + masterName + " master is running...");
 				}
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		}*/
+			
+			sentinelAvailable = false;
+		}
 
 	 log.info("Redis master running at " + master
 				+ ", starting Sentinel listeners...");
@@ -480,5 +484,12 @@ public class JedisSentinelPoolWrapper242 extends Pool<Jedis> {
 			+ e.getMessage());
 	    }
 	}
+    }
+    
+    
+    
+    public void reload()  {
+    	//this.setConfigLocation(new FileSystemResource(this.configLocation.getFile().getPath()));
+    	//this.afterPropertiesSet();
     }
 }

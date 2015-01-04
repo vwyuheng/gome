@@ -84,6 +84,7 @@ public class JedisFactory extends RedisBaseObject
 					returnBrokenRes(j);
 			}
 		}
+	    //重新初始化连接池
 	    
 	    return null;
 	}
