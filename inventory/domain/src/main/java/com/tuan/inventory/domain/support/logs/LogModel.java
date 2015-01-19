@@ -4,10 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.alibaba.fastjson.JSON;
 import com.wowotrace.trace.model.Message;
 import com.wowotrace.trace.util.TraceMessageUtil;
-
-import net.sf.json.JSONObject;
 
 public class LogModel {
 	private Map<String, Object> datas;
@@ -54,16 +53,16 @@ public class LogModel {
 		try {
 			datas.put("_serialId", serialId.incrementAndGet());
 			if (purge) {
-				JSONObject ja = JSONObject.fromObject(datas);
+				//JSONObject ja = JSONObject.fromObject(datas);
 				this.datas.clear();
 				datasInit();
-				return ja.toString();
+				return JSON.toJSONString(datas);
 
 			} else {
 				Map<String, Object> map = toMap();
 				if (map != null) {
-					JSONObject ja = JSONObject.fromObject(map);
-					return ja.toString();
+					//JSONObject ja = JSONObject.fromObject(map);
+					return JSON.toJSONString(map);
 				}
 			}
 		} catch (Exception e) {
@@ -77,8 +76,8 @@ public class LogModel {
 	}
 	
 	public String toJson(Object obj) {
-		JSONObject ja = JSONObject.fromObject(obj);
-		return ja.toString();
+		//JSONObject ja = JSONObject.fromObject(obj);
+		return JSON.toJSONString(obj);
 	}
 	
 	public String endJson() {
