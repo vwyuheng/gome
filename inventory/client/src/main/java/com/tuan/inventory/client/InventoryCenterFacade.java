@@ -234,4 +234,5 @@ public interface InventoryCenterFacade {
 	 */
 	InventoryCallResult incrGoodsSaleCount(
 			final String clientIp, final String clientName,final UpdateLotteryInventoryParam param,Message traceMessage);
+	public void test();
 }

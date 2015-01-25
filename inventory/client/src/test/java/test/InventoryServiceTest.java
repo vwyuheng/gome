@@ -16,12 +16,12 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 
 	/*@Resource
 	SpyMemcachedClient memcachedClient;*/
-	@Resource
-	RedisClientCacheUtil redisCacheUtil;
+	//@Resource
+	//RedisClientCacheUtil redisCacheUtil;
 	//@Resource
 	//GoodsInventoryQueryClientService goodsInventoryQueryClientService;
-	//@Resource
-	//InventoryCenterFacade inventoryCenterFacade;
+	@Resource
+	InventoryCenterFacade inventoryCenterFacade;
 	
 	 @Test
 	    public void sentinel() throws InterruptedException {
@@ -45,6 +45,20 @@ public class InventoryServiceTest extends InventroyAbstractTest {
 			}
 	    }
 	
+	  @Test
+	 public void testDubbo() {
+		 try {
+			 // 查询商品库存
+			 inventoryCenterFacade
+					.test();
+			
+		 } catch (Exception e) {
+			 // TODO Auto-generated catch block
+			 e.printStackTrace();
+		 }
+	 }
+	 
+	 
 	/* @Test
 	 public void testDubboInventory() {
 		 try {

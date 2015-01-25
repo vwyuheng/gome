@@ -12,7 +12,7 @@
 
 	<bean id="inventoryCenterFacade" class="com.tuan.inventory.client.impl.InventoryCenterFacadeImpl" />
 	
-	<bean id="goodsInventoryQuery" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+	<bean id="goodsInventoryQueryService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
 			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryQueryService</value>
 <!-- 			<value>http://inventory.55tuan.me:882/remoting/goodsInventoryQueryService</value> -->
@@ -23,7 +23,7 @@
 		</property>
 	</bean>
 	
-	<bean id="goodsInventoryUpdate" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
+	<bean id="goodsInventoryUpdateService" class="org.springframework.remoting.caucho.HessianProxyFactoryBean">
 		<property name="serviceUrl">
 <!-- 			<value>http://localhost:8080/remoting/goodsInventoryUpdateService</value> -->
 			<value>http://inventory.55tuan.me:8787/remoting/goodsInventoryUpdateService</value>

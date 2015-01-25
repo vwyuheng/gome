@@ -1004,4 +1004,10 @@ public class GoodsInventoryQueryServiceImpl extends AbstractInventoryService imp
 					(GoodsBaseModel) qresult.getResultObject(),
 					result.getThrowable());
 		}
+
+		@Override
+		public void test() {
+			System.out.println("query test");
+			
+		}
 }
