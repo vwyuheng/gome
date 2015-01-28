@@ -29,7 +29,7 @@
 		<notifyserver.version>1.1.1</notifyserver.version>
 		<!-- <ordercenter.version>1.0.1.20140328</ordercenter.version> -->
 		<ordercenter.version>1.0.1.20140915</ordercenter.version>
-		<trace.version>1.0.1.20140110</trace.version>
+		<trace.version>1.0.1.20141210</trace.version>
 		<!-- 分布式锁 -->
 		<dlock.version>1.0.1.20140514</dlock.version>
 		<!-- jobcenter版本 -->
