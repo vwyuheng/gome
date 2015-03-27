@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+<settings>
+		<!-- 是否使用缓存-使用 -->
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="false" />
+		<setting name="aggressiveLazyLoading" value="true" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" />
+		<setting name="autoMappingBehavior" value="FULL" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25000" />
+	</settings>
+	<plugins>
+		<plugin interceptor="com.gome.core.common.utility.PagePlugin">
+			<!-- 请修改此处：需改为实际使用的数据库方言名称 -->
+			<property name="dialect" value="mysql" />
+			<property name="pageSqlId" value=".*ListPage.*" />
+		</plugin>
+	</plugins>
+	<!-- 请修改此处：mapper映射xml配置 -->
+    <mappers>
+        <mapper resource="com/gome/mapper/UserMapper.xml"/>
+    </mappers>
+</configuration>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+	<!-- 应用数据源 -->
+	<New class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg>java:comp/env/jdbc/master</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">com.mysql.jdbc.Driver</Set>
+				<Set name="url">jdbc:mysql://xxx:8066/db?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
+				<Set name="username">user</Set>
+				<Set name="password">123456</Set>
+				<Set name="maxActive">20</Set>
+			</New>
+		</Arg>
+	</New>
+	
+	<New class="org.eclipse.jetty.plus.jndi.Resource">
+		<Arg>java:comp/env/jdbc/slave_1</Arg>
+		<Arg>
+			<New class="org.apache.commons.dbcp.BasicDataSource">
+				<Set name="driverClassName">com.mysql.jdbc.Driver</Set>
+				<Set name="url">jdbc:mysql://xx:8066/db?useUnicode=true&amp;characterEncoding=gbk&amp;zeroDateTimeBehavior=convertToNull&amp;autoReconnect=true</Set>
+				<Set name="username">user</Set>
+				<Set name="password">123456</Set>
+				<Set name="maxActive">20</Set>
+			</New>
+		</Arg>
+	</New>
+	
+</Configure>

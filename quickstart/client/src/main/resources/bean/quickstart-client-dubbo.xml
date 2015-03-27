@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd 
+						http://code.alibabatech.com/schema/dubbo        
+						http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+						default-autowire="byName">
+	
+  	<!-- <bean id="facade" class="com.gome.client.impl.FacadeImpl"/>
+	<dubbo:reference id="queryService"
+		interface="com.gome.service.QueryService" check="false"
+		version="1.0" />
+	<dubbo:reference id="updateService"
+		interface="com.gome.service.UpdateService" check="false"
+		version="1.0" /> -->
+	
+</beans>

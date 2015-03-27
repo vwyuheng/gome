@@ -1,9 +1,0 @@
-#!/bin/sh
-echo 'stoping a...'
-/application/resin-uorder2.0/bin/httpd.sh -server a stop
-echo '-------------------'
-echo 'starting a...'
-/application/resin-uorder2.0/bin/httpd.sh -server a start >> /application/resin-uorder2.0/bin/server_a.log
-
-echo '-------------------'
-ps -ef|grep resin-uorder2.0|grep -v grep

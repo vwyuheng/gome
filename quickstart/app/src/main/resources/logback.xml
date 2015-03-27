@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<configuration> 
+	
+	<!-- ===================================================================== -->
+	<!-- Root logger                                                           -->
+	<!-- ===================================================================== -->
+	<root level="INFO">           
+	    <appender-ref ref="DEFAULT-APPENDER"/>
+		  <appender-ref ref="ERROR-APPENDER"/>
+	</root>   
+ </configuration>
