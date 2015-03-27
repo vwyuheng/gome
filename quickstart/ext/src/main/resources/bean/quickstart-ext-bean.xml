@@ -8,5 +8,5 @@
 						http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
 						default-autowire="byName">
 						
-
+	<bean id="quickstartExtFacade" class="com.gome.ext.impl.QuickstartExtFacadeImpl" />
 </beans>

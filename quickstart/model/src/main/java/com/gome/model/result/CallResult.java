@@ -2,13 +2,15 @@ package com.gome.model.result;
 
 import com.gome.core.common.lang.GomeBaseDO;
 
-/** 
- * @author henry.yu
- * @param <T>
- *  业务返回对象
- * @param <T>
+/**
+ * 结果数据 
+ * 		是否成功 --不代表业务结果
+ *      系统错误枚举
+ *      业务结果对象    包含具体的业务枚举
+ *      业务附件对象（一般是异常对象或者其他信息）
+ * @param <T extends Serializable > 
  */
-public class CallResult extends GomeBaseDO{
+public class CallResult<T> extends GomeBaseDO {
 	private static final long serialVersionUID = 8136212258133597383L;
 	
 	/** 返回码 **/
@@ -50,3 +52,4 @@ public class CallResult extends GomeBaseDO{
 	
 	
 }
+

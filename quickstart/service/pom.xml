@@ -17,5 +17,9 @@
          <groupId>com.gome</groupId>
          <artifactId>cozy-framework-service</artifactId>
          </dependency>
+         <dependency>
+				<groupId>com.gome.quickstart</groupId>
+				<artifactId>quickstart-model</artifactId>
+			</dependency>
 	</dependencies>
 </project>

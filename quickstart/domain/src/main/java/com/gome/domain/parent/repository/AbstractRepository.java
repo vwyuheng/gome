@@ -1,4 +1,4 @@
-package com.gome.domain.repository;
+package com.gome.domain.parent.repository;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
